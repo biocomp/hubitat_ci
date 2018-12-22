@@ -1,0 +1,2 @@
+apply plugin: biocomp.hubitatci.HubitatCiAppPlugin
+hubitat_ci_app.scriptPath = "Send_Hub_Events.src/Send_Hub_Events.groovy"
