@@ -1,3 +1,3 @@
-[submodule "buildSrc\\src\\main\\groovy\\biocomp\\HubitatCi"]
-	path = buildSrc\\src\\main\\groovy\\biocomp\\HubitatCi
+[submodule "buildSrc/src/main/groovy/biocomp/HubitatCi"]
+	path = buildSrc/src/main/groovy/biocomp/HubitatCi
 	url = https://biocomp.visualstudio.com/DefaultCollection/HubitatStuff/_git/HubitatCi
