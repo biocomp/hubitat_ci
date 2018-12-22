@@ -1,4 +1,0 @@
-apply plugin: biocomp.hubitatci.HubitatCiAppPlugin
-
-// Configure the extension
-//hubitatci.message = 'Hi from Gradle'
