@@ -1,39 +1,13 @@
-// repositories {
-//     mavenCentral()
-// }
-
-// dependencies {
-//     compile 'org.codehaus.groovy:groovy-all:2.4.14'
-// }
-
-// apply plugin: groovy
-// // apply plugin: biocomp.hubitatci.HubitatCiAppPlugin
-// // hubitat_ci_app.scriptPath = "Send_Hub_Events.src/Send_Hub_Events.groovy"
-
-
-
-// //task build(dependsOn: build_script) 
-
 plugins {
-// end::use-plugin[]
-// end::all[]
-    //id 'eclipse'
-// tag::all[]
-// tag::use-plugin[]
     id 'groovy'
 }
-// end::use-plugin[]
-
-// tag::groovy-dependency[]
 repositories {
     mavenCentral()
 }
 
 dependencies {
     implementation 'org.codehaus.groovy:groovy-all:2.4.15'
-// end::groovy-dependency[]
-// end::all[]
+    
+    testCompile "org.spockframework:spock-core:1.2-groovy-2.4"
     testImplementation 'junit:junit:4.12'
-// tag::all[]
-// tag::groovy-dependency[]
 }
