@@ -48,10 +48,8 @@ interface HubitatAppApi
     void setLocation(def value)
 
     def getIp()
-    void setIp(def value)
 
     def getEnabled()
-    void setEnabled(def value)
 }
 
 // Custom Script with methods that change the Car's state.
