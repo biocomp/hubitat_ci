@@ -3,17 +3,17 @@ package biocomp.HubitatCiTest
 import org.codehaus.groovy.control.CompilerConfiguration
 import spock.lang.Specification
 
-interface HubitatAppApi
-{
+interface HubitatAppApi {
     def definition(def definitionsMap)
     def preferences(def preferenceCallback)
-    def sendSetup()
+    void sendHubCommand(MyHubAction action)
+
     def subscribe(def device, String propertyName, def handler)
     def subscribe(def device, def handler)
 
     def getPresenceDevices()
     void setPresenceDevices(def value)
-    
+
     def getOmniDevices()
     void setOmniDevices(def value)
 
@@ -43,65 +43,81 @@ interface HubitatAppApi
 
     def getModes()
     void setModes(def value)
-    
+
     def getLocation()
     void setLocation(def value)
 
     def getIp()
-
-    def getEnabled()
+    boolean getEnabled()
+    boolean getLogEnable()
 }
 
 // Custom Script with methods that change the Car's state.
 // The Car object is passed via the binding.
 abstract class HubitatAppScript extends Script {
-    //def printer = null
+    def printer = null
 
-    def methodMissing(String name, Object args)
-    {
-        return this.binding.privateApi."${name}"(*args)
+    @Delegate
+    App app
+    /*
+    def invokeMethod(String name, Object args) {
+        def methods = this.binding.privateApi.metaClass.methods
+        def foundApiMethod = methods.find { it.getName() == name }
+        if (foundApiMethod) {
+            return this.binding.privateApi."${name}"(*args)
+        }
+
+        return super.invokeMethod(name, args)
     }
 
-    def propertyMissing(String name)
+    @Override
+    def getProperty(String name)
     {
-         def methods = getMetaClass().getMethods()
-         def foundMethod = methods.find { it.getName() == name}
+        if (name != "binding") {
+            def getName = "get${name.capitalize()}"
+            def methods = this.binding.privateApi.metaClass.methods
+            def foundApiMethod = methods.find { it.getName() == getName }
+            if (foundApiMethod) {
+                return this.binding.privateApi."${getName}"()
+            }
+        }
 
-         printer "property missing for ('${name}')"
-         if (foundMethod){
-             printer "returning method '${name}'"
-             return foundMethod;
-         }
-
-        printer "calling privateApi.\"get${name.capitalize()}\"()"
-        return this.binding.privateApi."get${name.capitalize()}"()
+        return super.getProperty(name)
     }
+
+    @Override
+    void setProperty(String name, Object newValue)
+    {
+        def setName = "set${name.capitalize()}"
+        def methods = this.binding.privateApi.metaClass.methods
+        def foundApiMethod = methods.find { it.getName() == setName }
+        if (foundApiMethod) {
+            this.binding.privateApi."${setName}"(newValue)
+        }
+
+        super.setProperty(name, newValue)
+    }*/
 }
 
-class HubitatAppSandbox
-{
-    HubitatAppSandbox(String filePath)
-    {
+class HubitatAppSandbox {
+    HubitatAppSandbox(String filePath) {
         this.fileOrScript = filePath
     }
 
-    class MyClassLoader extends ClassLoader
-    {
+    class MyClassLoader extends ClassLoader {
         MyClassLoader(ClassLoader parent) {
             super(parent)
         }
 
         @Override
-        Class<?> loadClass(String name, boolean resolve)
-        {
+        Class<?> loadClass(String name, boolean resolve) {
             super.loadClass(mapClassName(name), resolve)
         }
 
-        private static String mapClassName(String name)
-        {
-            switch (name)
-            {
+        private static String mapClassName(String name) {
+            switch (name) {
                 case "physicalgraph.device.HubAction":
+                    println "Overridden!"
                     return "biocomp.HubitatCiTest.MyHubAction"
 
                 default:
@@ -110,8 +126,7 @@ class HubitatAppSandbox
         }
     }
 
-    Script setupScript(def api)
-    {
+    Script setupScript(def api) {
         // Use custom HubitatAppScript.
         def compilerConfiguration = new CompilerConfiguration()
         compilerConfiguration.scriptBaseClass = HubitatAppScript.class.name
@@ -129,12 +144,11 @@ class HubitatAppSandbox
         return script
     }
 
-    void mandatoryConfigIsSet()
-    {
+    void mandatoryConfigIsSet() {
         LinkedHashMap<String, String> definitions = null
         def api = [
-            definition: { def map -> definitions = map },
-            preferences: {}] as HubitatAppApi
+                definition : { def map -> definitions = map },
+                preferences: {}] as HubitatAppApi
 
         setupScript(api)
 
@@ -153,42 +167,147 @@ class HubitatAppSandbox
     String fileOrScript = null
 }
 
+interface App
+{
+    def foo()
+
+    def zap(def o, String s)
+    def zap(def o)
+    def zap()
+
+    def getBar()
+    void setBar(def val)
+}
+
+class Api implements App
+{
+    @Override
+    def foo() { println 'foo() called!' }
+
+    @Override
+    def zap(def o, String s) { println 'zap(2) called!' }
+
+    @Override
+    def zap(def o) { println 'zap(1) called!' }
+
+    @Override
+    def zap() { println 'zap(0) called!' }
+
+    @Override
+    def getBar() { println "getBar() called!, returns ${bar_}" }
+
+    @Override
+    void setBar(def val) { println "setBar(${val}) called!" }
+
+    private def bar_ = 42
+}
+
+
+
+abstract class HubitatAppScript2 extends Script
+{
+    @Delegate
+    private App app_
+
+    void setApp(App app)
+    {
+        this.app_ = app
+    }
+}
+
+
 class MyTestCase extends Specification {
     def sandbox = new HubitatAppSandbox("Send_Hub_Events.src/Send_Hub_Events.groovy")
+//
+//    def "Script sets mandatory properties"() {
+//        expect:
+//        sandbox.mandatoryConfigIsSet()
+//    }
+//
+//    def "Installation succeeds"() {
+//        given:
+//        def api = Mock(HubitatAppApi)
+//        def script = sandbox.setupScript(api)
+//
+//        when:
+//        script.installed()
+//
+//        then:
+//        _ * api.getPresenceDevices
+//        23 * api.subscribe(*_)
+//        0 * api.sendHubCommand
+//    }
+//
+//    def "Installation with modes requires one more subscription"() {
+//        given:
+//        def api = Mock(HubitatAppApi)
+//        def script = sandbox.setupScript(api)
+//
+//        when:
+//        script.installed()
+//
+//        then:
+//        _ * api.getModes() >> "Modes?"
+//        _ * api.getPresenceDevices
+//        23 * api.subscribe(_, _, _)
+//        1 * api.subscribe(_, _)
+//    }
+//
+//    def "When enabled, sends setup command during installation"() {
+//        given:
+//        def api = Mock(HubitatAppApi)
+//        def script = sandbox.setupScript(api)
+//
+//        when:
+//        script.installed()
+//
+//        then:
+//        _*api.enabled >> true
+//        1 * api.sendHubCommand({MyHubAction action -> action.msg == "test"})
+//    }
 
-    def "Script sets mandatory properties"() 
+    def "Test another thing"()
     {
-        expect:
-            sandbox.mandatoryConfigIsSet()
+        def api = new Api()
+
+/*App.class.declaredMethods.each{
+    if (!${it}.name.startsWith "get" && !${it}.name.startsWith "set")
+    {
+        binding."${it.name}" = api.&"${it.name}"
+    }
+}*/
+
+        def compilerConfiguration = new CompilerConfiguration()
+        compilerConfiguration.scriptBaseClass = HubitatAppScript2.class.name
+
+// Setup script binding
+        def binding = new Binding(privateApi: api)
+
+// Configure the GroovyShell.
+        def shell = new GroovyShell(this.class.classLoader, binding, compilerConfiguration)
+
+
+// Run DSL script.
+        Script script = shell.parse('''
+println "calling foo"
+foo()
+
+println "calling zap(2)"
+zap(1, "test")
+
+println "calling zap(0)"
+zap()
+
+println "bar = ${bar}" 
+println "Setting bar to 123"
+bar = 123
+assert bar == 123
+println "Print from script!"
+''')
+        assert api.bar == 42
+        script.run()
+
+        assert api.bar == 123
     }
 
-    def "Installation succeeds"()
-    {
-        given:
-            def api = Mock(HubitatAppApi)
-            def script = sandbox.setupScript(api)
-
-        when:
-            script.installed()
-
-        then:
-            _*api.getPresenceDevices
-            23*api.subscribe(*_)
-    }
-
-    def "Installation with modes requires one more subscription"()
-    {
-        given:
-        def api = Mock(HubitatAppApi)
-        def script = sandbox.setupScript(api)
-
-        when:
-        script.installed()
-
-        then:
-        _*api.getModes() >> "Modes?"
-        _*api.getPresenceDevices
-        23*api.subscribe(_,_,_)
-        1*api.subscribe(_,_)
-    }
 }
