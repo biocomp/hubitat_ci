@@ -1,27 +1,32 @@
 package biocomp.hubitatCiTest.emulation
 
-interface SmartAppApi
+trait SmartAppApi
 {
-    def definition(def definitionsMap)
-    def preferences(def preferenceCallback)
-    void sendHubCommand(HubAction action)
+    abstract def definition(def definitionsMap)
+    abstract def preferences(def preferenceCallback)
+    abstract void sendHubCommand(HubAction action)
 
-    def subscribe(def device, String propertyName, def handler)
-    def subscribe(def device, def handler)
+    abstract def subscribe(def device, String propertyName, Closure<Event> handler)
+    abstract def subscribe(def device, Closure<Event> handler)
 
-    def getPresenceDevices()
-    def getOmniDevices()
-    def getMotionDevices()
-    def getContactDevices()
-    def getAccelerationDevices()
-    def getMultiSensors()
-    def getOmniSensors()
-    def getSwitchDevices()
-    def getDimmerDevices()
-    def getLocks()
-    def getModes()
-    Location getLocation()
-    String getIp()
-    boolean getEnabled()
-    boolean getLogEnable()
+    abstract def getPresenceDevices()
+    abstract def getOmniDevices()
+    abstract def getMotionDevices()
+    abstract def getContactDevices()
+    abstract def getAccelerationDevices()
+    abstract def getMultiSensors()
+    abstract def getOmniSensors()
+    abstract def getSwitchDevices()
+    abstract def getDimmerDevices()
+    abstract def getLocks()
+    abstract def getModes()
+    abstract Location getLocation()
+    abstract String getIp()
+    abstract boolean getEnabled()
+    abstract boolean getLogEnable()
+
+    /*
+    Returns a list of all child devices. An example use would be in Service Manager SmartApps.
+     */
+    abstract List getChildDevices(boolean includeVirtualDevices = false)
 }

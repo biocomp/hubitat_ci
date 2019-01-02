@@ -24,6 +24,21 @@ class MyTestCase extends Specification {
         0 * api.sendHubCommand
     }
 
+    def "Uninstallation succeeds"() {
+        given:
+        def
+        def api = Mock(emulation.SmartAppApi)
+        def script = sandbox.setupScript(api)
+
+        when:
+        script.uninstalled()
+
+        then:
+        _ * api.getChildDevices
+        23 * api.subscribe(*_)
+        0 * api.sendHubCommand
+    }
+
     def "Installation with modes requires one more subscription"() {
         given:
         def api = Mock(emulation.SmartAppApi)
