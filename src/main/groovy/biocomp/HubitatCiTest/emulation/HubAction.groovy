@@ -1,4 +1,4 @@
-package biocomp.HubitatCiTest
+package biocomp.hubitatCiTest.emulation
 
 class HubAction
 {
