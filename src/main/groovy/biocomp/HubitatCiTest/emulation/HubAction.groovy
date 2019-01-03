@@ -1,5 +1,15 @@
 package biocomp.hubitatCiTest.emulation
 
+/**
+ * Real methods:
+ * public java.lang.String hubitat.device.HubAction.getAction(),
+ * public java.lang.String hubitat.device.HubAction.getCallbackMethod(),
+ * public java.lang.String hubitat.device.HubAction.getDeviceNetworkId(),
+ * public java.util.Map hubitat.device.HubAction.getOptions(),
+ * public java.net.URI hubitat.device.HubAction.getURI(),
+ * public void hubitat.device.HubAction.setDeviceNetworkId(java.lang.String),
+ * public void hubitat.device.HubAction.setOptions(java.util.Map),
+ */
 class HubAction
 {
     /*
