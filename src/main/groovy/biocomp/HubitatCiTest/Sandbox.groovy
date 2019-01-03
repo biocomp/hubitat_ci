@@ -1,6 +1,6 @@
 package biocomp.hubitatCiTest
 
-import biocomp.hubitatCiTest.emulation.SmartAppApi
+import biocomp.hubitatCiTest.emulation.AppApi
 import org.codehaus.groovy.control.CompilerConfiguration
 
 
@@ -8,9 +8,9 @@ import org.codehaus.groovy.control.CompilerConfiguration
 * */
 abstract class HubitatAppScript extends Script {
     @Delegate
-    private SmartAppApi app_
+    private AppApi app_
 
-    void setApp(SmartAppApi app)
+    void setApp(AppApi app)
     {
         this.app_ = app
     }
@@ -124,7 +124,7 @@ class HubitatAppSandbox {
         LinkedHashMap<String, String> definitions = null
         def api = [
                 definition : { def map -> definitions = map },
-                preferences: {}] as SmartAppApi
+                preferences: {}] as AppApi
 
         setupScript(api)
 

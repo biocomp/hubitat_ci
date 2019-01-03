@@ -12,7 +12,7 @@ class MyTestCase extends Specification {
 
     def "Installation succeeds"() {
         given:
-        def api = Mock(emulation.SmartAppApi)
+        def api = Mock(emulation.AppApi)
         def script = sandbox.setupScript(api)
 
         when:
@@ -26,8 +26,7 @@ class MyTestCase extends Specification {
 
     def "Uninstallation succeeds"() {
         given:
-        def
-        def api = Mock(emulation.SmartAppApi)
+        def api = Mock(emulation.AppApi)
         def script = sandbox.setupScript(api)
 
         when:
@@ -41,7 +40,7 @@ class MyTestCase extends Specification {
 
     def "Installation with modes requires one more subscription"() {
         given:
-        def api = Mock(emulation.SmartAppApi)
+        def api = Mock(emulation.AppApi)
         def script = sandbox.setupScript(api)
 
         when:
@@ -56,7 +55,7 @@ class MyTestCase extends Specification {
 
     def "When enabled, sends setup command during installation with all devices"() {
         given:
-        def api = Mock(emulation.SmartAppApi)
+        def api = Mock(emulation.AppApi)
         def script = sandbox.setupScript(api)
         def myIp = "123.456.789.123"
 

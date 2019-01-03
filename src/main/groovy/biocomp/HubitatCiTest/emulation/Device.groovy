@@ -132,18 +132,19 @@ trait Device {
     abstract def latestValue(String attributeName)
 
 
-/**
- Device's states in reverse chronological order.
- @param options : max (Number) - max states to return (default = 10)
- */
-
+    /**
+     Device's states in reverse chronological order.
+     @param options : max (Number) - max states to return (default = 10)
+     */
     abstract List<State> statesBetween(String attributeName, Date startDate, Date endDate, Map options = null)
 
-/**
- Device's states in reverse chronological order.
- @param options : max (Number) - max states to return (default = 10).
- @return list of states, up to 7 days, and up to 1000.
- */
-
+    /**
+     Device's states in reverse chronological order.
+     @param options : max (Number) - max states to return (default = 10).
+     @return list of states, up to 7 days, and up to 1000.
+     */
     abstract List<State> statesSince(String attributeName, Date startDate, Map options = null)
 }
+
+trait ChildDeviceWrapper extends Device
+{}
