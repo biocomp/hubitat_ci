@@ -2,7 +2,16 @@ package biocomp.hubitatCiTest.emulation
 
 /**
  * Real methods:
- * -- public static void com.hubitat.hub.domain.Event.__$swapInit(),
+ * Meta/Common:
+ * public java.util.Map com.hubitat.hub.domain.Event.toMap()
+ * public static void com.hubitat.hub.domain.Event.__$swapInit(),
+ * public java.lang.Object com.hubitat.hub.domain.Event.getProperty(java.lang.String),
+ * public groovy.lang.MetaClass com.hubitat.hub.domain.Event.getMetaClass(),
+ * public void com.hubitat.hub.domain.Event.setProperty(java.lang.String,java.lang.Object),
+ * public java.lang.Object com.hubitat.hub.domain.Event.invokeMethod(java.lang.String,java.lang.Object),
+ * public void com.hubitat.hub.domain.Event.setMetaClass(groovy.lang.MetaClass),
+ *
+ * Getters/main methods:
  * public boolean com.hubitat.hub.domain.Event.getArchivable(),
  * ++ public java.lang.String com.hubitat.hub.domain.Event.getData(),
  * ++ public java.util.Date com.hubitat.hub.domain.Event.getDate(),
@@ -25,24 +34,23 @@ package biocomp.hubitatCiTest.emulation
  * ++ public com.hubitat.hub.domain.Location com.hubitat.hub.domain.Event.getLocation(),
  * ++ public java.lang.Long com.hubitat.hub.domain.Event.getLocationId(),
  * ++ public java.lang.Long com.hubitat.hub.domain.Event.getLongValue(),
- * public groovy.lang.MetaClass com.hubitat.hub.domain.Event.getMetaClass(),
  * ++ public java.lang.String com.hubitat.hub.domain.Event.getName(),
  * ++ public java.lang.Number com.hubitat.hub.domain.Event.getNumberValue(),
  * ++ public java.lang.Number com.hubitat.hub.domain.Event.getNumericValue(),
- * public java.lang.Object com.hubitat.hub.domain.Event.getProperty(java.lang.String),
  * ++ public java.lang.String com.hubitat.hub.domain.Event.getSource(),
  * public boolean com.hubitat.hub.domain.Event.getTranslatable(),
  * public java.lang.String com.hubitat.hub.domain.Event.getType(),
  * ++ public java.lang.String com.hubitat.hub.domain.Event.getUnit(),
  * public long com.hubitat.hub.domain.Event.getUnixTime(),
  * ++ public java.lang.String com.hubitat.hub.domain.Event.getValue(),
- * public java.lang.Object com.hubitat.hub.domain.Event.invokeMethod(java.lang.String,java.lang.Object),
  * public boolean com.hubitat.hub.domain.Event.isArchivable(),
  * ++ public java.lang.Boolean com.hubitat.hub.domain.Event.isDigital(),
  * public boolean com.hubitat.hub.domain.Event.isDisplayed(),
  * ++ public java.lang.Boolean com.hubitat.hub.domain.Event.isPhysical(),
  * public boolean com.hubitat.hub.domain.Event.isTranslatable(),
  * public com.hubitat.hub.domain.Event com.hubitat.hub.domain.Event.populateValues(java.util.Map),
+ *
+ * Setters:
  * public void com.hubitat.hub.domain.Event.setArchivable(boolean),
  * public void com.hubitat.hub.domain.Event.setData(java.lang.String),
  * public void com.hubitat.hub.domain.Event.setDate(java.util.Date),
@@ -59,15 +67,12 @@ package biocomp.hubitatCiTest.emulation
  * public void com.hubitat.hub.domain.Event.setLinkText(java.lang.String),
  * public void com.hubitat.hub.domain.Event.setLocation(com.hubitat.hub.domain.Location),
  * public void com.hubitat.hub.domain.Event.setLocationId(java.lang.Long),
- * public void com.hubitat.hub.domain.Event.setMetaClass(groovy.lang.MetaClass),
  * public void com.hubitat.hub.domain.Event.setName(java.lang.String),
- * public void com.hubitat.hub.domain.Event.setProperty(java.lang.String,java.lang.Object),
  * public void com.hubitat.hub.domain.Event.setSource(java.lang.String),
  * public void com.hubitat.hub.domain.Event.setTranslatable(boolean),
  * public void com.hubitat.hub.domain.Event.setType(java.lang.String),
  * public void com.hubitat.hub.domain.Event.setUnit(java.lang.String),
  * public void com.hubitat.hub.domain.Event.setValue(java.lang.String),
- * public java.util.Map com.hubitat.hub.domain.Event.toMap()
  */
 
 
@@ -101,12 +106,12 @@ trait Event {
     /**
      @return getDevice( ).getId( )
      */
-    abstract String getDeviceId()
+    abstract Long getDeviceId()
 
     /**
      @return unique ID of this event
      */
-    abstract String getId()
+    abstract Long getId()
 
     /**
      @return value of event parsed as double
@@ -120,12 +125,7 @@ trait Event {
      */
     abstract Float getFloatValue()
 
-    abstract String getHubId()
-
-    /**
-     * @return The unique system identifier of the SmartApp instance associated with this Event.
-     */
-    abstract String getInstalledSmartAppId()
+    abstract Long getHubId()
 
     /**
      @return value of event parsed as Integer
@@ -134,19 +134,14 @@ trait Event {
     abstract Integer getIntegerValue()
 
     /**
-     @return value interpreted as ISO-8601 string with Date, null if it's not
-     */
-    abstract String getIsoDate()
-
-    /**
      @return value of event parsed as JSON object
      @exception Exception if value is not JSON
      */
-    abstract Object getJsonValue()
+    abstract Map getJsonData()
 
     abstract Location getLocation()
 
-    abstract String getLocationId()
+    abstract Long getLocationId()
 
     /**
      @return value of event parsed as long
@@ -181,13 +176,6 @@ trait Event {
      * “USER”
      */
     abstract String getSource()
-
-    /**
-     *
-     * @return value of event as String
-     */
-    abstract String getStringValue()
-
     /**
      *
      * @retrun The unit of measure for this Event, if applicable
@@ -199,13 +187,6 @@ trait Event {
      * @return value of event as String
      */
     abstract String getValue()
-
-    /**
-     * @return value of event as a 3-entry Map with keys ‘x’, ‘y’, and ‘z’.
-     * @example "[x: 11, y: 22, z: 33]"
-     * @exception Exception if value can't be parsed as map
-     */
-    abstract Map<String, BigDecimal> getXyzValue()
 
     /**
      * @return false if triggered by physical device

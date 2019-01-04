@@ -15,19 +15,24 @@ package biocomp.hubitatCiTest.emulation
  * public hubitat.device.HubAction(java.lang.String,hubitat.device.Protocol,java.lang.String)
  *
  * Rest:
- public java.lang.String hubitat.device.HubAction.getAction(),
- public java.lang.String hubitat.device.HubAction.getCallbackMethod(),
- public java.lang.String hubitat.device.HubAction.getDeviceNetworkId(),
- public groovy.lang.MetaClass hubitat.device.HubAction.getMetaClass(),
- public java.util.Map hubitat.device.HubAction.getOptions(),
- public java.lang.Object hubitat.device.HubAction.getProperty(java.lang.String),
- public java.net.URI hubitat.device.HubAction.getURI(),
- public java.lang.Object hubitat.device.HubAction.invokeMethod(java.lang.String,java.lang.Object),
- public void hubitat.device.HubAction.setDeviceNetworkId(java.lang.String),
- public void hubitat.device.HubAction.setMetaClass(groovy.lang.MetaClass),
- public void hubitat.device.HubAction.setOptions(java.util.Map),
- public void hubitat.device.HubAction.setProperty(java.lang.String,java.lang.Object),
- public java.lang.String hubitat.device.HubAction.toString()
+ * Meta:
+ * public java.lang.Object hubitat.device.HubAction.invokeMethod(java.lang.String,java.lang.Object),
+ * public groovy.lang.MetaClass hubitat.device.HubAction.getMetaClass(),
+ * public java.lang.Object hubitat.device.HubAction.getProperty(java.lang.String),
+ * public void hubitat.device.HubAction.setProperty(java.lang.String,java.lang.Object),
+ * public java.lang.String hubitat.device.HubAction.toString()
+ * public void hubitat.device.HubAction.setMetaClass(groovy.lang.MetaClass),
+ *
+ * Getters (most relevant for mock)
+ * public java.lang.String hubitat.device.HubAction.getAction(),
+ * public java.lang.String hubitat.device.HubAction.getCallbackMethod(),
+ * public java.lang.String hubitat.device.HubAction.getDeviceNetworkId(),
+ * public java.util.Map hubitat.device.HubAction.getOptions(),
+ * public java.net.URI hubitat.device.HubAction.getURI(),
+ *
+ * Setters:
+ * public void hubitat.device.HubAction.setDeviceNetworkId(java.lang.String),
+ * public void hubitat.device.HubAction.setOptions(java.util.Map),
  */
 class HubAction
 {

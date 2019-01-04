@@ -1,4 +1,4 @@
-package biocomp.hubitatCiTest.emulation
+package biocomp.hubitatCiTest.emulation.zwave
 
 trait Zwave
 {

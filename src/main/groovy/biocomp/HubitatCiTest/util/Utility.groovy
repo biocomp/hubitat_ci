@@ -1,11 +1,51 @@
 package biocomp.hubitatCiTest.util
 
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
 
 final class Utility
 {
+    static Map stringToMap(String map) {
+        def result = [:]
+        map.split(',').each {
+            def keyValue = it.split(':')
+            if (keyValue.size() == 2) {
+                result[keyValue[0].trim()] = keyValue[1].trim()
+            }
+        }
+
+        return result
+    }
+
+
+    /**
+     * Return today's date object for given time.
+     * @param timeString - Either an ISO-8601 date string as returned from time input preferences, or a simple time string in "hh:mm" format (“21:34”).
+     * @param timeZone - current time zone. Please use it.
+     * @note most likely some date calculations are incorrect in some cases, but this is meant mostly for testing.
+     */
+    static Date timeToday(String timeString, TimeZone timeZone = null) {
+        assert timeZone != null
+        def time = Utility.parseTimeString(timeString)
+        def dateTime = ZonedDateTime.now(timeZone.toZoneId())
+        def justDate = ZonedDateTime.of(dateTime.year, dateTime.monthValue, dateTime.dayOfMonth, 0, 0, 0, 0,
+                timeZone.toZoneId())
+        def updatedDate = justDate
+                .plusHours(time.hours)
+                .plusMinutes(time.minutes)
+                .plusSeconds(time.seconds);
+
+        return new Date(updatedDate.year, updatedDate.monthValue, updatedDate.year, updatedDate.hour,
+                updatedDate.minute, updatedDate.second);
+    }
+
+    static boolean timeOfDayIsBetween(Date start, Date stop, Date value, TimeZone timeZone = null) {
+        assert timeZone != null
+        return value.after(start) && value.before(stop);
+    }
+
     private static final DateTimeFormatter DATE_TIME_OFFSET_FORMATTER =
             new DateTimeFormatterBuilder().parseCaseInsensitive().append(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
                     .optionalStart().appendZoneOrOffsetId().optionalEnd()
