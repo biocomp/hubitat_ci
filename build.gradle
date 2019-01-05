@@ -6,8 +6,8 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.codehaus.groovy:groovy-all:2.4.15'
+    implementation 'org.codehaus.groovy:groovy-all:2.5.5'
     
-    testCompile "org.spockframework:spock-core:1.2-groovy-2.4"
+    testCompile "org.spockframework:spock-core:1.2-groovy-2.5"
     testImplementation 'junit:junit:4.12'
 }

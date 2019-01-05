@@ -1,77 +1,92 @@
 package biocomp.hubitatCiTest
 
+import biocomp.hubitatCiTest.emulation.DeviceWrapper
+import biocomp.hubitatCiTest.util.CapturingLog
+import biocomp.hubitatCiTest.util.Log
 import spock.lang.Specification
 
-class MyTestCase extends Specification {
-    def sandbox = new HubitatAppSandbox("Send_Hub_Events.src/Send_Hub_Events.groovy")
+class AppTemplateScriptTest extends
+        Specification
+{
+    def sandbox = new HubitatAppSandbox(new File("Scripts/New App Template.groovy"))
 
     def "Script sets mandatory properties"() {
-       expect:
-       sandbox.mandatoryConfigIsSet()
-   }
+        expect:
+            sandbox.mandatoryConfigIsSet()
+    }
 
-    def "Installation succeeds"() {
+    def "Script's preferences are correct"() {
+        expect:
+            sandbox.preferencesAreCorrect()
+    }
+
+    def "Installation succeeds and logs stuff"() {
         given:
-        def api = Mock(emulation.AppApi)
-        def script = sandbox.setupScript(api)
+            def api = Mock(emulation.AppExecutorApi)
+            def log = Mock(Log)
+            def script = sandbox.setupScript(api)
+            script.metaClass.ventDevices = ["S1", "S2"]
+            script.metaClass.numberOption = 123
 
         when:
-        script.installed()
+            script.installed()
 
         then:
-        _ * api.getPresenceDevices
-        23 * api.subscribe(*_)
-        0 * api.sendHubCommand
+            _ * api.log >> log
+            1 * log.debug("initialize")
+            1 * log.debug("ventDevices: " + ["S1", "S2"])
+            1 * log.debug("numberOption: 123")
+            1 * api.unschedule()
+            1 * api.unschedule()
+    }
+
+    def "Update initializes again"() {
+        given:
+            def api = Mock(emulation.AppExecutorApi)
+            def log = Mock(Log)
+            def script = sandbox.setupScript(api)
+            script.metaClass.ventDevices = ["S1", "S2"]
+            script.metaClass.numberOption = 123
+
+        when:
+            script.updated()
+
+        then:
+            _ * api.log >> log
+            1 * log.debug("updated")
+            1 * log.debug("initialize")
+            1 * log.debug("ventDevices: " + ["S1", "S2"])
+            1 * log.debug("numberOption: 123")
+            1 * api.unschedule()
     }
 
     def "Uninstallation succeeds"() {
         given:
-        def api = Mock(emulation.AppApi)
-        def script = sandbox.setupScript(api)
+            def api = Mock(emulation.AppExecutorApi)
+            def log = Mock(Log)
+            def script = sandbox.setupScript(api)
 
         when:
-        script.uninstalled()
+            script.uninstalled()
 
         then:
-        _ * api.getChildDevices
-        23 * api.subscribe(*_)
-        0 * api.sendHubCommand
+            _ * api.log >> log
+            1 * log.debug("uninstalled")
+    }
+}
+
+class ThermostatDimerSyncHelperTest extends
+        Specification
+{
+    def sandbox = new HubitatAppSandbox(new File("Scripts/ThermostatDimmerSyncHelper.groovy"))
+
+    def "Script sets mandatory properties"() {
+        expect:
+            sandbox.mandatoryConfigIsSet()
     }
 
-    def "Installation with modes requires one more subscription"() {
-        given:
-        def api = Mock(emulation.AppApi)
-        def script = sandbox.setupScript(api)
-
-        when:
-        script.installed()
-
-        then:
-        _ * api.getModes() >> "Modes?"
-        _ * api.getPresenceDevices
-        23 * api.subscribe(_, _, _)
-        1 * api.subscribe(_, _)
-    }
-
-    def "When enabled, sends setup command during installation with all devices"() {
-        given:
-        def api = Mock(emulation.AppApi)
-        def script = sandbox.setupScript(api)
-        def myIp = "123.456.789.123"
-
-        when:
-        script.installed()
-
-        then:
-        (1.._)*api.enabled >> true
-        (1.._)*api.ip >> myIp
-        1 * api.sendHubCommand({
-            emulation.HubAction action ->
-                action.action.startsWith("""POST / HTTP/1.1
-HOST: ${myIp}:39501
-CONTENT-TYPE: text/plain
-DEVICE-NETWORK-ID: systemHubLink
-CONTENT-LENGTH: 0""") && action.dni == "${myIp}:39501"
-        })
+    def "Script's properties are correct"() {
+        expect:
+            sandbox.preferencesAreCorrect()
     }
 }

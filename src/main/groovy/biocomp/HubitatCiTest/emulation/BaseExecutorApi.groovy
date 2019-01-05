@@ -1,5 +1,7 @@
 package biocomp.hubitatCiTest.emulation
 
+import biocomp.hubitatCiTest.util.CapturingLog
+import biocomp.hubitatCiTest.util.Log
 import biocomp.hubitatCiTest.util.Utility
 import groovy.util.slurpersupport.GPathResult
 
