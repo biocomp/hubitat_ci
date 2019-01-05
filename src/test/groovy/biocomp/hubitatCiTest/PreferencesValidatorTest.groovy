@@ -16,8 +16,8 @@ preferences{
 
         then:
             def ex = thrown(AssertionError)
-            ex.message.contains("page")
-            ex.message.contains("can't be empty")
+            ex.message.contains("Page")
+            ex.message.contains("must have at least one section")
     }
 
     def "Can add sections w/o pages"()
@@ -50,15 +50,15 @@ preferences{
 
         then:
             def ex = thrown(AssertionError)
-            ex.message.contains("unsupported option 'someInvalidOption'")
+            ex.message.contains("Option 'someInvalidOption' is not supported")
     }
 
-    def "Reading valid page options"(String validOptionName, def expectedValue)
+    def "Reading valid page options"(String validOptionName, def givenValue, def expectedValue)
     {
         given:
             def preferences = new HubitatAppSandbox("""
 preferences{
-    page(${validOptionName}:"${expectedValue}"){
+    page(${validOptionName}:${givenValue}){
         section{
             input "temperature1", "number", title: "Temperature"
         }
@@ -67,10 +67,16 @@ preferences{
 
         expect:
             preferences.pages[0].options."${validOptionName}" == expectedValue
+            preferences.pages[0].options."${validOptionName}".class == expectedValue.class
 
         where:
-            validOptionName | expectedValue
-            "name"          | "some name"
+            validOptionName | givenValue              || expectedValue
+            "name"          | '"some name"'           || "some name"
+            "nextPage"      | '"some next page name"' || "some next page name"
+            "install"       | true                    || true
+            "uninstall"     | false                   || false
+            "install"       | "true"                  || true
+            "uninstall"     | "false"                 || false
     }
 
     def "preferences() can't be empty"()
@@ -80,20 +86,16 @@ preferences{
 
         then:
             def ex = thrown(AssertionError)
-            ex.message.contains("preferences")
-            ex.message.contains("can't be empty")
+            ex.message.contains("has to have pages (got 0) or sections (got 0)")
     }
-//
-//    def "Page needs to have name and title"(String script, String expectedError)
-//    {
-//        when:
-//            new HubitatAppSandbox(script).preferencesAreCorrect()
-//
-//        then:
-//            thrown().message.contains(expectedError)
-//
-//        where:
-//            script | expectedError
-//            "preferences(page())"
-//    }
+
+    def "section() must have a title"()
+    {
+        when:
+            new HubitatAppSandbox("preferences{}").readPreferences()
+
+        then:
+            def ex = thrown(AssertionError)
+            ex.message.contains("has to have pages (got 0) or sections (got 0)")
+    }
 }

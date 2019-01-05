@@ -1,7 +1,7 @@
 package biocomp.hubitatCiTest
 
-import biocomp.hubitatCiTest.apppreferences.AppPreferencesReader
 import biocomp.hubitatCiTest.apppreferences.Preferences
+import groovy.transform.CompileStatic
 import org.codehaus.groovy.control.CompilerConfiguration
 
 class HubitatAppSandbox {
@@ -37,9 +37,13 @@ class HubitatAppSandbox {
         return script
     }
 
+    @CompileStatic
     Preferences readPreferences()
     {
-        (setupScript(AppPreferencesReader, true) as AppPreferencesReader).producePreferences()
+        HubitatAppScript script = setupScript(HubitatAppScript, false) as HubitatAppScript
+        script.@readPreferences = true
+        script.run()
+        return script.getProducedPreferences()
     }
 
     void mandatoryConfigIsSet() {

@@ -1,44 +1,45 @@
 package biocomp.hubitatCiTest.apppreferences
 
-import groovy.transform.CompileStatic
+import biocomp.hubitatCiTest.emulation.AppPage
+import biocomp.hubitatCiTest.emulation.AppSection
+import biocomp.hubitatCiTest.util.Utility
+import groovy.transform.ToString
 import groovy.transform.TupleConstructor
-
-@CompileStatic
-class InPageState implements State
-{
-    InPageState(int index, String title, Map options)
-    {
-        page = new Page(index, title, options)
-    }
-
-    Page page
-
-    @Override
-    void finalValidation()
-    {
-        assert childrenCount != 0 : "${this} can't be empty"
-    }
-
-    @Override
-    int getChildrenCount() {
-        return page.sections.size()
-    }
-
-    String toString() { return "page(${page.title ? page.title : ""}) #${page.index}, options = ${page.options}" }
-
-    @Override
-    void addChild(State state) {
-        assert state instanceof InSectionState
-
-        page.sections << (state as InSectionState).section
-    }
-}
+import groovy.transform.TypeChecked
 
 @TupleConstructor
-class Page {
+@TypeChecked
+@ToString
+class Page implements AppPage {
     int index
+    String name
     String title
     Map options
 
+    static private final HashMap<String, Closure<Void>> validOptionsAndValidators = [
+            "name": Utility.&nonEmptyStringProperty,
+            "nextPage": Utility.&nonEmptyStringProperty,
+            "install": Utility.&booleanProperty,
+            "uninstall": Utility.&booleanProperty,
+    ]
+
     List<Section> sections = []
+
+    void validate()
+    {
+        Utility.validateOptionMap(this.toString(), options, validOptionsAndValidators)
+        assert sections.size() != 0 : "Page ${this} must have at least one section"
+    }
+
+    @Override
+    def section(String sectionTitle,
+                @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value= AppSection) Closure makeContents) {
+        sections << Utility.runClosureAndValidate(new Section(sections.size(), sectionTitle), makeContents)
+    }
+
+    @Override
+    def section(String sectionTitle, Map options,
+                @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=AppSection) Closure makeContents) {
+        sections << Utility.runClosureAndValidate(new Section(sections.size(), sectionTitle, options), makeContents)
+    }
 }

@@ -1,6 +1,9 @@
 package biocomp.hubitatCiTest
 
+import biocomp.hubitatCiTest.apppreferences.Preferences
 import biocomp.hubitatCiTest.emulation.AppExecutorApi
+import biocomp.hubitatCiTest.emulation.AppPreferences
+import biocomp.hubitatCiTest.util.Utility
 import groovy.transform.AutoImplement
 
 /* Custom Script that redirects most unknown calls to app_, and does not use Binding.
@@ -17,6 +20,20 @@ abstract class HubitatAppScript extends
         println "Checking '${methodOrPropName}'"
         if (forbiddenMethods_.contains(methodOrPropName)) {
             throw new SecurityException("Usage of '${methodOrPropName}' is forbidden inside Hubitat scripts")
+        }
+    }
+
+    public boolean readPreferences
+    private Preferences preferences_ = null
+
+    Preferences getProducedPreferences() { return preferences_ }
+    
+    @Override
+    def preferences(Map options, @DelegatesTo(AppPreferences) Closure makeContents)
+    {
+        if (readPreferences)
+        {
+            preferences_ = Utility.runClosureAndValidate(new Preferences(options), makeContents)
         }
     }
 //
