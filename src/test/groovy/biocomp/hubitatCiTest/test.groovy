@@ -17,14 +17,14 @@ class AppTemplateScriptTest extends
 
     def "Script's preferences are correct"() {
         expect:
-            sandbox.preferencesAreCorrect()
+            sandbox.readPreferences()
     }
 
     def "Installation succeeds and logs stuff"() {
         given:
-            def api = Mock(emulation.AppExecutorApi)
             def log = Mock(Log)
-            def script = sandbox.setupScript(api)
+            def script = sandbox.setupScript(HubitatAppScript, true)
+            script.metaClass.log = log
             script.metaClass.ventDevices = ["S1", "S2"]
             script.metaClass.numberOption = 123
 
@@ -42,9 +42,9 @@ class AppTemplateScriptTest extends
 
     def "Update initializes again"() {
         given:
-            def api = Mock(emulation.AppExecutorApi)
             def log = Mock(Log)
-            def script = sandbox.setupScript(api)
+            def script = sandbox.setupScript(HubitatAppScript, true)
+            script.metaClass.log = log
             script.metaClass.ventDevices = ["S1", "S2"]
             script.metaClass.numberOption = 123
 
@@ -64,7 +64,7 @@ class AppTemplateScriptTest extends
         given:
             def api = Mock(emulation.AppExecutorApi)
             def log = Mock(Log)
-            def script = sandbox.setupScript(api)
+            def script = sandbox.setupScript(api, true)
 
         when:
             script.uninstalled()
@@ -87,6 +87,6 @@ class ThermostatDimerSyncHelperTest extends
 
     def "Script's properties are correct"() {
         expect:
-            sandbox.preferencesAreCorrect()
+            sandbox.readPreferences()
     }
 }

@@ -145,7 +145,7 @@ package biocomp.hubitatCiTest.emulation
  * public void com.hubitat.hub.executor.DeviceExecutor.setZwave(hubitat.zwave.Zwave),
  * */
 
-trait DeviceExecutorApi extends BaseExecutorApi
+trait DeviceExecutorApi implements BaseExecutorApi
 {
     // Command can be invoked by name
     // Needs to be defined by user

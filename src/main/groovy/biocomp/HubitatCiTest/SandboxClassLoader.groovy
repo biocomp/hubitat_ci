@@ -9,7 +9,7 @@ class SandboxClassLoader extends ClassLoader {
 
     @Override
     Class<?> loadClass(String name, boolean resolve) {
-        println "Loading ${name}"
+        //println "Loading ${name}"
         super.loadClass(mapClassName(name), resolve)
     }
 

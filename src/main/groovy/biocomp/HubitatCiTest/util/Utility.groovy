@@ -22,43 +22,6 @@ final class Utility
         return target
     }
 
-    /**
-     * Validate string value from map of properties
-     * @param name of the key. Used for reporting.
-     * @param value - value to validate.
-     */
-    @TypeChecked
-    static void nonEmptyStringProperty(@NotNull String context, @NotNull String name, def value)
-    {
-        assert value != null : "${context}: ${name} value can't be null"
-        assert value instanceof String : "${context}: ${name}'s value must be String, not ${value.class}"
-        String val = value as String
-        assert val != null : "${context}: ${name} value can't be null"
-        assert val != "" : "${context}: ${name}'s value can't be empty"
-    }
-
-    @TypeChecked
-    static void booleanProperty(@NotNull String context, @NotNull String name, def value)
-    {
-        assert value != null : "${context}: ${name} value can't be null"
-        assert value == true || value == false : "${context}: ${name}'s value is not boolean, it's ${value}"
-    }
-
-    @TypeChecked
-    static void validateOptionMap(
-            @NotNull String context,
-            Map options,
-            @NotNull Map<String, Closure<Void>> validPropertiesAndValidators,
-            boolean mustBeNonNull = false)
-    {
-        options?.each {
-            assert it.key instanceof String : "${context}: Option's name '${it.key}' must be String"
-            def validator = validPropertiesAndValidators[it.key as String]
-            assert validator : "${context}: Option '${it.key}' is not supported"
-            validator(context, it.key, it.value)
-        }
-    }
-
     static Map stringToMap(String map) {
         def result = [:]
         map.split(',').each {

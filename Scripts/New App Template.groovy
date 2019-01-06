@@ -8,7 +8,7 @@ definition(
 		iconX3Url: "")
 
 preferences {
-	page(name: "pageConfig")
+	page(name: "pageConfig", title: "t")
 }
 
 def pageConfig() {

@@ -118,7 +118,7 @@ class SandboxTest extends Specification {
             def sandbox = new HubitatAppSandbox("println 'a'")
 
         when:
-            sandbox.setupScript(Mock(AppExecutorApi), true)
+            sandbox.setupScript(HubitatAppScript, true)
 
         then:
             thrown SecurityException

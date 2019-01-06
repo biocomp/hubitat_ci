@@ -181,69 +181,66 @@ import java.time.ZonedDateTime
 
 /**
  * Methods that can be used inside App or Driver, that are also implemented here for simplicity.*/
-trait SeparateHelperMethodsApiImpl {
+interface SeparateHelperMethodsApiImpl {
     /**
      * @param map - string of format "key1: value1, key2: value2"
      */
-    Map stringToMap(String map) {
-        return Utility.stringToMap(map)
-    }
+    Map stringToMap(String map)
 }
 
 /**Methods that can be used inside both App or Driver.*/
-trait BaseExecutorApi extends
+interface BaseExecutorApi extends
         SeparateHelperMethodsApiImpl
 {
-    abstract Location getLocation()
+    Location getLocation()
 
     /**
      * @return "C" or "F"
      */
-    abstract String getTemperatureScale()
+    String getTemperatureScale()
 
     /**
      * @return current Unix time in milliseconds.
      */
-    abstract long now()
+    long now()
 
     /**
      * return true if value is between start and end
      */
-    boolean timeOfDayIsBetween(Date start, Date stop, Date value, TimeZone timeZone = null) {
-        return Utility.timeOfDayIsBetween(start, stop, value, timeZone)
-    }
+    boolean timeOfDayIsBetween(Date start, Date stop, Date value, TimeZone timeZone)
+    boolean timeOfDayIsBetween(Date start, Date stop, Date value)
 
-    abstract BigDecimal celsiusToFahrenheit(BigDecimal val)
+    BigDecimal celsiusToFahrenheit(BigDecimal val)
 
-    abstract BigDecimal fahrenheitToCelsius(BigDecimal val)
+    BigDecimal fahrenheitToCelsius(BigDecimal val)
 
-    abstract void httpGet(String uri, Closure closure)
+    void httpGet(String uri, Closure closure)
 
-    abstract void httpGet(Map params, Closure closure)
+    void httpGet(Map params, Closure closure)
 
-    abstract void httpPost(String uri, String body, Closure closure)
+    void httpPost(String uri, String body, Closure closure)
 
-    abstract void httpPost(Map params, Closure closure)
+    void httpPost(Map params, Closure closure)
 
-    abstract void httpPutJson(String uri, String body, Closure closure)
+    void httpPutJson(String uri, String body, Closure closure)
 
-    abstract void httpPutJson(String uri, Map body, Closure closure)
+    void httpPutJson(String uri, Map body, Closure closure)
 
-    abstract void httpPutJson(Map params, Closure closure)
+    void httpPutJson(Map params, Closure closure)
 
-    abstract void httpPut(String uri, String body, Closure closure)
+    void httpPut(String uri, String body, Closure closure)
 
-    abstract void httpPut(Map params, Closure closure)
+    void httpPut(Map params, Closure closure)
 
-    abstract void httpDelete(Map params, Closure closure)
+    void httpDelete(Map params, Closure closure)
 
-    abstract String getMACFromIP(String ipAddr)
+    String getMACFromIP(String ipAddr)
 
-    abstract String convertTemperatureIfNeeded(BigDecimal value, String scale, Integer precision)
+    String convertTemperatureIfNeeded(BigDecimal value, String scale, Integer precision)
 
-    abstract Object parseJson(String stringToParse)
+    Object parseJson(String stringToParse)
 
-    abstract GPathResult parseXML(String stringToParse)
+    GPathResult parseXML(String stringToParse)
 
     /**
      * Parses a Base64-encoded LAN message received from the Hub into a map with header and body elements,
@@ -254,59 +251,66 @@ trait BaseExecutorApi extends
      *  headers (Map) - a Map of string/name value pairs for each header
      *  body (String) the request body as a string
      */
-    abstract Map parseLanMessage(String stringToParse)
+    Map parseLanMessage(String stringToParse)
 
 
-    abstract void pauseExecution(Long milliseconds)
-
-    /**
-     * @param handlerMethod - could be method name (String) or reference to a method.
-     * @param options. Supported keys:
-     *  data (Map) A map of data that will be passed to the handler method
-     */
-    abstract void runEvery1Minute(def handlerMethod, Map options = null)
+    void pauseExecution(Long milliseconds)
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    abstract void runEvery5Minutes(def handlerMethod, Map options = null)
+    void runEvery1Minute(def handlerMethod, Map options)
+    void runEvery1Minute(def handlerMethod)
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    abstract void runEvery10Minutes(def handlerMethod, Map options = null)
+    void runEvery5Minutes(def handlerMethod, Map options)
+    void runEvery5Minutes(def handlerMethod)
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    abstract void runEvery15Minutes(def handlerMethod, Map options = null)
+    void runEvery10Minutes(def handlerMethod, Map options)
+    void runEvery10Minutes(def handlerMethod)
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    abstract void runEvery30Minutes(def handlerMethod, Map options = null)
+    void runEvery15Minutes(def handlerMethod, Map options)
+    void runEvery15Minutes(def handlerMethod)
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    abstract void runEvery1Hour(def handlerMethod, Map options = null)
+    void runEvery30Minutes(def handlerMethod, Map options)
+    void runEvery30Minutes(def handlerMethod)
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    abstract void runEvery3Hours(def handlerMethod, Map options = null)
+    void runEvery1Hour(def handlerMethod, Map options)
+    void runEvery1Hour(def handlerMethod)
+
+    /**
+     * @param handlerMethod - could be method name (String) or reference to a method.
+     * @param options. Supported keys:
+     *  data (Map) A map of data that will be passed to the handler method
+     */
+    void runEvery3Hours(def handlerMethod, Map options)
+    void runEvery3Hours(def handlerMethod)
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
@@ -314,10 +318,12 @@ trait BaseExecutorApi extends
      *  overwrite (Boolean) - Specify [overwrite: false] to not overwrite any existing pending schedule handler for the given method (the default behavior is to overwrite the pending schedule). Specifying [overwrite: false] can lead to multiple different schedules for the same handler method, so be sure your handler method can handle this.
      *  data (Map) A map of data that will be passed to the handler method
      */
-    abstract void runIn(Long delayInSeconds, def handlerMethod, Map options = null)
+    void runIn(Long delayInSeconds, def handlerMethod, Map options)
+    void runIn(Long delayInSeconds, def handlerMethod)
 
 
-    abstract void runInMillis(Long delayInMilliSeconds, def handlerMethod, Map options = null)
+    void runInMillis(Long delayInMilliSeconds, def handlerMethod, Map options)
+    void runInMillis(Long delayInMilliSeconds, def handlerMethod)
 
     /**
      * Runs specified method at specified date/time.
@@ -328,7 +334,8 @@ trait BaseExecutorApi extends
      *  overwrite (Boolean) - Specify [overwrite: false] to not overwrite any existing pending schedule handler for the given method (the default behavior is to overwrite the pending schedule). Specifying [overwrite: false] can lead to multiple different schedules for the same handler method, so be sure your handler method can handle this.
      *  data (Map) A map of data that will be passed to the handler method
      */
-    abstract void runOnce(Date dateTime, def handlerMethod, Map options = null)
+    void runOnce(Date dateTime, def handlerMethod, Map options)
+    void runOnce(Date dateTime, def handlerMethod)
 
     /**
      * Runs specified method at specified date/time.
@@ -339,7 +346,8 @@ trait BaseExecutorApi extends
      *  overwrite (Boolean) - Specify [overwrite: false] to not overwrite any existing pending schedule handler for the given method (the default behavior is to overwrite the pending schedule). Specifying [overwrite: false] can lead to multiple different schedules for the same handler method, so be sure your handler method can handle this.
      *  data (Map) A map of data that will be passed to the handler method
      */
-    abstract void runOnce(String dateTime, def handlerMethod, Map options = null)
+    void runOnce(String dateTime, def handlerMethod, Map options)
+    void runOnce(String dateTime, def handlerMethod)
 
     /**
      * Creates a scheduled job that calls the handlerMethod once per day at the time specified.
@@ -348,7 +356,8 @@ trait BaseExecutorApi extends
      * @param options. Supported keys:
      *  data (Map) - will be passed to handlerMethod
      */
-    abstract void schedule(Date dateTime, def handlerMethod, Map options = null)
+    void schedule(Date dateTime, def handlerMethod, Map options)
+    void schedule(Date dateTime, def handlerMethod)
 
     /**
      * Creates a scheduled job that calls the handlerMethod according to cronExpression, or once a day at specified time.
@@ -358,25 +367,46 @@ trait BaseExecutorApi extends
      * @param options. Supported keys:
      *  data (Map) - will be passed to handlerMethod
      */
-    abstract void schedule(String cronExpressionOrIsoDate, def handlerMethod, Map options = null)
+    void schedule(String cronExpressionOrIsoDate, def handlerMethod, Map options)
+    void schedule(String cronExpressionOrIsoDate, def handlerMethod)
 
-    abstract void asynchttpGet(String callbackMethod = null, Map params, Map data = null)
+    void asynchttpGet(String callbackMethod, Map params, Map data)
+    void asynchttpGet(String callbackMethod, Map params)
+    void asynchttpGet(Map params, Map data)
+    void asynchttpGet(Map params)
 
-    abstract void asynchttpPost(String callbackMethod = null, Map params, Map data = null)
 
-    abstract void asynchttpPut(String callbackMethod = null, Map params, Map data = null)
+    void asynchttpPost(String callbackMethod, Map params, Map data)
+    void asynchttpPost(String callbackMethod, Map params)
+    void asynchttpPost(Map params, Map data)
+    void asynchttpPost(Map params)
 
-    abstract void asynchttpDelete(String callbackMethod = null, Map params, Map data = null)
+    void asynchttpPut(String callbackMethod, Map params, Map data)
+    void asynchttpPut(String callbackMethod, Map params)
+    void asynchttpPut(Map params, Map data)
+    void asynchttpPut(Map params)
 
-    abstract void asynchttpPatch(String callbackMethod = null, Map params, Map data = null)
+    void asynchttpDelete(String callbackMethod, Map params, Map data)
+    void asynchttpDelete(String callbackMethod, Map params)
+    void asynchttpDelete(Map params, Map data)
+    void asynchttpDelete(Map params)
 
-    abstract void asynchttpHead(String callbackMethod = null, Map params, Map data = null)
+    void asynchttpPatch(String callbackMethod, Map params, Map data)
+    void asynchttpPatch(String callbackMethod, Map params)
+    void asynchttpPatch(Map params, Map data)
+    void asynchttpPatch(Map params)
 
-    abstract Map textToSpeech(String stringToBeSynthesized, String voice = null)
+    void asynchttpHead(String callbackMethod, Map params, Map data)
+    void asynchttpHead(String callbackMethod, Map params)
+    void asynchttpHead(Map params, Map data)
+    void asynchttpHead(Map params)
 
-    abstract String encrypt(String value)
+    Map textToSpeech(String stringToBeSynthesized, String voice)
+    Map textToSpeech(String stringToBeSynthesized)
 
-    abstract String decrypt(String value)
+    String encrypt(String value)
+
+    String decrypt(String value)
 
     /**
      * Sends a LOCATION Event constructed from the specified properties.
@@ -393,15 +423,15 @@ trait BaseExecutorApi extends
      * unit 	String - a unit string, if desired. This will be used to create the descriptionText if it (the descriptionText option) is not specified.
      * data 	A map of additional information to store with the Event
      */
-    abstract void sendLocationEvent(Map properties)
+    void sendLocationEvent(Map properties)
 
-    abstract void httpPostJson(String uri, String body, Closure closure)
+    void httpPostJson(String uri, String body, Closure closure)
 
-    abstract void httpPostJson(String uri, Map body, Closure closure)
+    void httpPostJson(String uri, Map body, Closure closure)
 
-    abstract void httpPostJson(Map params, Closure closure)
+    void httpPostJson(Map params, Closure closure)
 
-    abstract Date toDateTime(String dateTimeString)
+    Date toDateTime(String dateTimeString)
 
 
     /**
@@ -410,9 +440,8 @@ trait BaseExecutorApi extends
      * @param timeZone - current time zone. Please use it.
      * @note most likely some date calculations are incorrect in some cases, but this is meant mostly for testing.
      */
-    Date timeToday(String timeString, TimeZone timeZone = null) {
-        return Utility.timeToday(timeString, timeZone)
-    }
+    Date timeToday(String timeString, TimeZone timeZone)
+    Date timeToday(String timeString)
 
     // ST has this, but HE does not?
     // TimeZone timeZone(String timePreferenceString)
@@ -422,10 +451,12 @@ trait BaseExecutorApi extends
      * If using the optional method parameter, then it deletes the scheduled job for the specified handler name only.
      * @param method - optional specific method to unschedule
      */
-    abstract void unschedule(String method = '')
+    void unschedule(String method)
+    void unschedule()
 
 
-    abstract List getChildDevices(boolean includeVirtualDevices = false)
+    List getChildDevices(boolean includeVirtualDevices)
+    List getChildDevices()
 }
 
 

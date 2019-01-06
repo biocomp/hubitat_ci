@@ -1,8 +1,10 @@
 package biocomp.hubitatCiTest
 
-import biocomp.hubitatCiTest.HubitatAppScript
+import biocomp.hubitatCiTest.emulation.AppExecutorApi
+import groovy.transform.AutoImplement
 
-class AppDefinitionValidator extends HubitatAppScript {
+@AutoImplement
+class AppDefinitionValidator implements AppExecutorApi {
     @Override
     def definition(Map definitions)
     {

@@ -204,301 +204,6 @@ trait AppSection
      * @return
      */
     abstract def input(Map options = null, String name = null, String type = null)
-}
-
-trait AppPage
-{
-    /**
-     * Adds section to a page
-     */
-    abstract def section(String sectionTitle = null, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=AppSection)
-            Closure makeContents)
-
-    /**
-     * Adds section to a page
-     *
-     * @param sectionTitle
-     * @param options. valid options are:
-     *
-     * hideable (Boolean) - Pass true to allow the section to be collapsed. Defaults to false.
-     * hidden (Boolean) - Pass true to specify the section is collapsed by default. Used in conjunction with hideable.
-     *      Defaults to false.
-     * mobileOnly (Boolean) - Pass true to suppress this section from the IDE simulator. Defaults to false.
-     */
-    abstract def section(String sectionTitle, Map options, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=AppSection) Closure makeContents)
-}
-
-trait AppPreferences
-{
-    /**
-     * Adds page of settings.
-     */
-    abstract def page(String name, String title, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=AppPage) Closure
-            makeContents = null)
-
-    /**
-     * Adds page of settings.
-     *
-     * @param options. Valid options are:
-     name (required) (String) - Identifier for this page.
-     title (String) - The display title of this page.
-     nextPage (String) - Used on multi-page preferences only. Should be the name of the page to navigate to next.
-     install (Boolean) - Set to true to allow the user to install this app from this page. Defaults to false. Not
-     necessary for single-page preferences.
-     uninstall (Boolean) - Set to true to allow the user to uninstall from this page. Defaults to false. Not necessary
-     for single-page preferences.
-     */
-    abstract def page(Map options, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=AppPage) Closure makeContents)
-
-    /**
-     * Adds section to a page
-     */
-    abstract def section(String sectionTitle = null, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=AppSection)
-            Closure makeContents)
-
-    /**
-     * Adds section to a page
-     *
-     * @param sectionTitle
-     * @param options. valid options are:
-     *
-     * hideable (Boolean) - Pass true to allow the section to be collapsed. Defaults to false.
-     * hidden (Boolean) - Pass true to specify the section is collapsed by default. Used in conjunction with hideable.
-     *      Defaults to false.
-     * mobileOnly (Boolean) - Pass true to suppress this section from the IDE simulator. Defaults to false.
-     */
-    abstract def section(String sectionTitle, Map options, @DelegatesTo(strategy=Closure.DELEGATE_ONLY,
-            value=AppSection) Closure makeContents)
-
-}
-
-trait AppExecutorApi extends
-        BaseExecutorApi
-{
-    // Returns list of devices or one device from config
-    // Device/List<Device> get<device or capability preference name>()
-
-    // Returns Number or Decimal config value
-    // BigDecimal get<number or decimal preference name>()
-
-    // Return value of config property.
-    // If it's text, returns: String - the value entered as text
-    // If it's mode, returns: String - the name of the mode selected
-    // If it's time, returns: String - the full date string in the format of “yyyy-MM-dd’T’HH:mm:ss.SSSZ”
-    // String get<text, mode, or time preference name>()
-
-    /**
-     @throws IllegalArgumentException - If a label was not supplied
-     @throws NotFoundException - If the given SmartApp name was not found in the given Namespace.
-     @throws SizeLimitExceededException - If this SmartApp already has the maximum number of children allowed (500).
-     */
-    abstract InstalledAppWrapper addChildApp(String namespace, String smartAppVersionName, String label, Map
-            properties = null)
-
-    /**
-     * @return Returns the URL of the server where this App can be reached for API calls,
-     * along with the specified path appended to it.
-     * Use this instead of hard-coding a URL to ensure that the correct server URL
-     * for this installed instance is returned.
-     */
-    abstract String apiServerUrl(String path)
-
-    /**
-     * @return A map of name/value pairs that App can use to save and retrieve
-     * data across App executions.
-     * This is similar to getState(), but will immediately write and read from the backing data store.
-     * Prefer using getState() over getAtomicState() when possible.
-     */
-    abstract Map getAtomicState()
-
-    /**
-     * @return A map of name/value pairs that App can use to save and retrieve data across App executions.
-     * @note Though state can be treated as a map in most regards, certain convenience
-     * operations that you may be accustomed to in maps will not work with state.
-     * For example, state.count++ will not increment the count.
-     * Use the longer form of state.count = state.count + 1.
-     */
-    abstract Map getState()
-
-    /**
-     * @return true if max of 6 scheduled jobs was not reached.
-     */
-    abstract boolean canSchedule()
-
-    /**
-     * Creates access token and puts into state.accessToken
-     * @return may return access token here too.
-     */
-    abstract def createAccessToken()
-
-    abstract List<InstalledAppWrapper> findAllChildAppsByName(String name)
-
-    abstract List<InstalledAppWrapper> findAllChildAppsByNamespaceAndName(String namespace, String name)
-
-    /**
-     * @return found app (if many are matching, first one is returned) or null.
-     */
-    abstract InstalledAppWrapper findChildAppByName(String appName)
-
-    /**
-     * @return found app (if many are matching, first one is returned) or null.
-     */
-    abstract InstalledAppWrapper findChildAppByNamespaceAndName(String namespace, String appName)
-
-    /**
-     @return all child apps, even if installation state is "incomplete"
-     */
-    abstract List<InstalledAppWrapper> getAllChildApps()
-
-
-    /**
-     * @return getChildDevices()
-     */
-    abstract List<ChildDeviceWrapper> getAllChildDevices()
-
-    abstract String getApiServerUrl()
-
-    abstract ColorUtilities getColorUtil()
-
-
-    /**
-     * @param supported options:
-     * (not supported in Hubitat?) zipCode (String) - the zip code to use for determining the times.
-     *  If not specified then the coordinates of the Hub location are used.
-     * (not supported in Hubitat?) locationString (Srtring) - any location string supported by the Weather Underground APIs.
-     *  If not specified then the coordinates of the Hub Location are used
-     * sunriseOffset (String) - adjust the sunrise time by this amount.
-     *  See timeOffset() for supported formats
-     * sunsetOffset (String) - adjust the sunset time by this amount.
-     *  See timeOffset() for supported formats
-     * @return Map with String keys and Date values: [sunrise: Date, sunset: Date]
-     */
-    abstract Map getSunriseAndSunset(Map options = null)
-
-    abstract void pauseExecution(Long millisecs)
-
-    /**
-     @return only child apps whose state is "complete"
-     */
-    abstract List<InstalledAppWrapper> getChildApps()
-
-    /**
-     * Creates App event with specified properties.
-     * @param properties. Supported keys:
-     * name (required) (String) - The name of the Event. Typically corresponds to an attribute name of a capability.
-     * value (required) The value of the Event. The value is stored as a string, but you can pass numbers or other objects.
-     * descriptionText (String) - The description of this Event. This appears in the mobile application activity for the device. If not specified, this will be created using the Event name and value.
-     * displayed (boolean) - Pass true to display this Event in the mobile application activity feed, false to not display. Defaults to true.
-     * linkText (String) - Name of the Event to show in the mobile application activity feed.
-     * isStateChange (boolean) - true if this Event caused a device attribute to change state. Typically not used, since it will be set automatically.
-     * unit (String) - a unit string, if desired. This will be used to create the descriptionText if it (the descriptionText option) is not specified.
-     * device (Device) - The device for which this Event is created for.
-     * data (Map) A map of additional information to store with the Event
-     */
-    abstract void sendEvent(Map properties)
-
-    /**
-     * Creates Device event with specified properties.
-     * @param properties. Supported keys:
-     * name (required) (String) - The name of the Event. Typically corresponds to an attribute name of a capability.
-     * value (required) The value of the Event. The value is stored as a string, but you can pass numbers or other objects.
-     * descriptionText (String) - The description of this Event. This appears in the mobile application activity for the device. If not specified, this will be created using the Event name and value.
-     * displayed (boolean) - Pass true to display this Event in the mobile application activity feed, false to not display. Defaults to true.
-     * linkText (String) - Name of the Event to show in the mobile application activity feed.
-     * isStateChange (boolean) - true if this Event caused a device attribute to change state. Typically not used, since it will be set automatically.
-     * unit (String) - a unit string, if desired. This will be used to create the descriptionText if it (the descriptionText option) is not specified.
-     * device (Device) - The device for which this Event is created for.
-     * data (Map) A map of additional information to store with the Event
-     */
-    abstract void sendEvent(DeviceWrapper device, Map properties)
-
-    /**
-     * Creates Device event with specified properties.
-     * @param properties. Supported keys:
-     * name (required) (String) - The name of the Event. Typically corresponds to an attribute name of a capability.
-     * value (required) The value of the Event. The value is stored as a string, but you can pass numbers or other objects.
-     * descriptionText (String) - The description of this Event. This appears in the mobile application activity for the device. If not specified, this will be created using the Event name and value.
-     * displayed (boolean) - Pass true to display this Event in the mobile application activity feed, false to not display. Defaults to true.
-     * linkText (String) - Name of the Event to show in the mobile application activity feed.
-     * isStateChange (boolean) - true if this Event caused a device attribute to change state. Typically not used, since it will be set automatically.
-     * unit (String) - a unit string, if desired. This will be used to create the descriptionText if it (the descriptionText option) is not specified.
-     * device (Device) - The device for which this Event is created for.
-     * data (Map) A map of additional information to store with the Event
-     */
-    abstract void sendEvent(String dni, Map properties)
-
-    /**
-     * Sends the message as an SMS message to the specified phone number and displays it in Hello, Home.
-     * @param message - no longer than 140 chars
-     */
-    abstract void sendSms(String phone, String message)
-
-    /**
-     * Sends the message as an SMS message to the specified phone number but does not display it in Hello, Home.
-     * @param message - no longer than 140 chars
-     */
-    abstract void sendSmsMessage(String phone, String message)
-
-    /**
-     * Set the Mode for this Location.*/
-    abstract void setLocationMode(String mode)
-
-    /**
-     * @return configuration settings for the app.
-     */
-    abstract Map getSettings()
-
-    /**
-     * Subscribe to event, or attribute value changes.
-     * @param thing - could be Device, Location (or app)?
-     * @param attributeNameOrNameAndValueOrEventName. Could be:
-     *  1. name of event,
-     *  2. name of attribute that changed
-     *  3. Format of 'attribute.value' to get notification only for specific value
-     * @param handlerMethod - The method to call when the Event is fired.
-     *  Can be a String of the method name or the method reference itself.
-     * @param options
-     */
-    abstract void subscribe(def appOrDeviceOrLocation,
-                            String attributeNameOrNameAndValueOrEventName,
-                            def handlerMethod,
-                            Map options = null)
-
-
-    /**
-     * @param minutes
-     * @return milliseconds in given minutes
-     */
-    abstract Long timeOffset(Number minutes)
-
-    /**
-     * @param hoursAndMinutesString - A string in the format of "hh:mm" to get the offset in milliseconds for.
-     *  Negative offsets are specified by prefixing the string with a minus sign ("-02:30").
-     * @return milliseconds in given hours + minutes
-     */
-    abstract Long timeOffset(String hoursAndMinutesString)
-
-
-    abstract String fullApiServerUrl(String base)
-    abstract String getFullApiServerUrl()
-
-    abstract String getLocalApiServerUrl()
-
-    abstract String getFullLocalApiServerUrl()
-
-    abstract String localApiServerUrl(String url)
-
-    abstract String fullLocalApiServerUrl(String url)
-
-    /**
-     * Metainformation about the app
-     *
-     * @param definitionsMap
-     * @param makeContents
-     * @return
-     */
-    abstract def definition(Map definitionsMap, Closure makeContents = null)
-
 
     /**
      * @param name. Name.
@@ -508,12 +213,12 @@ trait AppExecutorApi extends
      required (Boolean) - true or false to specify this input is required. Defaults to false.
      description (String) - the secondary text of the element
      style (String) - Controls how the link will be handled.
-        Specify “external” to launch the link in the mobile device’s browser.
-        Specify “embedded” to launch the link within the SmartThings mobile application.
-        Specify “page” to indicate this is a preferences page.
-        If style is not specified, but page is, then style:"page" is assumed.
-        If style is not specified, but url is, then style:"embedded" is assumed.
-        Currently, Android does not support the “external” style option.
+     Specify “external” to launch the link in the mobile device’s browser.
+     Specify “embedded” to launch the link within the SmartThings mobile application.
+     Specify “page” to indicate this is a preferences page.
+     If style is not specified, but page is, then style:"page" is assumed.
+     If style is not specified, but url is, then style:"embedded" is assumed.
+     Currently, Android does not support the “external” style option.
      url (String) - The URL of the page to visit. You can use query parameters to pass additional information to the
      URL (for example, http://someurl.com?param1=value1&param2=value1).
      params (Map) - Use this to pass parameters to other preference pages. If doing this, make sure your page
@@ -551,21 +256,6 @@ trait AppExecutorApi extends
     abstract def mode(Map options)
 
     /**
-     * Adds dynanmic page
-     * @param options. Same as for page(), and one extra:
-     refreshInterval (Integer) - refreshes the specific page of the SmartApp on
-        the mobile device for the integer number of seconds.
-     */
-    abstract Map dynamicPage(Map options, Closure makeContents)
-
-    /**
-     * Preferences for the app
-     *
-     * @param options. Not clear which ones are supported.
-     */
-    abstract def preferences(Map options = null, @DelegatesTo(AppPreferences) Closure makeContents)
-
-    /**
      * Add a paragraph to the section
      * @param options.Valid options are:
      *
@@ -579,51 +269,389 @@ trait AppExecutorApi extends
      * Add this text as paragraph to the section
      */
     abstract def paragraph(String text)
+}
+
+trait AppPage
+{
+    /**
+     * Adds section to a page
+     */
+    abstract def section(String sectionTitle = null, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=AppSection)
+            Closure makeContents)
+
+    /**
+     * Adds section to a page
+     *
+     * @param sectionTitle
+     * @param options. valid options are:
+     *
+     * hideable (Boolean) - Pass true to allow the section to be collapsed. Defaults to false.
+     * hidden (Boolean) - Pass true to specify the section is collapsed by default. Used in conjunction with hideable.
+     *      Defaults to false.
+     * mobileOnly (Boolean) - Pass true to suppress this section from the IDE simulator. Defaults to false.
+     */
+    abstract def section(Map options, String sectionTitle = null, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=AppSection) Closure makeContents)
+}
+
+trait AppDynamicPage extends AppPage
+{}
+
+trait AppPreferences
+{
+    /**
+     * Adds page of settings.
+     */
+    abstract def page(String name, String title, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=AppPage) Closure
+            makeContents = null)
+
+    /**
+     * Adds page of settings.
+     *
+     * @param options. Valid options are:
+     name (required) (String) - Identifier for this page.
+     title (String) - The display title of this page.
+     nextPage (String) - Used on multi-page preferences only. Should be the name of the page to navigate to next.
+     install (Boolean) - Set to true to allow the user to install this app from this page. Defaults to false. Not
+     necessary for single-page preferences.
+     uninstall (Boolean) - Set to true to allow the user to uninstall from this page. Defaults to false. Not necessary
+     for single-page preferences.
+     */
+    abstract def page(Map options, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=AppPage) Closure makeContents)
+
+
+    /**
+     * Creates dynamic page. In this case, page's 'name' must point to a method.
+     * @param options (see other page() method). But 'name' must be a name of method that creates dynamic page.
+     * @return
+     */
+    abstract def page(Map options)
+
+    /**
+     * Adds section to single-page app (one parent page is assumed)
+     */
+    abstract def section(String sectionTitle = null, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=AppSection)
+            Closure makeContents)
+
+    /**
+     * Adds section to a single-page app (one parent page is assumed)
+     *
+     * @param sectionTitle
+     * @param options. valid options are:
+     *
+     * hideable (Boolean) - Pass true to allow the section to be collapsed. Defaults to false.
+     * hidden (Boolean) - Pass true to specify the section is collapsed by default. Used in conjunction with hideable.
+     *      Defaults to false.
+     * mobileOnly (Boolean) - Pass true to suppress this section from the IDE simulator. Defaults to false.
+     */
+    abstract def section(Map options, String sectionTitle = null, @DelegatesTo(strategy=Closure.DELEGATE_ONLY,
+            value=AppSection) Closure makeContents)
+
+}
+
+/**
+ * Entry point for all preferences() related calls.
+ */
+interface AppPreferencesSource
+{
+    /**
+     * Adds dynanmic page
+     * @param options. Same as for page(), and one extra:
+     refreshInterval (Integer) - refreshes the specific page of the SmartApp on
+     the mobile device for the integer number of seconds.
+     */
+    Map dynamicPage(Map options, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=AppDynamicPage) Closure makeContents)
+
+    /**
+     * Preferences for the app
+     *
+     * @param options. Not clear which ones are supported.
+     */
+    Object preferences(@DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=AppPreferences) Closure makeContents)
+
+    Object preferences(Map options, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=AppPreferences) Closure makeContents)
+}
+
+interface AppExecutorApi extends
+        BaseExecutorApi,
+        AppPreferencesSource
+{
+    // Returns list of devices or one device from config
+    // Device/List<Device> get<device or capability preference name>()
+
+    // Returns Number or Decimal config value
+    // BigDecimal get<number or decimal preference name>()
+
+    // Return value of config property.
+    // If it's text, returns: String - the value entered as text
+    // If it's mode, returns: String - the name of the mode selected
+    // If it's time, returns: String - the full date string in the format of “yyyy-MM-dd’T’HH:mm:ss.SSSZ”
+    // String get<text, mode, or time preference name>()
+
+    /**
+     @throws IllegalArgumentException - If a label was not supplied
+     @throws NotFoundException - If the given SmartApp name was not found in the given Namespace.
+     @throws SizeLimitExceededException - If this SmartApp already has the maximum number of children allowed (500).
+     */
+    InstalledAppWrapper addChildApp(String namespace, String smartAppVersionName, String label, Map
+            properties)
+    InstalledAppWrapper addChildApp(String namespace, String smartAppVersionName, String label)
+
+    /**
+     * @return Returns the URL of the server where this App can be reached for API calls,
+     * along with the specified path appended to it.
+     * Use this instead of hard-coding a URL to ensure that the correct server URL
+     * for this installed instance is returned.
+     */
+    String apiServerUrl(String path)
+
+    /**
+     * @return A map of name/value pairs that App can use to save and retrieve
+     * data across App executions.
+     * This is similar to getState(), but will immediately write and read from the backing data store.
+     * Prefer using getState() over getAtomicState() when possible.
+     */
+    Map getAtomicState()
+
+    /**
+     * @return A map of name/value pairs that App can use to save and retrieve data across App executions.
+     * @note Though state can be treated as a map in most regards, certain convenience
+     * operations that you may be accustomed to in maps will not work with state.
+     * For example, state.count++ will not increment the count.
+     * Use the longer form of state.count = state.count + 1.
+     */
+    Map getState()
+
+    /**
+     * @return true if max of 6 scheduled jobs was not reached.
+     */
+    boolean canSchedule()
+
+    /**
+     * Creates access token and puts into state.accessToken
+     * @return may return access token here too.
+     */
+    def createAccessToken()
+
+    List<InstalledAppWrapper> findAllChildAppsByName(String name)
+
+    List<InstalledAppWrapper> findAllChildAppsByNamespaceAndName(String namespace, String name)
+
+    /**
+     * @return found app (if many are matching, first one is returned) or null.
+     */
+    InstalledAppWrapper findChildAppByName(String appName)
+
+    /**
+     * @return found app (if many are matching, first one is returned) or null.
+     */
+    InstalledAppWrapper findChildAppByNamespaceAndName(String namespace, String appName)
+
+    /**
+     @return all child apps, even if installation state is "incomplete"
+     */
+    List<InstalledAppWrapper> getAllChildApps()
+
+
+    /**
+     * @return getChildDevices()
+     */
+    List<ChildDeviceWrapper> getAllChildDevices()
+
+    String getApiServerUrl()
+
+    ColorUtilities getColorUtil()
+
+
+    /**
+     * @param supported options:
+     * (not supported in Hubitat?) zipCode (String) - the zip code to use for determining the times.
+     *  If not specified then the coordinates of the Hub location are used.
+     * (not supported in Hubitat?) locationString (Srtring) - any location string supported by the Weather Underground APIs.
+     *  If not specified then the coordinates of the Hub Location are used
+     * sunriseOffset (String) - adjust the sunrise time by this amount.
+     *  See timeOffset() for supported formats
+     * sunsetOffset (String) - adjust the sunset time by this amount.
+     *  See timeOffset() for supported formats
+     * @return Map with String keys and Date values: [sunrise: Date, sunset: Date]
+     */
+    Map getSunriseAndSunset(Map options)
+    Map getSunriseAndSunset()
+
+    void pauseExecution(Long millisecs)
+
+    /**
+     @return only child apps whose state is "complete"
+     */
+    List<InstalledAppWrapper> getChildApps()
+
+    /**
+     * Creates App event with specified properties.
+     * @param properties. Supported keys:
+     * name (required) (String) - The name of the Event. Typically corresponds to an attribute name of a capability.
+     * value (required) The value of the Event. The value is stored as a string, but you can pass numbers or other objects.
+     * descriptionText (String) - The description of this Event. This appears in the mobile application activity for the device. If not specified, this will be created using the Event name and value.
+     * displayed (boolean) - Pass true to display this Event in the mobile application activity feed, false to not display. Defaults to true.
+     * linkText (String) - Name of the Event to show in the mobile application activity feed.
+     * isStateChange (boolean) - true if this Event caused a device attribute to change state. Typically not used, since it will be set automatically.
+     * unit (String) - a unit string, if desired. This will be used to create the descriptionText if it (the descriptionText option) is not specified.
+     * device (Device) - The device for which this Event is created for.
+     * data (Map) A map of additional information to store with the Event
+     */
+    void sendEvent(Map properties)
+
+    /**
+     * Creates Device event with specified properties.
+     * @param properties. Supported keys:
+     * name (required) (String) - The name of the Event. Typically corresponds to an attribute name of a capability.
+     * value (required) The value of the Event. The value is stored as a string, but you can pass numbers or other objects.
+     * descriptionText (String) - The description of this Event. This appears in the mobile application activity for the device. If not specified, this will be created using the Event name and value.
+     * displayed (boolean) - Pass true to display this Event in the mobile application activity feed, false to not display. Defaults to true.
+     * linkText (String) - Name of the Event to show in the mobile application activity feed.
+     * isStateChange (boolean) - true if this Event caused a device attribute to change state. Typically not used, since it will be set automatically.
+     * unit (String) - a unit string, if desired. This will be used to create the descriptionText if it (the descriptionText option) is not specified.
+     * device (Device) - The device for which this Event is created for.
+     * data (Map) A map of additional information to store with the Event
+     */
+    void sendEvent(DeviceWrapper device, Map properties)
+
+    /**
+     * Creates Device event with specified properties.
+     * @param properties. Supported keys:
+     * name (required) (String) - The name of the Event. Typically corresponds to an attribute name of a capability.
+     * value (required) The value of the Event. The value is stored as a string, but you can pass numbers or other objects.
+     * descriptionText (String) - The description of this Event. This appears in the mobile application activity for the device. If not specified, this will be created using the Event name and value.
+     * displayed (boolean) - Pass true to display this Event in the mobile application activity feed, false to not display. Defaults to true.
+     * linkText (String) - Name of the Event to show in the mobile application activity feed.
+     * isStateChange (boolean) - true if this Event caused a device attribute to change state. Typically not used, since it will be set automatically.
+     * unit (String) - a unit string, if desired. This will be used to create the descriptionText if it (the descriptionText option) is not specified.
+     * device (Device) - The device for which this Event is created for.
+     * data (Map) A map of additional information to store with the Event
+     */
+    void sendEvent(String dni, Map properties)
+
+    /**
+     * Sends the message as an SMS message to the specified phone number and displays it in Hello, Home.
+     * @param message - no longer than 140 chars
+     */
+    void sendSms(String phone, String message)
+
+    /**
+     * Sends the message as an SMS message to the specified phone number but does not display it in Hello, Home.
+     * @param message - no longer than 140 chars
+     */
+    void sendSmsMessage(String phone, String message)
+
+    /**
+     * Set the Mode for this Location.*/
+    void setLocationMode(String mode)
+
+    /**
+     * @return configuration settings for the app.
+     */
+    Map getSettings()
+
+    /**
+     * Subscribe to event, or attribute value changes.
+     * @param thing - could be Device, Location (or app)?
+     * @param attributeNameOrNameAndValueOrEventName. Could be:
+     *  1. name of event,
+     *  2. name of attribute that changed
+     *  3. Format of 'attribute.value' to get notification only for specific value
+     * @param handlerMethod - The method to call when the Event is fired.
+     *  Can be a String of the method name or the method reference itself.
+     * @param options
+     */
+    void subscribe(def appOrDeviceOrLocation,
+                            String attributeNameOrNameAndValueOrEventName,
+                            def handlerMethod,
+                            Map options)
+    void subscribe(def appOrDeviceOrLocation,
+                            String attributeNameOrNameAndValueOrEventName,
+                            def handlerMethod)
+
+
+    /**
+     * @param minutes
+     * @return milliseconds in given minutes
+     */
+    Long timeOffset(Number minutes)
+
+    /**
+     * @param hoursAndMinutesString - A string in the format of "hh:mm" to get the offset in milliseconds for.
+     *  Negative offsets are specified by prefixing the string with a minus sign ("-02:30").
+     * @return milliseconds in given hours + minutes
+     */
+    Long timeOffset(String hoursAndMinutesString)
+
+
+    String fullApiServerUrl(String base)
+    String getFullApiServerUrl()
+
+    String getLocalApiServerUrl()
+
+    String getFullLocalApiServerUrl()
+
+    String localApiServerUrl(String url)
+
+    String fullLocalApiServerUrl(String url)
+
+    /**
+     * Metainformation about the app
+     *
+     * @param definitionsMap
+     * @param makeContents
+     * @return
+     */
+    def definition(Map definitionsMap, Closure makeContents)
+    def definition(Map definitionsMap)
+
 
     /**
      * Deletes all subscriptions for the installed App.
      * Typically should be called in the updated() method, since device preferences may have changed.*/
-    abstract void unsubscribe()
+    void unsubscribe()
 
     /**
      * Deletes device subscription.
      * Typically should be called in the updated() method, since device preferences may have changed.*/
-    abstract void unsubscribe(DeviceWrapper device)
+    void unsubscribe(DeviceWrapper device)
 
     /**
      * Deletes subscriptions for devices.
      * Typically should be called in the updated() method, since device preferences may have changed.*/
-    abstract void unsubscribe(List<DeviceWrapper> devices)
+    void unsubscribe(List<DeviceWrapper> devices)
 
     /**
      * @throws UnknownDeviceTypeException - If a Device with the specified name and namespace is not found.
      * @throws IllegalArgumentException - If the deviceNetworkId is not specified.
      * @throws SizeLimitExceededException - If this App already has the maximum number of children allowed (500).
      */
-    abstract ChildDeviceWrapper addChildDevice(String namespace, String typeName, String deviceNetworkId, Long hubId
-            = null, Map properties = null)
+    ChildDeviceWrapper addChildDevice(String namespace, String typeName, String deviceNetworkId)
+    ChildDeviceWrapper addChildDevice(String namespace, String typeName, String deviceNetworkId, Long hubId)
+    ChildDeviceWrapper addChildDevice(String namespace, String typeName, String deviceNetworkId, Long hubId, Map properties)
 
-    abstract void deleteChildApp(Long id)
+    void deleteChildApp(Long id)
 
     /**
      * @throws NotFoundException
      */
-    abstract void deleteChildDevice(String deviceNetworkId)
+    void deleteChildDevice(String deviceNetworkId)
 
-    abstract InstalledAppWrapper getChildAppById(Long childAppId)
-    abstract InstalledAppWrapper getChildAppByLabel(String childAppLabel)
+    InstalledAppWrapper getChildAppById(Long childAppId)
+    InstalledAppWrapper getChildAppByLabel(String childAppLabel)
 
 
-    abstract ChildDeviceWrapper getChildDevice(String deviceNetworkId)
-    abstract List<ChildDeviceWrapper> getChildDevices()
+    ChildDeviceWrapper getChildDevice(String deviceNetworkId)
+    List<ChildDeviceWrapper> getChildDevices()
 
-    abstract String getHubUID()
+    String getHubUID()
 
-    abstract List<Event> getLocationEventsSince(String attributeName, Date startDate, Map options = null)
+    List<Event> getLocationEventsSince(String attributeName, Date startDate, Map options)
+    List<Event> getLocationEventsSince(String attributeName, Date startDate)
 
-    abstract InstalledAppWrapper getParent()
+    InstalledAppWrapper getParent()
 
-    abstract DeviceWrapper getSubscribedDeviceById(Long deviceId)
+    DeviceWrapper getSubscribedDeviceById(Long deviceId)
 
     /**
      * Returns a HTTP response to the calling client with the options specified.
@@ -634,9 +662,10 @@ trait AppExecutorApi extends
      * data (?) Required. The data for this response.
      * @return http response.
      */
-    abstract def render(Map options = null)
+    def render(Map options)
+    def render()
 
-    abstract void pause(Long milliseconds)
+    void pause(Long milliseconds)
 
     /**
      * Returns a Date of the next occurrence of the time specified in the input, relative to a reference time.
@@ -649,5 +678,5 @@ trait AppExecutorApi extends
      * @param timeZone for date calculations. Please provide it.
      * @return
      */
-    abstract Date timeTodayAfter(String referenceTime, String, TimeZone timeZone)
+    Date timeTodayAfter(String referenceTime, String, TimeZone timeZone)
 }
