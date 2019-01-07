@@ -51,25 +51,58 @@ class Preferences implements AppPreferences
     }
 
     final Script parentScript
-    List<Page> pages = []
+
+    /**
+     * Pages for multiple-page apps.
+     */
+    final List<Page> pages = []
+
+    /**
+     * Dynamic pages for multiple-page apps.
+     */
+    final List<Page> dynamicPages = []
+
+
+    /**
+     * Methods to be called to generate dynamic pages.
+     * Called via registerDynamicPages()
+     */
+    final List<Closure> dynamicRegistrations = []
+
+    /**
+     * Sections for single-page apps
+     */
     List<Section> sections = []
 
     /**
      * Run validations after all pages and sections were added
      */
-    void validate()
+    void validate(boolean okIfRegisteredDynamicPages = true)
     {
-        assert pages.size() != 0 || sections.size() != 0 : "preferences() has to have pages (got ${pages.size()}) or sections (got ${sections.size()})"
+        if (!okIfRegisteredDynamicPages || dynamicRegistrations.size() == 0) {
+            assert (pages.size() != 0 || sections.size() != 0 || dynamicPages != 0): "preferences() has to have pages (got ${pages.size()}), dynamic pages (got ${dynamicPages.size()}) or sections (got ${sections.size()})"
+        }
+    }
+
+    /**
+     * Calls methods that create dymaic pages that were discovered previously
+     */
+    void registerDynamicPages()
+    {
+        dynamicRegistrations.each { it() }
+
+        // Now validate and make sure something was actually created, not just methods registered.
+        validate(false)
     }
 
     @Override
     def page(String name, String title,
-             @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=AppPage) Closure makeContents) {
+             @DelegatesTo(AppPage) Closure makeContents) {
         pages << Utility.runClosureAndValidate(new Page(pages.size(), name, title, null), makeContents)
     }
 
     @Override
-    def page(Map options, @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value=AppPage) Closure makeContents) {
+    def page(Map options, @DelegatesTo(AppPage) Closure makeContents) {
         pages << Utility.runClosureAndValidate(new Page(pages.size(), null, null, options), makeContents)
     }
 
@@ -77,27 +110,37 @@ class Preferences implements AppPreferences
         stringParameter(name:"name", required:true)
     }
 
+    /**
+     * Overload for a dynamic page creation - takes only options with name of the method.
+     * @param options
+     * @return
+     */
     @Override
     def page(Map options) {
         dynamicPageParamValidator.validate(this.toString(), options)
 
         // Now need to run named closure that is adding dynamic pages
-        List<MetaMethod> metaMethods = parentScript.metaClass.methods.findAll{ options.name as String == it.name }
-        assert metaMethods.size() == 1 : "page(name: \"${options.name})\" points to ${metaMethods.size()} method(s) of the script. But it needs strictly one."
-
-        if (metaMethods[0].parameterTypes.size() == 1)
+        def methodWithNoArgs = parentScript.getMetaClass().pickMethod(options.name as String, [] as Class[])
+        if (methodWithNoArgs)
         {
-            metaMethods[0].invoke(parentScript, [:])
+            dynamicRegistrations << { methodWithNoArgs.invoke(parentScript) }
+            return
         }
         else
         {
-            metaMethods[0].invoke(parentScript)
+            def methodWithMapArg = parentScript.getMetaClass().pickMethod(options.name as String, [Map.class] as Class[])
+            if (methodWithMapArg) {
+                dynamicRegistrations << { methodWithMapArg.invoke(parentScript, [:]) }
+                return
+            }
         }
+
+        assert false : "${this}: page '${options.name}' does not point to any method to create dynamic pages"
     }
 
     @Override
     def section(String sectionTitle,
-                @DelegatesTo(strategy=Closure.DELEGATE_ONLY, value= AppSection) Closure makeContents) {
+                @DelegatesTo( AppSection) Closure makeContents) {
 
         println "Preferences adding section with just title = '${sectionTitle}'"
         sections << Utility.runClosureAndValidate(new Section(sections.size(), sectionTitle), makeContents)
@@ -112,6 +155,6 @@ class Preferences implements AppPreferences
 
     void addDynamicPage(Map options, @DelegatesTo(strategy=Closure.DELEGATE_ONLY,
             value= AppDynamicPage) Closure makeContents) {
-        pages << Utility.runClosureAndValidate(new Page(sections.size(), null, null, options, true), makeContents)
+        dynamicPages << Utility.runClosureAndValidate(new Page(sections.size(), null, null, options, true), makeContents)
     }
 }

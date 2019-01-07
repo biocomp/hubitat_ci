@@ -8,11 +8,11 @@ definition(
 		iconX3Url: "")
 
 preferences {
-	page(name: "pageConfig", title: "t")
+	page(name: "pageConfig")
 }
 
 def pageConfig() {
-	dynamicPage(name: "", title: "", install: true, uninstall: true, refreshInterval: 0) {
+	dynamicPage(name: "nam", title: "tit", install: true, uninstall: true, refreshInterval: 0) {
 
 		section("") {
 			input(name: "ventDevices", "capability.switch", title: "Trigger Devices", multiple: true)
@@ -24,6 +24,7 @@ def pageConfig() {
 }
 
 def installed() {
+	System.out.println "log.debug \"installed\""
 	log.debug "installed"
 	initialize()
 }
@@ -32,9 +33,12 @@ def updated() {
 	initialize()
 }
 def initialize() {
+	System.out.println "log.debug \"initialize\""
 	log.debug "initialize"
 	log.debug "ventDevices: " + ventDevices
 	log.debug "numberOption: " + numberOption
+
+	System.out.println "unschedule()"
 	unschedule()
 	//runEvery5Minutes(checkDevices)
 }

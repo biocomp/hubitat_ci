@@ -1,30 +1,40 @@
 package biocomp.hubitatCiTest
 
 import biocomp.hubitatCiTest.emulation.AppExecutorApi
-import groovy.transform.AutoImplement
+import groovy.transform.TypeChecked
 
-@AutoImplement
+@TypeChecked
 class AppDefinitionValidator implements AppExecutorApi {
-    @Override
-    def definition(Map definitions)
+    AppDefinitionValidator(AppExecutorApi delegate)
     {
-        assert definitions : "Map passed into definition() can't be null"
+       this.delegate = delegate
+    }
 
-        def assertPropertyIsSet = { String name, boolean notEvenEmpty = false ->
-            assert definitions."${name}" != null: "definition() call did not provide mandatory property '${name}'. "
+    @Override
+    def definition(Map definitionsMap, Closure makeContents)
+    {
+        assert definitionsMap : "Map passed into definition() can't be null"
+
+        def assertPropertyIsSet = { String name, boolean notEvenEmpty ->
+            assert definitionsMap["${name}"] != null: "definition() call did not provide mandatory property '${name}'. "
             if (notEvenEmpty) {
-                assert definitions."${name}": "mandatory property '${name}' can't empty in definition() call"
+                assert definitionsMap["${name}"]: "mandatory property '${name}' can't empty in definition() call"
             }
         }
 
         // Checking mandatory properties
-        assert definitions: "definitions should be provided"
+        assert definitionsMap: "definitions should be provided"
         assertPropertyIsSet "name", true
-        assertPropertyIsSet "namespace"
-        assertPropertyIsSet "author"
+        assertPropertyIsSet "namespace", false
+        assertPropertyIsSet "author", false
         assertPropertyIsSet "description", true
-        assertPropertyIsSet "iconUrl"
-        assertPropertyIsSet "iconX2Url"
-        assertPropertyIsSet "iconX3Url"
+        assertPropertyIsSet "iconUrl", false
+        assertPropertyIsSet "iconX2Url", false
+        assertPropertyIsSet "iconX3Url", false
+
+        return delegate.definition(definitionsMap, makeContents)
     }
+
+    @Delegate
+    final private AppExecutorApi delegate
 }

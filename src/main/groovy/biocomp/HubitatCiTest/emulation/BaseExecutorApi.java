@@ -1,11 +1,15 @@
-package biocomp.hubitatCiTest.emulation
+package biocomp.hubitatCiTest.emulation;
 
-import biocomp.hubitatCiTest.util.CapturingLog
-import biocomp.hubitatCiTest.util.Log
-import biocomp.hubitatCiTest.util.Utility
-import groovy.util.slurpersupport.GPathResult
+import biocomp.hubitatCiTest.util.Log;
+import biocomp.hubitatCiTest.util.Utility;
+import groovy.lang.Closure;
+import groovy.lang.MetaMethod;
+import groovy.util.slurpersupport.GPathResult;
 
-import java.time.ZonedDateTime
+import java.math.BigDecimal;
+import java.util.Date;
+import java.util.Map;
+import java.util.TimeZone;
 
 /*
  Methods from real class:
@@ -179,138 +183,216 @@ import java.time.ZonedDateTime
  * ++ public void com.hubitat.hub.executor.BaseExecutor.unschedule(java.lang.String),
  */
 
-/**
- * Methods that can be used inside App or Driver, that are also implemented here for simplicity.*/
-interface SeparateHelperMethodsApiImpl {
-    /**
-     * @param map - string of format "key1: value1, key2: value2"
-     */
-    Map stringToMap(String map)
+interface BaseHttpApi
+{
+    default Object httpGet(String address, Closure handler) { return null; }
+    default Object httpGet(Map options, Closure handler) { return null; }
+
+    default void httpPost(Map options, Closure handler) {}
+    default void httpPost(String address, String request, Closure handler) {}
+
+    default void httpPostJson(Map options, Closure handler) {}
+    default void httpPostJson(String uri, String body, Closure handler) {}
+    default void httpPostJson(String uri, Map options, Closure handler) {}
+
+    default void httpPutJson(String uri, String body, Closure closure) {}
+    default void httpPutJson(String uri, Map body, Closure closure) {}
+    default void httpPutJson(Map params, Closure closure) {}
+
+    default void httpPut(Map uri, Closure handler) {}
+    default void httpPut(String uri,String body, Closure handler) {}
+
+    default void httpDelete(Map params, Closure closure) {}
 }
 
-/**Methods that can be used inside both App or Driver.*/
-interface BaseExecutorApi extends
-        SeparateHelperMethodsApiImpl
+
+interface BaseAsyncHttpApi
 {
-    Location getLocation()
+    // GET
+
+    default void asynchttpGet(MetaMethod handlerMethod) {}
+    default void asynchttpGet(Map options) {}
+    default void asynchttpGet(MetaMethod handlerMethod, Map options) {}
+    default void asynchttpGet(String handlerMethod, Map options) {}
 
     /**
-     * @return "C" or "F"
+     * Send an http GET request and return control to the calling code. Any response from the call will be passed to the callback method.
+     *
+     * @param handlerMethod The name of a callback method to send the response to.
+     *                      Can be null if the response can be ignored.
+     * @param options - the parameters to use to build the http GET call.
+     * @param data - optional data to be passed to the callback method.
      */
-    String getTemperatureScale()
+    default void asynchttpGet(MetaMethod handlerMethod, Map options, Map data) {}
+    default void asynchttpGet(String handlerMethod, Map options, Map data) {}
+
+
+    // POST
+
+    default void asynchttpPost(MetaMethod handlerMethod) {}
+    default void asynchttpPost(Map options) {}
+    default void asynchttpPost(MetaMethod handlerMethod, Map options) {}
+    default void asynchttpPost(String handlerMethod, Map options) {}
 
     /**
-     * @return current Unix time in milliseconds.
+     * Send an http POST request and return control to the calling code. Any response from the call will be passed to the callback method.
+     *
+     * @param handlerMethod The name of a callback method to send the response to.
+     *                      Can be null if the response can be ignored.
+     * @param options - the parameters to use to build the http GET call.
+     * @param data - optional data to be passed to the callback method.
      */
-    long now()
+    default void asynchttpPost(MetaMethod handlerMethod, Map options, Map data) {}
+    default void asynchttpPost(String handlerMethod, Map options, Map data) {}
+
+
+    // PUT
+
+    default void asynchttpPut(MetaMethod handlerMethod) {}
+    default void asynchttpPut(Map options) {}
+    default void asynchttpPut(MetaMethod handlerMethod, Map options) {}
+    default void asynchttpPut(String handlerMethod, Map options) {}
 
     /**
-     * return true if value is between start and end
+     * Send an http PUT request and return control to the calling code. Any response from the call will be passed to the callback method.
+     *
+     * @param handlerMethod The name of a callback method to send the response to.
+     *                      Can be null if the response can be ignored.
+     * @param options - the parameters to use to build the http GET call.
+     * @param data - optional data to be passed to the callback method.
      */
-    boolean timeOfDayIsBetween(Date start, Date stop, Date value, TimeZone timeZone)
-    boolean timeOfDayIsBetween(Date start, Date stop, Date value)
+    default void asynchttpPut(MetaMethod handlerMethod, Map options, Map data) {}
+    default void asynchttpPut(String handlerMethod, Map options, Map data) {}
 
-    BigDecimal celsiusToFahrenheit(BigDecimal val)
 
-    BigDecimal fahrenheitToCelsius(BigDecimal val)
+    // DELETE
 
-    void httpGet(String uri, Closure closure)
-
-    void httpGet(Map params, Closure closure)
-
-    void httpPost(String uri, String body, Closure closure)
-
-    void httpPost(Map params, Closure closure)
-
-    void httpPutJson(String uri, String body, Closure closure)
-
-    void httpPutJson(String uri, Map body, Closure closure)
-
-    void httpPutJson(Map params, Closure closure)
-
-    void httpPut(String uri, String body, Closure closure)
-
-    void httpPut(Map params, Closure closure)
-
-    void httpDelete(Map params, Closure closure)
-
-    String getMACFromIP(String ipAddr)
-
-    String convertTemperatureIfNeeded(BigDecimal value, String scale, Integer precision)
-
-    Object parseJson(String stringToParse)
-
-    GPathResult parseXML(String stringToParse)
+    default void asynchttpDelete(MetaMethod handlerMethod) {}
+    default void asynchttpDelete(Map options) {}
+    default void asynchttpDelete(MetaMethod handlerMethod, Map options) {}
+    default void asynchttpDelete(String handlerMethod, Map options) {}
 
     /**
-     * Parses a Base64-encoded LAN message received from the Hub into a map with header and body elements,
-     * as well as parsing the body into an XML document.
-     * @param stringToParse
-     * @return map with:
-     *  header (String) - the headers of the request as a single string
-     *  headers (Map) - a Map of string/name value pairs for each header
-     *  body (String) the request body as a string
+     * Send an http DELETE request and return control to the calling code. Any response from the call will be passed to the callback method.
+     *
+     * @param handlerMethod The name of a callback method to send the response to.
+     *                      Can be null if the response can be ignored.
+     * @param options - the parameters to use to build the http GET call.
+     * @param data - optional data to be passed to the callback method.
      */
-    Map parseLanMessage(String stringToParse)
+    default void asynchttpDelete(MetaMethod handlerMethod, Map options, Map data) {}
+    default void asynchttpDelete(String handlerMethod, Map options, Map data) {}
 
 
-    void pauseExecution(Long milliseconds)
+    // PATCH
+
+    default void asynchttpPatch(MetaMethod handlerMethod) {}
+    default void asynchttpPatch(Map options) {}
+    default void asynchttpPatch(MetaMethod handlerMethod, Map options) {}
+    default void asynchttpPatch(String handlerMethod, Map options) {}
+
+    /**
+     * Send an http PATCH request and return control to the calling code. Any response from the call will be passed to the callback method.
+     *
+     * @param handlerMethod The name of a callback method to send the response to.
+     *                      Can be null if the response can be ignored.
+     * @param options - the parameters to use to build the http GET call.
+     * @param data - optional data to be passed to the callback method.
+     */
+    default void asynchttpPatch(MetaMethod handlerMethod, Map options, Map data) {}
+    default void asynchttpPatch(String handlerMethod, Map options, Map data) {}
+
+
+    // HEAD
+
+    // Not present? default void asynchttpHead(MetaMethod handlerMethod) {}
+    default void asynchttpHead(Map options) {}
+    // Not present? default void asynchttpHead(MetaMethod handlerMethod, Map options) {}
+    default void asynchttpHead(String handlerMethod, Map options) {}
+
+    /**
+     * Send an http DELETE request and return control to the calling code. Any response from the call will be passed to the callback method.
+     *
+     * @param handlerMethod The name of a callback method to send the response to.
+     *                      Can be null if the response can be ignored.
+     * @param options - the parameters to use to build the http GET call.
+     * @param data - optional data to be passed to the callback method.
+     */
+    // Not present? default void asynchttpHead(MetaMethod handlerMethod, Map options, Map data) {}
+    default void asynchttpHead(String handlerMethod, Map options, Map data) {}
+}
+
+interface BaseSchedulerApi
+{
+    /**
+     * @param handlerMethod - could be method name (String) or reference to a method.
+     * @param options. Supported keys:
+     *  data (Map) A map of data that will be passed to the handler method
+     */
+    default void runEvery1Minute(MetaMethod handlerMethod) {}
+    default void runEvery1Minute(String handlerMethod) {}
+    default void runEvery1Minute(MetaMethod handlerMethod, Map options) {}
+    default void runEvery1Minute(String handlerMethod, Map options) {}
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runEvery1Minute(def handlerMethod, Map options)
-    void runEvery1Minute(def handlerMethod)
+    default void runEvery5Minutes(MetaMethod handlerMethod) {}
+    default void runEvery5Minutes(String handlerMethod) {}
+    default void runEvery5Minutes(MetaMethod handlerMethod, Map options) {}
+    default void runEvery5Minutes(String handlerMethod, Map options) {}
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runEvery5Minutes(def handlerMethod, Map options)
-    void runEvery5Minutes(def handlerMethod)
+    default void runEvery10Minutes(MetaMethod handlerMethod) {}
+    default void runEvery10Minutes(String handlerMethod) {}
+    default void runEvery10Minutes(MetaMethod handlerMethod, Map options) {}
+    default void runEvery10Minutes(String handlerMethod, Map options) {}
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runEvery10Minutes(def handlerMethod, Map options)
-    void runEvery10Minutes(def handlerMethod)
+    default void runEvery15Minutes(MetaMethod handlerMethod) {}
+    default void runEvery15Minutes(String handlerMethod) {}
+    default void runEvery15Minutes(MetaMethod handlerMethod, Map options) {}
+    default void runEvery15Minutes(String handlerMethod, Map options) {}
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runEvery15Minutes(def handlerMethod, Map options)
-    void runEvery15Minutes(def handlerMethod)
+    default void runEvery30Minutes(MetaMethod handlerMethod) {}
+    default void runEvery30Minutes(String handlerMethod) {}
+    default void runEvery30Minutes(MetaMethod handlerMethod, Map options) {}
+    default void runEvery30Minutes(String handlerMethod, Map options) {}
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runEvery30Minutes(def handlerMethod, Map options)
-    void runEvery30Minutes(def handlerMethod)
+    default void runEvery1Hour(MetaMethod handlerMethod) {}
+    default void runEvery1Hour(String handlerMethod) {}
+    default void runEvery1Hour(MetaMethod handlerMethod, Map options) {}
+    default void runEvery1Hour(String handlerMethod, Map options) {}
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runEvery1Hour(def handlerMethod, Map options)
-    void runEvery1Hour(def handlerMethod)
-
-    /**
-     * @param handlerMethod - could be method name (String) or reference to a method.
-     * @param options. Supported keys:
-     *  data (Map) A map of data that will be passed to the handler method
-     */
-    void runEvery3Hours(def handlerMethod, Map options)
-    void runEvery3Hours(def handlerMethod)
+    default void runEvery3Hours(MetaMethod handlerMethod) {}
+    default void runEvery3Hours(String handlerMethod) {}
+    default void runEvery3Hours(MetaMethod handlerMethod, Map options) {}
+    default void runEvery3Hours(String handlerMethod, Map options) {}
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
@@ -318,12 +400,15 @@ interface BaseExecutorApi extends
      *  overwrite (Boolean) - Specify [overwrite: false] to not overwrite any existing pending schedule handler for the given method (the default behavior is to overwrite the pending schedule). Specifying [overwrite: false] can lead to multiple different schedules for the same handler method, so be sure your handler method can handle this.
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runIn(Long delayInSeconds, def handlerMethod, Map options)
-    void runIn(Long delayInSeconds, def handlerMethod)
+    default void runIn(Long delayInSeconds, MetaMethod handlerMethod) {}
+    default void runIn(Long delayInSeconds, String handlerMethod) {}
+    default void runIn(Long delayInSeconds, MetaMethod handlerMethod, Map options) {}
+    default void runIn(Long delayInSeconds, String handlerMethod, Map options) {}
 
-
-    void runInMillis(Long delayInMilliSeconds, def handlerMethod, Map options)
-    void runInMillis(Long delayInMilliSeconds, def handlerMethod)
+    default void runInMillis(Long delayInMilliSeconds, MetaMethod handlerMethod) {}
+    default void runInMillis(Long delayInMilliSeconds, String handlerMethod) {}
+    default void runInMillis(Long delayInMilliSeconds, MetaMethod handlerMethod, Map options) {}
+    default void runInMillis(Long delayInMilliSeconds, String handlerMethod, Map options) {}
 
     /**
      * Runs specified method at specified date/time.
@@ -334,8 +419,10 @@ interface BaseExecutorApi extends
      *  overwrite (Boolean) - Specify [overwrite: false] to not overwrite any existing pending schedule handler for the given method (the default behavior is to overwrite the pending schedule). Specifying [overwrite: false] can lead to multiple different schedules for the same handler method, so be sure your handler method can handle this.
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runOnce(Date dateTime, def handlerMethod, Map options)
-    void runOnce(Date dateTime, def handlerMethod)
+    default void runOnce(Date dateTime, MetaMethod handlerMethod) {}
+    default void runOnce(Date dateTime, String handlerMethod) {}
+    default void runOnce(Date dateTime, MetaMethod handlerMethod, Map options) {}
+    default void runOnce(Date dateTime, String handlerMethod, Map options) {}
 
     /**
      * Runs specified method at specified date/time.
@@ -346,8 +433,10 @@ interface BaseExecutorApi extends
      *  overwrite (Boolean) - Specify [overwrite: false] to not overwrite any existing pending schedule handler for the given method (the default behavior is to overwrite the pending schedule). Specifying [overwrite: false] can lead to multiple different schedules for the same handler method, so be sure your handler method can handle this.
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runOnce(String dateTime, def handlerMethod, Map options)
-    void runOnce(String dateTime, def handlerMethod)
+    default void runOnce(String dateTime, MetaMethod handlerMethod) {}
+    default void runOnce(String dateTime, String handlerMethod) {}
+    default void runOnce(String dateTime, MetaMethod handlerMethod, Map options) {}
+    default void runOnce(String dateTime, String handlerMethod, Map options) {}
 
     /**
      * Creates a scheduled job that calls the handlerMethod once per day at the time specified.
@@ -356,9 +445,10 @@ interface BaseExecutorApi extends
      * @param options. Supported keys:
      *  data (Map) - will be passed to handlerMethod
      */
-    void schedule(Date dateTime, def handlerMethod, Map options)
-    void schedule(Date dateTime, def handlerMethod)
-
+    default void schedule(Date dateTime, MetaMethod handlerMethod) {}
+    default void schedule(Date dateTime, String handlerMethod) {}
+    default void schedule(Date dateTime, MetaMethod handlerMethod, Map options) {}
+    default void schedule(Date dateTime, String handlerMethod, Map options) {}
     /**
      * Creates a scheduled job that calls the handlerMethod according to cronExpression, or once a day at specified time.
      * @param cronExpressionOrIsoDate
@@ -367,46 +457,94 @@ interface BaseExecutorApi extends
      * @param options. Supported keys:
      *  data (Map) - will be passed to handlerMethod
      */
-    void schedule(String cronExpressionOrIsoDate, def handlerMethod, Map options)
-    void schedule(String cronExpressionOrIsoDate, def handlerMethod)
+    default void schedule(String cronExpressionOrIsoDate, MetaMethod handlerMethod) {}
+    default void schedule(String cronExpressionOrIsoDate, String handlerMethod) {}
+    default void schedule(String cronExpressionOrIsoDate, MetaMethod handlerMethod, Map options) {}
+    default void schedule(String cronExpressionOrIsoDate, String handlerMethod, Map options) {}
 
-    void asynchttpGet(String callbackMethod, Map params, Map data)
-    void asynchttpGet(String callbackMethod, Map params)
-    void asynchttpGet(Map params, Map data)
-    void asynchttpGet(Map params)
+    /**
+     * Deletes all scheduled jobs for the App.
+     */
+    default void unschedule() {}
+
+    /**
+     * Deletes scheduled job for the App.
+     * @param method - method to unschedule
+     */
+    default void unschedule(groovy.lang.MetaMethod method) {}
+
+    /**
+     * Deletes scheduled job for the App.
+     * @param method - method to unschedule
+     */
+    default void unschedule(java.lang.String method) {}
+}
+
+/**
+ * Methods that can be used inside both App or Driver.
+ * */
+interface BaseExecutorApi extends BaseAsyncHttpApi, BaseHttpApi, BaseSchedulerApi
+{
+    /**
+     * @return log object
+     */
+    default Log getLog() { return null; }
+
+    default Location getLocation() { return null; }
+
+    /**
+     * @return "C" or "F"
+     */
+    default String getTemperatureScale() { return null; }
+
+    /**
+     * @return current Unix time in milliseconds.
+     */
+    default long now() { return 0; }
+
+    /**
+     * return true if value is between start and end
+     */
+    default boolean timeOfDayIsBetween(Date start, Date stop, Date value, TimeZone timeZone) {
+        return Utility.timeOfDayIsBetween(start, stop, value, timeZone);
+    }
+
+    default boolean timeOfDayIsBetween(Date start, Date stop, Date value) {
+        return timeOfDayIsBetween(start, stop, null);
+    }
+
+    default BigDecimal celsiusToFahrenheit(BigDecimal val) { return BigDecimal.ZERO; }
+
+    default BigDecimal fahrenheitToCelsius(BigDecimal val) { return BigDecimal.ZERO; }
 
 
-    void asynchttpPost(String callbackMethod, Map params, Map data)
-    void asynchttpPost(String callbackMethod, Map params)
-    void asynchttpPost(Map params, Map data)
-    void asynchttpPost(Map params)
+    default String getMACFromIP(String ipAddr) { return null; }
 
-    void asynchttpPut(String callbackMethod, Map params, Map data)
-    void asynchttpPut(String callbackMethod, Map params)
-    void asynchttpPut(Map params, Map data)
-    void asynchttpPut(Map params)
+    default String convertTemperatureIfNeeded(BigDecimal value, String scale, Integer precision) { return null; }
 
-    void asynchttpDelete(String callbackMethod, Map params, Map data)
-    void asynchttpDelete(String callbackMethod, Map params)
-    void asynchttpDelete(Map params, Map data)
-    void asynchttpDelete(Map params)
+    default Object parseJson(String stringToParse) { return null; }
 
-    void asynchttpPatch(String callbackMethod, Map params, Map data)
-    void asynchttpPatch(String callbackMethod, Map params)
-    void asynchttpPatch(Map params, Map data)
-    void asynchttpPatch(Map params)
+    default GPathResult parseXML(String stringToParse) { return null; }
 
-    void asynchttpHead(String callbackMethod, Map params, Map data)
-    void asynchttpHead(String callbackMethod, Map params)
-    void asynchttpHead(Map params, Map data)
-    void asynchttpHead(Map params)
+    /**
+     * Parses a Base64-encoded LAN message received from the Hub into a map with header and body elements,
+     * as well as parsing the body into an XML document.
+     * @param stringToParse
+     * @return map with:
+     *  header (String) - the headers of the request as a single string
+     *  headers (Map) - a Map of string/name value pairs for each header
+     *  body (String) the request body as a string
+     */
+    default Map parseLanMessage(String stringToParse) { return null; }
 
-    Map textToSpeech(String stringToBeSynthesized, String voice)
-    Map textToSpeech(String stringToBeSynthesized)
 
-    String encrypt(String value)
+    default void pauseExecution(Long milliseconds) {}
 
-    String decrypt(String value)
+    default Map textToSpeech(String stringToBeSynthesized, String voice) { return null; }
+    default Map textToSpeech(String stringToBeSynthesized) { return textToSpeech(stringToBeSynthesized, null); }
+
+    default String encrypt(String value) { return null; }
+    default String decrypt(String value) { return null; }
 
     /**
      * Sends a LOCATION Event constructed from the specified properties.
@@ -423,15 +561,10 @@ interface BaseExecutorApi extends
      * unit 	String - a unit string, if desired. This will be used to create the descriptionText if it (the descriptionText option) is not specified.
      * data 	A map of additional information to store with the Event
      */
-    void sendLocationEvent(Map properties)
+    default void sendLocationEvent(Map properties) {}
 
-    void httpPostJson(String uri, String body, Closure closure)
 
-    void httpPostJson(String uri, Map body, Closure closure)
-
-    void httpPostJson(Map params, Closure closure)
-
-    Date toDateTime(String dateTimeString)
+    default Date toDateTime(String dateTimeString) { return null; }
 
 
     /**
@@ -440,23 +573,20 @@ interface BaseExecutorApi extends
      * @param timeZone - current time zone. Please use it.
      * @note most likely some date calculations are incorrect in some cases, but this is meant mostly for testing.
      */
-    Date timeToday(String timeString, TimeZone timeZone)
-    Date timeToday(String timeString)
+    default Date timeToday(String timeString, TimeZone timeZone) {
+        return Utility.timeToday(timeString, timeZone);
+    }
+
+    default Date timeToday(String timeString) { return timeToday(timeString, null); }
 
     // ST has this, but HE does not?
     // TimeZone timeZone(String timePreferenceString)
+    //default List getChildDevices(boolean includeVirtualDevices = false) { return null; }
 
     /**
-     * Deletes all scheduled jobs for the App.
-     * If using the optional method parameter, then it deletes the scheduled job for the specified handler name only.
-     * @param method - optional specific method to unschedule
+     * @param map - string of format "key1: value1, key2: value2"
      */
-    void unschedule(String method)
-    void unschedule()
-
-
-    List getChildDevices(boolean includeVirtualDevices)
-    List getChildDevices()
+    //default Map stringToMap(String map) { return null; }
 }
 
 

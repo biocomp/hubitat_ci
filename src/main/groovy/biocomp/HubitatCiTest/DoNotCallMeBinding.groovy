@@ -1,5 +1,8 @@
 package biocomp.hubitatCiTest
 
+import groovy.transform.TypeChecked
+
+@TypeChecked
 class DoNotCallMeBinding extends Binding
 {
     @Override
@@ -17,8 +20,10 @@ class DoNotCallMeBinding extends Binding
     @Override
     java.util.Map getVariables()
     {
-        ThisBindingShouldNotBeUsed()
+        return emptyVariables_
     }
+
+    private final Map emptyVariables_ = [:]
 
     @Override
     boolean hasVariable(String name)

@@ -71,6 +71,37 @@ class ParametersToValidate
                 }))
     }
 
+    void intParameter(Map options)
+    {
+        assert options.name
+
+        addParameter(new Parameter(options.name as String, options.get("required", false) as boolean,
+                { @NotNull String context, @NotNull String name, def value ->
+                    assert value != null: "${context}: ${name} value can't be null"
+
+                    int result = 0
+                    try
+                    {
+                        result = Integer.parseInt(value as String)
+                    }
+                    catch (NumberFormatException e)
+                    {
+                        assert false : "${context}: Integer option '${name}' value = '${value}' can't be formatted as int: ${e.message}"
+                    }
+                }))
+    }
+
+    /**
+     * Add validations fom another validator.
+     * If names match, it's caller's problem.
+     * @param copyFrom
+     */
+    void add(NamedParametersValidator copyFrom)
+    {
+        copyFrom.supportedParameters.each { supportedParameters[it.key] = it.value }
+        copyFrom.mandatoryParameters.each { mandatoryParameters.add(it) }
+    }
+
     final HashMap<String, Parameter> supportedParameters = [] as HashMap
     final HashSet<String> mandatoryParameters = [] as HashSet
 }
@@ -87,10 +118,10 @@ class NamedParametersValidator
         return new NamedParametersValidator(params.supportedParameters, params.mandatoryParameters)
     }
 
-    private NamedParametersValidator(HashMap<String, Parameter> supportedParameters, HashSet<String> mandatoryParameters)
+    private NamedParametersValidator(@NotNull HashMap<String, Parameter> supportedParameters, @NotNull HashSet<String> mandatoryParameters)
     {
-        this.supportedParameters_ = supportedParameters
-        this.mandatoryParameters_ = mandatoryParameters
+        this.supportedParameters = supportedParameters
+        this.mandatoryParameters = mandatoryParameters
     }
 
     static Map addOptionAsNamedParam(Map options, String paramNameInMap, def valueToAdd) {
@@ -107,17 +138,17 @@ class NamedParametersValidator
         return options
     }
 
-    @TypeChecked
+     @TypeChecked
      void validate(
             @NotNull String context,
             Map options,
             boolean mustBeNonNull = false)
     {
-        def mandatoryParameters = mandatoryParameters_.clone() as HashSet<String>
+        def mandatoryParameters = mandatoryParameters.clone() as HashSet<String>
 
         options?.each {
             assert it.key instanceof String : "${context}: Option's name '${it.key}' must be a String"
-            def validator = supportedParameters_[it.key as String]?.validator
+            def validator = supportedParameters[it.key as String]?.validator
             assert validator : "${context}: Option '${it.key}' is not supported"
             validator(context, it.key, it.value)
             mandatoryParameters.remove(it.key)
@@ -126,6 +157,6 @@ class NamedParametersValidator
         assert mandatoryParameters.size() == 0 : "${context}: mandatory parameters '${mandatoryParameters}' not set"
     }
 
-    private HashMap<String, Parameter> supportedParameters_ = [] as HashMap
-    private HashSet<String> mandatoryParameters_ = [] as HashSet
+    final HashMap<String, Parameter> supportedParameters
+    final HashSet<String> mandatoryParameters
 }

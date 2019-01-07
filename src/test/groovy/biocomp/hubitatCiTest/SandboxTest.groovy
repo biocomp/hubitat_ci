@@ -118,9 +118,16 @@ class SandboxTest extends Specification {
             def sandbox = new HubitatAppSandbox("println 'a'")
 
         when:
-            sandbox.setupScript(HubitatAppScript, true)
+            sandbox.setupScript()
 
         then:
-            thrown SecurityException
+            SecurityException ex = thrown()
+            ex.message.contains("println")
+    }
+
+    def "Can't define your classes!"()
+    {
+        expect:
+            assert false
     }
 }

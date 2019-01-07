@@ -53,6 +53,26 @@ preferences{
             ex.message.contains("must have at least one section")
     }
 
+    def "Dynamic page's method will be called right away"() {
+        given:
+            def sandbox = new HubitatAppSandbox("""
+preferences{
+    page(name:"dynamicMe")
+}
+
+void dynamicMe()
+{
+    dynamicPage(name:"imSoDynamic", title:"dynamicTitle"){ ${validSection} }
+}
+""")
+            def preferences = sandbox.readPreferences()
+
+        expect:
+            preferences.dynamicPages[0].options['name'] == "imSoDynamic"
+            preferences.dynamicPages[0].options['title'] == "dynamicTitle"
+            preferences.dynamicPages[0].sections[0].children[0].options.title == "Temperature"
+    }
+
     def "Can add sections w/o pages"() {
         given:
             def sandbox = new HubitatAppSandbox('''

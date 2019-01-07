@@ -11,12 +11,10 @@ import java.time.format.DateTimeFormatterBuilder
 
 final class Utility
 {
-    static <T> T runClosureAndValidate(@DelegatesTo.Target T target, @DelegatesTo(strategy=Closure
-            .DELEGATE_ONLY,
-            genericTypeIndex=0) Closure closure)
+    static <T> T runClosureAndValidate(@DelegatesTo.Target T target, @DelegatesTo(genericTypeIndex=0) Closure closure)
     {
         def withTarget = closure.rehydrate(target, closure.owner, closure.thisObject)
-        withTarget.resolveStrategy = Closure.DELEGATE_ONLY
+        withTarget.resolveStrategy = Closure.DELEGATE_FIRST
         withTarget()
         target.validate();
         return target
