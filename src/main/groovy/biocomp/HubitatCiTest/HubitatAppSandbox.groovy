@@ -116,9 +116,25 @@ class HubitatAppSandbox {
         setupScript(true)
     }
 
+    static final Set<String> forbiddenExpressions = [
+            "execute",
+            "getClass",
+            "getMetaClass",
+            "setMetaClass",
+            "propertyMissing",
+            "methodMissing",
+            "invokeMethod",
+            "print",
+            "println",
+            "printf",
+            "sleep"
+    ] as Set
+
     @TypeChecked
     private static void restricScript(CompilerConfiguration options)
     {
+
+        
         def scz = new SecureASTCustomizer()
         scz.with{
             receiversClassesWhiteList = [
@@ -205,11 +221,7 @@ class HubitatAppSandbox {
         def checker = { expr ->
             if (expr instanceof MethodCallExpression)
             {
-                if (expr.methodAsString == "println")
-                {
-                    println "Returning false!"
-                    return false;
-                }
+                return !forbiddenExpressions.contains(expr.methodAsString)
             }
 
             return true;

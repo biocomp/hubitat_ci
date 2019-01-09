@@ -24,7 +24,6 @@ def pageConfig() {
 }
 
 def installed() {
-	System.out.println "log.debug \"installed\""
 	log.debug "installed"
 	initialize()
 }
@@ -33,12 +32,10 @@ def updated() {
 	initialize()
 }
 def initialize() {
-	System.out.println "log.debug \"initialize\""
 	log.debug "initialize"
 	log.debug "ventDevices: " + ventDevices
 	log.debug "numberOption: " + numberOption
 
-	System.out.println "unschedule()"
 	unschedule()
 	//runEvery5Minutes(checkDevices)
 }

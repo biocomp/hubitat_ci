@@ -2,6 +2,7 @@ package biocomp.hubitatCiTest
 
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import spock.lang.Specification
+import spock.lang.Unroll
 
 /*
 *
@@ -111,27 +112,46 @@ import spock.lang.Specification
  */
 
 class SandboxTest extends Specification {
-    def prohibitedMethodsAndClasses = []
+    List<Tuple2<String, String>> makeScriptVariations(List<Tuple2<String, String>> expressionsAndResults)
+    {
+        def result = []
+        expressionsAndResults.each({
+            result << new Tuple(it.get(0), it.get(1))
+            result << new Tuple("""
+def foo()
+{
+    ${it.get(0)}
+}
+""", it.get(1))
+        })
+    }
 
-    def "println is not allowed"(String script) {
+    @Unroll
+    def "Expressions that are not allowed fail to compile and expect"(String script, String expectedErrorPart) {
         when:
-            def sandbox = new HubitatAppSandbox("println 'a'")
-            sandbox.setupScript()
+            def sandbox = new HubitatAppSandbox(script)
+
+            // Not running the script, compilation should still fail.
+            sandbox.setupScript(false)
 
         then:
             MultipleCompilationErrorsException ex = thrown()
-            ex.message.contains("println")
+            ex.message.contains(expectedErrorPart)
 
         where:
-            script << [
-                "println 'a'",
-                """
-def foo()
-{
-    println 'a'
-}
-"""
-            ]
+            [script, expectedErrorPart] << makeScriptVariations([
+                    new Tuple("println 'a'", "println"),
+                    new Tuple("print 'a'", "print"),
+                    new Tuple("[].execute()", "execute"),
+                    new Tuple("String s\ns.getClass()", "getClass"),
+                    new Tuple("String s\ns.getMetaClass()", "getMetaClass"),
+                    new Tuple("String s\ns.setMetaClass(null)", "setMetaClass"),
+                    new Tuple("String s\ns.propertyMissing()", "propertyMissing"),
+                    new Tuple("String s\ns.methodMissing()", "methodMissing"),
+                    new Tuple("String s\ns.invokeMethod('a')", "invokeMethod"),
+                    //new Tuple("printf", "printf"),
+                    new Tuple("sleep 10", "sleep")
+            ])
     }
 
     def "Can't define your classes!"()
@@ -139,7 +159,7 @@ def foo()
         when:
             new HubitatAppSandbox("""
 class MyShinyNewClass{}
-""").setupScript()
+""").setupScript(false)
 
         then:
             MultipleCompilationErrorsException ex = thrown()
@@ -151,10 +171,22 @@ class MyShinyNewClass{}
         when:
             new HubitatAppSandbox("""
 System.out.print "Boom!"
-""").setupScript()
+""").setupScript(false)
 
         then:
             MultipleCompilationErrorsException ex = thrown()
             ex.message.contains("System.out")
+    }
+
+    def "Can't create File"()
+    {
+        when:
+            new HubitatAppSandbox("""
+File.createNewFile('foo.txt')"
+""").setupScript(false)
+
+        then:
+            MultipleCompilationErrorsException ex = thrown()
+            ex.message.contains("File")
     }
 }
