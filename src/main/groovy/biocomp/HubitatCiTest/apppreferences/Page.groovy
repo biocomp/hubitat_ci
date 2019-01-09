@@ -1,7 +1,5 @@
 package biocomp.hubitatCiTest.apppreferences
 
-import biocomp.hubitatCiTest.emulation.AppDynamicPage
-import biocomp.hubitatCiTest.emulation.AppSection
 import biocomp.hubitatCiTest.util.NamedParametersValidator
 import biocomp.hubitatCiTest.util.Utility
 import groovy.transform.ToString
@@ -11,8 +9,7 @@ import groovy.transform.TypeChecked
 @TupleConstructor
 @TypeChecked
 @ToString
-class Page implements
-        AppDynamicPage
+class Page implements biocomp.hubitatCiTest.emulation.appApi.DynamicPage
 {
     int index
     String name
@@ -33,7 +30,16 @@ class Page implements
         intParameter(name: "refreshInterval")
     }
 
+    public static final NamedParametersValidator dynamicPageInitialParamValidator = NamedParametersValidator.make{
+        stringParameter(name:"name", required:true)
+    }
+
     List<Section> sections = []
+
+    static Page makeSinglePage()
+    {
+        return new Page(0, 'special_single_page', 'special_single_page_title', null)
+    }
 
     void validate() {
         options = NamedParametersValidator.addOptionAsNamedParam(options, "name", name)
@@ -45,24 +51,5 @@ class Page implements
             dynamicPageParamValidator.validate(this.toString(), options)
         }
         assert sections.size() != 0: "Page ${this} must have at least one section"
-    }
-
-    @Override
-    def section(
-            String sectionTitle,
-            @DelegatesTo(AppSection) Closure makeContents)
-    {
-
-        println "Page adding section with just title = ${sectionTitle}"
-        sections << Utility.runClosureAndValidate(new Section(sections.size(), sectionTitle), makeContents)
-    }
-
-    @Override
-    def section(
-            Map options, String sectionTitle,
-            @DelegatesTo(AppSection) Closure makeContents)
-    {
-        println "Page adding section with title = ${sectionTitle} and options = ${options}"
-        sections << Utility.runClosureAndValidate(new Section(sections.size(), sectionTitle, options), makeContents)
     }
 }

@@ -1,5 +1,7 @@
 package biocomp.hubitatCiTest.util
 
+import biocomp.hubitatCiTest.emulation.commonApi.Log
+
 class CapturingLog implements Log
 {
     enum Level

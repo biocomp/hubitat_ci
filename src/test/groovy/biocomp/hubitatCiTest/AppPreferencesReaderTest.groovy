@@ -3,7 +3,7 @@ package biocomp.hubitatCiTest
 import spock.lang.Specification
 import spock.lang.Unroll
 
-class AppPreferencesValidatorTest extends
+class AppPreferencesReaderTest extends
         Specification
 {
     private static String validInput = 'input "temperature1", "number", title: "Temperature"'
@@ -82,8 +82,10 @@ preferences{
     }
 }
 ''')
+        def properties = sandbox.readPreferences()
+
         expect:
-            sandbox.readPreferences()
+            properties.pages[0].sections[0].title == "sec"
     }
 
 
@@ -150,7 +152,7 @@ preferences{
 
         then:
             def ex = thrown(AssertionError)
-            ex.message.contains("has to have pages (got 0) or sections (got 0)")
+            ex.message.contains("has to have pages (got 0), dynamic pages (got 0)")
     }
 
     @Unroll
@@ -168,12 +170,22 @@ preferences{
                        makePropertiesWithPageWithSection('someUnsupportedOption:"blah"')]
     }
 
-    def "preferences{} must have pages or sections"() {
-        when:
-            new HubitatAppSandbox("preferences{}").readPreferences()
+    def "preferences() could be calling methods of script to generate non-dynamic pages"() {
+        given:
+            def sandbox = new HubitatAppSandbox("""
+preferences{
+    userProvidedMethodToMakeStaticPages()
+}
 
-        then:
-            def ex = thrown(AssertionError)
-            ex.message.contains("has to have pages (got 0) or sections (got 0)")
+def userProvidedMethodToMakeStaticPages()
+{
+    page(name:"fromUserMethod", title:"titleFromUserMethod") { ${validSection} }
+}
+""")
+            def preferences = sandbox.readPreferences()
+
+        expect:
+            preferences.pages[0].options['name'] == "fromUserMethod"
+            preferences.pages[0].options['title'] == "titleFromUserMethod"
     }
 }

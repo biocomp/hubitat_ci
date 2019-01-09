@@ -1,4 +1,4 @@
-package biocomp.hubitatCiTest.emulation;
+package biocomp.hubitatCiTest.emulation.appApi;
 
 /*
 Methods from reflected real code:
@@ -8,20 +8,20 @@ Methods:
 Meta/Common:
 
 Main methods/getters:
-++ public com.hubitat.app.InstalledAppWrapper com.hubitat.hub.executor.AppExecutor.addChildApp(java.lang.String,java
+++ public com.hubitat.appApi.InstalledAppWrapper com.hubitat.hub.executor.AppExecutor.addChildApp(java.lang.String,java
 .lang.String,java.lang.String),
-++ public com.hubitat.app.InstalledAppWrapper com.hubitat.hub.executor.AppExecutor.addChildApp(java.lang.String,java
+++ public com.hubitat.appApi.InstalledAppWrapper com.hubitat.hub.executor.AppExecutor.addChildApp(java.lang.String,java
 .lang.String,java.lang.String,java.util.Map),
-++ public com.hubitat.app.ChildDeviceWrapper com.hubitat.hub.executor.AppExecutor.addChildDevice(java.lang.String,java
+++ public com.hubitat.appApi.ChildDeviceWrapper com.hubitat.hub.executor.AppExecutor.addChildDevice(java.lang.String,java
 .lang.String,java.lang.String),
-++ public com.hubitat.app.ChildDeviceWrapper com.hubitat.hub.executor.AppExecutor.addChildDevice(java.lang.String,java
+++ public com.hubitat.appApi.ChildDeviceWrapper com.hubitat.hub.executor.AppExecutor.addChildDevice(java.lang.String,java
 .lang.String,java.lang.String,java.lang.Long),
-++ public com.hubitat.app.ChildDeviceWrapper com.hubitat.hub.executor.AppExecutor.addChildDevice(java.lang.String,java
+++ public com.hubitat.appApi.ChildDeviceWrapper com.hubitat.hub.executor.AppExecutor.addChildDevice(java.lang.String,java
 .lang.String,java.lang.String,java.lang.Long,java.util.Map),
 ++ public static java.lang.String com.hubitat.hub.executor.AppExecutor.apiServerUrl(java.lang.String),
-public java.lang.Object com.hubitat.hub.executor.AppExecutor.app(java.util.Map),
-public java.lang.Object com.hubitat.hub.executor.AppExecutor.app(java.lang.String,java.lang.String,java.lang.String),
-public java.lang.Object com.hubitat.hub.executor.AppExecutor.app(java.util.Map,java.lang.String,java.lang.String,java.lang.String),
+public java.lang.Object com.hubitat.hub.executor.AppExecutor.appApi(java.util.Map),
+public java.lang.Object com.hubitat.hub.executor.AppExecutor.appApi(java.lang.String,java.lang.String,java.lang.String),
+public java.lang.Object com.hubitat.hub.executor.AppExecutor.appApi(java.util.Map,java.lang.String,java.lang.String,java.lang.String),
 public java.lang.Object com.hubitat.hub.executor.AppExecutor.appSetting(java.lang.String),
 ++ public java.lang.String com.hubitat.hub.executor.AppExecutor.createAccessToken(),
 ++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.definition(java.util.Map),
@@ -34,22 +34,22 @@ public java.lang.Object com.hubitat.hub.executor.AppExecutor.appSetting(java.lan
 ++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.getAllChildApps(),
 ++ public java.util.List com.hubitat.hub.executor.AppExecutor.getAllChildDevices(),
 public java.util.List com.hubitat.hub.executor.AppExecutor.getAllDeviceIds(),
-public com.hubitat.app.DeviceWrapperList com.hubitat.hub.executor.AppExecutor.getAllDevicesByCapability(java.lang.String),
+public com.hubitat.appApi.DeviceWrapperList com.hubitat.hub.executor.AppExecutor.getAllDevicesByCapability(java.lang.String),
 ++ public static java.lang.String com.hubitat.hub.executor.AppExecutor.getApiServerUrl(),
-public com.hubitat.app.InstalledAppWrapper com.hubitat.hub.executor.AppExecutor.getApp(),
+public com.hubitat.appApi.InstalledAppWrapper com.hubitat.hub.executor.AppExecutor.getApp(),
 public java.lang.Object com.hubitat.hub.executor.AppExecutor.getAppMappings(),
 public com.hubitat.hub.domain.AppType com.hubitat.hub.executor.AppExecutor.getAppType(),
 public java.lang.String com.hubitat.hub.executor.AppExecutor.getAppTypeType(),
 ++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.getChildAppById(java.lang.Long),
 ++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.getChildAppByLabel(java.lang.String),
 ++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.getChildApps(),
-++ public com.hubitat.app.ChildDeviceWrapper com.hubitat.hub.executor.AppExecutor.getChildDevice(java.lang.String),
+++ public com.hubitat.appApi.ChildDeviceWrapper com.hubitat.hub.executor.AppExecutor.getChildDevice(java.lang.String),
 public java.util.List com.hubitat.hub.executor.AppExecutor.getChildDevices(),
 public java.util.Map com.hubitat.hub.executor.AppExecutor.getCurrentPage(),
 public java.util.Map com.hubitat.hub.executor.AppExecutor.getCurrentSection(),
 public java.util.Map com.hubitat.hub.executor.AppExecutor.getDashboard(),
 public java.util.List com.hubitat.hub.executor.AppExecutor.getDashboardEventsMap(java.util.List,java.lang.Integer),
-public com.hubitat.app.DeviceWrapper com.hubitat.hub.executor.AppExecutor.getDeviceById(java.lang.Long),
+public com.hubitat.appApi.DeviceWrapper com.hubitat.hub.executor.AppExecutor.getDeviceById(java.lang.Long),
 public static java.lang.String com.hubitat.hub.executor.AppExecutor.getEXECUTOR_TYPE(),
 ++ public java.lang.String com.hubitat.hub.executor.AppExecutor.getFullApiServerUrl(),
 ++ public java.lang.String com.hubitat.hub.executor.AppExecutor.getFullLocalApiServerUrl(),
@@ -63,7 +63,7 @@ public java.util.List com.hubitat.hub.executor.AppExecutor.getPages(),
 ++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.getParent(),
 public java.util.Map com.hubitat.hub.executor.AppExecutor.getPreferences(),
 ++ public java.util.Map com.hubitat.hub.executor.AppExecutor.getState(),
-++ public com.hubitat.app.DeviceWrapper com.hubitat.hub.executor.AppExecutor.getSubscribedDeviceById(java.lang.Long),
+++ public com.hubitat.appApi.DeviceWrapper com.hubitat.hub.executor.AppExecutor.getSubscribedDeviceById(java.lang.Long),
 ++ public java.util.Map com.hubitat.hub.executor.AppExecutor.getSunriseAndSunset(),
 ++ public java.util.Map com.hubitat.hub.executor.AppExecutor.getSunriseAndSunset(java.util.Map),
 public java.util.List com.hubitat.hub.executor.AppExecutor.getThirdPartyHubIPList(),
@@ -113,7 +113,7 @@ public void com.hubitat.hub.executor.AppExecutor.saveState(),
 ++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.section(java.util.Map,java.lang.String,groovy.lang.Closure),
 
 ++ public void com.hubitat.hub.executor.AppExecutor.sendEvent(java.util.Map),
-++ public static void com.hubitat.hub.executor.AppExecutor.sendEvent(com.hubitat.app.DeviceWrapper,java.util.Map),
+++ public static void com.hubitat.hub.executor.AppExecutor.sendEvent(com.hubitat.appApi.DeviceWrapper,java.util.Map),
 ++ public static void com.hubitat.hub.executor.AppExecutor.sendEvent(java.lang.String,java.util.Map),
 ++ public void com.hubitat.hub.executor.AppExecutor.sendSms(java.lang.String,java.lang.String),
 ++ public void com.hubitat.hub.executor.AppExecutor.sendSmsMessage(java.lang.String,java.lang.String),
@@ -130,12 +130,12 @@ public void com.hubitat.hub.executor.AppExecutor.saveState(),
 java.util.TimeZone),
 
 ++ public void com.hubitat.hub.executor.AppExecutor.unsubscribe(),
-++ public void com.hubitat.hub.executor.AppExecutor.unsubscribe(com.hubitat.app.DeviceWrapper),
+++ public void com.hubitat.hub.executor.AppExecutor.unsubscribe(com.hubitat.appApi.DeviceWrapper),
 ++ public void com.hubitat.hub.executor.AppExecutor.unsubscribe(java.util.List)
 
 
 Setters:
-public void com.hubitat.hub.executor.AppExecutor.setApp(com.hubitat.app.InstalledAppWrapper),
+public void com.hubitat.hub.executor.AppExecutor.setApp(com.hubitat.appApi.InstalledAppWrapper),
 public void com.hubitat.hub.executor.AppExecutor.setAppMappings(java.lang.Object),
 public void com.hubitat.hub.executor.AppExecutor.setAppType(com.hubitat.hub.domain.AppType),
 public void com.hubitat.hub.executor.AppExecutor.setAppTypeType(java.lang.String),
@@ -148,6 +148,8 @@ public void com.hubitat.hub.executor.AppExecutor.setPreferences(java.util.Map),
 public void com.hubitat.hub.executor.AppExecutor.setState(java.util.Map),
 public void com.hubitat.hub.executor.AppExecutor.setThirdPartyHubIPList(java.util.List),
 */
+
+import biocomp.hubitatCiTest.emulation.commonApi.*;
 
 import java.util.Date;
 import java.util.List;
@@ -165,11 +167,11 @@ import java.util.TimeZone;
  * but AutoImplement had some strange issues (like implementing getMetaClass() that was returning null always, and was crashing at runtime).
  * So the easiest way to go was to have default implementations right here.
  */
-public interface AppExecutorApi extends
-        BaseExecutorApi,
-        AppPreferencesSourceApi,
-        AppDefinitionReaderApi,
-        AppSubscriptionApi {
+public interface AppExecutor extends
+        BaseExecutor,
+        PreferencesSource,
+        DefinitionReader,
+        Subscription {
     // Returns list of devices or one device from config
     // Device/List<Device> get<device or capability preference name>()
 
@@ -250,14 +252,14 @@ public interface AppExecutorApi extends
 //    }
 //
 //    /**
-//     * @return found app (if many are matching, first one is returned) or return null;.
+//     * @return found appApi (if many are matching, first one is returned) or return null;.
 //     */
 //    InstalledAppWrapper findChildAppByName(String appName) {
 //        return null;
 //    }
 //
 //    /**
-//     * @return found app (if many are matching, first one is returned) or return null;.
+//     * @return found appApi (if many are matching, first one is returned) or return null;.
 //     */
 //    InstalledAppWrapper findChildAppByNamespaceAndName(String namespace, String appName) {
 //        return null;
@@ -390,7 +392,7 @@ public interface AppExecutorApi extends
     }
 
     /**
-     * @return configuration settings for the app.
+     * @return configuration settings for the appApi.
      */
     //default Map getSettings() {}
 

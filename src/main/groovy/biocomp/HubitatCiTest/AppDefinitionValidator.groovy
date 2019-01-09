@@ -1,11 +1,11 @@
 package biocomp.hubitatCiTest
 
-import biocomp.hubitatCiTest.emulation.AppExecutorApi
+import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
 import groovy.transform.TypeChecked
 
 @TypeChecked
-class AppDefinitionValidator implements AppExecutorApi {
-    AppDefinitionValidator(AppExecutorApi delegate)
+class AppDefinitionValidator implements AppExecutor {
+    AppDefinitionValidator(AppExecutor delegate)
     {
        this.delegate = delegate
     }
@@ -36,5 +36,5 @@ class AppDefinitionValidator implements AppExecutorApi {
     }
 
     @Delegate
-    final private AppExecutorApi delegate
+    final private AppExecutor delegate
 }

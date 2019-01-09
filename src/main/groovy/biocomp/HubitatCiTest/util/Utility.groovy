@@ -11,15 +11,6 @@ import java.time.format.DateTimeFormatterBuilder
 
 final class Utility
 {
-    static <T> T runClosureAndValidate(@DelegatesTo.Target T target, @DelegatesTo(genericTypeIndex=0) Closure closure)
-    {
-        def withTarget = closure.rehydrate(target, closure.owner, closure.thisObject)
-        withTarget.resolveStrategy = Closure.DELEGATE_FIRST
-        withTarget()
-        target.validate();
-        return target
-    }
-
     static Map stringToMap(String map) {
         def result = [:]
         map.split(',').each {

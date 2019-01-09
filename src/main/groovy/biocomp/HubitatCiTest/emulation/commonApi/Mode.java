@@ -1,4 +1,4 @@
-package biocomp.hubitatCiTest.emulation
+package biocomp.hubitatCiTest.emulation.commonApi;
 
 /*
 Real methods:
@@ -21,18 +21,18 @@ public void com.hubitat.hub.domain.Mode.setLocationId(java.lang.Long),
 public void com.hubitat.hub.domain.Mode.setName(java.lang.String),
  */
 
-trait Mode
+public interface Mode
 {
     /**
      * @return unique internal identifier
      */
-    abstract String getId()
+    String getId();
 
-    abstract Long getLocationId()
+    Long getLocationId();
 
     /**
      * @return user-friendly mode name
      */
-    abstract String getName()
+    String getName();
 }
 

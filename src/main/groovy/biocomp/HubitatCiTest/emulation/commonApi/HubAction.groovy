@@ -1,4 +1,6 @@
-package biocomp.hubitatCiTest.emulation
+package biocomp.hubitatCiTest.emulation.commonApi
+
+import biocomp.hubitatCiTest.emulation.Protocol
 
 /**
  * Real methods:

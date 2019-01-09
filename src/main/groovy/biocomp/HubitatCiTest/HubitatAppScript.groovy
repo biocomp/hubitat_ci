@@ -1,8 +1,6 @@
 package biocomp.hubitatCiTest
 
-import biocomp.hubitatCiTest.emulation.AppExecutorApi
-import groovy.transform.CompileDynamic
-import groovy.transform.CompileStatic
+import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
 import groovy.transform.TypeChecked
 
 /* Custom Script that redirects most unknown calls to app_, and does not use Binding.
@@ -21,7 +19,7 @@ abstract class HubitatAppScript extends Script
     }
 
     @Delegate
-    AppExecutorApi api = null
+    AppExecutor api = null
 
     /*
         Don't let Script base class to redirect properties to binding,

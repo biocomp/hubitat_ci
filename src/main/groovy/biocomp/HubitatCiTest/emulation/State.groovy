@@ -1,5 +1,7 @@
 package biocomp.hubitatCiTest.emulation
 
+import biocomp.hubitatCiTest.emulation.commonApi.Location
+
 /*
 Real methods:
 Common/meta:

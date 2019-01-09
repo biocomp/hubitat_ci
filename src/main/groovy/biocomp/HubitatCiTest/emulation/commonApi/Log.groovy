@@ -1,8 +1,8 @@
-package biocomp.hubitatCiTest.util
+package biocomp.hubitatCiTest.emulation.commonApi;
 
 /**
  * Emulation of Hub's log.
- * In this emulation it's injected via BaseExecutorApi,
+ * In this emulation it's injected via BaseExecutor,
  * although in real code it comes from somewhere else.
  */
 interface Log

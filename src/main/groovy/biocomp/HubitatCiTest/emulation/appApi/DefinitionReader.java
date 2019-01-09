@@ -1,12 +1,12 @@
-package biocomp.hubitatCiTest.emulation;
+package biocomp.hubitatCiTest.emulation.appApi;
 
 import groovy.lang.Closure;
 
 import java.util.Map;
 
-public interface AppDefinitionReaderApi {
+public interface DefinitionReader {
     /**
-     * Metainformation about the app
+     * Metainformation about the appApi
      *
      * @param definitionsMap
      * @param makeContents
@@ -17,7 +17,7 @@ public interface AppDefinitionReaderApi {
     }
 
     /**
-     * Metainformation about the app
+     * Metainformation about the appApi
      *
      * @param definitionsMap
      * @return not sure

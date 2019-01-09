@@ -1,10 +1,7 @@
 package biocomp.hubitatCiTest
 
-import biocomp.hubitatCiTest.emulation.AppExecutorApi
-import biocomp.hubitatCiTest.emulation.DeviceWrapper
-import biocomp.hubitatCiTest.util.CapturingLog
-import biocomp.hubitatCiTest.util.Log
-import groovy.transform.TypeChecked
+import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
+import biocomp.hubitatCiTest.emulation.commonApi.Log
 import spock.lang.Specification
 
 class AppTemplateScriptTest extends
@@ -20,7 +17,7 @@ class AppTemplateScriptTest extends
     def "Installation succeeds and logs stuff"() {
         given:
             def log = Mock(Log)
-            def api = Mock(AppExecutorApi)
+            def api = Mock(AppExecutor)
             def script = sandbox.setupScript(true, api)
             script.getMetaClass().ventDevices = ["S1", "S2"]
             script.getMetaClass().numberOption = 123
@@ -39,7 +36,7 @@ class AppTemplateScriptTest extends
     def "Update initializes again"() {
         given:
             def log = Mock(Log)
-            def api = Mock(AppExecutorApi)
+            def api = Mock(AppExecutor)
             def script = sandbox.setupScript(true, api)
             script.getMetaClass().ventDevices = ["S1", "S2"]
             script.getMetaClass().numberOption = 123
@@ -59,7 +56,7 @@ class AppTemplateScriptTest extends
     def "Uninstallation succeeds"() {
         given:
             def log = Mock(Log)
-            def api = Mock(AppExecutorApi)
+            def api = Mock(AppExecutor)
             def script = sandbox.setupScript(true, api)
 
         when:

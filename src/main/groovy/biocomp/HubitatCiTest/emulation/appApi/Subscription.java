@@ -1,13 +1,15 @@
-package biocomp.hubitatCiTest.emulation;
+package biocomp.hubitatCiTest.emulation.appApi;
+
+import biocomp.hubitatCiTest.emulation.commonApi.DeviceWrapper;
 
 import java.util.List;
 import java.util.Map;
 
-public interface AppSubscriptionApi {
+public interface Subscription {
     /**
      * Subscribe to event, or attribute value changes.
      *
-     * @param toWhat                                 - could be Device, Location (or app)?
+     * @param toWhat                                 - could be Device, Location (or appApi)?
      * @param attributeNameOrNameAndValueOrEventName Could be:
      *                                               1. name of event,
      *                                               2. name of attribute that changed

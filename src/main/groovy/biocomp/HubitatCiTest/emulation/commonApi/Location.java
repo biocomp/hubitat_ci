@@ -1,4 +1,7 @@
-package biocomp.hubitatCiTest.emulation
+package biocomp.hubitatCiTest.emulation.commonApi;
+
+//import biocomp.hubitatCiTest.emulation.Hub
+//import biocomp.hubitatCiTest.emulation.Mode
 
 /*
 Meta/Common:
@@ -59,6 +62,10 @@ public void com.hubitat.hub.domain.Location.setVersion(java.lang.Long),
 public void com.hubitat.hub.domain.Location.setZipCode(java.lang.String),
  */
 
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.TimeZone;
+
 /**
  * A Location is user’s geo-location, such as “Home” or “office”.
  *
@@ -66,33 +73,33 @@ public void com.hubitat.hub.domain.Location.setZipCode(java.lang.String),
  * All App and Device objects are injected with a location property
  * that is the Location into which the App or Device was installed.
  */
-trait Location {
-    abstract boolean getContactBookEnabled()
+public interface Location {
+    boolean getContactBookEnabled();
 
-    abstract Mode getMode()
-    abstract Mode getCurrentMode()
-    abstract List<Mode> getModes()
+    Mode getMode();
+    Mode getCurrentMode();
+    List<Mode> getModes();
 
-    abstract String getName()
+    String getName();
 
-    abstract Long getId()
+    Long getId();
 
     /**
      * @throws Exception if mode is invalid
      */
-    abstract void setMode(String mode)
+    void setMode(String mode);
 
     /**
      * @return "C" or "F"
      */
-    abstract String getTemperatureScale()
+    String getTemperatureScale();
 
-    abstract TimeZone getTimeZone()
+    TimeZone getTimeZone();
 
-    abstract String getZipCode()
+    String getZipCode();
 
-    abstract List<Hub> getHubs()
+    List<Hub> getHubs();
 
-    abstract BigDecimal getLatitude()
-    abstract BigDecimal getLongitude()
+    BigDecimal getLatitude();
+    BigDecimal getLongitude();
 }

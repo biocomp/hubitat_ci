@@ -1,53 +1,220 @@
 package biocomp.hubitatCiTest.apppreferences
 
+import biocomp.hubitatCiTest.emulation.appApi.Preferences as PreferencesInterface
 import biocomp.hubitatCiTest.HubitatAppScript
-import biocomp.hubitatCiTest.emulation.AppExecutorApi
-import biocomp.hubitatCiTest.emulation.AppPreferences
-import biocomp.hubitatCiTest.emulation.AppDynamicPage
+import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
+import biocomp.hubitatCiTest.emulation.appApi.DynamicPage
 import biocomp.hubitatCiTest.util.Utility
 import groovy.transform.TypeChecked
 
 @TypeChecked
-class AppPreferencesReader implements AppExecutorApi{
-    AppPreferencesReader(HubitatAppScript parentScript, AppExecutorApi delegate)
-    {
+class AppPreferencesReader implements
+        AppExecutor
+{
+    AppPreferencesReader(HubitatAppScript parentScript, AppExecutor delegate) {
         this.parentScript = parentScript
         this.delegate = delegate
     }
 
-    private Preferences preferences_ = null
-
-    Preferences getProducedPreferences() { return preferences_ }
+    Preferences getProducedPreferences() {
+        return preferences_
+    }
 
     @Override
-    Map dynamicPage(Map options, @DelegatesTo(AppDynamicPage) Closure makeContents) {
-        assert preferences_ // preferences() should have already been called and thus created
-        preferences_.addDynamicPage(options, makeContents)
+    Map dynamicPage(Map options, @DelegatesTo(DynamicPage) Closure makeContents) {
+        prefState.currentPreferences.dynamicPages << prefState.initWithPage(
+                new Page(prefState.currentPreferences.dynamicPages.size(), null, null, options, true), makeContents)
+
         delegate.dynamicPage(options, makeContents)
     }
 
-    private void readPreferencesImpl(Map options, @DelegatesTo(AppPreferences) Closure makeContents)
-    {
-        preferences_ = Utility.runClosureAndValidate(new Preferences(parentScript, null), makeContents)
-        preferences_.registerDynamicPages()
+    private void readPreferencesImpl(Map options, @DelegatesTo(PreferencesInterface) Closure makeContents) {
+        def newPreferences = new Preferences(parentScript, null)
+        preferences_ = prefState.initWithPreferences(newPreferences,
+                {
+                    makeContents()
+                    newPreferences.registerDynamicPages()
+                })
     }
 
+    // PreferencesReader
+
     @Override
-    def preferences(@DelegatesTo(AppPreferences) Closure makeContents) {
+    def preferences(@DelegatesTo(Preferences) Closure makeContents) {
         readPreferencesImpl(null, makeContents)
         delegate.preferences(makeContents)
     }
 
     @Override
-    def preferences(Map options, @DelegatesTo(AppPreferences) Closure makeContents)
-    {
+    def preferences(Map options, @DelegatesTo(PreferencesInterface) Closure makeContents) {
         readPreferencesImpl(options, makeContents)
         delegate.preferences(makeContents)
     }
 
-    final List<String> dynamicPageGenerationMethods = []
+    // Page + Preferences
+
+    @Override
+    def page(
+            String name, String title,
+            @DelegatesTo(biocomp.hubitatCiTest.emulation.appApi.Page) Closure makeContents)
+    {
+        prefState.currentPreferences.pages << prefState.initWithPage(
+                new Page(prefState.currentPreferences.pages.size(), name, title, null), makeContents)
+    }
+
+    @Override
+    def page(Map options, @DelegatesTo(biocomp.hubitatCiTest.emulation.appApi.Page) Closure makeContents) {
+        prefState.currentPreferences.pages << prefState.initWithPage(
+                new Page(prefState.currentPreferences.pages.size(), null, null, options), makeContents)
+    }
+
+    /**
+     * Overload for a dynamic page creation - takes only options with name of the method.
+     * @param options
+     * @return
+     */
+    @Override
+    def page(Map options) {
+        Page.dynamicPageInitialParamValidator.validate(this.toString(), options)
+
+        // Now need to run named closure that is adding dynamic pages
+        def methodWithNoArgs = parentScript.getMetaClass().pickMethod(options.name as String, [] as Class[])
+        if (methodWithNoArgs) {
+            prefState.currentPreferences.dynamicRegistrations << { methodWithNoArgs.invoke(parentScript) }
+            return
+        } else {
+            def methodWithMapArg = parentScript.getMetaClass().pickMethod(options.name as String,
+                    [Map.class] as Class[])
+            if (methodWithMapArg) {
+                prefState.currentPreferences.dynamicRegistrations << { methodWithMapArg.invoke(parentScript, [:]) }
+                return
+            }
+        }
+
+        assert false: "${this}: page '${options.name}' does not point to any method to create dynamic pages"
+    }
+
+    @Override
+    def section(
+            Map options,
+            @DelegatesTo(biocomp.hubitatCiTest.emulation.appApi.Section.class) Closure makeContents)
+    {
+        addSectionImpl(null, options, makeContents)
+        delegate.section(options, makeContents)
+    }
+
+    @Override
+    def section(
+            String sectionTitle,
+            @DelegatesTo(biocomp.hubitatCiTest.emulation.appApi.Section) Closure makeContents)
+    {
+        addSectionImpl(sectionTitle, null, makeContents)
+        delegate.section(sectionTitle, makeContents)
+    }
+
+    private void addSectionImpl(String sectionTitle, Map options, Closure makeContents)
+    {
+        if (prefState.hasCurrentPage()) {
+            prefState.currentPage.sections << prefState.initWithSection(
+                    new Section(prefState.currentPage.sections.size(), sectionTitle, options), makeContents)
+        } else {
+            this.prefState.initWithPage(prefState.currentPreferences.specialSinglePage, {
+                prefState.currentPage.sections << prefState.initWithSection(
+                        new Section(prefState.currentPage.sections.size(), sectionTitle, options), makeContents)
+            },
+                    false)
+        }
+    }
+
+
+    @Override
+    def section(
+            Map options, String sectionTitle,
+            @DelegatesTo(biocomp.hubitatCiTest.emulation.appApi.Section) Closure makeContents)
+    {
+        addSectionImpl(sectionTitle, options, makeContents)
+        delegate.section(options, sectionTitle, makeContents)
+    }
+
+    @Override
+    def section(
+            @DelegatesTo(biocomp.hubitatCiTest.emulation.appApi.Section) Closure makeContents)
+    {
+        addSectionImpl(null, null, makeContents)
+        delegate.section(makeContents)
+    }
+
+    //
+    //    @Override
+    //    def section(
+    //            String sectionTitle,
+    //            @DelegatesTo(Section) Closure makeContents)
+    //    {
+    //
+    //        println "Page adding section with just title = ${sectionTitle}"
+    //        sections << Utility.runClosureAndValidate(new Section(sections.size(), sectionTitle), makeContents)
+    //    }
+    //
+    //    @Override
+    //    def section(
+    //            Map options, String sectionTitle,
+    //            @DelegatesTo(Section) Closure makeContents)
+    //    {
+    //        println "Page adding section with title = ${sectionTitle} and options = ${options}"
+    //        sections << Utility.runClosureAndValidate(new Section(sections.size(), sectionTitle, options), makeContents)
+    //    }
+
+    // Section
+
+    @Override
+    Object input(Map options, String name, String type)
+    {
+        prefState.currentSection.children << new Input(options, name, type)
+    }
+
+    @Override
+    Object input(String name, String type)
+    {
+        prefState.currentSection.children << new Input(null, name, type)
+    }
+
+    @Override
+    Object input(Map options)
+    {
+        prefState.currentSection.children << new Input(options, null, null)
+    }
+
+    @Override
+    def href(String name, Map options) {
+        return null
+    }
+
+    @Override
+    def label(Map options) {
+        return null
+    }
+
+    @Override
+    def mode(Map options) {
+        return null
+    }
+
+    @Override
+    def paragraph(Map options) {
+        return null
+    }
+
+    @Override
+    def paragraph(String text) {
+        return null
+    }
+
+
+    private final PreferencesReaderState prefState = new PreferencesReaderState()
+    private Preferences preferences_ = null
+
     final HubitatAppScript parentScript;
 
     @Delegate
-    final private AppExecutorApi delegate;
+    final private AppExecutor delegate;
 }

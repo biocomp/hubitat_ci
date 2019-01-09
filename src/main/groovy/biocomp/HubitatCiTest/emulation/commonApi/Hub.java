@@ -1,4 +1,4 @@
-package biocomp.hubitatCiTest.emulation
+package biocomp.hubitatCiTest.emulation.commonApi;
 
 /**
  * Real methods:
@@ -47,15 +47,15 @@ package biocomp.hubitatCiTest.emulation
  * public void com.hubitat.hub.domain.Hub.setVersion(java.lang.Long),
  */
 
-trait Hub
+public interface Hub
 {
-    abstract String getFirmwareVersionString()
-    abstract Long getId()
-    abstract String getLocalIP()
-    abstract String getLocalSrvPortTCP()
-    abstract String getName()
-    abstract String getType()
-    abstract String getZigbeeEui()
-    abstract String getZigbeeId()
+    String getFirmwareVersionString();
+    Long getId();
+    String getLocalIP();
+    String getLocalSrvPortTCP();
+    String getName();
+    String getType();
+    String getZigbeeEui();
+    String getZigbeeId();
 }
 

@@ -1,9 +1,6 @@
 package biocomp.hubitatCiTest.apppreferences
 
-import biocomp.hubitatCiTest.emulation.AppSection
 import biocomp.hubitatCiTest.util.NamedParametersValidator
-import biocomp.hubitatCiTest.util.Utility
-import groovy.transform.CompileStatic
 import groovy.transform.TupleConstructor
 import groovy.transform.TypeChecked
 
@@ -43,7 +40,7 @@ import groovy.transform.TypeChecked
 
 @TupleConstructor
 @TypeChecked
-class Section implements AppSection{
+class Section implements biocomp.hubitatCiTest.emulation.appApi.Section{
     int index
     String title
     Map options
@@ -52,41 +49,13 @@ class Section implements AppSection{
 
     static private final NamedParametersValidator paramValidator = NamedParametersValidator.make{
         boolParameter(name:"hideable")
+        boolParameter(name:"hidden")
+        boolParameter(name:"mobileOnly")
     }
 
     void validate()
     {
         paramValidator.validate(this.toString(), options)
         assert children.size() != 0 : "Section ${this} must have at least some content"
-    }
-
-    @Override
-    def input(Map options, String name, String type) {
-        children << new Input(options, name, type)
-    }
-
-    @Override
-    def href(String name, Map options) {
-        return null
-    }
-
-    @Override
-    def label(Map options) {
-        return null
-    }
-
-    @Override
-    def mode(Map options) {
-        return null
-    }
-
-    @Override
-    def paragraph(Map options) {
-        return null
-    }
-
-    @Override
-    def paragraph(String text) {
-        return null
     }
 }

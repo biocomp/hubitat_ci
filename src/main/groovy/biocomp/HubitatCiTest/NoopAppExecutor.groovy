@@ -1,8 +1,5 @@
 package biocomp.hubitatCiTest
 
-import biocomp.hubitatCiTest.emulation.AppExecutorApi
-
-class NoopAppExecutor implements
-        AppExecutorApi
+class NoopAppExecutor implements emulation.appApi.AppExecutor
 {
 }

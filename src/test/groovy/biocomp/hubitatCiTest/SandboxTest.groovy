@@ -1,6 +1,6 @@
 package biocomp.hubitatCiTest
 
-import biocomp.hubitatCiTest.emulation.AppExecutorApi
+import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import spock.lang.Specification
 
 /*
@@ -113,21 +113,48 @@ import spock.lang.Specification
 class SandboxTest extends Specification {
     def prohibitedMethodsAndClasses = []
 
-    def "println is not allowed"() {
-        setup:
-            def sandbox = new HubitatAppSandbox("println 'a'")
-
+    def "println is not allowed"(String script) {
         when:
+            def sandbox = new HubitatAppSandbox("println 'a'")
             sandbox.setupScript()
 
         then:
-            SecurityException ex = thrown()
+            MultipleCompilationErrorsException ex = thrown()
             ex.message.contains("println")
+
+        where:
+            script << [
+                "println 'a'",
+                """
+def foo()
+{
+    println 'a'
+}
+"""
+            ]
     }
 
     def "Can't define your classes!"()
     {
-        expect:
-            assert false
+        when:
+            new HubitatAppSandbox("""
+class MyShinyNewClass{}
+""").setupScript()
+
+        then:
+            MultipleCompilationErrorsException ex = thrown()
+            ex.message.contains("MyShinyNewClass")
+    }
+
+    def "Can't call System.out!"()
+    {
+        when:
+            new HubitatAppSandbox("""
+System.out.print "Boom!"
+""").setupScript()
+
+        then:
+            MultipleCompilationErrorsException ex = thrown()
+            ex.message.contains("System.out")
     }
 }

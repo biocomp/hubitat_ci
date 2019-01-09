@@ -2,15 +2,23 @@ package biocomp.hubitatCiTest
 
 import biocomp.hubitatCiTest.apppreferences.AppPreferencesReader
 import biocomp.hubitatCiTest.apppreferences.Preferences
-import biocomp.hubitatCiTest.emulation.AppDefinitionReaderApi
-import biocomp.hubitatCiTest.emulation.AppExecutorApi
-import biocomp.hubitatCiTest.emulation.AppPreferencesSourceApi
+
+import biocomp.hubitatCiTest.emulation.appApi.AppExecutor as AppExecutorInterface
+import biocomp.hubitatCiTest.emulation.appApi.PreferencesSource as PreferencesSourceInterface
+import biocomp.hubitatCiTest.emulation.appApi.DefinitionReader as DefinitionReaderInterface
+import groovy.json.JsonBuilder
+import groovy.time.TimeCategory
 import groovy.transform.TypeChecked
-import org.codehaus.groovy.ast.expr.AttributeExpression
+import groovy.xml.MarkupBuilder
+import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.control.CompilerConfiguration
-import org.codehaus.groovy.control.customizers.CompilationCustomizer
+import org.codehaus.groovy.control.customizers.SourceAwareCustomizer
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer
+import sun.util.calendar.ZoneInfo
+
+import java.text.DecimalFormat
+import java.text.SimpleDateFormat
 
 
 class HubitatAppSandbox {
@@ -27,45 +35,45 @@ class HubitatAppSandbox {
 
     HubitatAppScript setupScript(
             boolean runScript = true,
-            AppExecutorApi api = new NoopAppExecutor(),
-            Closure<AppExecutorApi> addPreferencesReader = {
-                delegate, script -> new AppPreferencesReader(script, delegate) as AppExecutorApi
+            AppExecutorInterface api = new NoopAppExecutor(),
+            Closure<AppExecutorInterface> addPreferencesReader = {
+                delegate, script -> new AppPreferencesReader(script, delegate) as AppExecutorInterface
             },
-            Closure<AppExecutorApi> addDefinitionsReader = {
-                delegate -> new AppDefinitionValidator(delegate) as AppExecutorApi
+            Closure<AppExecutorInterface> addDefinitionsReader = {
+                delegate -> new AppDefinitionValidator(delegate) as AppExecutorInterface
             })
     {
         return setupScriptWithPrefsAndSources(runScript, api, addPreferencesReader, addDefinitionsReader).get(
                 0) as HubitatAppScript
     }
 
-    Tuple3<HubitatAppScript, AppPreferencesSourceApi, AppDefinitionReaderApi> setupScriptWithPrefsAndSources(
+    Tuple3<HubitatAppScript, PreferencesSourceInterface, DefinitionReaderInterface> setupScriptWithPrefsAndSources(
             boolean runScript = true,
-            AppExecutorApi api = new NoopAppExecutor(),
-            Closure<AppExecutorApi> addPreferencesReader = {
-                delegate, script -> new AppPreferencesReader(script, delegate) as AppExecutorApi
+            AppExecutorInterface api = new NoopAppExecutor(),
+            Closure<AppExecutorInterface> addPreferencesReader = {
+                delegate, script -> new AppPreferencesReader(script, delegate) as AppExecutorInterface
             })
     {
         return setupScriptWithPrefsAndSources(
                 runScript,
                 api,
                 addPreferencesReader,
-                { delegate -> new AppDefinitionValidator(delegate) as AppExecutorApi
+                { delegate -> new AppDefinitionValidator(delegate) as AppExecutorInterface
         })
     }
 
     @TypeChecked
-    Tuple3<HubitatAppScript, AppPreferencesSourceApi, AppDefinitionReaderApi> setupScriptWithPrefsAndSources(
+    Tuple3<HubitatAppScript, PreferencesSourceInterface, DefinitionReaderInterface> setupScriptWithPrefsAndSources(
             boolean runScript,
-            AppExecutorApi api,
-            Closure<AppExecutorApi> addPreferencesReader,
-            Closure<AppExecutorApi> addDefinitionsReader)
+            AppExecutorInterface api,
+            Closure<AppExecutorInterface> addPreferencesReader,
+            Closure<AppExecutorInterface> addDefinitionsReader)
     {
 
         // Use custom HubitatAppScript.
         def compilerConfiguration = new CompilerConfiguration()
         compilerConfiguration.scriptBaseClass = HubitatAppScript.class.name
-        compilerConfiguration.compilationCustomizers << makeRestrictingCustomizer()
+        restricScript(compilerConfiguration)
 
         def shell = new GroovyShell(new SandboxClassLoader(this.class.classLoader),
                 new DoNotCallMeBinding(),
@@ -78,8 +86,8 @@ class HubitatAppSandbox {
             script = shell.parse(text) as HubitatAppScript
         }
 
-        AppExecutorApi preferencesReader = addPreferencesReader(api, script)
-        AppExecutorApi definitionsReader = addDefinitionsReader(preferencesReader)
+        AppExecutorInterface preferencesReader = addPreferencesReader(api, script)
+        AppExecutorInterface definitionsReader = addDefinitionsReader(preferencesReader)
 
         script.api = definitionsReader
         script.run()
@@ -88,7 +96,7 @@ class HubitatAppSandbox {
 
     Preferences readPreferences() {
         AppPreferencesReader preferencesReader = null
-        def wrapPreferencesReader = { AppExecutorApi delegate, HubitatAppScript script ->
+        def wrapPreferencesReader = { AppExecutorInterface delegate, HubitatAppScript script ->
             preferencesReader = new AppPreferencesReader(script, delegate)
             return preferencesReader
         }
@@ -108,14 +116,127 @@ class HubitatAppSandbox {
         setupScript(true)
     }
 
-    private static CompilationCustomizer makeRestrictingCustomizer()
+    @TypeChecked
+    private static void restricScript(CompilerConfiguration options)
     {
         def scz = new SecureASTCustomizer()
+        scz.with{
+            receiversClassesWhiteList = [
+                    java.lang.Object,
+                    org.codehaus.groovy.runtime.InvokerHelper,
+                    ArrayList,
+                    BigDecimal,
+                    BigInteger,
+                    Boolean,
+                    Byte,
+                    ByteArrayInputStream,
+                    ByteArrayOutputStream,
+                    Calendar,
+                    Closure,
+                    Collection,
+                    Collections,
+                    Date,
+                    DecimalFormat,
+                    Double,
+                    Float,
+                    GregorianCalendar,
+                    HashMap,
+                    //HashMap.Entry,
+//                    HashMap,
+//                    HashMap.KeySet,
+//                    HashMap.Values,
+                    HashSet,
+                    Integer,
+                    JsonBuilder,
+                    LinkedHashMap,
+                    //LinkedHashMap.Entry,
+                    LinkedHashSet,
+                    LinkedList,
+                    List,
+                    Long,
+                    Map,
+                    MarkupBuilder,
+                    Math,
+                    Random,
+                    Set,
+                    Short,
+                    SimpleDateFormat,
+                    String,
+                    StringBuilder,
+                    StringReader,
+                    StringWriter,
+                    //SubList,
+                    TimeCategory,
+                    TimeZone,
+                    TreeMap,
+//                    TreeMap.Entry,
+//                    TreeMap.KeySet,
+//                    TreeMap.Values,
+                    TreeSet,
+                    URLDecoder,
+                    URLEncoder,
+                    UUID,
+                    ZoneInfo,
+                    //com.amazonaws.services.s3.model.S3Object,
+                    //com.amazonaws.services.s3.model.S3ObjectInputStream,
+                    com.sun.org.apache.xerces.internal.dom.DocumentImpl,
+                    com.sun.org.apache.xerces.internal.dom.ElementImpl,
+                    groovy.json.JsonOutput,
+                    groovy.json.JsonSlurper,
+                    groovy.util.Node,
+                    groovy.util.NodeList,
+                    groovy.util.XmlParser,
+                    groovy.util.XmlSlurper,
+                    groovy.xml.XmlUtil,
+                    java.net.URI,
+                    java.util.RandomAccessSubList,
+                    //org.apache.commons.codec.binary.Base64,
+                    //org.apache.xerces.dom.DocumentImpl,
+                    //org.apache.xerces.dom.ElementImpl,
+                    org.codehaus.groovy.runtime.EncodingGroovyMethods,
+                    //org.json.JSONArray,
+                    //org.json.JSONException,
+                    //org.json.JSONObject,
+                    //org.json.JSONObject.Null,
+            ] as List<Class>
+        }
+
+
         def checker = { expr ->
-            !(expr instanceof MethodCallExpression && expr.method == "println")
+            if (expr instanceof MethodCallExpression)
+            {
+                if (expr.methodAsString == "println")
+                {
+                    println "Returning false!"
+                    return false;
+                }
+            }
+
+            return true;
         } as SecureASTCustomizer.ExpressionChecker
+
         scz.addExpressionCheckers(checker)
-        return scz
+
+        def sac = new SourceAwareCustomizer(scz)
+
+        sac.sourceUnitValidator = {
+            println "SourceUnit: ${it}"
+            return true
+        }
+
+        sac.classValidator = {
+            ClassNode cn ->
+                println "ClassNode: ${cn}. scriptBody = ${cn.scriptBody}"
+
+                if (!cn.scriptBody)
+                {
+                    throw new SecurityException("Can't define classes in the script, but you defined '${cn}'")
+                }
+
+                return true
+        }
+
+        options.addCompilationCustomizers(sac)
     }
 
     final private File file = null
