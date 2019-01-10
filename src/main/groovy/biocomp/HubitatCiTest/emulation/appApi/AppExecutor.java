@@ -394,7 +394,7 @@ public interface AppExecutor extends
     /**
      * @return configuration settings for the appApi.
      */
-    //default Map getSettings() {}
+    default Map getSettings() { return null; }
 
 
     /**

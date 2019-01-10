@@ -50,17 +50,17 @@ class UtilityTest extends
             "a: b, c:  d" | [a: "b", c: "d"]
     }
 
-    @Unroll
-    def "TimeOfDayInBetween test with no timezone"(Date start, Date end, Date toCheck, boolean isBetween) {
-        expect:
-            Utility.timeOfDayIsBetween(start, end, toCheck, new GregorianCalendar().timeZone) == isBetween
-
-        where:
-            start           | end             | toCheck     | isBetween
-            currentDate - 1 | currentDate + 1 | currentDate | true
-            currentDate + 1 | currentDate + 2 | currentDate | false
-            currentDate - 2 | currentDate - 1 | currentDate | false
-    }
+//    @Unroll
+//    def "TimeOfDayInBetween test with no timezone"(Date start, Date end, Date toCheck, boolean isBetween) {
+//        expect:
+//            Utility.timeOfDayIsBetween(start, end, toCheck, new GregorianCalendar().timeZone) == isBetween
+//
+//        where:
+//            start           | end             | toCheck     | isBetween
+//            currentDate - 1 | currentDate + 1 | currentDate | true
+//            currentDate + 1 | currentDate + 2 | currentDate | false
+//            currentDate - 2 | currentDate - 1 | currentDate | false
+//    }
 
 
     @Unroll

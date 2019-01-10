@@ -1,5 +1,7 @@
 package biocomp.hubitatCiTest
 
+import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
+import biocomp.hubitatCiTest.emulation.commonApi.Log
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -188,5 +190,32 @@ File.createNewFile('foo.txt')"
         then:
             MultipleCompilationErrorsException ex = thrown()
             ex.message.contains("File")
+    }
+
+    def "Local variable with no 'def' or type is not confused with property"()
+    {
+        given:
+            def log = Mock(Log)
+            def api = Mock(AppExecutor)
+        
+        when:
+            def script = new HubitatAppSandbox("""
+int loginCheck()
+{
+    return 42
+}
+
+def foo()
+{
+    LoginCheck = loginCheck()
+    if (LoginCheck) { log.debug '1' }
+    else { log.debug '2' }
+} 
+""").compile(SettingsCheckingMode.None)
+            script.setApi(api)
+            script.run()
+
+        then:
+            _*api.getLog() >> log
     }
 }

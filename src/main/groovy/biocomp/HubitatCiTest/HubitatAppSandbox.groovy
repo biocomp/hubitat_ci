@@ -3,6 +3,7 @@ package biocomp.hubitatCiTest
 import biocomp.hubitatCiTest.apppreferences.AppPreferencesReader
 import biocomp.hubitatCiTest.apppreferences.Preferences
 import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
+import com.sun.scenario.Settings
 import groovy.json.JsonBuilder
 import groovy.time.TimeCategory
 import groovy.transform.TupleConstructor
@@ -37,27 +38,27 @@ class HubitatAppSandbox {
     }
 
     @TypeChecked
-    HubitatAppScript compile()
+    HubitatAppScript compile(SettingsCheckingMode settingsMode = SettingsCheckingMode.Strict)
     {
-        return setupImpl(false, false, false, null).script
+        return setupImpl(false, false, false, SettingsCheckingMode.None, null).script
     }
 
     @TypeChecked
-    HubitatAppScript setupAndValidate(AppExecutor api)
+    HubitatAppScript setupAndValidate(AppExecutor api = null, SettingsCheckingMode settingsMode = SettingsCheckingMode.Strict)
     {
-        return setupImpl(true, true, true, api).script
+        return setupImpl(true, true, true, settingsMode, api).script
     }
 
     @TypeChecked
-    SandboxResult setupWithPreferencesAndDefinitions(AppExecutor api)
+    SandboxResult setupWithPreferencesAndDefinitions(AppExecutor api, SettingsCheckingMode settingsMode = SettingsCheckingMode.Strict)
     {
-        return setupImpl(true, true, true, api)
+        return setupImpl(true, true, true, settingsMode, api)
     }
 
     @TypeChecked
     HubitatAppScript setupNoValidation(AppExecutor api)
     {
-        return setupImpl(true, false, false, api).script
+        return setupImpl(true, false, false, SettingsCheckingMode.None, api).script
     }
 
     @TypeChecked
@@ -65,12 +66,18 @@ class HubitatAppSandbox {
             boolean run = true,
             boolean readAndValidatePropertiesOnRun = true,
             boolean readAndValidateDefinitionsOnRun = true,
+            SettingsCheckingMode settingsMode,
             AppExecutor api)
     {
         if (readAndValidatePropertiesOnRun || readAndValidateDefinitionsOnRun)
         {
             // Need to run the script too to be able to get preferences and definitions
-            assert run
+            assert run : "You can't read properties or definitions without running the script"
+        }
+
+        if (settingsMode == SettingsCheckingMode.Strict)
+        {
+            assert readAndValidatePropertiesOnRun : "properties() need to be read and validated if you also want to validate settings - we need to match input names"
         }
 
         // Use custom HubitatAppScript.
@@ -103,18 +110,27 @@ class HubitatAppSandbox {
             api = definitionReader
         }
 
-        script.api = api
+        def settings = new SettingsProvider(api, settingsMode)
+        api = settings
+
+        script.setApi(api)
+        script.setSettingsMap(settings)
 
         if (run) {
             script.run()
         }
 
+        if (preferencesReader) {
+            settings.setPreferences(preferencesReader.producedPreferences)
+        }
+
+        //return new SandboxResult(script, preferencesReader?.producedPreferences, null)
         return new SandboxResult(script, preferencesReader?.producedPreferences, null)
     }
 
     @TypeChecked
     Preferences readPreferences() {
-        setupImpl(true, true, false, null).preferences
+        setupImpl(true, true, false, SettingsCheckingMode.None, null).preferences
     }
 
     static final Set<String> forbiddenExpressions = [
@@ -140,6 +156,7 @@ class HubitatAppSandbox {
         scz.with{
             receiversClassesWhiteList = [
                     java.lang.Object,
+                    groovy.lang.GString,
                     org.codehaus.groovy.runtime.InvokerHelper,
                     ArrayList,
                     BigDecimal,

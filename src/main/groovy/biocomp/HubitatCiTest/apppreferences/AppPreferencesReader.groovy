@@ -197,15 +197,15 @@ class AppPreferencesReader implements
 //        return null
 //    }
 //
-//    @Override
-//    def paragraph(Map options) {
-//        return null
-//    }
-//
-//    @Override
-//    def paragraph(String text) {
-//        return null
-//    }
+    @Override
+    def paragraph(Map options) {
+        prefState.currentSection.children << new Paragraph(null, options)
+    }
+
+    @Override
+    def paragraph(String text) {
+        prefState.currentSection.children << new Paragraph(text, null)
+    }
 
 
     private final PreferencesReaderState prefState = new PreferencesReaderState()

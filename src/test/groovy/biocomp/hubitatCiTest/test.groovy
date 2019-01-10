@@ -78,3 +78,32 @@ class ThermostatDimerSyncHelperTest extends
             sandbox.setupAndValidate()
     }
 }
+
+//class WeatherForecastScriptTest extends
+//        Specification
+//{
+//    def sandbox = new HubitatAppSandbox(new File("Scripts/Weather-Display With External Forecast.groovy"))
+//
+//    def "Basic validation"() {
+//        expect:
+//            sandbox.setupAndValidate()
+//    }
+//}
+
+class IComfortAppScriptTest extends
+        Specification
+{
+    def sandbox = new HubitatAppSandbox(new File("Scripts/Lennox-iComfort-connect.groovy"))
+
+    def "Basic validation"() {
+        given:
+            def log = Mock(Log)
+            def api = Mock(AppExecutor)
+
+        when:
+            sandbox.setupAndValidate(api, SettingsCheckingMode.None)
+
+        then:
+            _ * api.getLog() >> log
+    }
+}

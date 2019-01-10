@@ -1,6 +1,8 @@
 package biocomp.hubitatCiTest
 
 import biocomp.hubitatCiTest.apppreferences.Preferences
+import org.codehaus.groovy.ast.expr.MethodCallExpression
+import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -32,6 +34,11 @@ preferences{
 """
     }
 
+    private static Object parseOneChild(String elementString)
+    {
+        return fromScript(makePropertiesWithPageWithSectionWithElement(elementString)).pages[0].sections[0].children[0]
+    }
+
     private static String makePropertiesWithSection(String sectionParams) {
         println "makePropertiesWithSection('${sectionParams}')"
 
@@ -52,7 +59,7 @@ preferences{
 """
     }
 
-    Preferences fromScript(String script)
+    static Preferences fromScript(String script)
     {
         return new HubitatAppSandbox(script).readPreferences()
     }
@@ -219,10 +226,64 @@ def userProvidedMethodToMakeStaticPages()
     def "input() can only consist of name and type"()
     {
         given:
-            def input = fromScript(makePropertiesWithPageWithSectionWithElement("input 'nam', 'typ'")).pages[0].sections[0].children[0]
+            def input = parseOneChild("input 'nam', 'typ'")
 
         expect:
             input.name == "nam"
             input.type == "typ"
+    }
+
+    def "input() can't be empty"()
+    {
+        when:
+            def input = parseOneChild("input()")
+
+        then:
+            MethodSelectionException e = thrown()
+            e.message.contains("input()")
+    }
+
+    def "paragraph() with just the text"()
+    {
+        when:
+            def paragraph = parseOneChild("paragraph 'some text'")
+
+        then:
+            paragraph.text == "some text"
+    }
+
+    def "paragraph() with map of valid options"()
+    {
+        given:
+            def paragraph = parseOneChild(
+                    "paragraph(title:'some text', image:'some img', required: true)"
+            )
+
+        expect:
+            paragraph.options.title == "some text"
+            paragraph.options.image == "some img"
+            paragraph.options.required == true
+    }
+
+    def "paragraph() with map and invalid option fails"()
+    {
+        when:
+            def paragraph = parseOneChild(
+                "paragraph(badOption:'Im going to fail', title:'some text')"
+            )
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("badOption")
+    }
+
+    def "paragraph() with no options"()
+    {
+        when:
+            def paragraph = parseOneChild("paragraph()")
+
+        then:
+            MethodSelectionException e = thrown()
+            e.message.contains("paragraph")
     }
 }
