@@ -11,14 +11,14 @@ class AppTemplateScriptTest extends
 
     def "Basic validation"() {
         expect:
-            sandbox.runBasicValidations()
+            sandbox.setupAndValidate()
     }
 
     def "Installation succeeds and logs stuff"() {
         given:
             def log = Mock(Log)
             def api = Mock(AppExecutor)
-            def script = sandbox.setupScript(true, api)
+            def script = sandbox.setupAndValidate(api)
             script.getMetaClass().ventDevices = ["S1", "S2"]
             script.getMetaClass().numberOption = 123
 
@@ -37,7 +37,7 @@ class AppTemplateScriptTest extends
         given:
             def log = Mock(Log)
             def api = Mock(AppExecutor)
-            def script = sandbox.setupScript(true, api)
+            def script = sandbox.setupAndValidate(api)
             script.getMetaClass().ventDevices = ["S1", "S2"]
             script.getMetaClass().numberOption = 123
 
@@ -57,7 +57,7 @@ class AppTemplateScriptTest extends
         given:
             def log = Mock(Log)
             def api = Mock(AppExecutor)
-            def script = sandbox.setupScript(true, api)
+            def script = sandbox.setupAndValidate(api)
 
         when:
             script.uninstalled()
@@ -75,6 +75,6 @@ class ThermostatDimerSyncHelperTest extends
 
     def "Basic validation"() {
         expect:
-            sandbox.runBasicValidations()
+            sandbox.setupAndValidate()
     }
 }

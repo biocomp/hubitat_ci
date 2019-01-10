@@ -155,6 +155,16 @@ preferences{
             ex.message.contains("has to have pages (got 0), dynamic pages (got 0)")
     }
 
+    def "preferences() can't be missing"() {
+        when:
+            new HubitatAppSandbox("").readPreferences()
+
+        then:
+            def ex = thrown(AssertionError)
+            ex.message.contains("preferences()")
+            ex.message.contains("never called")
+    }
+
     @Unroll
     def "section()'s unsupported properties fail compilation"(String script) {
         when:

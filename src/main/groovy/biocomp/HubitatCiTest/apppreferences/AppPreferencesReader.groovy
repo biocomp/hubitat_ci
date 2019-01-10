@@ -17,6 +17,8 @@ class AppPreferencesReader implements
     }
 
     Preferences getProducedPreferences() {
+        assert preferences_ : "preferences() method was never called or failed. Either way, you can't get the preferences."
+
         return preferences_
     }
 
@@ -25,7 +27,7 @@ class AppPreferencesReader implements
         prefState.currentPreferences.dynamicPages << prefState.initWithPage(
                 new Page(prefState.currentPreferences.dynamicPages.size(), null, null, options, true), makeContents)
 
-        delegate.dynamicPage(options, makeContents)
+        return null
     }
 
     private void readPreferencesImpl(Map options, @DelegatesTo(PreferencesInterface) Closure makeContents) {
@@ -42,13 +44,11 @@ class AppPreferencesReader implements
     @Override
     def preferences(@DelegatesTo(Preferences) Closure makeContents) {
         readPreferencesImpl(null, makeContents)
-        delegate.preferences(makeContents)
     }
 
     @Override
     def preferences(Map options, @DelegatesTo(PreferencesInterface) Closure makeContents) {
         readPreferencesImpl(options, makeContents)
-        delegate.preferences(makeContents)
     }
 
     // Page + Preferences
@@ -81,13 +81,13 @@ class AppPreferencesReader implements
         def methodWithNoArgs = parentScript.getMetaClass().pickMethod(options.name as String, [] as Class[])
         if (methodWithNoArgs) {
             prefState.currentPreferences.dynamicRegistrations << { methodWithNoArgs.invoke(parentScript) }
-            return
+            return null
         } else {
             def methodWithMapArg = parentScript.getMetaClass().pickMethod(options.name as String,
                     [Map.class] as Class[])
             if (methodWithMapArg) {
                 prefState.currentPreferences.dynamicRegistrations << { methodWithMapArg.invoke(parentScript, [:]) }
-                return
+                return null
             }
         }
 
@@ -100,7 +100,6 @@ class AppPreferencesReader implements
             @DelegatesTo(biocomp.hubitatCiTest.emulation.appApi.Section.class) Closure makeContents)
     {
         addSectionImpl(null, options, makeContents)
-        delegate.section(options, makeContents)
     }
 
     @Override
@@ -109,7 +108,6 @@ class AppPreferencesReader implements
             @DelegatesTo(biocomp.hubitatCiTest.emulation.appApi.Section) Closure makeContents)
     {
         addSectionImpl(sectionTitle, null, makeContents)
-        delegate.section(sectionTitle, makeContents)
     }
 
     private void addSectionImpl(String sectionTitle, Map options, Closure makeContents)
@@ -133,7 +131,6 @@ class AppPreferencesReader implements
             @DelegatesTo(biocomp.hubitatCiTest.emulation.appApi.Section) Closure makeContents)
     {
         addSectionImpl(sectionTitle, options, makeContents)
-        delegate.section(options, sectionTitle, makeContents)
     }
 
     @Override
@@ -141,7 +138,6 @@ class AppPreferencesReader implements
             @DelegatesTo(biocomp.hubitatCiTest.emulation.appApi.Section) Closure makeContents)
     {
         addSectionImpl(null, null, makeContents)
-        delegate.section(makeContents)
     }
 
     //
@@ -183,31 +179,33 @@ class AppPreferencesReader implements
     {
         prefState.currentSection.children << new Input(options, null, null)
     }
-
-    @Override
-    def href(String name, Map options) {
-        return null
-    }
-
-    @Override
-    def label(Map options) {
-        return null
-    }
-
-    @Override
-    def mode(Map options) {
-        return null
-    }
-
-    @Override
-    def paragraph(Map options) {
-        return null
-    }
-
-    @Override
-    def paragraph(String text) {
-        return null
-    }
+//
+//    @Override
+//    def href(String name, Map options) {
+//        return null
+//
+//    }
+//
+//    @Override
+//    def label(Map options) {
+//        return null
+//
+//    }
+//
+//    @Override
+//    def mode(Map options) {
+//        return null
+//    }
+//
+//    @Override
+//    def paragraph(Map options) {
+//        return null
+//    }
+//
+//    @Override
+//    def paragraph(String text) {
+//        return null
+//    }
 
 
     private final PreferencesReaderState prefState = new PreferencesReaderState()

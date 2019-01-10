@@ -2,12 +2,10 @@ package biocomp.hubitatCiTest
 
 import biocomp.hubitatCiTest.apppreferences.AppPreferencesReader
 import biocomp.hubitatCiTest.apppreferences.Preferences
-
-import biocomp.hubitatCiTest.emulation.appApi.AppExecutor as AppExecutorInterface
-import biocomp.hubitatCiTest.emulation.appApi.PreferencesSource as PreferencesSourceInterface
-import biocomp.hubitatCiTest.emulation.appApi.DefinitionReader as DefinitionReaderInterface
+import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
 import groovy.json.JsonBuilder
 import groovy.time.TimeCategory
+import groovy.transform.TupleConstructor
 import groovy.transform.TypeChecked
 import groovy.xml.MarkupBuilder
 import org.codehaus.groovy.ast.ClassNode
@@ -20,6 +18,13 @@ import sun.util.calendar.ZoneInfo
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 
+@TupleConstructor
+class SandboxResult
+{
+    HubitatAppScript script
+    Preferences preferences
+    Map<String, Object> definitions
+}
 
 class HubitatAppSandbox {
     HubitatAppSandbox(File file) {
@@ -29,46 +34,44 @@ class HubitatAppSandbox {
 
     HubitatAppSandbox(String scriptText) {
         this.text = scriptText
-        assert scriptText
-        assert !scriptText.empty
-    }
-
-    HubitatAppScript setupScript(
-            boolean runScript = true,
-            AppExecutorInterface api = new NoopAppExecutor(),
-            Closure<AppExecutorInterface> addPreferencesReader = {
-                delegate, script -> new AppPreferencesReader(script, delegate) as AppExecutorInterface
-            },
-            Closure<AppExecutorInterface> addDefinitionsReader = {
-                delegate -> new AppDefinitionValidator(delegate) as AppExecutorInterface
-            })
-    {
-        return setupScriptWithPrefsAndSources(runScript, api, addPreferencesReader, addDefinitionsReader).get(
-                0) as HubitatAppScript
-    }
-
-    Tuple3<HubitatAppScript, PreferencesSourceInterface, DefinitionReaderInterface> setupScriptWithPrefsAndSources(
-            boolean runScript = true,
-            AppExecutorInterface api = new NoopAppExecutor(),
-            Closure<AppExecutorInterface> addPreferencesReader = {
-                delegate, script -> new AppPreferencesReader(script, delegate) as AppExecutorInterface
-            })
-    {
-        return setupScriptWithPrefsAndSources(
-                runScript,
-                api,
-                addPreferencesReader,
-                { delegate -> new AppDefinitionValidator(delegate) as AppExecutorInterface
-        })
     }
 
     @TypeChecked
-    Tuple3<HubitatAppScript, PreferencesSourceInterface, DefinitionReaderInterface> setupScriptWithPrefsAndSources(
-            boolean runScript,
-            AppExecutorInterface api,
-            Closure<AppExecutorInterface> addPreferencesReader,
-            Closure<AppExecutorInterface> addDefinitionsReader)
+    HubitatAppScript compile()
     {
+        return setupImpl(false, false, false, null).script
+    }
+
+    @TypeChecked
+    HubitatAppScript setupAndValidate(AppExecutor api)
+    {
+        return setupImpl(true, true, true, api).script
+    }
+
+    @TypeChecked
+    SandboxResult setupWithPreferencesAndDefinitions(AppExecutor api)
+    {
+        return setupImpl(true, true, true, api)
+    }
+
+    @TypeChecked
+    HubitatAppScript setupNoValidation(AppExecutor api)
+    {
+        return setupImpl(true, false, false, api).script
+    }
+
+    @TypeChecked
+    private SandboxResult setupImpl(
+            boolean run = true,
+            boolean readAndValidatePropertiesOnRun = true,
+            boolean readAndValidateDefinitionsOnRun = true,
+            AppExecutor api)
+    {
+        if (readAndValidatePropertiesOnRun || readAndValidateDefinitionsOnRun)
+        {
+            // Need to run the script too to be able to get preferences and definitions
+            assert run
+        }
 
         // Use custom HubitatAppScript.
         def compilerConfiguration = new CompilerConfiguration()
@@ -86,34 +89,32 @@ class HubitatAppSandbox {
             script = shell.parse(text) as HubitatAppScript
         }
 
-        AppExecutorInterface preferencesReader = addPreferencesReader(api, script)
-        AppExecutorInterface definitionsReader = addDefinitionsReader(preferencesReader)
-
-        script.api = definitionsReader
-        script.run()
-        return new Tuple3(script, preferencesReader, definitionsReader)
-    }
-
-    Preferences readPreferences() {
         AppPreferencesReader preferencesReader = null
-        def wrapPreferencesReader = { AppExecutorInterface delegate, HubitatAppScript script ->
-            preferencesReader = new AppPreferencesReader(script, delegate)
-            return preferencesReader
+        if (readAndValidatePropertiesOnRun)
+        {
+            preferencesReader = new AppPreferencesReader(script, api)
+            api = preferencesReader;
         }
 
-        setupScript(true, new NoopAppExecutor(), wrapPreferencesReader, { it })
-        return preferencesReader.getProducedPreferences()
+        AppDefinitionReader definitionReader = null
+        if (readAndValidateDefinitionsOnRun)
+        {
+            definitionReader = new AppDefinitionReader(api)
+            api = definitionReader
+        }
+
+        script.api = api
+
+        if (run) {
+            script.run()
+        }
+
+        return new SandboxResult(script, preferencesReader?.producedPreferences, null)
     }
 
-    void mandatoryConfigIsSet() {
-        setupScript(true,
-                new NoopAppExecutor(),
-                { def script, def api -> api },
-                { def api -> new AppDefinitionValidator(api) })
-    }
-
-    void runBasicValidations() {
-        setupScript(true)
+    @TypeChecked
+    Preferences readPreferences() {
+        setupImpl(true, true, false, null).preferences
     }
 
     static final Set<String> forbiddenExpressions = [

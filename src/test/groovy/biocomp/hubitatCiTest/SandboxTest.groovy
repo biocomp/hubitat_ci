@@ -132,7 +132,7 @@ def foo()
             def sandbox = new HubitatAppSandbox(script)
 
             // Not running the script, compilation should still fail.
-            sandbox.setupScript(false)
+            sandbox.compile()
 
         then:
             MultipleCompilationErrorsException ex = thrown()
@@ -159,7 +159,7 @@ def foo()
         when:
             new HubitatAppSandbox("""
 class MyShinyNewClass{}
-""").setupScript(false)
+""").compile()
 
         then:
             MultipleCompilationErrorsException ex = thrown()
@@ -171,7 +171,7 @@ class MyShinyNewClass{}
         when:
             new HubitatAppSandbox("""
 System.out.print "Boom!"
-""").setupScript(false)
+""").compile()
 
         then:
             MultipleCompilationErrorsException ex = thrown()
@@ -183,7 +183,7 @@ System.out.print "Boom!"
         when:
             new HubitatAppSandbox("""
 File.createNewFile('foo.txt')"
-""").setupScript(false)
+""").compile()
 
         then:
             MultipleCompilationErrorsException ex = thrown()
