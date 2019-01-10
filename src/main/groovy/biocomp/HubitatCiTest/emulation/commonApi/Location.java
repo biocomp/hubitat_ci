@@ -67,7 +67,7 @@ import java.util.List;
 import java.util.TimeZone;
 
 /**
- * A Location is user’s geo-location, such as “Home” or “office”.
+ * A Location is user’s geo-location, such as "Home" or "office".
  *
  * Locations do not have to have a Hub, but generally do.
  * All App and Device objects are injected with a location property

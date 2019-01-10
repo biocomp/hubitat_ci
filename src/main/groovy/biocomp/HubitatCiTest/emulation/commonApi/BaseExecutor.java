@@ -271,7 +271,7 @@ public interface BaseExecutor extends BaseAsyncHttp, BaseHttp, BaseScheduler
 
     /**
      * Return today's date object for given time.
-     * @param timeString - Either an ISO-8601 date string as returned from time input preferences, or a simple time string in "hh:mm" format (“21:34”).
+     * @param timeString - Either an ISO-8601 date string as returned from time input preferences, or a simple time string in "hh:mm" format ("21:34").
      * @param timeZone - current time zone. Please use it.
      * @note most likely some date calculations are incorrect in some cases, but this is meant mostly for testing.
      */
