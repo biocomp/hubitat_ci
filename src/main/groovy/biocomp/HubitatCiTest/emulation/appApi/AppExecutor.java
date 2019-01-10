@@ -181,7 +181,7 @@ public interface AppExecutor extends
     // Return value of config property.
     // If it's text, returns: String - the value entered as text
     // If it's mode, returns: String - the name of the mode selected
-    // If it's time, returns: String - the full date string in the format of “yyyy-MM-dd’T’HH:mm:ss.SSSZ”
+    // If it's time, returns: String - the full date string in the format of "yyyy-MM-dd"™T"™HH:mm:ss.SSSZ"
     // String get<text, mode, or time preference name>()
 
     /**
@@ -524,7 +524,7 @@ public interface AppExecutor extends
      * Returns a HTTP response to the calling client with the options specified.
      *
      * @param options. Valid options:
-     *                 contentType (String) The value of the “Content-Type” request header. “application/json” if not specified.
+     *                 contentType (String) The value of the "Content-Type" request header. "application/json" if not specified.
      *                 status (?) The HTTP status of the response. 200 if not specified.
      *                 data (?) Required. The data for this response.
      * @return http response.
@@ -543,10 +543,10 @@ public interface AppExecutor extends
      * Returns a Date of the next occurrence of the time specified in the input, relative to a reference time.
      *
      * @param referenceTime. Can be an ISO-8601 date string as returned from time input preferences,
-     *                       or a simple time string in "hh:mm" format (“21:34”).
+     *                       or a simple time string in "hh:mm" format ("21:34").
      * @param timeString     - The time string whose next occurrence is queried.
      *                       Can be an ISO-8601 date string as returned from time input preferences
-     *                       , or a simple time string in "hh:mm" format (“21:34”).
+     *                       , or a simple time string in "hh:mm" format ("21:34").
      * @param timeZone       for date calculations. Please provide it.
      * @return
      */

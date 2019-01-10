@@ -1,5 +1,6 @@
 package biocomp.hubitatCiTest
 
+import biocomp.hubitatCiTest.apppreferences.Preferences
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -10,12 +11,22 @@ class AppPreferencesReaderTest extends
     private static String validSection = "section(\"sec\"){${validInput}}"
 
     private static String makePropertiesWithPageWithSection(String sectionParams) {
-        println "makePropertiesWithPageWithSection('${sectionParams}')"
-
         return """
 preferences{
     page("name", "title"){
         section(${sectionParams}){${validInput}}
+    }
+}
+"""
+    }
+
+    private static String makePropertiesWithPageWithSectionWithElement(String elementText) {
+        return """
+preferences{
+    page("name", "title"){
+        section("sec"){
+            ${elementText}
+        }
     }
 }
 """
@@ -40,6 +51,12 @@ preferences{
 }
 """
     }
+
+    Preferences fromScript(String script)
+    {
+        return new HubitatAppSandbox(script).readPreferences()
+    }
+
 
     def "Page can't be empty when it's not a dynamic page"() {
         given:
@@ -197,5 +214,15 @@ def userProvidedMethodToMakeStaticPages()
         expect:
             preferences.pages[0].options['name'] == "fromUserMethod"
             preferences.pages[0].options['title'] == "titleFromUserMethod"
+    }
+
+    def "input() can only consist of name and type"()
+    {
+        given:
+            def input = fromScript(makePropertiesWithPageWithSectionWithElement("input 'nam', 'typ'")).pages[0].sections[0].children[0]
+
+        expect:
+            input.name == "nam"
+            input.type == "typ"
     }
 }
