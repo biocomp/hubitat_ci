@@ -186,11 +186,10 @@ class AppPreferencesReader implements
 //
 //    }
 //
-//    @Override
-//    def label(Map options) {
-//        return null
-//
-//    }
+    @Override
+    def label(Map options) {
+        prefState.currentSection.children << new Label(options)
+    }
 //
 //    @Override
 //    def mode(Map options) {

@@ -197,7 +197,7 @@ File.createNewFile('foo.txt')"
         given:
             def log = Mock(Log)
             def api = Mock(AppExecutor)
-        
+
         when:
             def script = new HubitatAppSandbox("""
 int loginCheck()

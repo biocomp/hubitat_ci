@@ -268,7 +268,7 @@ def userProvidedMethodToMakeStaticPages()
     def "paragraph() with map and invalid option fails"()
     {
         when:
-            def paragraph = parseOneChild(
+            parseOneChild(
                 "paragraph(badOption:'Im going to fail', title:'some text')"
             )
 
@@ -277,13 +277,55 @@ def userProvidedMethodToMakeStaticPages()
             e.message.contains("badOption")
     }
 
-    def "paragraph() with no options"()
+    def "paragraph() with no options is not supported"()
     {
         when:
-            def paragraph = parseOneChild("paragraph()")
+            parseOneChild("paragraph()")
 
         then:
             MethodSelectionException e = thrown()
             e.message.contains("paragraph")
+    }
+
+    // label()
+    def "label() with map of valid options"()
+    {
+        given:
+            def label = parseOneChild(
+                    """label(
+                title:'some text', 
+                description:'some desc', 
+                required: true,
+                image: 'some img')"""
+            )
+
+        expect:
+            label.options.title == "some text"
+            label.options.description == 'some desc'
+            label.options.required == true
+            label.options.image == "some img"
+    }
+
+    def "label() with map and invalid option fails"()
+    {
+        when:
+            parseOneChild(
+                    "label(badOption:'Im going to fail', title:'some text')"
+            )
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("badOption")
+    }
+
+    def "label() with no options is not supported"()
+    {
+        when:
+            parseOneChild("label()")
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("mandatory")
+            e.message.contains("title")
     }
 }
