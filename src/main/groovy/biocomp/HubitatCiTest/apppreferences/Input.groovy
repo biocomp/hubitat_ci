@@ -9,4 +9,14 @@ class Input {
     Map options
     String name
     String type
+
+    String readType()
+    {
+        if (type != null)
+        {
+            return type
+        }
+
+        return options?.type
+    }
 }

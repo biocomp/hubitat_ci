@@ -3,6 +3,7 @@ package biocomp.hubitatCiTest
 import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
 import biocomp.hubitatCiTest.emulation.commonApi.Log
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class AppTemplateScriptTest extends
         Specification
@@ -76,6 +77,26 @@ class ThermostatDimerSyncHelperTest extends
     def "Basic validation"() {
         expect:
             sandbox.setupAndValidate()
+    }
+
+    @Unroll
+    def "Uninstall button on 'prefLogIn' page is only shown when username and password are not null"(
+            String userName, String password, boolean uninstalledShown)
+    {
+        setup:
+            def properties = sandbox.readPreferences([username:userName, password:password], SettingsCheckingMode.Strict)
+
+        expect:
+            properties.dynamicPages[0].options.name == 'prefLogIn'
+            properties.dynamicPages[0].options.showUninstall == uninstalledShown
+
+        where:
+            userName | password || uninstalledShown
+            null     | null     || false
+            "u"      | null     || false
+            null     | "p"      || false
+            "u"      | "p"      || true
+            ""       | ""       || true // Even for just empty strings shows the page
     }
 }
 

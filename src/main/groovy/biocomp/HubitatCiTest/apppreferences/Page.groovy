@@ -17,6 +17,20 @@ class Page implements biocomp.hubitatCiTest.emulation.appApi.DynamicPage
     Map options
     final boolean isDynamicPage = false
 
+    /**
+     * Returns either 'name' or (if 'name' is null) options.name
+     * @return
+     */
+    String readName()
+    {
+        if (name != null)
+        {
+            return name
+        }
+
+        return options?.name
+    }
+
     private static final NamedParametersValidator paramValidator = NamedParametersValidator.make {
         stringParameter(name: "name", required: true)
         stringParameter(name: "title", required: true)

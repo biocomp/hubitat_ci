@@ -11,7 +11,7 @@ abstract class HubitatAppScript extends Script
 {
     private static HashSet forbiddenMethods_ = ["println"] as HashSet
 
-    SettingsProvider settingsMap
+    Map settingsMap
 
     private void ensureNotForbidden(String methodOrPropName) {
         //println "checking '$methodOrPropName'"
@@ -46,7 +46,7 @@ abstract class HubitatAppScript extends Script
         }
 
         if (!getMetaClass().hasProperty(this, property)) {
-            return this.@settingsMap.getSetting(property)
+            return this.@settingsMap.get(property)
         }
 
         return getMetaClass().getProperty(this as GroovyObjectSupport, property)
@@ -60,6 +60,6 @@ abstract class HubitatAppScript extends Script
         if("metaClass".equals(property))
             setMetaClass((MetaClass)newValue);
         else
-            this.@settingsMap.setSetting(property, newValue)
+            this.@settingsMap.put(property, newValue)
     }
 }

@@ -4,23 +4,36 @@ import biocomp.hubitatCiTest.emulation.appApi.Preferences as PreferencesInterfac
 import biocomp.hubitatCiTest.HubitatAppScript
 import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
 import biocomp.hubitatCiTest.emulation.appApi.DynamicPage
-import biocomp.hubitatCiTest.util.Utility
 import groovy.transform.TypeChecked
 
 @TypeChecked
 class AppPreferencesReader implements
         AppExecutor
 {
-    AppPreferencesReader(HubitatAppScript parentScript, AppExecutor delegate) {
+    AppPreferencesReader(
+            HubitatAppScript parentScript,
+            AppExecutor delegate,
+            EnumSet<ValidationFlags> validationFlags,
+            Map userSettingsValue)
+    {
         this.parentScript = parentScript
         this.delegate = delegate
+        this.validationFlags = validationFlags
+
+        this.settingsContainer = new SettingsContainer(prefState, validationFlags, userSettingsValue);
     }
 
     Preferences getProducedPreferences() {
-        assert preferences_ : "preferences() method was never called or failed. Either way, you can't get the preferences."
+        assert preferences_: "preferences() method was never called or failed. Either way, you can't get the preferences."
 
         return preferences_
     }
+
+    /*
+
+    dynamicPage()
+
+     */
 
     @Override
     Map dynamicPage(Map options, @DelegatesTo(DynamicPage) Closure makeContents) {
@@ -30,16 +43,11 @@ class AppPreferencesReader implements
         return null
     }
 
-    private void readPreferencesImpl(Map options, @DelegatesTo(PreferencesInterface) Closure makeContents) {
-        def newPreferences = new Preferences(parentScript, null)
-        preferences_ = prefState.initWithPreferences(newPreferences,
-                {
-                    makeContents()
-                    newPreferences.registerDynamicPages()
-                })
-    }
+    /*
 
-    // PreferencesReader
+    preferences()
+
+     */
 
     @Override
     def preferences(@DelegatesTo(Preferences) Closure makeContents) {
@@ -51,7 +59,11 @@ class AppPreferencesReader implements
         readPreferencesImpl(options, makeContents)
     }
 
-    // Page + Preferences
+    /*
+
+    page() + preferences()
+
+     */
 
     @Override
     def page(
@@ -110,8 +122,7 @@ class AppPreferencesReader implements
         addSectionImpl(sectionTitle, null, makeContents)
     }
 
-    private void addSectionImpl(String sectionTitle, Map options, Closure makeContents)
-    {
+    private void addSectionImpl(String sectionTitle, Map options, Closure makeContents) {
         if (prefState.hasCurrentPage()) {
             prefState.currentPage.sections << prefState.initWithSection(
                     new Section(prefState.currentPage.sections.size(), sectionTitle, options), makeContents)
@@ -124,6 +135,11 @@ class AppPreferencesReader implements
         }
     }
 
+    /*
+
+    section()
+
+     */
 
     @Override
     def section(
@@ -160,42 +176,60 @@ class AppPreferencesReader implements
     //        sections << Utility.runClosureAndValidate(new Section(sections.size(), sectionTitle, options), makeContents)
     //    }
 
-    // Section
+    /*
+
+    input()
+
+     */
 
     @Override
-    Object input(Map options, String name, String type)
-    {
+    Object input(Map options, String name, String type) {
         prefState.currentSection.children << new Input(options, name, type)
+        settingsContainer.userInputFound(name)
     }
 
     @Override
-    Object input(String name, String type)
-    {
+    Object input(String name, String type) {
         prefState.currentSection.children << new Input(null, name, type)
+        settingsContainer.userInputFound(name)
     }
 
     @Override
-    Object input(Map options)
-    {
+    Object input(Map options) {
         prefState.currentSection.children << new Input(options, null, null)
+        settingsContainer.userInputFound(options.name as String)
     }
-//
-//    @Override
-//    def href(String name, Map options) {
-//        return null
-//
-//    }
-//
+
+    //
+    //    @Override
+    //    def href(String name, Map options) {
+    //        return null
+    //
+    //    }
+    //
+    /*
+
+    label()
+
+     */
+
     @Override
     def label(Map options) {
         prefState.currentSection.children << new Label(options)
     }
-//
-//    @Override
-//    def mode(Map options) {
-//        return null
-//    }
-//
+
+    //
+    //    @Override
+    //    def mode(Map options) {
+    //        return null
+    //    }
+    //
+    /*
+
+    paragraph()
+
+     */
+
     @Override
     def paragraph(Map options) {
         prefState.currentSection.children << new Paragraph(null, options)
@@ -206,11 +240,50 @@ class AppPreferencesReader implements
         prefState.currentSection.children << new Paragraph(text, null)
     }
 
+    /*
+
+    settings
+
+    */
+
+    @Override
+    Map getSettings() {
+        return settingsContainer
+    }
+
+
+    /*
+
+    Private methods
+
+    */
+
+    private void readPreferencesImpl(Map options, @DelegatesTo(PreferencesInterface) Closure makeContents) {
+        def newPreferences = new Preferences(parentScript, null)
+        preferences_ = prefState.initWithPreferences(newPreferences,
+                {
+                    makeContents()
+                    newPreferences.registerDynamicPages()
+                })
+
+        settingsContainer.validateAfterPreferences()
+    }
+
+    /*
+
+    Private data
+
+     */
+
+    private final EnumSet<ValidationFlags> validationFlags
 
     private final PreferencesReaderState prefState = new PreferencesReaderState()
+
+    private final SettingsContainer settingsContainer
+
     private Preferences preferences_ = null
 
-    final HubitatAppScript parentScript;
+    private final HubitatAppScript parentScript;
 
     @Delegate
     final private AppExecutor delegate;
