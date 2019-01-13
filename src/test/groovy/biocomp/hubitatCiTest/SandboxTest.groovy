@@ -214,20 +214,20 @@ def foo()
     if (LoginCheck) { log.debug '1' }
     else { log.debug '2' }
 } 
-""").runNoValidation(api)
+""").run(noValidation: true)
 
         then:
             _*api.getLog() >> log
     }
 
     private def makeScriptForPrivateCheck(def fileOrText) {
-        def script = new HubitatAppSandbox(fileOrText).compile(
-                null,
-                [:],
-                EnumSet.of(ValidationFlags.DontValidatePreferences, ValidationFlags.DontValidateDefinition));
-        script.getMetaClass().myPrivateMethod1 = { -> "was overridden1!" }
-        script.getMetaClass().myPrivateMethod2 = { def arg1, def arg2 -> "was overridden2(${arg1}, ${arg2})!" }
-        return script
+        return new HubitatAppSandbox(fileOrText).compile(
+                noValidation: true,
+                customizeScriptBeforeRun: { script ->
+                    script.getMetaClass().myPrivateMethod1 = { -> "was overridden1!" }
+                    script.getMetaClass().myPrivateMethod2 = { def arg1, def arg2 -> "was overridden2(${arg1}, ${arg2})!"
+                    }
+                })
     }
 
     void verifyMethodsWereOverridden(Script script)

@@ -6,8 +6,8 @@ import biocomp.hubitatCiTest.apppreferences.ValidationFlags
 import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
 import groovy.json.JsonBuilder
 import groovy.time.TimeCategory
-import groovy.transform.TupleConstructor
 import groovy.transform.TypeChecked
+import groovy.transform.TypeCheckingMode
 import groovy.xml.MarkupBuilder
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.expr.MethodCallExpression
@@ -21,6 +21,7 @@ import sun.util.calendar.ZoneInfo
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 
+@TypeChecked
 class HubitatAppSandbox {
     HubitatAppSandbox(File file) {
         this.file = file
@@ -31,39 +32,31 @@ class HubitatAppSandbox {
         this.text = scriptText
     }
 
-    @TypeChecked
-    HubitatAppScript compile(
-            AppExecutor api = null,
-            Map userSettingValues = [:],
-            EnumSet<ValidationFlags> validationFlags = EnumSet.of(ValidationFlags.DontRunScript),
-            Closure customizeScriptBeforeRun = {}) {
-        validationFlags << ValidationFlags.DontRunScript
-        return setupImpl(validationFlags, userSettingValues, api, customizeScriptBeforeRun)
+    HubitatAppScript compile(Map options = [:]) {
+        addFlags(options, [ValidationFlags.DontRunScript])
+        return setupImpl(options)
     }
 
-    @TypeChecked
-    HubitatAppScript run(
-            AppExecutor api = null,
-            Map userSettingValues = [:],
-            EnumSet<ValidationFlags> validationFlags = EnumSet.of(ValidationFlags.Default),
-            Closure customizeScriptBeforeRun = {})
+    HubitatAppScript run(Map options = [:])
     {
-        return setupImpl(validationFlags, userSettingValues, api, customizeScriptBeforeRun)
+        return setupImpl(options)
     }
 
-    @TypeChecked
-    HubitatAppScript runNoValidation(AppExecutor api, Map userSettingValues = [:], EnumSet<ValidationFlags> validationFlags = EnumSet.of(ValidationFlags.Default), Closure customizeScriptBeforeRun = {}) {
-        validationFlags << ValidationFlags.DontValidateDefinition << ValidationFlags.DontValidatePreferences
-        return setupImpl(validationFlags, userSettingValues, api, customizeScriptBeforeRun)
-    }
-
-    @TypeChecked
-    private HubitatAppScript setupImpl(
-            EnumSet<ValidationFlags> validationFlags,
-            Map userSettingValues,
-            AppExecutor api,
-            Closure customizeScriptBeforeRun)
+    /**
+     * Calls run() with ValidationFlags.DontValidateDefinition and returns juts preferences, not script.
+     * @param options
+     * @return
+     */
+    Preferences readPreferences(Map options = [:])
     {
+        addFlags(options, [ValidationFlags.DontValidateDefinition])
+        setupImpl(options).getProducedPreferences()
+    }
+
+    private HubitatAppScript setupImpl(Map options)
+    {
+        validateAndUpdateSandboxOptions(options)
+        
         // Use custom HubitatAppScript.
         def compilerConfiguration = new CompilerConfiguration()
         compilerConfiguration.scriptBaseClass = HubitatAppScript.class.name
@@ -81,8 +74,9 @@ class HubitatAppSandbox {
             script = shell.parse(text) as HubitatAppScript
         }
 
-        script.initialize(api, validationFlags, userSettingValues)
-        customizeScriptBeforeRun(script)
+        def validationFlags = readFlags(options)
+        script.initialize(options.api as AppExecutor, readFlags(options), readUserSettingValues(options))
+        customizeScript(options, script)
 
         if (!validationFlags.contains(ValidationFlags.DontRunScript)) {
             script.run()
@@ -91,15 +85,79 @@ class HubitatAppSandbox {
         return script
     }
 
-    @TypeChecked
-    Preferences readPreferences(
-            AppExecutor api = null,
-            Map userSettingValues = [:],
-            EnumSet<ValidationFlags> validationFlags = EnumSet.of(ValidationFlags.Default),
-            Closure customizeScriptBeforeRun = {})
+    private static void customizeScript(Map options, HubitatAppScript script)
     {
-        setupImpl(validationFlags, userSettingValues, api, customizeScriptBeforeRun).getProducedPreferences()
+        (options.customizeScriptBeforeRun as Closure)?.call(script)
     }
+
+    @TypeChecked(TypeCheckingMode.SKIP)
+    private static EnumSet<ValidationFlags> readFlags(Map options)
+    {
+        def flags = EnumSet.noneOf(ValidationFlags)
+        options.validationFlags?.each { flags.add(it) }
+        return flags
+    }
+
+    private static Map readUserSettingValues(Map options)
+    {
+        return options.userSettingValues ? options.userSettingValues as Map : [:]
+    }
+
+    private static void validateAndUpdateSandboxOptions(Map options)
+    {
+        def allKeys = new HashSet<String>(options.keySet());
+
+        if (options.containsKey('api'))
+        {
+            allKeys.remove('api')
+
+            assert options['api'] == null || options['api'] instanceof AppExecutor : "'app' value must be null or implement AppExecutor interface"
+        }
+
+        if (options.containsKey('userSettingValues')) {
+            allKeys.remove('userSettingValues')
+
+            assert options['userSettingValues'] != null
+            assert (options['userSettingValues'] as Map<String, Object>) : "'userSettingValues' must be a map of String->Object options"
+        }
+
+        if (options.containsKey('customizeScriptBeforeRun'))
+        {
+            allKeys.remove('customizeScriptBeforeRun')
+
+            assert options['customizeScriptBeforeRun'] != null
+            assert options['customizeScriptBeforeRun'] instanceof Closure : "'customizeScriptBeforeRun' should be a closure that takes HubitatAppScript as a single parameter"
+        }
+
+        if (options.containsKey('validationFlags'))
+        {
+            allKeys.remove('validationFlags')
+
+            assert options['validationFlags'] != null
+            assert options['validationFlags'] as List<ValidationFlags> : "'validationFlags' should be a list of validation flags"
+        }
+
+        if (options.containsKey('noValidation'))
+        {
+            allKeys.remove('noValidation')
+
+            assert options['noValidation'] != null
+
+            if (options.noValidation)
+            {
+                addFlags(options, [ValidationFlags.DontValidateDefinition, ValidationFlags.DontValidatePreferences])
+            }
+        }
+
+        assert allKeys.isEmpty() : "These options are not supported: ${allKeys}"
+    }
+
+    static private void addFlags(Map options, List<ValidationFlags> flags)
+    {
+        options.putIfAbsent('validationFlags', [])
+        (options.validationFlags as List<ValidationFlags>).addAll(flags)
+    }
+
 
     static final Set<String> forbiddenExpressions = ["execute",
                                                      "getClass",
@@ -116,10 +174,7 @@ class HubitatAppSandbox {
                                                      "producedPreferences" // Script's test-only use property
     ] as Set
 
-    @TypeChecked
     private static void restrictScript(CompilerConfiguration options) {
-
-
         def scz = new SecureASTCustomizer()
         scz.with {
             receiversClassesWhiteList = [java.lang.Object,
@@ -241,7 +296,6 @@ class HubitatAppSandbox {
         options.addCompilationCustomizers(sac)
     }
 
-    @TypeChecked
     private static void makePrivatePublic(CompilerConfiguration options) {
         options.addCompilationCustomizers(new RemovePrivateFromScriptCompilationCustomizer())
     }

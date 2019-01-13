@@ -63,11 +63,13 @@ class ParametersToValidate
 
         addParameter(new Parameter(options.name as String, options.get("required", false) as boolean,
                 { @NotNull String context, @NotNull String name, def value ->
-                    assert value != null: "${context}: ${name} value can't be null"
-                    assert value instanceof String: "${context}: ${name}'s value must be String, not ${value.class}"
+                    assert value != null: "${context}: '${name}' value can't be null"
+                    assert value instanceof String: "${context}: '${name}''s value must be String, not ${value.class}"
                     String val = value as String
-                    assert val != null: "${context}: ${name} value can't be null"
-                    assert val != "": "${context}: ${name}'s value can't be empty"
+
+                    if (!options.getOrDefault("canBeEmpty", false)) {
+                        assert val != "": "${context}: '${name}''s value can't be empty"
+                    }
                 }))
     }
 
@@ -154,7 +156,7 @@ class NamedParametersValidator
             mandatoryParameters.remove(it.key)
         }
 
-        assert mandatoryParameters.size() == 0 : "${context}: mandatory parameters '${mandatoryParameters}' not set"
+        assert mandatoryParameters.size() == 0 : "${context}: mandatory parameters '${mandatoryParameters}' not set. All mandatory parameters are: ${supportedParameters.keySet().sort()}"
     }
 
     final HashMap<String, Parameter> supportedParameters

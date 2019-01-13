@@ -1,5 +1,0 @@
-
-
-preferences{
-    page("name", "title"){}
-}

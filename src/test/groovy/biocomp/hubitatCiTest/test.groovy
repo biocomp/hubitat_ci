@@ -19,16 +19,16 @@ class AppTemplateScriptTest extends
     def "Installation succeeds and logs stuff"() {
         given:
             def log = Mock(Log)
-            def api = Mock(AppExecutor)
-            def script = sandbox.run(api)
-            script.getMetaClass().ventDevices = ["S1", "S2"]
-            script.getMetaClass().numberOption = 123
+            AppExecutor api = Mock{ _ * getLog() >> log }
+            def script = sandbox.run(api: api, customizeScriptBeforeRun: { script ->
+                script.getMetaClass().ventDevices = ["S1", "S2"]
+                script.getMetaClass().numberOption = 123
+            })
 
         when:
             script.installed()
 
         then:
-            _ * api.getLog() >> log
             1 * log.debug("initialize")
             1 * log.debug("ventDevices: " + ["S1", "S2"])
             1 * log.debug("numberOption: 123")
@@ -39,9 +39,10 @@ class AppTemplateScriptTest extends
         given:
             def log = Mock(Log)
             def api = Mock(AppExecutor)
-            def script = sandbox.run(api)
-            script.getMetaClass().ventDevices = ["S1", "S2"]
-            script.getMetaClass().numberOption = 123
+            def script = sandbox.run(api: api, customizeScriptBeforeRun: { script ->
+                script.getMetaClass().ventDevices = ["S1", "S2"]
+                script.getMetaClass().numberOption = 123
+            })
 
         when:
             script.updated()
@@ -59,7 +60,7 @@ class AppTemplateScriptTest extends
         given:
             def log = Mock(Log)
             def api = Mock(AppExecutor)
-            def script = sandbox.run(api)
+            def script = sandbox.run(api: api)
 
         when:
             script.uninstalled()
@@ -103,17 +104,15 @@ class IComfortAppScriptTest extends
             AppExecutor api = Mock{
                 _ * getLog() >> log
             }
-            def script = sandbox.run(
-                api,
-                [:],
-                EnumSet.of(ValidationFlags.DontRunScript, ValidationFlags.AllowWritingToSettings, ValidationFlags.AllowReadingNonInputSettings),
-                { script ->
+
+        expect:
+            sandbox.run(
+                api: api,
+                validationFlags: [ValidationFlags.DontRunScript, ValidationFlags.AllowWritingToSettings, ValidationFlags.AllowReadingNonInputSettings],
+                customizeScriptBeforeRun: { script ->
                     script.getMetaClass().loginCheck = { -> 1 }
                     script.getMetaClass().getThermostatList = { -> ["a"] }
                 })
-
-        expect:
-            script.run()
     }
 
     @Unroll
@@ -127,10 +126,10 @@ class IComfortAppScriptTest extends
             }
 
             def script = sandbox.run(
-                api,
-                [username: userName, password: password],
-                EnumSet.of(ValidationFlags.AllowWritingToSettings, ValidationFlags.AllowReadingNonInputSettings),
-                { script ->
+                api: api,
+                userSettingValues: [username: userName, password: password],
+                validationFlags: [ValidationFlags.AllowWritingToSettings, ValidationFlags.AllowReadingNonInputSettings],
+                customizeScriptBeforeRun: { script ->
                     script.getMetaClass().loginCheck = { -> 1 }
                     script.getMetaClass().getThermostatList = { -> ["a"] }
                 })

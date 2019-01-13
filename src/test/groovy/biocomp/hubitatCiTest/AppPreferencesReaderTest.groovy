@@ -63,7 +63,12 @@ preferences{
 
     def "Page can't be empty when it's not a dynamic page"() {
         given:
-            def sandbox = new HubitatAppSandbox(new File("Scripts/test.groovy"))
+            def sandbox = new HubitatAppSandbox('''
+preferences{
+    page("name", "title"){}
+}
+''')
+
         when:
             sandbox.readPreferences()
 
@@ -154,8 +159,7 @@ preferences{
     @Unroll
     def "Reading valid page options"(String pageOptions, String propetyName, def expectedValue) {
         given:
-            def preferences = new HubitatAppSandbox(makePageWithParams(pageOptions)).readPreferences(null, [:],
-                    EnumSet.of(ValidationFlags.AllowMissingInstall))
+            def preferences = new HubitatAppSandbox(makePageWithParams(pageOptions)).readPreferences(validationFlags: [ValidationFlags.AllowMissingInstall])
 
         expect:
             preferences.pages[0].options."${propetyName}" == expectedValue
@@ -376,12 +380,12 @@ def makePage3()
         }
     }
 }
-/$).readPreferences(null,
+/$).readPreferences(userSettingValues:
                     [in1: ["_": "input1 val everywhere"],
                      in2: ["makePage2": null,
                            "makePage3": "input2 val on page3",
                            "_"        : "should not be used"]],
-                    EnumSet.of(ValidationFlags.AllowReadingNonInputSettings))
+                    validationFlags: [ValidationFlags.AllowReadingNonInputSettings])
 
         expect:
             preferences.dynamicPages[0].sections[0].title == 'input1 val everywhere section, unknown: null'
@@ -415,7 +419,7 @@ def makePage2()
         }
     }
 }
-/$).readPreferences(null, [it1: "input1val", it2: "input2val"])
+/$).readPreferences(userSettingValues: [it1: "input1val", it2: "input2val"])
 
         then:
             AssertionError e = thrown()

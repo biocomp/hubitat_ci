@@ -14,6 +14,8 @@ abstract class HubitatAppScript extends Script
 {
     private Map settingsMap
     private AppPreferencesReader preferencesReader = null
+    private AppDefinitionReader definitionReader = null
+
     @Delegate
     private AppExecutor api = null
 
@@ -23,9 +25,8 @@ abstract class HubitatAppScript extends Script
         this.preferencesReader = new AppPreferencesReader(this, api, validationFlags, userSettingValues)
         api = this.preferencesReader;
 
-        AppDefinitionReader definitionReader = null
-        definitionReader = new AppDefinitionReader(api, !validationFlags.contains(ValidationFlags.DontValidateDefinition))
-        api = definitionReader
+        this.definitionReader = new AppDefinitionReader(api, !validationFlags.contains(ValidationFlags.DontValidateDefinition))
+        api = this.definitionReader
 
         this.api = api
         this.settingsMap = preferencesReader.getSettings()
@@ -86,6 +87,7 @@ abstract class HubitatAppScript extends Script
     {
         scriptBody()
         getProducedPreferences() // Just to trigger validation
+        definitionReader.getDefinitions() // Trigger definition validation
     }
 
     abstract void scriptBody()
