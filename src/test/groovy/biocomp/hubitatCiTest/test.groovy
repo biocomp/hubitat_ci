@@ -1,5 +1,6 @@
 package biocomp.hubitatCiTest
 
+import biocomp.hubitatCiTest.apppreferences.ValidationFlags
 import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
 import biocomp.hubitatCiTest.emulation.commonApi.Log
 import spock.lang.Specification
@@ -12,14 +13,14 @@ class AppTemplateScriptTest extends
 
     def "Basic validation"() {
         expect:
-            sandbox.setupAndValidate()
+            sandbox.run()
     }
 
     def "Installation succeeds and logs stuff"() {
         given:
             def log = Mock(Log)
             def api = Mock(AppExecutor)
-            def script = sandbox.setupAndValidate(api)
+            def script = sandbox.run(api)
             script.getMetaClass().ventDevices = ["S1", "S2"]
             script.getMetaClass().numberOption = 123
 
@@ -38,7 +39,7 @@ class AppTemplateScriptTest extends
         given:
             def log = Mock(Log)
             def api = Mock(AppExecutor)
-            def script = sandbox.setupAndValidate(api)
+            def script = sandbox.run(api)
             script.getMetaClass().ventDevices = ["S1", "S2"]
             script.getMetaClass().numberOption = 123
 
@@ -58,7 +59,7 @@ class AppTemplateScriptTest extends
         given:
             def log = Mock(Log)
             def api = Mock(AppExecutor)
-            def script = sandbox.setupAndValidate(api)
+            def script = sandbox.run(api)
 
         when:
             script.uninstalled()
@@ -76,27 +77,7 @@ class ThermostatDimerSyncHelperTest extends
 
     def "Basic validation"() {
         expect:
-            sandbox.setupAndValidate()
-    }
-
-    @Unroll
-    def "Uninstall button on 'prefLogIn' page is only shown when username and password are not null"(
-            String userName, String password, boolean uninstalledShown)
-    {
-        setup:
-            def properties = sandbox.readPreferences([username:userName, password:password], SettingsCheckingMode.Strict)
-
-        expect:
-            properties.dynamicPages[0].options.name == 'prefLogIn'
-            properties.dynamicPages[0].options.showUninstall == uninstalledShown
-
-        where:
-            userName | password || uninstalledShown
-            null     | null     || false
-            "u"      | null     || false
-            null     | "p"      || false
-            "u"      | "p"      || true
-            ""       | ""       || true // Even for just empty strings shows the page
+            sandbox.run()
     }
 }
 
@@ -107,7 +88,7 @@ class ThermostatDimerSyncHelperTest extends
 //
 //    def "Basic validation"() {
 //        expect:
-//            sandbox.setupAndValidate()
+//            sandbox.run()
 //    }
 //}
 
@@ -117,14 +98,53 @@ class IComfortAppScriptTest extends
     def sandbox = new HubitatAppSandbox(new File("Scripts/Lennox-iComfort-connect.groovy"))
 
     def "Basic validation"() {
-        given:
+        setup:
             def log = Mock(Log)
-            def api = Mock(AppExecutor)
+            AppExecutor api = Mock{
+                _ * getLog() >> log
+            }
+            def script = sandbox.run(
+                api,
+                [:],
+                EnumSet.of(ValidationFlags.DontRunScript, ValidationFlags.AllowWritingToSettings, ValidationFlags.AllowReadingNonInputSettings),
+                { script ->
+                    script.getMetaClass().loginCheck = { -> 1 }
+                    script.getMetaClass().getThermostatList = { -> ["a"] }
+                })
 
-        when:
-            sandbox.setupAndValidate(api, SettingsCheckingMode.None)
+        expect:
+            script.run()
+    }
 
-        then:
-            _ * api.getLog() >> log
+    @Unroll
+    def "Uninstall button on 'prefLogIn' page is only shown when username and password are not null"(
+            String userName, String password, boolean uninstalledShown)
+    {
+        setup:
+            def log = Mock(Log)
+            AppExecutor api = Mock {
+                _ * getLog() >> log
+            }
+
+            def script = sandbox.run(
+                api,
+                [username: userName, password: password],
+                EnumSet.of(ValidationFlags.AllowWritingToSettings, ValidationFlags.AllowReadingNonInputSettings),
+                { script ->
+                    script.getMetaClass().loginCheck = { -> 1 }
+                    script.getMetaClass().getThermostatList = { -> ["a"] }
+                })
+
+        expect:
+            script.getProducedPreferences().dynamicPages[0].options.name == 'prefLogIn'
+            script.getProducedPreferences().dynamicPages[0].options.uninstall == uninstalledShown
+
+        where:
+            userName | password || uninstalledShown
+            null     | null     || false
+            "u"      | null     || false
+            null     | "p"      || false
+            "u"      | "p"      || true
+            ""       | ""       || true // Even for just empty strings shows the page
     }
 }

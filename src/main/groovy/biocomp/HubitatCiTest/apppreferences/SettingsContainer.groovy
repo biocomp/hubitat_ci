@@ -24,9 +24,9 @@ class SettingsContainer implements Map<String, Object>
      * 1. Verify that settings were only read, and not set.
      * 2. Verify that only settings from 'inputs' param were read.*/
     void validateAfterPreferences() {
-        if (mode.contains(ValidationFlags.NoReadingNonInputSettings)) {
+        if (!mode.contains(ValidationFlags.AllowReadingNonInputSettings)) {
             def readSettingsThatAreNotInputs = settingsRead - registeredInputs
-            assert !readSettingsThatAreNotInputs : "Settings were read that are not registered inputs: ${readSettingsThatAreNotInputs}. These are registered inputs: ${registeredInputs}"
+            assert !readSettingsThatAreNotInputs : "Settings were read that are not registered inputs: ${readSettingsThatAreNotInputs}. These are registered inputs: ${registeredInputs}. This is not allowed in strict mode (add ValidationFlags.AllowReadingNonInputSettings to allow this)"
         }
     }
 
@@ -44,7 +44,7 @@ class SettingsContainer implements Map<String, Object>
         settingsRead << name
 
         // We have per page mapping of values
-        def currentPageName = preferencesState.currentPage?.readName()
+        def currentPageName = preferencesState.hasCurrentPage() ? preferencesState.currentPage.readName() : null
         if (currentPageName && settingValues.get(name) instanceof Map && settingValues.get(name).containsKey('_') && settingValues.get(name).containsKey(currentPageName))
         {
             return settingValues.get(name)."${currentPageName}"
@@ -59,8 +59,8 @@ class SettingsContainer implements Map<String, Object>
 
     @Override
     Object put(String name, Object value) {
-        if (mode.contains(ValidationFlags.NoWritingToSettings)) {
-            assert false: "You tried assigning '${value}' to '${name}', but setting settings is not allowed in strict mode."
+        if (!mode.contains(ValidationFlags.AllowWritingToSettings)) {
+            assert false: "You tried assigning '${value}' to '${name}', but writing to settings is not allowed in strict mode (add ValidationFlags.AllowWritingToSettings to allow this)."
         }
 
         return settingValues.put(name, value)

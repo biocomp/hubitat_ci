@@ -24,7 +24,9 @@ class AppPreferencesReader implements
     }
 
     Preferences getProducedPreferences() {
-        assert preferences_: "preferences() method was never called or failed. Either way, you can't get the preferences."
+        if (!validationFlags.contains(ValidationFlags.DontValidatePreferences)) {
+            assert preferences_: "preferences() method was never called or failed. Either way, you can't get the preferences."
+        }
 
         return preferences_
     }
@@ -38,7 +40,7 @@ class AppPreferencesReader implements
     @Override
     Map dynamicPage(Map options, @DelegatesTo(DynamicPage) Closure makeContents) {
         prefState.currentPreferences.dynamicPages << prefState.initWithPage(
-                new Page(prefState.currentPreferences.dynamicPages.size(), null, null, options, true), makeContents)
+                new Page(prefState.currentPreferences.dynamicPages.size(), null, null, options, prefState.currentDynamicMethod), makeContents)
 
         return null
     }
@@ -80,6 +82,14 @@ class AppPreferencesReader implements
                 new Page(prefState.currentPreferences.pages.size(), null, null, options), makeContents)
     }
 
+    @Override
+    def page(Map options, String name, String title, @DelegatesTo(biocomp.hubitatCiTest.emulation.appApi.Page.class) Closure makeContents)
+    {
+        prefState.currentPreferences.pages << prefState.initWithPage(
+                new Page(prefState.currentPreferences.pages.size(), name, title, options), makeContents)
+    }
+
+
     /**
      * Overload for a dynamic page creation - takes only options with name of the method.
      * @param options
@@ -92,13 +102,17 @@ class AppPreferencesReader implements
         // Now need to run named closure that is adding dynamic pages
         def methodWithNoArgs = parentScript.getMetaClass().pickMethod(options.name as String, [] as Class[])
         if (methodWithNoArgs) {
-            prefState.currentPreferences.dynamicRegistrations << { methodWithNoArgs.invoke(parentScript) }
+            prefState.currentPreferences.dynamicRegistrations << {
+                prefState.withCurrentDynamicMethod(options.name as String, { methodWithNoArgs.invoke(parentScript) })
+            }
             return null
         } else {
             def methodWithMapArg = parentScript.getMetaClass().pickMethod(options.name as String,
                     [Map.class] as Class[])
             if (methodWithMapArg) {
-                prefState.currentPreferences.dynamicRegistrations << { methodWithMapArg.invoke(parentScript, [:]) }
+                prefState.currentPreferences.dynamicRegistrations << {
+                    prefState.withCurrentDynamicMethod(options.name as String, { methodWithNoArgs.invoke(parentScript, [:]) })
+                }
                 return null
             }
         }
@@ -263,7 +277,7 @@ class AppPreferencesReader implements
         preferences_ = prefState.initWithPreferences(newPreferences,
                 {
                     makeContents()
-                    newPreferences.registerDynamicPages()
+                    newPreferences.registerDynamicPages(validationFlags)
                 })
 
         settingsContainer.validateAfterPreferences()
@@ -277,7 +291,7 @@ class AppPreferencesReader implements
 
     private final EnumSet<ValidationFlags> validationFlags
 
-    private final PreferencesReaderState prefState = new PreferencesReaderState()
+    private final PreferencesReaderState prefState = new PreferencesReaderState(validationFlags)
 
     private final SettingsContainer settingsContainer
 

@@ -1,5 +1,8 @@
 package biocomp.hubitatCiTest
 
+import biocomp.hubitatCiTest.apppreferences.AppPreferencesReader
+import biocomp.hubitatCiTest.apppreferences.Preferences
+import biocomp.hubitatCiTest.apppreferences.ValidationFlags
 import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
 import groovy.transform.TypeChecked
 
@@ -9,19 +12,29 @@ import groovy.transform.TypeChecked
 @TypeChecked
 abstract class HubitatAppScript extends Script
 {
-    private static HashSet forbiddenMethods_ = ["println"] as HashSet
+    private Map settingsMap
+    private AppPreferencesReader preferencesReader = null
+    @Delegate
+    private AppExecutor api = null
 
-    Map settingsMap
+    @TypeChecked
+    void initialize(AppExecutor api, EnumSet<ValidationFlags> validationFlags, Map userSettingValues)
+    {
+        this.preferencesReader = new AppPreferencesReader(this, api, validationFlags, userSettingValues)
+        api = this.preferencesReader;
 
-    private void ensureNotForbidden(String methodOrPropName) {
-        //println "checking '$methodOrPropName'"
-        if (this.@forbiddenMethods_.contains(methodOrPropName)) {
-            //throw new SecurityException("Usage of '${methodOrPropName}' is forbidden inside Hubitat scripts")
-        }
+        AppDefinitionReader definitionReader = null
+        definitionReader = new AppDefinitionReader(api, !validationFlags.contains(ValidationFlags.DontValidateDefinition))
+        api = definitionReader
+
+        this.api = api
+        this.settingsMap = preferencesReader.getSettings()
     }
 
-    @Delegate
-    AppExecutor api = null
+    Preferences getProducedPreferences()
+    {
+        preferencesReader.getProducedPreferences()
+    }
 
     /*
         Don't let Script base class to redirect properties to binding,
@@ -32,6 +45,11 @@ abstract class HubitatAppScript extends Script
      */
     @Override
     Object getProperty(String property) {
+        if (property == "metaClass")
+        {
+            return getMetaClass();
+        }
+
         def methodName = "get${property.capitalize()}"
         try {
             // Simple implementation of redirecting getter back to script class (if present)
@@ -62,4 +80,13 @@ abstract class HubitatAppScript extends Script
         else
             this.@settingsMap.put(property, newValue)
     }
+
+    @Override
+    def run()
+    {
+        scriptBody()
+        getProducedPreferences() // Just to trigger validation
+    }
+
+    abstract void scriptBody()
 }

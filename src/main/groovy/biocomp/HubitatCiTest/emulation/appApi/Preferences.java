@@ -9,7 +9,7 @@ public interface Preferences extends Page {
     /**
      * Adds page of settings.*/
     default Object page(String name, String title, @DelegatesTo(Page.class) Closure makeContents) { return null; }
-    default Object page(String name, String title) { return page(name, title, null ); }
+    default Object page(Map options, String name, String title, @DelegatesTo(Page.class) Closure makeContents) { return null; }
 
     /**
      * Adds page of settings.

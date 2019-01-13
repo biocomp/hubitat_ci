@@ -4,32 +4,21 @@ import groovy.transform.TypeChecked
 
 enum ValidationFlags
 {
+    Default,
     DontRunScript,
-    ValidatePreferences,
-    ValidateDefinition,
-    NoWritingToSettings,
-    NoReadingNonInputSettings
+    DontValidatePreferences,
+    DontValidateDefinition,
+    AllowWritingToSettings,
+    AllowReadingNonInputSettings,
 
-    @TypeChecked
-    static EnumSet<ValidationFlags> validatePreferencesAndSettings()
-    {
-        return from(ValidatePreferences, NoWritingToSettings, NoReadingNonInputSettings)
-    }
+    /**
+     * Don't require install: true on at least one of the pages.
+     */
+    AllowMissingInstall
 
     @TypeChecked
     static EnumSet<ValidationFlags> from(ValidationFlags... settings)
     {
-        EnumSet<ValidationFlags> flags = EnumSet.copyOf(settings.toList());
-
-        validate(flags)
-        return flags
-    }
-
-    static void validate(EnumSet<ValidationFlags> flags)
-    {
-        if (flags.contains([NoReadingNonInputSettings, NoWritingToSettings, ValidatePreferences, ValidateDefinition]))
-        {
-            assert !flags.contains(DontRunScript)
-        }
+        return  EnumSet.copyOf(settings.toList());
     }
 }

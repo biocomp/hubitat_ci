@@ -12,7 +12,7 @@ preferences {
 }
 
 def pageConfig() {
-	dynamicPage(name: "nam", title: "tit", install: true, uninstall: true, refreshInterval: 0) {
+	dynamicPage(name: "pageConfig", title: "tit", install: true, uninstall: true, refreshInterval: 0) {
 
 		section("") {
 			input(name: "ventDevices", type: "capability.switch", title: "Trigger Devices", multiple: true)

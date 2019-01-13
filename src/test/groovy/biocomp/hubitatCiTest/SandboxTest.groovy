@@ -1,5 +1,6 @@
 package biocomp.hubitatCiTest
 
+import biocomp.hubitatCiTest.apppreferences.ValidationFlags
 import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
 import biocomp.hubitatCiTest.emulation.commonApi.Log
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
@@ -151,7 +152,9 @@ def foo()
                     new Tuple("String s\ns.propertyMissing()", "propertyMissing"),
                     new Tuple("String s\ns.methodMissing()", "methodMissing"),
                     new Tuple("String s\ns.invokeMethod('a')", "invokeMethod"),
-                    //new Tuple("printf", "printf"),
+                    new Tuple("getProducedPreferences()", "getProducedPreferences"),
+                    new Tuple("void foo() { def prefs = producedPreferences }", "producedPreferences"),
+                    new Tuple("printf", "printf"),
                     new Tuple("sleep 10", "sleep")
             ])
     }
@@ -211,11 +214,45 @@ def foo()
     if (LoginCheck) { log.debug '1' }
     else { log.debug '2' }
 } 
-""").compile(SettingsCheckingMode.None)
-            script.setApi(api)
-            script.run()
+""").runNoValidation(api)
 
         then:
             _*api.getLog() >> log
+    }
+
+    private def makeScriptForPrivateCheck(def fileOrText) {
+        def script = new HubitatAppSandbox(fileOrText).compile(
+                null,
+                [:],
+                EnumSet.of(ValidationFlags.DontValidatePreferences, ValidationFlags.DontValidateDefinition));
+        script.getMetaClass().myPrivateMethod1 = { -> "was overridden1!" }
+        script.getMetaClass().myPrivateMethod2 = { def arg1, def arg2 -> "was overridden2(${arg1}, ${arg2})!" }
+        return script
+    }
+
+    void verifyMethodsWereOverridden(Script script)
+    {
+        assert script.myPrivateMethod1() == "was overridden1!"
+        assert script.publicMethodThatCallsPrivateMethod1() == "was overridden1!"
+        assert script.myPrivateMethod2(42, "abc") == "was overridden2(42, abc)!"
+        assert script.publicMethodThatCallsPrivateMethod2() == "was overridden2(123, argFromPublicMethod)!"
+    }
+
+    def "private methods in the Script (as text) can be mocked!()"()
+    {
+        setup:
+            def script = makeScriptForPrivateCheck(new File("Scripts/ScriptWithPrivateMethod.groovy"))
+
+        expect:
+            verifyMethodsWereOverridden(script)
+    }
+
+    def "private methods in the Script (as File) can be mocked!()"()
+    {
+        setup:
+            def script = makeScriptForPrivateCheck(new File("Scripts/ScriptWithPrivateMethod.groovy").readLines().join('\n'))
+
+        expect:
+            verifyMethodsWereOverridden(script)
     }
 }

@@ -53,9 +53,11 @@ class Section implements biocomp.hubitatCiTest.emulation.appApi.Section{
         boolParameter(name:"mobileOnly")
     }
 
-    void validate()
+    void validate(EnumSet<ValidationFlags> flags)
     {
-        paramValidator.validate(this.toString(), options)
-        assert children.size() != 0 : "Section ${this} must have at least some content"
+        if (!flags.contains(ValidationFlags.DontValidatePreferences)) {
+            paramValidator.validate(this.toString(), options)
+            assert children.size() != 0: "Section ${this} must have at least some content"
+        }
     }
 }

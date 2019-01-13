@@ -25,7 +25,7 @@ preferences{
     private static String makePropertiesWithPageWithSectionWithElement(String elementText) {
         return """
 preferences{
-    page("name", "title"){
+    page("name", "title", install: true){
         section("sec"){
             ${elementText}
         }
@@ -49,8 +49,6 @@ preferences{
     }
 
     private static String makePageWithParams(String pageParams) {
-        println "makePageWithParams('${pageParams}')"
-
         return """
 preferences{
     page(${pageParams}){${validSection}}
@@ -75,16 +73,42 @@ preferences{
             ex.message.contains("must have at least one section")
     }
 
+    def "page() names must be unique"() {
+        when:
+            new HubitatAppSandbox(script).readPreferences()
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("page2")
+            e.message.contains("must be unique")
+
+        where:
+            script << ["""preferences{ 
+    page(name: "page2", title: "t2"){${validSection} }
+    page(name: "page2", title: "t2"){${validSection} }
+}""",
+                       """preferences{ 
+    page(name: "page2", title: "t2"){${validSection} }
+    page(name: "page2")
+}
+
+def page2()
+{
+    dynamicPage(name: "page2", title: "t2"){${validSection}
+}
+}"""]
+    }
+
     def "Dynamic page's method will be called right away"() {
         given:
             def sandbox = new HubitatAppSandbox("""
 preferences{
-    page(name:"dynamicMe")
+    page(name:"imSoDynamic")
 }
 
-void dynamicMe()
+void imSoDynamic()
 {
-    dynamicPage(name:"imSoDynamic", title:"dynamicTitle"){ ${validSection} }
+    dynamicPage(name:"imSoDynamic", title:"dynamicTitle", install: true){ ${validSection} }
 }
 """)
             def preferences = sandbox.readPreferences()
@@ -130,7 +154,8 @@ preferences{
     @Unroll
     def "Reading valid page options"(String pageOptions, String propetyName, def expectedValue) {
         given:
-            def preferences = new HubitatAppSandbox(makePageWithParams(pageOptions)).readPreferences()
+            def preferences = new HubitatAppSandbox(makePageWithParams(pageOptions)).readPreferences(null, [:],
+                    EnumSet.of(ValidationFlags.AllowMissingInstall))
 
         expect:
             preferences.pages[0].options."${propetyName}" == expectedValue
@@ -211,7 +236,7 @@ preferences{
 
 def userProvidedMethodToMakeStaticPages()
 {
-    page(name:"fromUserMethod", title:"titleFromUserMethod") { ${validSection} }
+    page(name:"fromUserMethod", title:"titleFromUserMethod", install: true) { ${validSection} }
 }
 """)
             def preferences = sandbox.readPreferences()
@@ -335,7 +360,7 @@ preferences{
 
 def makePage2()
 {
-    dynamicPage(name: "makePage2", title: "tit2"){
+    dynamicPage(name: "makePage2", title: "tit2", install: true){
         section("$${in1} section, unknown: $${blah}"){
             paragraph "$${in1} paragraph1, unknown: $${in2}"
             input "in2", "in2 = $${in1} input type"
@@ -351,11 +376,12 @@ def makePage3()
         }
     }
 }
-/$).readPreferences([in1: ["_": "input1 val everywhere"],
+/$).readPreferences(null,
+                    [in1: ["_": "input1 val everywhere"],
                      in2: ["makePage2": null,
                            "makePage3": "input2 val on page3",
                            "_"        : "should not be used"]],
-                    EnumSet.of(ValidationFlags.ValidatePreferences, ValidationFlags.NoWritingToSettings))
+                    EnumSet.of(ValidationFlags.AllowReadingNonInputSettings))
 
         expect:
             preferences.dynamicPages[0].sections[0].title == 'input1 val everywhere section, unknown: null'
@@ -383,13 +409,13 @@ preferences{
 
 def makePage2()
 {
-    dynamicPage(name: "makePage2", title: "tit2"){
+    dynamicPage(name: "makePage2", title: "tit2", install: true){
         section("sec"){
             paragraph "$${in1} paragraph, unknown: $${in2}"
         }
     }
 }
-/$).readPreferences([it1: "input1val", it2: "input2val"])
+/$).readPreferences(null, [it1: "input1val", it2: "input2val"])
 
         then:
             AssertionError e = thrown()
@@ -397,31 +423,124 @@ def makePage2()
             e.message.contains("These are registered inputs: [in1, in3]")
     }
 
-    def "All the pages are reachable (as initial pages or nextPage or href)"() {
+    @Unroll
+    def "Page is not reachable (via initial pages or nextPage or href), thus validation fails"(String script) {
+        when:
+            new HubitatAppSandbox(script).readPreferences()
 
-        expect:
-            assert false
+        then:
+            AssertionError e = thrown()
+            !e.message.contains("p1")
+            e.message.contains("p2")
+            e.message.contains("not reachable")
+
+        where:
+            script << ["""
+preferences{
+    page("p1", "tit") {${validSection}}
+    page("p2", "tit") {${validSection}}
+}
+""",
+                       """
+preferences{
+    page("p1", "tit") {${validSection}}
+    page("p2")
+}
+    
+def p2()
+{
+    dynamicPage("p2", "tit") {${validSection}}
+}
+"""]
     }
 
-    def "Page is not reachable (via initial pages or nextPage or href), thus validation fails"() {
+    @Unroll
+    def "install needs to be specified for mult-ipage settings"(String script) {
+        when:
+            new HubitatAppSandbox(script).readPreferences()
 
-        expect:
-            assert false
+        then:
+            AssertionError e = thrown()
+            e.message.contains("install: true")
+
+        where:
+            script << ["""
+preferences{
+    page("p1", "tit") {${validSection}}
+    page("p2", "tit") {${validSection}}
+}
+"""
+                       ,
+                       """
+preferences{
+    page("p1", "tit") {${validSection}}
+}
+"""
+                       ,
+                       """
+preferences{page(name: "p1")}
+
+def p1() { dynamicPage(name: "p1", title: "t1", install:false) {${validSection}}}
+"""
+                       ,
+                       """
+preferences{page(name: "p1")}
+
+def p1() { dynamicPage(name: "p1", title: "t1", install:false) {${validSection}}}
+"""]
     }
 
-    def "install/uninstall needs to be specified for multipage settings"() {
+    @Unroll
+    def "dynamicPage() name needs to match method it was created by"(String script) {
+        when:
+            new HubitatAppSandbox(script).readPreferences()
 
-        expect:
-            assert false
+        then:
+            AssertionError e = thrown()
+            e.message.contains("makePage2Method")
+            e.message.contains("makePage2")
+            e.message.contains("match")
+
+        where:
+            script << ["""
+preferences{ page(name: "makePage2Method") }
+
+def makePage2Method() { 
+    dynamicPage(name: "makePage2", title: "tit2"){ ${validSection}} 
+}""",
+                       """
+preferences{ page(name: "makePage2Method") }
+
+def foo() { bar() }
+def bar() { baz() }
+def baz() { dynamicPage(name: "makePage2", title: "tit2"){ ${validSection}} }
+
+def makePage2Method() { foo() }"""]
     }
 
-    def "dynamicPage() name needs to match method it was created by"() {
-        expect:
-            assert false
-    }
+    def "Only one dynamicPage() can be eventually created by page() with reference to method name"(String script) {
+        when:
+            new HubitatAppSandbox(script).readPreferences()
 
-    def "Only one dynamicPage() can be eventually created by page() with reference to method name"() {
-        expect:
-            assert false
+        then:
+            AssertionError e = thrown()
+            e.message.contains("makePage2")
+
+        where:
+            script << ["""
+preferences{ page(name: "makePage2") }
+
+def makePage2() { 
+    dynamicPage(name: "makePage2", title: "tit2"){ ${validSection}} 
+    dynamicPage(name: "makePage2", title: "tit2"){ ${validSection}}
+}""",
+                       """
+preferences{ page(name: "makePage2") }
+
+def foo() { bar() }
+def bar() { baz(); dynamicPage(name: "makePage2", title: "tit2"){ ${validSection}} }
+def baz() { dynamicPage(name: "makePage2", title: "tit2"){ ${validSection}} }
+
+def makePage2() { foo() }"""]
     }
 }

@@ -1,9 +1,20 @@
 package biocomp.hubitatCiTest.apppreferences
 
+import groovy.transform.TypeChecked
+
+@TypeChecked
 class PreferencesReaderState {
+    PreferencesReaderState(EnumSet<ValidationFlags> flags)
+    {
+        this.flags = flags;
+    }
+
+    final private EnumSet<ValidationFlags> flags
+
     Preferences currentPreferences
     Page currentPage
     Section currentSection
+    String currentDynamicMethod
 
     Preferences getCurrentPreferences()
     {
@@ -12,6 +23,7 @@ class PreferencesReaderState {
     }
 
     boolean hasCurrentPage() { return this.@currentPage != null }
+
     Page getCurrentPage()
     {
         assert this.@currentPage != null : "page() was not properly called"
@@ -32,7 +44,7 @@ class PreferencesReaderState {
 
             currentPreferences = newPrefrences
             makeContents()
-            currentPreferences.validate()
+            currentPreferences.validate(flags)
         }
         finally
         {
@@ -50,13 +62,27 @@ class PreferencesReaderState {
             makeContents()
 
             if (validate) {
-                currentPage.validate()
+                currentPage.validate(flags)
             }
         } finally {
             currentPage = null
         }
 
         return newPage
+    }
+
+    void withCurrentDynamicMethod(String methodName, Closure makeContents) {
+        try {
+            assert !this.@currentDynamicMethod: "${currentDynamicMethod}() is being called recursively. This is not supported."
+
+            currentDynamicMethod = methodName
+            makeContents()
+
+            currentPreferences.validateSingleDynamicPageFor(flags, currentDynamicMethod)
+
+        } finally {
+            currentDynamicMethod = null
+        }
     }
 
     Section initWithSection(Section newSection, Closure makeContents) {
@@ -66,7 +92,7 @@ class PreferencesReaderState {
             currentSection = newSection
             makeContents()
 
-            currentSection.validate()
+            currentSection.validate(flags)
         } finally {
             currentSection = null
         }

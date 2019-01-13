@@ -1,6 +1,6 @@
 package biocomp.hubitatCiTest
 
-import biocomp.hubitatCiTest.apppreferences.AppPreferencesReader
+
 import biocomp.hubitatCiTest.apppreferences.Preferences
 import biocomp.hubitatCiTest.apppreferences.ValidationFlags
 import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
@@ -11,6 +11,8 @@ import groovy.transform.TypeChecked
 import groovy.xml.MarkupBuilder
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.expr.MethodCallExpression
+import org.codehaus.groovy.ast.expr.PropertyExpression
+import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.SourceAwareCustomizer
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer
@@ -18,13 +20,6 @@ import sun.util.calendar.ZoneInfo
 
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
-
-@TupleConstructor
-class SandboxResult {
-    HubitatAppScript script
-    Preferences preferences
-    Map<String, Object> definitions
-}
 
 class HubitatAppSandbox {
     HubitatAppSandbox(File file) {
@@ -37,47 +32,43 @@ class HubitatAppSandbox {
     }
 
     @TypeChecked
-    HubitatAppScript compile(EnumSet<ValidationFlags> validationFlags = EnumSet.of(ValidationFlags.DontRunScript)) {
-        return setupImpl(validationFlags, [:], null).script
-    }
-
-    @TypeChecked
-    HubitatAppScript setupAndValidate(
+    HubitatAppScript compile(
             AppExecutor api = null,
             Map userSettingValues = [:],
-            EnumSet<ValidationFlags> validationFlags = ValidationFlags.validatePreferencesAndSettings())
-    {
-        return setupImpl(validationFlags, userSettingValues, api).script
+            EnumSet<ValidationFlags> validationFlags = EnumSet.of(ValidationFlags.DontRunScript),
+            Closure customizeScriptBeforeRun = {}) {
+        validationFlags << ValidationFlags.DontRunScript
+        return setupImpl(validationFlags, userSettingValues, api, customizeScriptBeforeRun)
     }
 
     @TypeChecked
-    SandboxResult setupWithPreferencesAndDefinitions(
-            AppExecutor api,
+    HubitatAppScript run(
+            AppExecutor api = null,
             Map userSettingValues = [:],
-            EnumSet<ValidationFlags> validationFlags = ValidationFlags.validatePreferencesAndSettings())
+            EnumSet<ValidationFlags> validationFlags = EnumSet.of(ValidationFlags.Default),
+            Closure customizeScriptBeforeRun = {})
     {
-
-        return setupImpl(validationFlags, userSettingValues, api)
+        return setupImpl(validationFlags, userSettingValues, api, customizeScriptBeforeRun)
     }
 
     @TypeChecked
-    HubitatAppScript setupNoValidation(AppExecutor api) {
-
-        return setupImpl([] as EnumSet, [:], api).script
+    HubitatAppScript runNoValidation(AppExecutor api, Map userSettingValues = [:], EnumSet<ValidationFlags> validationFlags = EnumSet.of(ValidationFlags.Default), Closure customizeScriptBeforeRun = {}) {
+        validationFlags << ValidationFlags.DontValidateDefinition << ValidationFlags.DontValidatePreferences
+        return setupImpl(validationFlags, userSettingValues, api, customizeScriptBeforeRun)
     }
 
     @TypeChecked
-    private SandboxResult setupImpl(
+    private HubitatAppScript setupImpl(
             EnumSet<ValidationFlags> validationFlags,
             Map userSettingValues,
-            AppExecutor api)
+            AppExecutor api,
+            Closure customizeScriptBeforeRun)
     {
-        ValidationFlags.validate(validationFlags)
-
         // Use custom HubitatAppScript.
         def compilerConfiguration = new CompilerConfiguration()
         compilerConfiguration.scriptBaseClass = HubitatAppScript.class.name
         restrictScript(compilerConfiguration)
+        makePrivatePublic(compilerConfiguration)
 
         def shell = new GroovyShell(new SandboxClassLoader(this.class.classLoader),
                 new DoNotCallMeBinding(),
@@ -90,32 +81,24 @@ class HubitatAppSandbox {
             script = shell.parse(text) as HubitatAppScript
         }
 
-        AppPreferencesReader preferencesReader = new AppPreferencesReader(script, api, validationFlags, userSettingValues)
-        api = preferencesReader;
-
-        AppDefinitionReader definitionReader = null
-        if (validationFlags.contains(ValidationFlags.ValidateDefinition)) {
-            definitionReader = new AppDefinitionReader(api)
-            api = definitionReader
-        }
-
-        script.setApi(api)
-        script.setSettingsMap(preferencesReader.getSettings())
+        script.initialize(api, validationFlags, userSettingValues)
+        customizeScriptBeforeRun(script)
 
         if (!validationFlags.contains(ValidationFlags.DontRunScript)) {
             script.run()
         }
 
-        //return new SandboxResult(script, preferencesReader?.producedPreferences, null)
-        return new SandboxResult(script, preferencesReader?.producedPreferences, null)
+        return script
     }
 
     @TypeChecked
     Preferences readPreferences(
+            AppExecutor api = null,
             Map userSettingValues = [:],
-            EnumSet<ValidationFlags> validationFlags = ValidationFlags.validatePreferencesAndSettings())
+            EnumSet<ValidationFlags> validationFlags = EnumSet.of(ValidationFlags.Default),
+            Closure customizeScriptBeforeRun = {})
     {
-        setupImpl(validationFlags, userSettingValues, null).preferences
+        setupImpl(validationFlags, userSettingValues, api, customizeScriptBeforeRun).getProducedPreferences()
     }
 
     static final Set<String> forbiddenExpressions = ["execute",
@@ -128,7 +111,10 @@ class HubitatAppSandbox {
                                                      "print",
                                                      "println",
                                                      "printf",
-                                                     "sleep"] as Set
+                                                     "sleep",
+                                                     "getProducedPreferences", // Script's test-only use method
+                                                     "producedPreferences" // Script's test-only use property
+    ] as Set
 
     @TypeChecked
     private static void restrictScript(CompilerConfiguration options) {
@@ -222,6 +208,14 @@ class HubitatAppSandbox {
                 return !forbiddenExpressions.contains(expr.methodAsString)
             }
 
+            if (expr instanceof PropertyExpression) {
+                return !forbiddenExpressions.contains(expr.propertyAsString)
+            }
+
+            if (expr instanceof VariableExpression) {
+                return !forbiddenExpressions.contains(expr.name)
+            }
+
             return true;
         } as SecureASTCustomizer.ExpressionChecker
 
@@ -245,6 +239,11 @@ class HubitatAppSandbox {
         }
 
         options.addCompilationCustomizers(sac)
+    }
+
+    @TypeChecked
+    private static void makePrivatePublic(CompilerConfiguration options) {
+        options.addCompilationCustomizers(new RemovePrivateFromScriptCompilationCustomizer())
     }
 
     final private File file = null
