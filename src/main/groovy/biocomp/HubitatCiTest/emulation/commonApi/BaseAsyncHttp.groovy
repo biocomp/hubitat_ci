@@ -8,10 +8,10 @@ interface BaseAsyncHttp
 {
     // GET
 
-    default void asynchttpGet(MetaMethod handlerMethod) {}
-    default void asynchttpGet(Map options) {}
-    default void asynchttpGet(MetaMethod handlerMethod, Map options) {}
-    default void asynchttpGet(String handlerMethod, Map options) {}
+    abstract void asynchttpGet(MetaMethod handlerMethod)
+    abstract void asynchttpGet(Map options)
+    abstract void asynchttpGet(MetaMethod handlerMethod, Map options)
+    abstract void asynchttpGet(String handlerMethod, Map options)
 
     /**
      * Send an http GET request and return control to the calling code. Any response from the call will be passed to the callback method.
@@ -21,16 +21,16 @@ interface BaseAsyncHttp
      * @param options - the parameters to use to build the http GET call.
      * @param data - optional data to be passed to the callback method.
      */
-    default void asynchttpGet(MetaMethod handlerMethod, Map options, Map data) {}
-    default void asynchttpGet(String handlerMethod, Map options, Map data) {}
+    abstract void asynchttpGet(MetaMethod handlerMethod, Map options, Map data)
+    abstract void asynchttpGet(String handlerMethod, Map options, Map data)
 
 
     // POST
 
-    default void asynchttpPost(MetaMethod handlerMethod) {}
-    default void asynchttpPost(Map options) {}
-    default void asynchttpPost(MetaMethod handlerMethod, Map options) {}
-    default void asynchttpPost(String handlerMethod, Map options) {}
+    abstract void asynchttpPost(MetaMethod handlerMethod)
+    abstract void asynchttpPost(Map options)
+    abstract void asynchttpPost(MetaMethod handlerMethod, Map options)
+    abstract void asynchttpPost(String handlerMethod, Map options)
 
     /**
      * Send an http POST request and return control to the calling code. Any response from the call will be passed to the callback method.
@@ -40,16 +40,16 @@ interface BaseAsyncHttp
      * @param options - the parameters to use to build the http GET call.
      * @param data - optional data to be passed to the callback method.
      */
-    default void asynchttpPost(MetaMethod handlerMethod, Map options, Map data) {}
-    default void asynchttpPost(String handlerMethod, Map options, Map data) {}
+    abstract void asynchttpPost(MetaMethod handlerMethod, Map options, Map data)
+    abstract void asynchttpPost(String handlerMethod, Map options, Map data)
 
 
     // PUT
 
-    default void asynchttpPut(MetaMethod handlerMethod) {}
-    default void asynchttpPut(Map options) {}
-    default void asynchttpPut(MetaMethod handlerMethod, Map options) {}
-    default void asynchttpPut(String handlerMethod, Map options) {}
+    abstract void asynchttpPut(MetaMethod handlerMethod)
+    abstract void asynchttpPut(Map options)
+    abstract void asynchttpPut(MetaMethod handlerMethod, Map options)
+    abstract void asynchttpPut(String handlerMethod, Map options)
 
     /**
      * Send an http PUT request and return control to the calling code. Any response from the call will be passed to the callback method.
@@ -59,16 +59,16 @@ interface BaseAsyncHttp
      * @param options - the parameters to use to build the http GET call.
      * @param data - optional data to be passed to the callback method.
      */
-    default void asynchttpPut(MetaMethod handlerMethod, Map options, Map data) {}
-    default void asynchttpPut(String handlerMethod, Map options, Map data) {}
+    abstract void asynchttpPut(MetaMethod handlerMethod, Map options, Map data)
+    abstract void asynchttpPut(String handlerMethod, Map options, Map data)
 
 
     // DELETE
 
-    default void asynchttpDelete(MetaMethod handlerMethod) {}
-    default void asynchttpDelete(Map options) {}
-    default void asynchttpDelete(MetaMethod handlerMethod, Map options) {}
-    default void asynchttpDelete(String handlerMethod, Map options) {}
+    abstract void asynchttpDelete(MetaMethod handlerMethod)
+    abstract void asynchttpDelete(Map options)
+    abstract void asynchttpDelete(MetaMethod handlerMethod, Map options)
+    abstract void asynchttpDelete(String handlerMethod, Map options)
 
     /**
      * Send an http DELETE request and return control to the calling code. Any response from the call will be passed to the callback method.
@@ -78,16 +78,16 @@ interface BaseAsyncHttp
      * @param options - the parameters to use to build the http GET call.
      * @param data - optional data to be passed to the callback method.
      */
-    default void asynchttpDelete(MetaMethod handlerMethod, Map options, Map data) {}
-    default void asynchttpDelete(String handlerMethod, Map options, Map data) {}
+    abstract void asynchttpDelete(MetaMethod handlerMethod, Map options, Map data)
+    abstract void asynchttpDelete(String handlerMethod, Map options, Map data)
 
 
     // PATCH
 
-    default void asynchttpPatch(MetaMethod handlerMethod) {}
-    default void asynchttpPatch(Map options) {}
-    default void asynchttpPatch(MetaMethod handlerMethod, Map options) {}
-    default void asynchttpPatch(String handlerMethod, Map options) {}
+    abstract void asynchttpPatch(MetaMethod handlerMethod)
+    abstract void asynchttpPatch(Map options)
+    abstract void asynchttpPatch(MetaMethod handlerMethod, Map options)
+    abstract void asynchttpPatch(String handlerMethod, Map options)
 
     /**
      * Send an http PATCH request and return control to the calling code. Any response from the call will be passed to the callback method.
@@ -97,16 +97,16 @@ interface BaseAsyncHttp
      * @param options - the parameters to use to build the http GET call.
      * @param data - optional data to be passed to the callback method.
      */
-    default void asynchttpPatch(MetaMethod handlerMethod, Map options, Map data) {}
-    default void asynchttpPatch(String handlerMethod, Map options, Map data) {}
+    abstract void asynchttpPatch(MetaMethod handlerMethod, Map options, Map data)
+    abstract void asynchttpPatch(String handlerMethod, Map options, Map data)
 
 
     // HEAD
 
-    // Not present? default void asynchttpHead(MetaMethod handlerMethod) {}
-    default void asynchttpHead(Map options) {}
-    // Not present? default void asynchttpHead(MetaMethod handlerMethod, Map options) {}
-    default void asynchttpHead(String handlerMethod, Map options) {}
+    // Not present? abstract void asynchttpHead(MetaMethod handlerMethod)
+    abstract void asynchttpHead(Map options)
+    // Not present? abstract void asynchttpHead(MetaMethod handlerMethod, Map options)
+    abstract void asynchttpHead(String handlerMethod, Map options)
 
     /**
      * Send an http DELETE request and return control to the calling code. Any response from the call will be passed to the callback method.
@@ -116,6 +116,6 @@ interface BaseAsyncHttp
      * @param options - the parameters to use to build the http GET call.
      * @param data - optional data to be passed to the callback method.
      */
-    // Not present? default void asynchttpHead(MetaMethod handlerMethod, Map options, Map data) {}
-    default void asynchttpHead(String handlerMethod, Map options, Map data) {}
+    // Not present? abstract void asynchttpHead(MetaMethod handlerMethod, Map options, Map data)
+    abstract void asynchttpHead(String handlerMethod, Map options, Map data)
 }

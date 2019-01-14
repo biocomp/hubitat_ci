@@ -1,12 +1,9 @@
 package biocomp.hubitatCiTest.apppreferences
 
-import biocomp.hubitatCiTest.util.NamedParametersValidator
-import biocomp.hubitatCiTest.util.Utility
 import groovy.transform.TypeChecked
 
 @TypeChecked
-class Preferences implements
-        biocomp.hubitatCiTest.emulation.appApi.Preferences
+class Preferences
 {
     Preferences(Script parentScript, Map options) {
         this.parentScript = parentScript

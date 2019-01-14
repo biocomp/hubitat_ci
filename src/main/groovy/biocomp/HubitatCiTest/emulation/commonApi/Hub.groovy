@@ -47,15 +47,15 @@ package biocomp.hubitatCiTest.emulation.commonApi;
  * public void com.hubitat.hub.domain.Hub.setVersion(java.lang.Long),
  */
 
-public interface Hub
+interface Hub
 {
-    String getFirmwareVersionString();
-    Long getId();
-    String getLocalIP();
-    String getLocalSrvPortTCP();
-    String getName();
-    String getType();
-    String getZigbeeEui();
-    String getZigbeeId();
+    abstract String getFirmwareVersionString();
+    abstract Long getId();
+    abstract String getLocalIP();
+    abstract String getLocalSrvPortTCP();
+    abstract String getName();
+    abstract String getType();
+    abstract String getZigbeeEui();
+    abstract String getZigbeeId();
 }
 

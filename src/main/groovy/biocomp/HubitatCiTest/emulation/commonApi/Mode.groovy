@@ -21,7 +21,7 @@ public void com.hubitat.hub.domain.Mode.setLocationId(java.lang.Long),
 public void com.hubitat.hub.domain.Mode.setName(java.lang.String),
  */
 
-public interface Mode
+interface Mode
 {
     /**
      * @return unique internal identifier

@@ -8,7 +8,7 @@ import groovy.transform.TypeChecked
 
 @TupleConstructor
 @TypeChecked
-class Page implements biocomp.hubitatCiTest.emulation.appApi.DynamicPage
+class Page
 {
     int index
     String name

@@ -40,7 +40,7 @@ import groovy.transform.TypeChecked
 
 @TupleConstructor
 @TypeChecked
-class Section implements biocomp.hubitatCiTest.emulation.appApi.Section{
+class Section {
     int index
     String title
     Map options

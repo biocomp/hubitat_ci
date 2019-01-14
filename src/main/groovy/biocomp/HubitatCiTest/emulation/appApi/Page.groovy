@@ -5,17 +5,13 @@ import groovy.lang.DelegatesTo;
 
 import java.util.Map;
 
-public interface Page {
+interface Page {
     /**
      * Adds section to a page
      */
-    default Object section(String sectionTitle, @DelegatesTo(Section.class) Closure makeContents) {
-        return null;
-    }
+    abstract def section(String sectionTitle, @DelegatesTo(Section.class) Closure makeContents)
 
-    default Object section(@DelegatesTo(Section.class) Closure makeContents) {
-        return section((String)null, makeContents);
-    }
+    abstract def section(@DelegatesTo(Section.class) Closure makeContents)
 
     /**
      * Adds section to a page
@@ -27,14 +23,10 @@ public interface Page {
      *                 Defaults to false.
      *                 mobileOnly (Boolean) - Pass true to suppress this section from the IDE simulator. Defaults to false.
      */
-    default Object section(Map options, String sectionTitle,
-                           @DelegatesTo(Section.class) Closure makeContents) {
-        return null;
-    }
+    abstract def section(Map options, String sectionTitle,
+                           @DelegatesTo(Section.class) Closure makeContents)
 
-    default Object section(Map options,
-                           @DelegatesTo(Section.class) Closure makeContents) {
-        return section((Map)null, null, makeContents);
-    }
+    abstract def section(Map options,
+                           @DelegatesTo(Section.class) Closure makeContents)
 }
 

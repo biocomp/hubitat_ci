@@ -185,48 +185,44 @@ import java.util.TimeZone;
 /**
  * Methods that can be used inside both App or Driver.
  * */
-public interface BaseExecutor extends BaseAsyncHttp, BaseHttp, BaseScheduler
+interface BaseExecutor extends BaseAsyncHttp, BaseHttp, BaseScheduler
 {
     /**
      * @return log object
      */
-    default Log getLog() { return null; }
+    abstract Log getLog()
 
-    default Location getLocation() { return null; }
+    abstract Location getLocation()
 
     /**
      * @return "C" or "F"
      */
-    default String getTemperatureScale() { return null; }
+    abstract String getTemperatureScale()
 
     /**
      * @return current Unix time in milliseconds.
      */
-    default long now() { return 0; }
+    abstract long now()
 
     /**
      * return true if value is between start and end
      */
-    default boolean timeOfDayIsBetween(Date start, Date stop, Date value, TimeZone timeZone) {
-        return Utility.timeOfDayIsBetween(start, stop, value, timeZone);
-    }
+    abstract boolean timeOfDayIsBetween(Date start, Date stop, Date value, TimeZone timeZone)
 
-    default boolean timeOfDayIsBetween(Date start, Date stop, Date value) {
-        return timeOfDayIsBetween(start, stop, null);
-    }
+    abstract boolean timeOfDayIsBetween(Date start, Date stop, Date value)
 
-    default BigDecimal celsiusToFahrenheit(BigDecimal val) { return BigDecimal.ZERO; }
+    abstract BigDecimal celsiusToFahrenheit(BigDecimal val)
 
-    default BigDecimal fahrenheitToCelsius(BigDecimal val) { return BigDecimal.ZERO; }
+    abstract BigDecimal fahrenheitToCelsius(BigDecimal val)
 
 
-    default String getMACFromIP(String ipAddr) { return null; }
+    abstract String getMACFromIP(String ipAddr)
 
-    default String convertTemperatureIfNeeded(BigDecimal value, String scale, Integer precision) { return null; }
+    abstract String convertTemperatureIfNeeded(BigDecimal value, String scale, Integer precision)
 
-    default Object parseJson(String stringToParse) { return null; }
+    abstract Object parseJson(String stringToParse)
 
-    default GPathResult parseXML(String stringToParse) { return null; }
+    abstract GPathResult parseXML(String stringToParse)
 
     /**
      * Parses a Base64-encoded LAN message received from the Hub into a map with header and body elements,
@@ -237,16 +233,16 @@ public interface BaseExecutor extends BaseAsyncHttp, BaseHttp, BaseScheduler
      *  headers (Map) - a Map of string/name value pairs for each header
      *  body (String) the request body as a string
      */
-    default Map parseLanMessage(String stringToParse) { return null; }
+    abstract Map parseLanMessage(String stringToParse)
 
 
-    default void pauseExecution(Long milliseconds) {}
+    abstract void pauseExecution(Long milliseconds)
 
-    default Map textToSpeech(String stringToBeSynthesized, String voice) { return null; }
-    default Map textToSpeech(String stringToBeSynthesized) { return textToSpeech(stringToBeSynthesized, null); }
+    abstract Map textToSpeech(String stringToBeSynthesized, String voice)
+    abstract Map textToSpeech(String stringToBeSynthesized)
 
-    default String encrypt(String value) { return null; }
-    default String decrypt(String value) { return null; }
+    abstract String encrypt(String value)
+    abstract String decrypt(String value)
 
     /**
      * Sends a LOCATION Event constructed from the specified properties.
@@ -263,10 +259,10 @@ public interface BaseExecutor extends BaseAsyncHttp, BaseHttp, BaseScheduler
      * unit 	String - a unit string, if desired. This will be used to create the descriptionText if it (the descriptionText option) is not specified.
      * data 	A map of additional information to store with the Event
      */
-    default void sendLocationEvent(Map properties) {}
+    abstract void sendLocationEvent(Map properties)
 
 
-    default Date toDateTime(String dateTimeString) { return null; }
+    abstract Date toDateTime(String dateTimeString)
 
 
     /**
@@ -275,20 +271,18 @@ public interface BaseExecutor extends BaseAsyncHttp, BaseHttp, BaseScheduler
      * @param timeZone - current time zone. Please use it.
      * @note most likely some date calculations are incorrect in some cases, but this is meant mostly for testing.
      */
-    default Date timeToday(String timeString, TimeZone timeZone) {
-        return Utility.timeToday(timeString, timeZone);
-    }
+    abstract Date timeToday(String timeString, TimeZone timeZone)
 
-    default Date timeToday(String timeString) { return timeToday(timeString, null); }
+    abstract Date timeToday(String timeString)
 
     // ST has this, but HE does not?
     // TimeZone timeZone(String timePreferenceString)
-    //default List getChildDevices(boolean includeVirtualDevices = false) { return null; }
+    //abstract List getChildDevices(boolean includeVirtualDevices = false)
 
     /**
      * @param map - string of format "key1: value1, key2: value2"
      */
-    //default Map stringToMap(String map) { return null; }
+    //abstract Map stringToMap(String map)
 }
 
 

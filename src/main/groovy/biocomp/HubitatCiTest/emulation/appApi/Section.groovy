@@ -2,7 +2,7 @@ package biocomp.hubitatCiTest.emulation.appApi;
 
 import java.util.Map;
 
-public interface Section {
+interface Section {
     /**
      * Allows the user to select devices or enter values to be used during execution of the App.
      * <p>
@@ -54,17 +54,11 @@ public interface Section {
      * @param name     - name of the input (could also be passed as options)
      * @param type     - type of the input (see option's type values)
      */
-    default Object input(Map options, String name, String type) {
-        return null;
-    }
+    abstract def input(Map options, String name, String type)
 
-    default Object input(String name, String type) {
-        return null;
-    }
+    abstract def input(String name, String type)
 
-    default Object input(Map options) {
-        return null;
-    }
+    abstract def input(Map options)
 
     /**
      * @param name.    Name.
@@ -87,9 +81,7 @@ public interface Section {
      *                 page (String) - Used to link to another preferences page. Not compatible with the external option.
      *                 image (String) - URL of an image to use, if desired.
      */
-    default Object href(Map options, String title) {
-        return null;
-    }
+    abstract def href(Map options, String title)
 
 
     /**
@@ -97,13 +89,9 @@ public interface Section {
      * @param nextPageName - name of existing local page.
      * @return
      */
-    default Object href(String nextPageName) {
-        return null;
-    }
+    abstract def href(String nextPageName)
 
-    default Object href(Map options) {
-        return null;
-    }
+    abstract def href(Map options)
 
     /**
      * Allows the user to name the appApi installation.
@@ -115,9 +103,7 @@ public interface Section {
      *                 required (Boolean) - true or false to specify this input is required. Defaults to false. Defaults to true.
      *                 image (String) - URL to an image to use, if desired.
      */
-    default Object label(Map options) {
-        return null;
-    }
+    abstract def label(Map options)
 
     /**
      * Allows the user to select which modes the appApi executes in.
@@ -129,9 +115,7 @@ public interface Section {
      *                 multiple (Boolean) - true or false to specify this input allows selection of multiple values. Defaults to true.
      *                 image (String) - URL of an image to use, if desired.
      */
-    default Object mode(Map options) {
-        return null;
-    }
+    abstract def mode(Map options)
 
     /**
      * Add a paragraph to the section
@@ -142,14 +126,10 @@ public interface Section {
      *                      image (String) - URL of image to use, if desired.
      *                      required (Boolean) - true or false to specify this input is required. Defaults to false.
      */
-    default Object paragraph(Map options) {
-        return null;
-    }
+    abstract def paragraph(Map options)
 
     /**
      * Add this text as paragraph to the section
      */
-    default Object paragraph(String text) {
-        return null;
-    }
+    abstract def paragraph(String text)
 }

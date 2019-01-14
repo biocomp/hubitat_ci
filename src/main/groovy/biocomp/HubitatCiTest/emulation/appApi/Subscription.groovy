@@ -5,7 +5,7 @@ import biocomp.hubitatCiTest.emulation.commonApi.DeviceWrapper;
 import java.util.List;
 import java.util.Map;
 
-public interface Subscription {
+interface Subscription {
     /**
      * Subscribe to event, or attribute value changes.
      *
@@ -18,33 +18,27 @@ public interface Subscription {
      *                                               Can be a String of the method name or the method reference itself.
      * @param options
      */
-    default void subscribe(Object toWhat, String attributeNameOrNameAndValueOrEventName, Object handlerMethod, Map options) {
-    }
+    abstract void subscribe(Object toWhat, String attributeNameOrNameAndValueOrEventName, Object handlerMethod, Map options)
 
-    default void subscribe(Object toWhat, Object handlerMethod) {
-    }
+    abstract void subscribe(Object toWhat, Object handlerMethod)
 
-    default void subscribe(Object toWhat, String attributeNameOrNameAndValueOrEventName, Object handler) {
-    }
+    abstract void subscribe(Object toWhat, String attributeNameOrNameAndValueOrEventName, Object handler)
 
     /**
      * Deletes all subscriptions for the installed App.
      * Typically should be called in the updated() method, since device preferences may have changed.
      */
-    default void unsubscribe() {
-    }
+    abstract void unsubscribe()
 
     /**
      * Deletes device subscription.
      * Typically should be called in the updated() method, since device preferences may have changed.
      */
-    default void unsubscribe(DeviceWrapper device) {
-    }
+    abstract void unsubscribe(DeviceWrapper device)
 
     /**
      * Deletes subscriptions for devices.
      * Typically should be called in the updated() method, since device preferences may have changed.
      */
-    default void unsubscribe(List devices) {
-    }
+    abstract void unsubscribe(List devices)
 }

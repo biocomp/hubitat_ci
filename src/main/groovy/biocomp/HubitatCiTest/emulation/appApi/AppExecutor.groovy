@@ -167,7 +167,7 @@ import java.util.TimeZone;
  * but AutoImplement had some strange issues (like implementing getMetaClass() that was returning null always, and was crashing at runtime).
  * So the easiest way to go was to have default implementations right here.
  */
-public interface AppExecutor extends
+interface AppExecutor extends
         BaseExecutor,
         PreferencesSource,
         DefinitionReader,
@@ -189,19 +189,15 @@ public interface AppExecutor extends
      * @throws NotFoundException          - If the given SmartApp name was not found in the given Namespace.
      * @throws SizeLimitExceededException - If this SmartApp already has the maximum number of children allowed (500).
      */
-    default InstalledAppWrapper addChildApp(String namespace, String smartAppVersionName, String label, Map
-            properties) {
-        return null;
-    }
+    abstract InstalledAppWrapper addChildApp(String namespace, String smartAppVersionName, String label, Map
+            properties)
 
     /**
      * @throws IllegalArgumentException   - If a label was not supplied
      * @throws NotFoundException          - If the given SmartApp name was not found in the given Namespace.
      * @throws SizeLimitExceededException - If this SmartApp already has the maximum number of children allowed (500).
      */
-    default InstalledAppWrapper addChildApp(String namespace, String smartAppVersionName, String label) {
-        return addChildApp(namespace, smartAppVersionName, label, null);
-    }
+    abstract InstalledAppWrapper addChildApp(String namespace, String smartAppVersionName, String label)
 
     /**
      * @return Returns the URL of the server where this App can be reached for API calls,
@@ -209,9 +205,7 @@ public interface AppExecutor extends
      * Use this instead of hard-coding a URL to ensure that the correct server URL
      * for this installed instance is returned.
      */
-    default String apiServerUrl(String path) {
-        return null;
-    }
+    abstract String apiServerUrl(String path)
 
     /**
      * @return A map of name/value pairs that App can use to save and retrieve
@@ -219,9 +213,7 @@ public interface AppExecutor extends
      * This is similar to getState(), but will immediately write and read from the backing data store.
      * Prefer using getState() over getAtomicState() when possible.
      */
-    default Map getAtomicState() {
-        return null;
-    }
+    abstract Map getAtomicState()
 
     /**
      * @return A map of name/value pairs that App can use to save and retrieve data across App executions.
@@ -230,18 +222,14 @@ public interface AppExecutor extends
      * For example, state.count++ will not increment the count.
      * Use the longer form of state.count = state.count + 1.
      */
-    default Map getState() {
-        return null;
-    }
+    abstract Map getState()
 
     /**
      * Creates access token and puts into state.accessToken
      *
      * @return may return access token here too.
      */
-    default String createAccessToken() {
-        return null;
-    }
+    abstract String createAccessToken()
 //
 //    List<InstalledAppWrapper> findAllChildAppsByName(String name) {
 //        return null;
@@ -268,20 +256,14 @@ public interface AppExecutor extends
     /**
      * @return all child apps, even if installation state is "incomplete"
      */
-    default Object getAllChildApps() {
-        return null;
-    }
+    abstract Object getAllChildApps()
 
     /**
      * @return getChildDevices()
      */
-    default List getAllChildDevices() {
-        return null;
-    }
+    abstract List getAllChildDevices()
 
-    default String getApiServerUrl() {
-        return null;
-    }
+    abstract String getApiServerUrl()
 //
 //    ColorUtilities getColorUtil() {
 //        return null;
@@ -300,23 +282,15 @@ public interface AppExecutor extends
      *                  See timeOffset() for supported formats
      * @return Map with String keys and Date values: [sunrise: Date, sunset: Date]
      */
-    default Map getSunriseAndSunset(Map options) {
-        return null;
-    }
+    abstract Map getSunriseAndSunset(Map options)
 
-    default Map getSunriseAndSunset() {
-        return getSunriseAndSunset(null);
-    }
+    abstract Map getSunriseAndSunset()
 
-    default void pauseExecution(Long millisecs) {
-    }
-
+    abstract void pauseExecution(Long millisecs)
     /**
      * @return only child apps whose state is "complete"
      */
-    default Object getChildApps() {
-        return null;
-    }
+    abstract Object getChildApps()
 
     /**
      * Creates App event with specified properties.
@@ -332,8 +306,7 @@ public interface AppExecutor extends
      *                    device (Device) - The device for which this Event is created for.
      *                    data (Map) A map of additional information to store with the Event
      */
-    default void sendEvent(Map properties) {
-    }
+    abstract void sendEvent(Map properties)
 
     /**
      * Creates Device event with specified properties.
@@ -349,8 +322,7 @@ public interface AppExecutor extends
      *                    device (Device) - The device for which this Event is created for.
      *                    data (Map) A map of additional information to store with the Event
      */
-    default void sendEvent(DeviceWrapper device, Map properties) {
-    }
+    abstract void sendEvent(DeviceWrapper device, Map properties)
 
     /**
      * Creates Device event with specified properties.
@@ -366,159 +338,113 @@ public interface AppExecutor extends
      *                    device (Device) - The device for which this Event is created for.
      *                    data (Map) A map of additional information to store with the Event
      */
-    default void sendEvent(String dni, Map properties) {
-    }
+    abstract void sendEvent(String dni, Map properties)
 
     /**
      * Sends the message as an SMS message to the specified phone number and displays it in Hello, Home.
      *
      * @param message - no longer than 140 chars
      */
-    default void sendSms(String phone, String message) {
-    }
+    abstract void sendSms(String phone, String message)
 
     /**
      * Sends the message as an SMS message to the specified phone number but does not display it in Hello, Home.
      *
      * @param message - no longer than 140 chars
      */
-    default void sendSmsMessage(String phone, String message) {
-    }
+    abstract void sendSmsMessage(String phone, String message)
 
     /**
      * Set the Mode for this Location.
      */
-    default void setLocationMode(String mode) {
-    }
+    abstract void setLocationMode(String mode)
 
     /**
      * @return configuration settings for the appApi.
      */
-    default Map getSettings() { return null; }
+    abstract Map getSettings()
 
 
     /**
      * @param minutes
      * @return milliseconds in given minutes
      */
-    default Long timeOffset(Number minutes) {
-        return null;
-    }
+    abstract Long timeOffset(Number minutes)
 
     /**
      * @param hoursAndMinutesString - A string in the format of "hh:mm" to get the offset in milliseconds for.
      *                              Negative offsets are specified by prefixing the string with a minus sign ("-02:30").
      * @return milliseconds in given hours + minutes
      */
-    default Long timeOffset(String hoursAndMinutesString) {
-        return null;
-    }
+    abstract Long timeOffset(String hoursAndMinutesString)
 
 
-    default String fullApiServerUrl(String base) {
-        return null;
-    }
+    abstract String fullApiServerUrl(String base)
 
-    default String getFullApiServerUrl() {
-        return null;
-    }
+    abstract String getFullApiServerUrl()
 
-    default String getLocalApiServerUrl() {
-        return null;
-    }
+    abstract String getLocalApiServerUrl()
 
-    default String getFullLocalApiServerUrl() {
-        return null;
-    }
+    abstract String getFullLocalApiServerUrl()
 
-    default String localApiServerUrl(String url) {
-        return null;
-    }
+    abstract String localApiServerUrl(String url)
 
-    default String fullLocalApiServerUrl(String url) {
-        return null;
-    }
+    abstract String fullLocalApiServerUrl(String url)
 
     /**
      * @throws UnknownDeviceTypeException - If a Device with the specified name and namespace is not found.
      * @throws IllegalArgumentException   - If the deviceNetworkId is not specified.
      * @throws SizeLimitExceededException - If this App already has the maximum number of children allowed (500).
      */
-    default ChildDeviceWrapper addChildDevice(String namespace, String typeName, String deviceNetworkId, Long hubId, Map options) {
-        return null;
-    }
+    abstract ChildDeviceWrapper addChildDevice(String namespace, String typeName, String deviceNetworkId, Long hubId, Map options)
 
-    default ChildDeviceWrapper addChildDevice(String namespace, String typeName, String deviceNetworkId) {
-        return null;
-    }
+    abstract ChildDeviceWrapper addChildDevice(String namespace, String typeName, String deviceNetworkId)
 
-    default ChildDeviceWrapper addChildDevice(String namespace, String typeName, String deviceNetworkId, Long hubId) {
-        return null;
-    }
+    abstract ChildDeviceWrapper addChildDevice(String namespace, String typeName, String deviceNetworkId, Long hubId)
 
-    default void deleteChildApp(Long id) {
-    }
+    abstract void deleteChildApp(Long id)
 
     /**
      * @throws NotFoundException
      */
-    default void deleteChildDevice(String deviceNetworkId) {
-    }
+    abstract void deleteChildDevice(String deviceNetworkId)
 
     /**
      * @return most likely InstalledChildWrapper
      */
-    default Object getChildAppById(Long childAppId) {
-        return null;
-    }
+    abstract Object getChildAppById(Long childAppId)
 
     /**
      * @return most likely InstalledChildWrapper
      */
-    default Object getChildAppByLabel(String childAppLabel) {
-        return null;
-    }
+    abstract Object getChildAppByLabel(String childAppLabel)
 
 
-    default ChildDeviceWrapper getChildDevice(String deviceNetworkId) {
-        return null;
-    }
+    abstract ChildDeviceWrapper getChildDevice(String deviceNetworkId)
 
     /**
      * @return most likely List<ChildDeviceWrapper>
      */
-    default List getChildDevices() {
-        return null;
-    }
+    abstract List getChildDevices()
 
-    default String getHubUID() {
-        return null;
-    }
+    abstract String getHubUID()
 
     /**
      * @return most likely, List of Event objects
      */
-    default List getLocationEventsSince(String attributeName, Date startDate, Map options) {
-        return null;
-    }
+    abstract List getLocationEventsSince(String attributeName, Date startDate, Map options)
 
     /**
      * @return most likely, List of Event objects
      */
-    default List getLocationEventsSince(String attributeName, Date startDate) {
-        return null;
-    }
+    abstract List getLocationEventsSince(String attributeName, Date startDate)
 
     /**
      * @return Likely, InstalledAppWrapper
      */
-    default Object getParent() {
-        return null;
-    }
+    abstract Object getParent()
 
-    default DeviceWrapper getSubscribedDeviceById(Long deviceId) {
-        return null;
-    }
+    abstract DeviceWrapper getSubscribedDeviceById(Long deviceId)
 
     /**
      * Returns a HTTP response to the calling client with the options specified.
@@ -529,15 +455,11 @@ public interface AppExecutor extends
      *                 data (?) Required. The data for this response.
      * @return http response.
      */
-    default Object render(Map options) {
-        return null;
-    }
+    abstract Object render(Map options)
 
-    default Object render() {
-        return render(null);
-    }
+    abstract Object render()
 
-    default void pause(Long milliseconds) {}
+    abstract void pause(Long milliseconds)
 
     /**
      * Returns a Date of the next occurrence of the time specified in the input, relative to a reference time.
@@ -550,11 +472,7 @@ public interface AppExecutor extends
      * @param timeZone       for date calculations. Please provide it.
      * @return
      */
-    default Date timeTodayAfter(String referenceTime, String timeString, TimeZone timeZone) {
-        return null;
-    }
+    abstract Date timeTodayAfter(String referenceTime, String timeString, TimeZone timeZone)
 
-    default Date timeTodayAfter(String referenceTime, String timeString) {
-        return timeTodayAfter(referenceTime, timeString, null);
-    }
+    abstract Date timeTodayAfter(String referenceTime, String timeString)
 };

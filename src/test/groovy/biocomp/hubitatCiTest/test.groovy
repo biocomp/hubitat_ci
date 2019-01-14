@@ -115,7 +115,7 @@ class IComfortAppScriptTest extends
                 })
     }
 
-    @Unroll
+    //@Unroll
     def "Uninstall button on 'prefLogIn' page is only shown when username and password are not null"(
             String userName, String password, boolean uninstalledShown)
     {

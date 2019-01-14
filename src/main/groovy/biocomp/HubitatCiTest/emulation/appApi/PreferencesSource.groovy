@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * Entry point for all preferences() related calls.
  */
-public interface PreferencesSource extends Preferences, Page, Section {
+interface PreferencesSource extends Preferences, Page, Section {
     /**
      * Adds dynanmic page
      *
@@ -15,23 +15,17 @@ public interface PreferencesSource extends Preferences, Page, Section {
      *                 refreshInterval (Integer) - refreshes the specific page of the SmartApp on
      *                 the mobile device for the integer number of seconds
      *                 */
-    default Map dynamicPage(Map options, Closure makeContents) {
-        return null;
-    }
+    abstract def dynamicPage(Map options, Closure makeContents)
 
     /**
      * Preferences for the appApi
      */
-    default Object preferences(Closure makeContents) {
-        return preferences(null, makeContents);
-    }
+    abstract def preferences(Closure makeContents)
 
     /**
      * Preferences for the appApi
      *
      * @param options. Not clear which ones are supported.
      */
-    default Object preferences(Map options, Closure makeContents) {
-        return null;
-    }
+    abstract def preferences(Map options, Closure makeContents)
 }

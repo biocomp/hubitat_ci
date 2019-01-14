@@ -4,7 +4,7 @@ import groovy.lang.Closure;
 
 import java.util.Map;
 
-public interface DefinitionReader {
+interface DefinitionReader {
     /**
      * Metainformation about the appApi
      *
@@ -12,9 +12,7 @@ public interface DefinitionReader {
      * @param makeContents
      * @return not sure
      */
-    default Object definition(Map definitionsMap, Closure makeContents) {
-        return null;
-    }
+    abstract Object definition(Map definitionsMap, Closure makeContents)
 
     /**
      * Metainformation about the appApi
@@ -22,7 +20,5 @@ public interface DefinitionReader {
      * @param definitionsMap
      * @return not sure
      */
-    default Object definition(Map definitionsMap) {
-        return definition(definitionsMap, null);
-    }
+    abstract Object definition(Map definitionsMap)
 }

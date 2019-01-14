@@ -73,33 +73,33 @@ import java.util.TimeZone;
  * All App and Device objects are injected with a location property
  * that is the Location into which the App or Device was installed.
  */
-public interface Location {
-    boolean getContactBookEnabled();
+interface Location {
+    abstract boolean getContactBookEnabled();
 
-    Mode getMode();
-    Mode getCurrentMode();
-    List<Mode> getModes();
+    abstract Mode getMode();
+    abstract Mode getCurrentMode();
+    abstract List<Mode> getModes();
 
-    String getName();
+    abstract String getName();
 
-    Long getId();
+    abstract Long getId();
 
     /**
      * @throws Exception if mode is invalid
      */
-    void setMode(String mode);
+    abstract void setMode(String mode);
 
     /**
      * @return "C" or "F"
      */
-    String getTemperatureScale();
+    abstract String getTemperatureScale();
 
-    TimeZone getTimeZone();
+    abstract TimeZone getTimeZone();
 
-    String getZipCode();
+    abstract String getZipCode();
 
-    List<Hub> getHubs();
+    abstract List<Hub> getHubs();
 
-    BigDecimal getLatitude();
-    BigDecimal getLongitude();
+    abstract BigDecimal getLatitude();
+    abstract BigDecimal getLongitude();
 }

@@ -5,11 +5,11 @@ import groovy.lang.DelegatesTo;
 
 import java.util.Map;
 
-public interface Preferences extends Page {
+interface Preferences extends Page {
     /**
      * Adds page of settings.*/
-    default Object page(String name, String title, @DelegatesTo(Page.class) Closure makeContents) { return null; }
-    default Object page(Map options, String name, String title, @DelegatesTo(Page.class) Closure makeContents) { return null; }
+    abstract Object page(String name, String title, @DelegatesTo(Page.class) Closure makeContents)
+    abstract Object page(Map options, String name, String title, @DelegatesTo(Page.class) Closure makeContents)
 
     /**
      * Adds page of settings.
@@ -23,9 +23,7 @@ public interface Preferences extends Page {
     uninstall (Boolean) - Set to true to allow the user to uninstall from this page. Defaults to false. Not necessary
     for single-page preferences.
      */
-    default Object page(Map options, @DelegatesTo(Page.class) Closure makeContents) {
-        return null;
-    }
+    abstract Object page(Map options, @DelegatesTo(Page.class) Closure makeContents)
 
 
     /**
@@ -33,17 +31,15 @@ public interface Preferences extends Page {
      * @param options (see other page() method). But 'name' must be a name of method that creates dynamic page.
      * @return
      */
-    default Object page(Map options) {
-        return null;
-    }
+    abstract Object page(Map options)
 
 //    /**
 //     * Adds section to single-page appApi (one parent page is assumed)*/
-//    default Object section(String sectionTitle, @DelegatesTo(Section.class) Closure makeContents) {
+//    abstract Object section(String sectionTitle, @DelegatesTo(Section.class) Closure makeContents) {
 //        return null;
 //    }
 //
-//    default Object section(@DelegatesTo(Section.class) Closure makeContents) {
+//    abstract Object section(@DelegatesTo(Section.class) Closure makeContents) {
 //        return null;
 //    }
 //
@@ -58,11 +54,11 @@ public interface Preferences extends Page {
 //     *      Defaults to false.
 //     * mobileOnly (Boolean) - Pass true to suppress this section from the IDE simulator. Defaults to false.
 //     */
-//    default Object section(Map options, String sectionTitle, @DelegatesTo(Section.class) Closure makeContents) {
+//    abstract Object section(Map options, String sectionTitle, @DelegatesTo(Section.class) Closure makeContents) {
 //        return null;
 //    }
 //
-//    default Object section(Map options, @DelegatesTo(Section.class) Closure makeContents) {
+//    abstract Object section(Map options, @DelegatesTo(Section.class) Closure makeContents) {
 //        return section(options, null, makeContents);
 //    }
 }
