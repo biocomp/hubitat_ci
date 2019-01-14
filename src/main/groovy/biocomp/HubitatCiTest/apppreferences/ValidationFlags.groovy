@@ -10,6 +10,7 @@ enum ValidationFlags
     DontValidateDefinition,
     AllowWritingToSettings,
     AllowReadingNonInputSettings,
+    AllowUnreachablePages,
 
     /**
      * Don't require install: true on at least one of the pages.

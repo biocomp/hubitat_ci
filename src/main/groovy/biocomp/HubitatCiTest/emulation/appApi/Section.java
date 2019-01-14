@@ -74,29 +74,35 @@ public interface Section {
      *                 required (Boolean) - true or false to specify this input is required. Defaults to false.
      *                 description (String) - the secondary text of the element
      *                 style (String) - Controls how the link will be handled.
-     *                 Specify "external" to launch the link in the mobile device’s browser.
-     *                 Specify "embedded" to launch the link within the SmartThings mobile application.
-     *                 Specify "page" to indicate this is a preferences page.
-     *                 If style is not specified, but page is, then style:"page" is assumed.
-     *                 If style is not specified, but url is, then style:"embedded" is assumed.
-     *                 Currently, Android does not support the "external" style option.
+     *                  Specify "external" to launch the link in the mobile device’s browser.
+     *                  Specify "embedded" to launch the link within the SmartThings mobile application.
+     *                  Specify "page" to indicate this is a preferences page.
+     *                  If style is not specified, but page is, then style:"page" is assumed.
+     *                  If style is not specified, but url is, then style:"embedded" is assumed.
+     *                  Currently, Android does not support the "external" style option.
      *                 url (String) - The URL of the page to visit. You can use query parameters to pass additional information to the
-     *                 URL (for example, http://someurl.com?param1=value1&param2=value1).
+     *                  URL (for example, http://someurl.com?param1=value1&param2=value1).
      *                 params (Map) - Use this to pass parameters to other preference pages. If doing this, make sure your page
-     *                 definition method accepts a single parameter (that will be this params map). See the page-params-by-href example at the end of this document for more information.
+     *                  definition method accepts a single parameter (that will be this params map). See the page-params-by-href example at the end of this document for more information.
      *                 page (String) - Used to link to another preferences page. Not compatible with the external option.
      *                 image (String) - URL of an image to use, if desired.
      */
-    default Object href(String name, Map options) {
+    default Object href(Map options, String title) {
         return null;
     }
 
-    default Object href(String name) {
-        return href(name, null);
+
+    /**
+     * Creates a link to another page
+     * @param nextPageName - name of existing local page.
+     * @return
+     */
+    default Object href(String nextPageName) {
+        return null;
     }
 
-    default Object href() {
-        return href(null);
+    default Object href(Map options) {
+        return null;
     }
 
     /**

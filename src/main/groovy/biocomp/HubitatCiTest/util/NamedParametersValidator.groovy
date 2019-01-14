@@ -1,5 +1,6 @@
 package biocomp.hubitatCiTest.util
 
+import biocomp.hubitatCiTest.apppreferences.ValidationFlags
 import com.sun.istack.internal.NotNull
 import com.sun.org.apache.xpath.internal.operations.Bool
 import groovy.transform.TupleConstructor
@@ -70,6 +71,34 @@ class ParametersToValidate
                     if (!options.getOrDefault("canBeEmpty", false)) {
                         assert val != "": "${context}: '${name}''s value can't be empty"
                     }
+                }))
+    }
+
+    void enumStringParameter(Map options)
+    {
+        assert options.name
+        assert options.values
+
+        def validValues = new HashSet<String>(options.values as List<String>)
+
+        addParameter(new Parameter(options.name as String, options.get("required", false) as boolean,
+                { @NotNull String context, @NotNull String name, def value ->
+                    assert value != null: "${context}: '${name}' value can't be null"
+                    assert value instanceof String: "${context}: '${name}''s value must be String, not ${value.class}"
+                    String val = value as String
+
+                    assert validValues.contains(val) : "${context}: '${name}''s value is not supported. Valid values: ${validValues}"
+                }))
+    }
+
+    void mapParameter(Map options)
+    {
+        assert options.name
+
+        addParameter(new Parameter(options.name as String, options.get("required", false) as boolean,
+                { @NotNull String context, @NotNull String name, def value ->
+                    assert value != null: "${context}: '${name}' value can't be null"
+                    assert value instanceof Map: "${context}: '${name}''s value must be Map, not ${value.class}"
                 }))
     }
 
@@ -149,14 +178,14 @@ class NamedParametersValidator
         def mandatoryParameters = mandatoryParameters.clone() as HashSet<String>
 
         options?.each {
-            assert it.key instanceof String : "${context}: Option's name '${it.key}' must be a String"
+            assert it.key instanceof String: "${context}: Option's name '${it.key}' must be a String"
             def validator = supportedParameters[it.key as String]?.validator
-            assert validator : "${context}: Option '${it.key}' is not supported"
+            assert validator: "${context}: Option '${it.key}' is not supported"
             validator(context, it.key, it.value)
             mandatoryParameters.remove(it.key)
         }
 
-        assert mandatoryParameters.size() == 0 : "${context}: mandatory parameters '${mandatoryParameters}' not set. All mandatory parameters are: ${supportedParameters.keySet().sort()}"
+        assert mandatoryParameters.size() == 0: "${context}: mandatory parameters '${mandatoryParameters}' not set. All mandatory parameters are: ${supportedParameters.keySet().sort()}"
     }
 
     final HashMap<String, Parameter> supportedParameters

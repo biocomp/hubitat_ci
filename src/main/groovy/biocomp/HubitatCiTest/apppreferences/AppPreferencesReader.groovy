@@ -198,29 +198,46 @@ class AppPreferencesReader implements
 
     @Override
     Object input(Map options, String name, String type) {
-        prefState.currentSection.children << new Input(options, name, type)
+        prefState.currentSection.children << new Input(options, name, type, validationFlags)
         settingsContainer.userInputFound(name)
     }
 
     @Override
     Object input(String name, String type) {
-        prefState.currentSection.children << new Input(null, name, type)
+        prefState.currentSection.children << new Input(null, name, type, validationFlags)
         settingsContainer.userInputFound(name)
     }
 
     @Override
     Object input(Map options) {
-        prefState.currentSection.children << new Input(options, null, null)
+        prefState.currentSection.children << new Input(options, null, null, validationFlags)
         settingsContainer.userInputFound(options.name as String)
     }
 
-    //
-    //    @Override
-    //    def href(String name, Map options) {
-    //        return null
-    //
-    //    }
-    //
+    /*
+
+    href
+
+     */
+
+    @Override
+    def href(String nextPageName)
+    {
+        prefState.currentSection.children << new HRef(nextPageName)
+    }
+
+    @Override
+    def href(Map options)
+    {
+        prefState.currentSection.children << new HRef(options, validationFlags)
+    }
+
+    @Override
+    def href(Map options, String title)
+    {
+        prefState.currentSection.children << new HRef(options, title, validationFlags)
+    }
+
     /*
 
     label()
@@ -229,7 +246,7 @@ class AppPreferencesReader implements
 
     @Override
     def label(Map options) {
-        prefState.currentSection.children << new Label(options)
+        prefState.currentSection.children << new Label(options, validationFlags)
     }
 
     //
@@ -246,12 +263,12 @@ class AppPreferencesReader implements
 
     @Override
     def paragraph(Map options) {
-        prefState.currentSection.children << new Paragraph(null, options)
+        prefState.currentSection.children << new Paragraph(null, options, validationFlags)
     }
 
     @Override
     def paragraph(String text) {
-        prefState.currentSection.children << new Paragraph(text, null)
+        prefState.currentSection.children << new Paragraph(text, null, validationFlags)
     }
 
     /*

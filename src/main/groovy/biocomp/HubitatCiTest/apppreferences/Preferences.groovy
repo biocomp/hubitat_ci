@@ -72,6 +72,61 @@ class Preferences implements
                     it.options.install == true
                 }: "There is no 'install: true' option specified on any page (and it's not a special one-page app). This means you can't install the app. Please add the button to a page."
             }
+
+            // Pages must be reachable
+            if (!flags.contains(ValidationFlags.AllowUnreachablePages))
+            {
+                validatePagesAreReachable()
+            }
+        }
+    }
+
+    private static Page getPageOrAssert(Page currentPage, String referredPage, HashMap<String, Page> allPages)
+    {
+        def foundPage = allPages[referredPage]
+        assert foundPage: "${this}: Page's name '${referredPage}' referred by ${currentPage} is not valid. Valid page names are: ${allPages.keySet()}"
+        return foundPage
+    }
+
+    private static void addReachablePages(Page p, HashMap<String, Page> allPages, HashSet<String> reachablePages)
+    {
+        if (!reachablePages.contains(p.readName())) {
+            reachablePages << p.readName()
+
+            p.sections.each {
+                it.children.each {
+                    if (it instanceof HRef) {
+                        def referredPage = it.readPage()
+                        if (referredPage) {
+                            addReachablePages(getPageOrAssert(p, referredPage, allPages), allPages, reachablePages)
+                        }
+                    }
+                }
+            }
+
+            if (p.options?.nextPage) {
+                addReachablePages(getPageOrAssert(p, p.options.nextPage as String, allPages), allPages, reachablePages)
+            }
+        }
+    }
+
+    private void validatePagesAreReachable()
+    {
+        def reachablePages = [] as HashSet<String>
+
+        def pagesCombined = (pages + dynamicPages)
+
+        if (!pagesCombined.isEmpty()) {
+            def allPages = [] as HashMap<String, Page>;
+            (pagesCombined).each {
+                allPages[it.readName()] = it
+            }
+
+
+            addReachablePages(pagesCombined[0], allPages, reachablePages);
+
+            def unreachablePages = allPages.keySet() - reachablePages
+            assert !unreachablePages: "${this}: pages ${unreachablePages} are not reachable via 'href' or 'nextPage', and thus don't make sense to have";
         }
     }
 

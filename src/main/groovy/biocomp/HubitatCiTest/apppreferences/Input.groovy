@@ -6,9 +6,10 @@ import groovy.transform.TypeChecked
 @TupleConstructor
 @TypeChecked
 class Input {
-    Map options
-    String name
-    String type
+    final Map options
+    final String name
+    final String type
+    final EnumSet<ValidationFlags> flags
 
     String readType()
     {

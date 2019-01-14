@@ -12,11 +12,13 @@ class Label {
         boolParameter(name: "required")
     }
 
-    Label(Map options) {
+    Label(Map options, EnumSet<ValidationFlags> flags) {
         this.options = options
 
-        paramValidator.validate(this.toString(), options)
+        if (!flags.contains(ValidationFlags.DontValidatePreferences)) {
+            paramValidator.validate(this.toString(), options)
+        }
     }
 
-    Map options
+    final Map options
 }

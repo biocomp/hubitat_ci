@@ -1,5 +1,6 @@
 package biocomp.hubitatCiTest
 
+import biocomp.hubitatCiTest.apppreferences.ValidationFlags
 import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
 import biocomp.hubitatCiTest.util.NamedParametersValidator
 import groovy.transform.TypeChecked
@@ -19,9 +20,9 @@ class AppDefinitionReader implements
         stringParameter(name: "category", required: false, canBeEmpty: false)
     }
 
-    AppDefinitionReader(AppExecutor delegate, boolean validate) {
+    AppDefinitionReader(AppExecutor delegate, EnumSet<ValidationFlags> flags) {
         this.delegate = delegate
-        this.validate = validate
+        this.flags = flags
     }
 
     @Override
@@ -40,7 +41,7 @@ class AppDefinitionReader implements
     }
 
     private void verifyDefinitionMap(Map definitionsMap) {
-        if (validate) {
+        if (!flags.contains(ValidationFlags.DontValidateDefinition)) {
             assert definitionsMap: "Map passed into definition() can't be null"
 
             def assertPropertyIsSet = { String name, boolean notEvenEmpty ->
@@ -58,7 +59,7 @@ class AppDefinitionReader implements
 
     Map<String, Object> getDefinitions()
     {
-        if (validate) {
+        if (!flags.contains(ValidationFlags.DontValidateDefinition)) {
             assert definitions: "definition() method was never called or failed. Either way, definition list is empty."
         }
         return definitions
@@ -66,7 +67,7 @@ class AppDefinitionReader implements
 
     @Delegate
     final private AppExecutor delegate
-    final private boolean validate
+    final private EnumSet<ValidationFlags> flags
 
     private Map<String, Object> definitions
 }

@@ -11,15 +11,15 @@ class Paragraph {
         boolParameter(name: "required")
     }
 
-    Paragraph(String text, Map options) {
+    Paragraph(String text, Map options, EnumSet<ValidationFlags> flags) {
         this.text = text
         this.options = options
 
-        if (text == null) {
+        if (text == null && !flags.contains(ValidationFlags.DontValidatePreferences)) {
             paramValidator.validate(this.toString(), options)
         }
     }
 
-    String text
-    Map options
+    final String text
+    final Map options
 }
