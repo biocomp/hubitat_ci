@@ -37,6 +37,11 @@ abstract class HubitatAppScript extends Script
         preferencesReader.getProducedPreferences()
     }
 
+    Map<String, Object> getProducedDefinition()
+    {
+        definitionReader.getDefinitions()
+    }
+
     /*
         Don't let Script base class to redirect properties to binding,
             it causes confusing issues when using non-supported methods and properties.

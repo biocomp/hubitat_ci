@@ -1,7 +1,7 @@
 package biocomp.hubitatCiTest
 
 import biocomp.hubitatCiTest.apppreferences.ValidationFlags
-import com.sun.xml.internal.ws.developer.MemberSubmissionAddressing
+import groovy.transform.TypeChecked
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -52,5 +52,36 @@ class AppDefinitionReaderTest extends
     {
         expect:
             new HubitatAppSandbox("int x = 0").run(validationFlags: [ValidationFlags.DontValidateDefinition, ValidationFlags.DontValidatePreferences])
+    }
+
+    @TypeChecked
+    private static def generateValidDefinitionsWith(String entry)
+    {
+        return new HubitatAppSandbox($/
+                definition(
+                    name: "v",
+                    namespace: "v",
+                    author: "v",
+                    description: "v",
+                    iconUrl: "v",
+                    iconX2Url: "v",
+                    iconX3Url: "v",
+                    ${entry})/$).run(validationFlags: [ValidationFlags.DontValidatePreferences]).getProducedDefinition()
+    }
+
+    def "Other supported parameters are accepted"()
+    {
+        expect:
+            generateValidDefinitionsWith("category: 'cat'").category == 'cat'
+    }
+
+    def "Unsupported parameters cause error"()
+    {
+        when:
+            generateValidDefinitionsWith("unsupportedStuff: 'blah'")
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("unsupportedStuff")
     }
 }

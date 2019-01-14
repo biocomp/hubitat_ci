@@ -154,6 +154,8 @@ def foo()
                     new Tuple("String s\ns.invokeMethod('a')", "invokeMethod"),
                     new Tuple("getProducedPreferences()", "getProducedPreferences"),
                     new Tuple("void foo() { def prefs = producedPreferences }", "producedPreferences"),
+                    new Tuple("getProducedDefinition()", "getProducedDefinition"),
+                    new Tuple("void foo() { def prefs = producedDefinition }", "producedDefinition"),
                     new Tuple("printf", "printf"),
                     new Tuple("sleep 10", "sleep")
             ])

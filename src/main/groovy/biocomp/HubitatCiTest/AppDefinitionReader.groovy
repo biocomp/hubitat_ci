@@ -9,8 +9,6 @@ class AppDefinitionReader implements
         AppExecutor
 {
     private static final NamedParametersValidator paramValidator = NamedParametersValidator.make {
-        stringParameter(name: "name", required: true)
-
         stringParameter(name: "name", required: true, canBeEmpty: false)
         stringParameter(name: "namespace", required: true, canBeEmpty: false)
         stringParameter(name: "author", required: true, canBeEmpty: true)
@@ -18,6 +16,7 @@ class AppDefinitionReader implements
         stringParameter(name: "iconUrl", required: true, canBeEmpty: true)
         stringParameter(name: "iconX2Url", required: true, canBeEmpty: true)
         stringParameter(name: "iconX3Url", required: true, canBeEmpty: true)
+        stringParameter(name: "category", required: false, canBeEmpty: false)
     }
 
     AppDefinitionReader(AppExecutor delegate, boolean validate) {

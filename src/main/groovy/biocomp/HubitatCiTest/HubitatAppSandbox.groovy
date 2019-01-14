@@ -171,7 +171,9 @@ class HubitatAppSandbox {
                                                      "printf",
                                                      "sleep",
                                                      "getProducedPreferences", // Script's test-only use method
-                                                     "producedPreferences" // Script's test-only use property
+                                                     "producedPreferences", // Script's test-only use property
+                                                     "getProducedDefinition", // Script's test-only use method
+                                                     "producedDefinition" // Script's test-only use property
     ] as Set
 
     private static void restrictScript(CompilerConfiguration options) {
