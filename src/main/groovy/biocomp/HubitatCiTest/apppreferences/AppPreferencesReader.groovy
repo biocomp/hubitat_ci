@@ -249,12 +249,20 @@ class AppPreferencesReader implements
         prefState.currentSection.children << new Label(options, validationFlags)
     }
 
-    //
-    //    @Override
-    //    def mode(Map options) {
-    //        return null
-    //    }
-    //
+
+    /*
+
+    mode()
+
+    */
+
+
+    @Override
+    def mode(Map options)
+    {
+        prefState.currentSection.children << new Mode(options, validationFlags)
+    }
+
     /*
 
     paragraph()

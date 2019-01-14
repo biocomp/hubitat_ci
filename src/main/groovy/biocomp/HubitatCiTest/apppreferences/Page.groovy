@@ -1,20 +1,28 @@
 package biocomp.hubitatCiTest.apppreferences
 
 import biocomp.hubitatCiTest.util.NamedParametersValidator
-import biocomp.hubitatCiTest.util.Utility
-import groovy.transform.ToString
 import groovy.transform.TupleConstructor
 import groovy.transform.TypeChecked
 
-@TupleConstructor
 @TypeChecked
 class Page
 {
-    int index
-    String name
-    String title
-    Map options
-    final String generationMethodName = null
+    final int index
+    final String name
+    final String title
+    final Map options
+    final String generationMethodName
+
+    Page(int index, String name, String title, Map options, String generationMethodName = null) {
+        this.index = index
+        this.name = name
+        this.title = title
+        this.options = options
+        this.generationMethodName = generationMethodName
+
+        this.options = NamedParametersValidator.addOptionAsNamedParam(this.options, "name", name)
+        this.options = NamedParametersValidator.addOptionAsNamedParam(this.options, "title", title)
+    }
 
     @Override
     String toString()
@@ -67,9 +75,6 @@ class Page
     }
 
     void validate(EnumSet<ValidationFlags> flags) {
-        options = NamedParametersValidator.addOptionAsNamedParam(options, "name", name)
-        options = NamedParametersValidator.addOptionAsNamedParam(options, "title", title)
-
         if (!flags.contains(ValidationFlags.DontValidatePreferences)) {
             if (!isDynamicPage()) {
                 paramValidator.validate(this.toString(), options)

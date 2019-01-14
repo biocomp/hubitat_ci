@@ -180,7 +180,7 @@ class NamedParametersValidator
         options?.each {
             assert it.key instanceof String: "${context}: Option's name '${it.key}' must be a String"
             def validator = supportedParameters[it.key as String]?.validator
-            assert validator: "${context}: Option '${it.key}' is not supported"
+            assert validator: "${context}: Option '${it.key}' is not supported. Valid options are: ${supportedParameters.keySet()}."
             validator(context, it.key, it.value)
             mandatoryParameters.remove(it.key)
         }

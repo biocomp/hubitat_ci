@@ -1,5 +1,6 @@
 package biocomp.hubitatCiTest
 
+import biocomp.hubitatCiTest.apppreferences.Mode
 import biocomp.hubitatCiTest.apppreferences.Preferences
 import biocomp.hubitatCiTest.apppreferences.ValidationFlags
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
@@ -657,5 +658,43 @@ def makePage2() { foo() }"""]
         expect:
             new HubitatAppSandbox(pageWith("href(someBadVal: 'val')")).run(
                     validationFlags: [ValidationFlags.DontValidatePreferences, ValidationFlags.DontValidateDefinition])
+    }
+
+    def "mode() with all valid options"()
+    {
+        setup:
+            def mode = new HubitatAppSandbox(pageWith("mode (title: 'tit', required: false, multiple: true, image: 'someImg')")).readPreferences(
+                    validationFlags: [ValidationFlags.DontValidateDefinition]).pages[0].sections[0].children[0] as Mode
+
+        expect:
+            mode.options.title == 'tit'
+            mode.options.required == false
+            mode.options.multiple == true
+            mode.options.image == 'someImg'
+    }
+
+    def "mode() with invalid option"()
+    {
+        when:
+            new HubitatAppSandbox(pageWith("mode (title: 'tit', badOption: 'bad')")).run(
+                    validationFlags: [ValidationFlags.DontValidateDefinition])
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("badOption")
+            e.message.contains("not supported")
+            e.message.contains("image, multiple, title, required")
+    }
+
+    def "mode()'s title is required"()
+    {
+        when:
+            new HubitatAppSandbox(pageWith("mode (required: false)")).run(
+                    validationFlags: [ValidationFlags.DontValidateDefinition])
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("title")
+            e.message.contains("required")
     }
 }
