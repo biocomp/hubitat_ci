@@ -33,15 +33,7 @@ interface Preferences extends Page {
      */
     abstract Object page(Map options)
 
-//    /**
-//     * Adds section to single-page appApi (one parent page is assumed)*/
-//    abstract Object section(String sectionTitle, @DelegatesTo(Section.class) Closure makeContents) {
-//        return null;
-//    }
-//
-//    abstract Object section(@DelegatesTo(Section.class) Closure makeContents) {
-//        return null;
-//    }
+
 //
 //    /**
 //     * Adds section to a single-page appApi (one parent page is assumed)

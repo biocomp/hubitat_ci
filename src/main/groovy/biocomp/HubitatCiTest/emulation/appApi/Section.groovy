@@ -132,4 +132,8 @@ interface Section {
      * Add this text as paragraph to the section
      */
     abstract def paragraph(String text)
+
+    abstract def app(Map options)
+    abstract def app(String name, String namespace, String title)
+    abstract def app(Map options, String name, String namespace, String title)
 }

@@ -73,6 +73,7 @@ class AppDefinitionReaderTest extends
     {
         expect:
             generateValidDefinitionsWith("category: 'cat'").category == 'cat'
+            generateValidDefinitionsWith("singleInstance: true").singleInstance == true
     }
 
     def "Unsupported parameters cause error"()

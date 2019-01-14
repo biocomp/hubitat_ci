@@ -14,7 +14,18 @@ class SandboxClassLoader extends ClassLoader {
     }
 
     private static String mapClassName(String name) {
-        return name.replaceAll('''physicalgraph[\\.$]device[\\.$]''', "biocomp.hubitatCiTest.emulation.")
+        switch (name)
+        {
+            case 'hubitat.device.HubAction':
+                return 'biocomp.hubitatCiTest.emulation.commonApi.HubAction'
+
+            case 'hubitat.device.Protocol':
+                return 'biocomp.hubitatCiTest.emulation.Protocol'
+
+            default:
+                return name
+        }
+        //return name.replaceAll('''hubitat[\\.$]device[\\.$]''', "biocomp.hubitatCiTest.emulation.")
     }
 }
 

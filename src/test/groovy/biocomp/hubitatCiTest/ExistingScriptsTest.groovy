@@ -147,3 +147,14 @@ class IComfortAppScriptTest extends
             ""       | ""       || true // Even for just empty strings shows the page
     }
 }
+
+class KonnectedConnectScriptTest extends
+        Specification
+{
+    HubitatAppSandbox sandbox = new HubitatAppSandbox(new File("Scripts/konnected-connect.groovy"))
+
+    def "Basic validation"() {
+        expect:
+            sandbox.run()
+    }
+}

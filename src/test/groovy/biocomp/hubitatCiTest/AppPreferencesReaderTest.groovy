@@ -1,5 +1,6 @@
 package biocomp.hubitatCiTest
 
+import biocomp.hubitatCiTest.apppreferences.App
 import biocomp.hubitatCiTest.apppreferences.Mode
 import biocomp.hubitatCiTest.apppreferences.Preferences
 import biocomp.hubitatCiTest.apppreferences.ValidationFlags
@@ -696,5 +697,29 @@ def makePage2() { foo() }"""]
             AssertionError e = thrown()
             e.message.contains("title")
             e.message.contains("required")
+    }
+
+    def "app() with all valid options"()
+    {
+        setup:
+            def app = new HubitatAppSandbox(pageWith("app (name: 'nam', appName: 'app name', namespace: 'nms', title: 'tit', multiple: true)")).readPreferences().pages[0].sections[0].children[0] as App
+
+        expect:
+            app.options.name == 'nam'
+            app.options.appName == 'app name'
+            app.options.namespace == 'nms'
+            app.options.title == 'tit'
+            app.options.multiple == true
+    }
+
+    def "app() with invalid options fails"()
+    {
+        when:
+            new HubitatAppSandbox(pageWith("app (name: 'nam', badOption: 'bad', appName: 'app name', namespace: 'nms', title: 'tit', multiple: true)")).readPreferences()
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains('badOption')
+            e.message.contains('not supported')
     }
 }

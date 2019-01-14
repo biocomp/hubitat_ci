@@ -10,14 +10,18 @@ import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
 import groovy.xml.MarkupBuilder
 import org.codehaus.groovy.ast.ClassNode
+import org.codehaus.groovy.ast.expr.AttributeExpression
+import org.codehaus.groovy.ast.expr.ClassExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.PropertyExpression
+import org.codehaus.groovy.ast.expr.StaticMethodCallExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.SourceAwareCustomizer
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer
 import sun.util.calendar.ZoneInfo
 
+import java.beans.Expression
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 
@@ -37,8 +41,7 @@ class HubitatAppSandbox {
         return setupImpl(options)
     }
 
-    HubitatAppScript run(Map options = [:])
-    {
+    HubitatAppScript run(Map options = [:]) {
         return setupImpl(options)
     }
 
@@ -47,16 +50,14 @@ class HubitatAppSandbox {
      * @param options
      * @return
      */
-    Preferences readPreferences(Map options = [:])
-    {
+    Preferences readPreferences(Map options = [:]) {
         addFlags(options, [ValidationFlags.DontValidateDefinition])
         setupImpl(options).getProducedPreferences()
     }
 
-    private HubitatAppScript setupImpl(Map options)
-    {
+    private HubitatAppScript setupImpl(Map options) {
         validateAndUpdateSandboxOptions(options)
-        
+
         // Use custom HubitatAppScript.
         def compilerConfiguration = new CompilerConfiguration()
         compilerConfiguration.scriptBaseClass = HubitatAppScript.class.name
@@ -85,75 +86,69 @@ class HubitatAppSandbox {
         return script
     }
 
-    private static void customizeScript(Map options, HubitatAppScript script)
-    {
+    private static void customizeScript(Map options, HubitatAppScript script) {
         (options.customizeScriptBeforeRun as Closure)?.call(script)
     }
 
     @TypeChecked(TypeCheckingMode.SKIP)
-    private static EnumSet<ValidationFlags> readFlags(Map options)
-    {
+    private static EnumSet<ValidationFlags> readFlags(Map options) {
         def flags = EnumSet.noneOf(ValidationFlags)
         options.validationFlags?.each { flags.add(it) }
         return flags
     }
 
-    private static Map readUserSettingValues(Map options)
-    {
+    private static Map readUserSettingValues(Map options) {
         return options.userSettingValues ? options.userSettingValues as Map : [:]
     }
 
-    private static void validateAndUpdateSandboxOptions(Map options)
-    {
+    private static void validateAndUpdateSandboxOptions(Map options) {
         def allKeys = new HashSet<String>(options.keySet());
 
-        if (options.containsKey('api'))
-        {
+        if (options.containsKey('api')) {
             allKeys.remove('api')
 
-            assert options['api'] == null || options['api'] instanceof AppExecutor : "'app' value must be null or implement AppExecutor interface"
+            assert options['api'] == null || options[
+                    'api'] instanceof AppExecutor: "'app' value must be null or implement AppExecutor interface"
         }
 
         if (options.containsKey('userSettingValues')) {
             allKeys.remove('userSettingValues')
 
             assert options['userSettingValues'] != null
-            assert (options['userSettingValues'] as Map<String, Object>) : "'userSettingValues' must be a map of String->Object options"
+            assert (options[
+                    'userSettingValues'] as Map<String, Object>): "'userSettingValues' must be a map of String->Object options"
         }
 
-        if (options.containsKey('customizeScriptBeforeRun'))
-        {
+        if (options.containsKey('customizeScriptBeforeRun')) {
             allKeys.remove('customizeScriptBeforeRun')
 
             assert options['customizeScriptBeforeRun'] != null
-            assert options['customizeScriptBeforeRun'] instanceof Closure : "'customizeScriptBeforeRun' should be a closure that takes HubitatAppScript as a single parameter"
+            assert options[
+                    'customizeScriptBeforeRun'] instanceof Closure: "'customizeScriptBeforeRun' should be a closure that takes HubitatAppScript as a single parameter"
         }
 
-        if (options.containsKey('validationFlags'))
-        {
+        if (options.containsKey('validationFlags')) {
             allKeys.remove('validationFlags')
 
             assert options['validationFlags'] != null
-            assert options['validationFlags'] as List<ValidationFlags> : "'validationFlags' should be a list of validation flags"
+            assert options[
+                    'validationFlags'] as List<ValidationFlags>: "'validationFlags' should be a list of validation flags"
         }
 
-        if (options.containsKey('noValidation'))
-        {
+        if (options.containsKey('noValidation')) {
             allKeys.remove('noValidation')
 
             assert options['noValidation'] != null
 
-            if (options.noValidation)
-            {
+            if (options.noValidation) {
                 addFlags(options, [ValidationFlags.DontValidateDefinition, ValidationFlags.DontValidatePreferences])
             }
         }
 
-        assert allKeys.isEmpty() : "These options are not supported: ${allKeys}"
+        assert allKeys.isEmpty(): "These options are not supported: ${allKeys}"
     }
 
-    static private void addFlags(Map options, List<ValidationFlags> flags)
-    {
+    static private void addFlags(Map options, List<ValidationFlags> flags) {
         options.putIfAbsent('validationFlags', [])
         (options.validationFlags as List<ValidationFlags>).addAll(flags)
     }
@@ -176,10 +171,7 @@ class HubitatAppSandbox {
                                                      "producedDefinition" // Script's test-only use property
     ] as Set
 
-    private static void restrictScript(CompilerConfiguration options) {
-        def scz = new SecureASTCustomizer()
-        scz.with {
-            receiversClassesWhiteList = [java.lang.Object,
+    private static List<Class> classWhiteList = [java.lang.Object,
                                          groovy.lang.GString,
                                          org.codehaus.groovy.runtime.InvokerHelper,
                                          ArrayList,
@@ -256,21 +248,50 @@ class HubitatAppSandbox {
                                          //org.json.JSONException,
                                          //org.json.JSONObject,
                                          //org.json.JSONObject.Null,
-            ] as List<Class>
+                                         biocomp.hubitatCiTest.emulation.Protocol,
+                                         biocomp.hubitatCiTest.emulation.commonApi.HubAction
+
+    ] as List<Class>
+
+
+    static private HashSet<String> classNameWhiteList = new HashSet<String>(classWhiteList.collect { it.name } as List<String>)
+
+    private static boolean isClassAllowed(ClassNode classNode)
+    {
+        if (classNameWhiteList.contains(classNode.name))
+        {
+            return true;
         }
 
+        return classNode.isScript()
+    }
+
+    private static void restrictScript(CompilerConfiguration options) {
+        def scz = new SecureASTCustomizer()
 
         def checker = { expr ->
             if (expr instanceof MethodCallExpression) {
-                return !forbiddenExpressions.contains(expr.methodAsString)
+                return !forbiddenExpressions.contains(expr.methodAsString) &&
+                    isClassAllowed(expr.getObjectExpression().getType())
             }
 
             if (expr instanceof PropertyExpression) {
-                return !forbiddenExpressions.contains(expr.propertyAsString)
+                return !forbiddenExpressions.contains(expr.propertyAsString) &&
+                        isClassAllowed(expr.getObjectExpression().getType())
+            }
+
+            if (expr instanceof AttributeExpression) {
+                return !forbiddenExpressions.contains(expr.propertyAsString) &&
+                        isClassAllowed(expr.getObjectExpression().getType())
             }
 
             if (expr instanceof VariableExpression) {
                 return !forbiddenExpressions.contains(expr.name)
+            }
+
+            if (expr instanceof StaticMethodCallExpression) {
+                return !forbiddenExpressions.contains(expr.methodAsString) &&
+                        isClassAllowed(expr.getOwnerType())
             }
 
             return true;

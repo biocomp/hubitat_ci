@@ -281,6 +281,27 @@ class AppPreferencesReader implements
 
     /*
 
+    app()
+
+     */
+
+    @Override
+    def app(Map options) {
+        prefState.currentSection.children << new App(options, null, null, null, validationFlags)
+    }
+
+    @Override
+    def app(String name, String namespace, String title) {
+        prefState.currentSection.children << new App(null, name, namespace, title, validationFlags)
+    }
+
+    @Override
+    def app(Map options, String name, String namespace, String title) {
+        prefState.currentSection.children << new App(options, name, namespace, title, validationFlags)
+    }
+
+    /*
+
     settings
 
     */
