@@ -3,6 +3,8 @@ package biocomp.hubitatCiTest
 import biocomp.hubitatCiTest.apppreferences.ValidationFlags
 import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
 import biocomp.hubitatCiTest.emulation.commonApi.Log
+import groovy.transform.NotYetImplemented
+import org.junit.Assert
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -96,7 +98,7 @@ class ThermostatDimerSyncHelperTest extends
 class IComfortAppScriptTest extends
         Specification
 {
-    def sandbox = new HubitatAppSandbox(new File("Scripts/Lennox-iComfort-connect.groovy"))
+    def sandbox = new HubitatAppSandbox(new File("SubmodulesWithScripts/Hubitat_iComfort/App/Lennox-iComfort-connect.groovy"))
 
     def "Basic validation"() {
         setup:
@@ -108,7 +110,7 @@ class IComfortAppScriptTest extends
         expect:
             sandbox.run(
                 api: api,
-                validationFlags: [ValidationFlags.DontRunScript, ValidationFlags.AllowWritingToSettings, ValidationFlags.AllowReadingNonInputSettings],
+                validationFlags: [ValidationFlags.DontRunScript, ValidationFlags.AllowWritingToSettings, ValidationFlags.AllowReadingNonInputSettings, ValidationFlags.AllowTitleInPageCallingMethods],
                 customizeScriptBeforeRun: { script ->
                     script.getMetaClass().loginCheck = { -> 1 }
                     script.getMetaClass().getThermostatList = { -> ["a"] }
@@ -128,7 +130,7 @@ class IComfortAppScriptTest extends
             def script = sandbox.run(
                 api: api,
                 userSettingValues: [username: userName, password: password],
-                validationFlags: [ValidationFlags.AllowWritingToSettings, ValidationFlags.AllowReadingNonInputSettings],
+                validationFlags: [ValidationFlags.AllowWritingToSettings, ValidationFlags.AllowReadingNonInputSettings, ValidationFlags.AllowTitleInPageCallingMethods],
                 customizeScriptBeforeRun: { script ->
                     script.getMetaClass().loginCheck = { -> 1 }
                     script.getMetaClass().getThermostatList = { -> ["a"] }
@@ -151,10 +153,59 @@ class IComfortAppScriptTest extends
 class KonnectedConnectScriptTest extends
         Specification
 {
-    HubitatAppSandbox sandbox = new HubitatAppSandbox(new File("Scripts/konnected-connect.groovy"))
+    HubitatAppSandbox sandbox = new HubitatAppSandbox(new File("SubmodulesWithScripts/konnected/hubitat/apps/konnected-connect.groovy"))
 
     def "Basic validation"() {
         expect:
             sandbox.run()
+    }
+}
+
+// It's a device?
+//
+//class KonnectedServiceManagerScriptTest extends
+//        Specification
+//{
+//    HubitatAppSandbox sandbox = new HubitatAppSandbox(new File("SubmodulesWithScripts/konnected/hubitat/apps/konnected-service-manager.groovy"))
+//
+//    def "Basic validation"() {
+//        expect:
+//            sandbox.run()
+//    }
+//}
+
+class EcoNetThermostatScriptTest extends
+        Specification
+{
+    HubitatAppSandbox sandbox = new HubitatAppSandbox(new File("SubmodulesWithScripts/EcoNet/Hubitat/SmartApps/econet-thermostat-app.groovy"))
+
+    @NotYetImplemented
+    def "Basic validation"() {
+        expect:
+            sandbox.run()
+    }
+}
+
+class EcoNetTanklessAppScriptTest extends
+        Specification
+{
+    HubitatAppSandbox sandbox = new HubitatAppSandbox(new File("SubmodulesWithScripts/EcoNet/Hubitat/SmartApps/econet-tankless-app.groovy"))
+
+    def "Basic validation"() {
+        setup:
+            def appState = [:]
+            AppExecutor api = Mock{
+                _ * getState() >> appState
+            }
+
+        expect:
+            sandbox.run(
+                api: api,
+                validationFlags: [ValidationFlags.AllowTitleInPageCallingMethods],
+                userSettingValues: [username: "user", password: "pass"],
+                customizeScriptBeforeRun: { script ->
+                    script.getMetaClass().login = { -> true }
+                    script.getMetaClass().getWaterHeaterList = { -> ["waterheater!"] }
+                })
     }
 }

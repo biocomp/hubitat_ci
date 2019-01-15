@@ -11,6 +11,7 @@ enum ValidationFlags
     AllowWritingToSettings,
     AllowReadingNonInputSettings,
     AllowUnreachablePages,
+    AllowTitleInPageCallingMethods,
 
     /**
      * Don't require install: true on at least one of the pages.

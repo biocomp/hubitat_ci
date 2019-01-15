@@ -97,7 +97,15 @@ class AppPreferencesReader implements
      */
     @Override
     def page(Map options) {
-        Page.dynamicPageInitialParamValidator.validate(this.toString(), options)
+        if (validationFlags.contains(ValidationFlags.AllowTitleInPageCallingMethods)) {
+            Page.dynamicPageInitialParamValidatorWithTitle.validate("page(${options}) - special case of reference to method",
+                    options)
+        }
+        else
+        {
+            Page.dynamicPageInitialParamValidator.validate("page(${options}) - special case of reference to method",
+                    options)
+        }
 
         // Now need to run named closure that is adding dynamic pages
         def methodWithNoArgs = parentScript.getMetaClass().pickMethod(options.name as String, [] as Class[])
@@ -309,6 +317,13 @@ class AppPreferencesReader implements
     @Override
     Map getSettings() {
         return settingsContainer
+    }
+    
+    
+    @Override
+    String toString()
+    {
+        return "preferences()"
     }
 
 

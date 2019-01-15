@@ -1,3 +1,12 @@
 [submodule "buildSrc/src/main/groovy/biocomp/HubitatCi"]
 	path = buildSrc/src/main/groovy/biocomp/HubitatCi
 	url = https://biocomp.visualstudio.com/DefaultCollection/HubitatStuff/_git/HubitatCi
+[submodule "SubmodulesWithScripts/EcoNet"]
+	path = SubmodulesWithScripts/EcoNet
+	url = https://github.com/bmcgair/EcoNet.git
+[submodule "SubmodulesWithScripts/konnected"]
+	path = SubmodulesWithScripts/konnected
+	url = https://github.com/jca1/konnected.git
+[submodule "SubmodulesWithScripts/Hubitat_iComfort"]
+	path = SubmodulesWithScripts/Hubitat_iComfort
+	url = https://github.com/bspranger/Hubitat_iComfort.git

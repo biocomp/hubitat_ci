@@ -62,6 +62,11 @@ class Page
         stringParameter(name:"name", required:true)
     }
 
+    public static final NamedParametersValidator dynamicPageInitialParamValidatorWithTitle = NamedParametersValidator.make{
+        add(dynamicPageInitialParamValidator)
+        stringParameter(name:"title")
+    }
+
     List<Section> sections = []
 
     static Page makeSinglePage()

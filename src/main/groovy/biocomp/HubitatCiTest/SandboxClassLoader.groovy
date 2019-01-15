@@ -19,6 +19,9 @@ class SandboxClassLoader extends ClassLoader {
             case 'hubitat.device.HubAction':
                 return 'biocomp.hubitatCiTest.emulation.commonApi.HubAction'
 
+            case 'hubitat.device.HubResponse':
+                return 'biocomp.hubitatCiTest.emulation.commonApi.HubResponse'
+
             case 'hubitat.device.Protocol':
                 return 'biocomp.hubitatCiTest.emulation.Protocol'
 

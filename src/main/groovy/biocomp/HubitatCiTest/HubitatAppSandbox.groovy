@@ -249,7 +249,8 @@ class HubitatAppSandbox {
                                          //org.json.JSONObject,
                                          //org.json.JSONObject.Null,
                                          biocomp.hubitatCiTest.emulation.Protocol,
-                                         biocomp.hubitatCiTest.emulation.commonApi.HubAction
+                                         biocomp.hubitatCiTest.emulation.commonApi.HubAction,
+                                         biocomp.hubitatCiTest.emulation.commonApi.HubResponse
 
     ] as List<Class>
 
