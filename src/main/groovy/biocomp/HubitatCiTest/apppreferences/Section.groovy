@@ -56,7 +56,7 @@ class Section {
     void validate(EnumSet<ValidationFlags> flags)
     {
         if (!flags.contains(ValidationFlags.DontValidatePreferences)) {
-            paramValidator.validate(this.toString(), options)
+            paramValidator.validate(this.toString(), options, flags)
             assert children.size() != 0: "Section ${this} must have at least some content"
         }
     }

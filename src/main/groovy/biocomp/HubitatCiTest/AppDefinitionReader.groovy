@@ -54,7 +54,7 @@ class AppDefinitionReader implements
 
             // Checking mandatory properties
             assert definitionsMap: "definitions should be provided"
-            paramValidator.validate("definition(): ", definitionsMap, true)
+            paramValidator.validate("definition(): ", definitionsMap, flags, true)
         }
     }
 

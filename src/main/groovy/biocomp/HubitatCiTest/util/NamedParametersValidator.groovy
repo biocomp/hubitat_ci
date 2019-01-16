@@ -1,28 +1,9 @@
 package biocomp.hubitatCiTest.util
 
 import biocomp.hubitatCiTest.apppreferences.ValidationFlags
-import com.sun.istack.internal.NotNull
-import com.sun.org.apache.xpath.internal.operations.Bool
 import groovy.transform.TupleConstructor
 import groovy.transform.TypeChecked
 
-import java.lang.reflect.Type
-
-class StringParameter
-{
-    void validate()
-    {
-
-    }
-}
-
-class BooleanParameter
-{
-    void validate()
-    {
-
-    }
-}
 
 @TupleConstructor
 class Parameter
@@ -51,7 +32,7 @@ class ParametersToValidate
 
         addParameter(new Parameter(options.name as String,
                 options.get("required", false) as boolean,
-                { @NotNull String context, @NotNull String name, def value ->
+                { def flags, String context, String name, def value ->
                     assert value != null: "${context}: ${name} value can't be null"
                     String valuePrinted = value.toString()
                     assert valuePrinted == "false" || valuePrinted == "true" : "${context}: ${name}'s value is not boolean, it's ${value}"
@@ -63,12 +44,12 @@ class ParametersToValidate
         assert options.name
 
         addParameter(new Parameter(options.name as String, options.get("required", false) as boolean,
-                { @NotNull String context, @NotNull String name, def value ->
+                { EnumSet<ValidationFlags> flags,  String context, String name, def value ->
                     assert value != null: "${context}: '${name}' value can't be null"
                     assert value instanceof String: "${context}: '${name}''s value must be String, not ${value.class}"
                     String val = value as String
 
-                    if (!options.getOrDefault("canBeEmpty", false)) {
+                    if (!options.getOrDefault("canBeEmpty", false) && !flags.contains(ValidationFlags.AllowEmptyOptionValueStrings)) {
                         assert val != "": "${context}: '${name}''s value can't be empty"
                     }
                 }))
@@ -82,7 +63,7 @@ class ParametersToValidate
         def validValues = new HashSet<String>(options.values as List<String>)
 
         addParameter(new Parameter(options.name as String, options.get("required", false) as boolean,
-                { @NotNull String context, @NotNull String name, def value ->
+                { def flags, String context, String name, def value ->
                     assert value != null: "${context}: '${name}' value can't be null"
                     assert value instanceof String: "${context}: '${name}''s value must be String, not ${value.class}"
                     String val = value as String
@@ -96,7 +77,7 @@ class ParametersToValidate
         assert options.name
 
         addParameter(new Parameter(options.name as String, options.get("required", false) as boolean,
-                { @NotNull String context, @NotNull String name, def value ->
+                { def flags, String context, String name, def value ->
                     assert value != null: "${context}: '${name}' value can't be null"
                     assert value instanceof Map: "${context}: '${name}''s value must be Map, not ${value.class}"
                 }))
@@ -107,7 +88,7 @@ class ParametersToValidate
         assert options.name
 
         addParameter(new Parameter(options.name as String, options.get("required", false) as boolean,
-                { @NotNull String context, @NotNull String name, def value ->
+                { def flags, String context, String name, def value ->
                     assert value != null: "${context}: ${name} value can't be null"
 
                     int result = 0
@@ -149,7 +130,7 @@ class NamedParametersValidator
         return new NamedParametersValidator(params.supportedParameters, params.mandatoryParameters)
     }
 
-    private NamedParametersValidator(@NotNull HashMap<String, Parameter> supportedParameters, @NotNull HashSet<String> mandatoryParameters)
+    private NamedParametersValidator(HashMap<String, Parameter> supportedParameters, HashSet<String> mandatoryParameters)
     {
         this.supportedParameters = supportedParameters
         this.mandatoryParameters = mandatoryParameters
@@ -171,8 +152,9 @@ class NamedParametersValidator
 
      @TypeChecked
      void validate(
-            @NotNull String context,
+            String context,
             Map options,
+            EnumSet<ValidationFlags> validationFlags,
             boolean mustBeNonNull = false)
     {
         def mandatoryParameters = mandatoryParameters.clone() as HashSet<String>
@@ -181,7 +163,7 @@ class NamedParametersValidator
             assert it.key instanceof String: "${context}: Option's name '${it.key}' must be a String"
             def validator = supportedParameters[it.key as String]?.validator
             assert validator: "${context}: Option '${it.key}' is not supported. Valid options are: ${supportedParameters.keySet()}."
-            validator(context, it.key, it.value)
+            validator(validationFlags, context, it.key, it.value)
             mandatoryParameters.remove(it.key)
         }
 

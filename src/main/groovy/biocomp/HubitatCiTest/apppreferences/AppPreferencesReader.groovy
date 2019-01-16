@@ -99,12 +99,12 @@ class AppPreferencesReader implements
     def page(Map options) {
         if (validationFlags.contains(ValidationFlags.AllowTitleInPageCallingMethods)) {
             Page.dynamicPageInitialParamValidatorWithTitle.validate("page(${options}) - special case of reference to method",
-                    options)
+                    options, validationFlags)
         }
         else
         {
             Page.dynamicPageInitialParamValidator.validate("page(${options}) - special case of reference to method",
-                    options)
+                    options, validationFlags)
         }
 
         // Now need to run named closure that is adding dynamic pages
@@ -241,9 +241,9 @@ class AppPreferencesReader implements
     }
 
     @Override
-    def href(Map options, String title)
+    def href(Map options, String nextPageName)
     {
-        prefState.currentSection.children << new HRef(options, title, validationFlags)
+        prefState.currentSection.children << new HRef(options, nextPageName, validationFlags)
     }
 
     /*
@@ -278,8 +278,8 @@ class AppPreferencesReader implements
      */
 
     @Override
-    def paragraph(Map options) {
-        prefState.currentSection.children << new Paragraph(null, options, validationFlags)
+    def paragraph(Map options, String text) {
+        prefState.currentSection.children << new Paragraph(text, options, validationFlags)
     }
 
     @Override

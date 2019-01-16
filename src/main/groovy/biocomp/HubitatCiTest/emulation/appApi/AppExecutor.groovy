@@ -83,7 +83,7 @@ public boolean com.hubitat.hub.executor.AppExecutor.isSystemTypeOrHubDeveloper()
 ++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.label(java.util.Map),
 
 ++ public static java.lang.String com.hubitat.hub.executor.AppExecutor.localApiServerUrl(java.lang.String),
-public java.lang.Object com.hubitat.hub.executor.AppExecutor.mappings(groovy.lang.Closure),
+++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.mappings(groovy.lang.Closure),
 public void com.hubitat.hub.executor.AppExecutor.metadata(groovy.lang.Closure),
 
 ++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.mode(java.util.Map),
@@ -96,7 +96,7 @@ public void com.hubitat.hub.executor.AppExecutor.metadata(groovy.lang.Closure),
 ++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.paragraph(java.lang.String),
 ++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.paragraph(java.util.Map,java.lang.String),
 
-public java.lang.Object com.hubitat.hub.executor.AppExecutor.path(java.lang.String,groovy.lang.Closure),
+++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.path(java.lang.String,groovy.lang.Closure),
 
 ++ public void com.hubitat.hub.executor.AppExecutor.pause(java.lang.Long),
 
@@ -170,6 +170,7 @@ import java.util.TimeZone;
 interface AppExecutor extends
         BaseExecutor,
         PreferencesSource,
+        MappingsSource, Mappings,
         DefinitionReader,
         Subscription {
     // Returns list of devices or one device from config

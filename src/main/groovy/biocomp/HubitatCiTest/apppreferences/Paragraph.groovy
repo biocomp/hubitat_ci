@@ -6,7 +6,7 @@ import groovy.transform.TypeChecked
 @TypeChecked
 class Paragraph {
     private static final NamedParametersValidator paramValidator = NamedParametersValidator.make {
-        stringParameter(name: "title", required: true)
+        stringParameter(name: "title")
         stringParameter(name: "image")
         boolParameter(name: "required")
     }
@@ -15,8 +15,8 @@ class Paragraph {
         this.text = text
         this.options = options
 
-        if (text == null && !flags.contains(ValidationFlags.DontValidatePreferences)) {
-            paramValidator.validate(this.toString(), options)
+        if (!flags.contains(ValidationFlags.DontValidatePreferences)) {
+            paramValidator.validate(this.toString(), options, flags)
         }
     }
 

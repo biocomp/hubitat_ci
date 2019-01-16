@@ -26,7 +26,7 @@ class App {
         this.options = options
 
         if (!flags.contains(ValidationFlags.DontValidatePreferences)) {
-            paramValidator.validate(this.toString(), options)
+            paramValidator.validate(this.toString(), options, flags)
         }
     }
 

@@ -24,5 +24,8 @@ class RemovePrivateFromScriptCompilationCustomizer extends CompilationCustomizer
             classNode.methods.each{
                 it.modifiers = (it.modifiers & ~Opcodes.ACC_PRIVATE) | Opcodes.ACC_PUBLIC}
         }
+
+        //println "ClassNode: ${classNode.name}"
+        classNode.name = classNode.name.replaceAll('-', '_')
     }
 }

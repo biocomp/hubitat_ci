@@ -20,7 +20,7 @@ class Mode {
 
         if (!validationFlags.contains(ValidationFlags.DontValidatePreferences))
         {
-            paramValidator.validate(this.toString(), options, true)
+            paramValidator.validate(this.toString(), options, validationFlags, true)
         }
     }
 

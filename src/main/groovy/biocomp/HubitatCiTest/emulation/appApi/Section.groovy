@@ -126,7 +126,7 @@ interface Section {
      *                      image (String) - URL of image to use, if desired.
      *                      required (Boolean) - true or false to specify this input is required. Defaults to false.
      */
-    abstract def paragraph(Map options)
+    abstract def paragraph(Map options, String text)
 
     /**
      * Add this text as paragraph to the section

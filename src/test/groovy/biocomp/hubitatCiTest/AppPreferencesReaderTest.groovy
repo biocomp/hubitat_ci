@@ -290,17 +290,18 @@ def userProvidedMethodToMakeStaticPages()
 
     def "paragraph() with map of valid options"() {
         given:
-            def paragraph = parseOneChild("paragraph(title:'some text', image:'some img', required: true)")
+            def paragraph = parseOneChild("paragraph(title:'tit', image:'some img', required: true, 'body')")
 
         expect:
-            paragraph.options.title == "some text"
+            paragraph.text == 'body'
+            paragraph.options.title == "tit"
             paragraph.options.image == "some img"
             paragraph.options.required == true
     }
 
     def "paragraph() with map and invalid option fails"() {
         when:
-            parseOneChild("paragraph(badOption:'Im going to fail', title:'some text')")
+            parseOneChild("paragraph(badOption:'Im going to fail', title:'tit', 'body')")
 
         then:
             AssertionError e = thrown()
@@ -421,7 +422,8 @@ def makePage2()
         }
     }
 }
-/$).readPreferences(userSettingValues: [it1: "input1val", it2: "input2val"], validationFlags: [ValidationFlags.AllowUnreachablePages])
+/$).readPreferences(userSettingValues: [it1: "input1val", it2: "input2val"],
+                    validationFlags: [ValidationFlags.AllowUnreachablePages])
 
         then:
             AssertionError e = thrown()
@@ -440,23 +442,21 @@ def makePage2()
             e.message.contains("reference")
 
         where:
-            script << [
-                """
+            script << ["""
 preferences{
     page("p1", "tit", nextPage:'invalidPageName') { ${validSection}}
 }
 """,
-                """
+                       """
 preferences{
     page("p1", "tit") {section('tit'){ href('invalidPageName') }}
 }
 """,
-                """
+                       """
 preferences{
     page("p1", "tit") {section('tit'){ href(page: 'invalidPageName') }}
 }
-"""
-            ]
+"""]
     }
 
     @Unroll
@@ -613,11 +613,11 @@ def makePage2() { foo() }"""]
         where:
             script                                                                                                                                 | expectedValues
             pageWith(
-                    "href('SomePage')")                                                                                                            | [nextPageName: "SomePage", title: null, options: null]
+                    "href('SomePage')")                                                                                                            | [nextPageName: "SomePage", options: null]
             pageWith(
-                    "href(title: 'tit', required: false, description: 'desc', style:'page', url: 'http://a', page: 'somePage', image: 'someImg')") | [nextPageName: null, title: null, options: [title: 'tit', description: 'desc', style: 'page', url: 'http://a', page: 'somePage', image: 'someImg']]
+                    "href(title: 'tit', required: false, description: 'desc', style:'page', url: 'http://a', page: 'somePage', image: 'someImg')") | [nextPageName: null, options: [title: 'tit', description: 'desc', style: 'page', url: 'http://a', page: 'somePage', image: 'someImg']]
             pageWith(
-                    "href('tit', required: false, description: 'desc', style:'page', url: 'http://a', page: 'somePage', image: 'someImg')")        | [nextPageName: null, title: 'tit', options: [description: 'desc', style: 'page', url: 'http://a', page: 'somePage', image: 'someImg']]
+                    "href('somePage', required: false, description: 'desc', style:'page', url: 'http://a', title: 'tit', image: 'someImg')")       | [nextPageName: 'somePage', options: [description: 'desc', style: 'page', url: 'http://a', image: 'someImg']]
     }
 
     def "href() 'page' option is not compatible with external style"() {
@@ -661,10 +661,10 @@ def makePage2() { foo() }"""]
                     validationFlags: [ValidationFlags.DontValidatePreferences, ValidationFlags.DontValidateDefinition])
     }
 
-    def "mode() with all valid options"()
-    {
+    def "mode() with all valid options"() {
         setup:
-            def mode = new HubitatAppSandbox(pageWith("mode (title: 'tit', required: false, multiple: true, image: 'someImg')")).readPreferences(
+            def mode = new HubitatAppSandbox(
+                    pageWith("mode (title: 'tit', required: false, multiple: true, image: 'someImg')")).readPreferences(
                     validationFlags: [ValidationFlags.DontValidateDefinition]).pages[0].sections[0].children[0] as Mode
 
         expect:
@@ -674,8 +674,7 @@ def makePage2() { foo() }"""]
             mode.options.image == 'someImg'
     }
 
-    def "mode() with invalid option"()
-    {
+    def "mode() with invalid option"() {
         when:
             new HubitatAppSandbox(pageWith("mode (title: 'tit', badOption: 'bad')")).run(
                     validationFlags: [ValidationFlags.DontValidateDefinition])
@@ -687,8 +686,7 @@ def makePage2() { foo() }"""]
             e.message.contains("image, multiple, title, required")
     }
 
-    def "mode()'s title is required"()
-    {
+    def "mode()'s title is required"() {
         when:
             new HubitatAppSandbox(pageWith("mode (required: false)")).run(
                     validationFlags: [ValidationFlags.DontValidateDefinition])
@@ -699,10 +697,11 @@ def makePage2() { foo() }"""]
             e.message.contains("required")
     }
 
-    def "app() with all valid options"()
-    {
+    def "app() with all valid options"() {
         setup:
-            def app = new HubitatAppSandbox(pageWith("app (name: 'nam', appName: 'app name', namespace: 'nms', title: 'tit', multiple: true)")).readPreferences().pages[0].sections[0].children[0] as App
+            def app = new HubitatAppSandbox(pageWith(
+                    "app (name: 'nam', appName: 'app name', namespace: 'nms', title: 'tit', multiple: true)")).readPreferences().pages[
+                    0].sections[0].children[0] as App
 
         expect:
             app.options.name == 'nam'
@@ -712,10 +711,10 @@ def makePage2() { foo() }"""]
             app.options.multiple == true
     }
 
-    def "app() with invalid options fails"()
-    {
+    def "app() with invalid options fails"() {
         when:
-            new HubitatAppSandbox(pageWith("app (name: 'nam', badOption: 'bad', appName: 'app name', namespace: 'nms', title: 'tit', multiple: true)")).readPreferences()
+            new HubitatAppSandbox(pageWith(
+                    "app (name: 'nam', badOption: 'bad', appName: 'app name', namespace: 'nms', title: 'tit', multiple: true)")).readPreferences()
 
         then:
             AssertionError e = thrown()

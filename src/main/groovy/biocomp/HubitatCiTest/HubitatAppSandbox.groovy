@@ -172,95 +172,102 @@ class HubitatAppSandbox {
     ] as Set
 
     private static List<Class> classWhiteList = [java.lang.Object,
-                                         groovy.lang.GString,
-                                         org.codehaus.groovy.runtime.InvokerHelper,
-                                         ArrayList,
-                                         BigDecimal,
-                                         BigInteger,
-                                         Boolean,
-                                         Byte,
-                                         ByteArrayInputStream,
-                                         ByteArrayOutputStream,
-                                         Calendar,
-                                         Closure,
-                                         Collection,
-                                         Collections,
-                                         Date,
-                                         DecimalFormat,
-                                         Double,
-                                         Float,
-                                         GregorianCalendar,
-                                         HashMap,
-                                         //HashMap.Entry,
-                                         //                    HashMap,
-                                         //                    HashMap.KeySet,
-                                         //                    HashMap.Values,
-                                         HashSet,
-                                         Integer,
-                                         JsonBuilder,
-                                         LinkedHashMap,
-                                         //LinkedHashMap.Entry,
-                                         LinkedHashSet,
-                                         LinkedList,
-                                         List,
-                                         Long,
-                                         Map,
-                                         MarkupBuilder,
-                                         Math,
-                                         Random,
-                                         Set,
-                                         Short,
-                                         SimpleDateFormat,
-                                         String,
-                                         StringBuilder,
-                                         StringReader,
-                                         StringWriter,
-                                         //SubList,
-                                         TimeCategory,
-                                         TimeZone,
-                                         TreeMap,
-                                         //                    TreeMap.Entry,
-                                         //                    TreeMap.KeySet,
-                                         //                    TreeMap.Values,
-                                         TreeSet,
-                                         URLDecoder,
-                                         URLEncoder,
-                                         UUID,
-                                         ZoneInfo,
-                                         //com.amazonaws.services.s3.model.S3Object,
-                                         //com.amazonaws.services.s3.model.S3ObjectInputStream,
-                                         com.sun.org.apache.xerces.internal.dom.DocumentImpl,
-                                         com.sun.org.apache.xerces.internal.dom.ElementImpl,
-                                         groovy.json.JsonOutput,
-                                         groovy.json.JsonSlurper,
-                                         groovy.util.Node,
-                                         groovy.util.NodeList,
-                                         groovy.util.XmlParser,
-                                         groovy.util.XmlSlurper,
-                                         groovy.xml.XmlUtil,
-                                         java.net.URI,
-                                         java.util.RandomAccessSubList,
-                                         //org.apache.commons.codec.binary.Base64,
-                                         //org.apache.xerces.dom.DocumentImpl,
-                                         //org.apache.xerces.dom.ElementImpl,
-                                         org.codehaus.groovy.runtime.EncodingGroovyMethods,
-                                         //org.json.JSONArray,
-                                         //org.json.JSONException,
-                                         //org.json.JSONObject,
-                                         //org.json.JSONObject.Null,
-                                         biocomp.hubitatCiTest.emulation.Protocol,
-                                         biocomp.hubitatCiTest.emulation.commonApi.HubAction,
-                                         biocomp.hubitatCiTest.emulation.commonApi.HubResponse
+                                                 groovy.lang.GString,
+                                                 org.codehaus.groovy.runtime.InvokerHelper,
+                                                 ArrayList,
+                                                 int,
+                                                 boolean,
+                                                 byte,
+                                                 char,
+                                                 short,
+                                                 long,
+                                                 float,
+                                                 double,
+                                                 BigDecimal,
+                                                 BigInteger,
+                                                 Boolean,
+                                                 Byte,
+                                                 ByteArrayInputStream,
+                                                 ByteArrayOutputStream,
+                                                 Calendar,
+                                                 Closure,
+                                                 Collection,
+                                                 Collections,
+                                                 Date,
+                                                 DecimalFormat,
+                                                 Double,
+                                                 Float,
+                                                 GregorianCalendar,
+                                                 HashMap,
+                                                 //HashMap.Entry,
+                                                 //                    HashMap,
+                                                 //                    HashMap.KeySet,
+                                                 //                    HashMap.Values,
+                                                 HashSet,
+                                                 Integer,
+                                                 JsonBuilder,
+                                                 LinkedHashMap,
+                                                 //LinkedHashMap.Entry,
+                                                 LinkedHashSet,
+                                                 LinkedList,
+                                                 List,
+                                                 Long,
+                                                 Map,
+                                                 MarkupBuilder,
+                                                 Math,
+                                                 Random,
+                                                 Set,
+                                                 Short,
+                                                 SimpleDateFormat,
+                                                 String,
+                                                 StringBuilder,
+                                                 StringReader,
+                                                 StringWriter,
+                                                 //SubList,
+                                                 TimeCategory,
+                                                 TimeZone,
+                                                 TreeMap,
+                                                 //                    TreeMap.Entry,
+                                                 //                    TreeMap.KeySet,
+                                                 //                    TreeMap.Values,
+                                                 TreeSet,
+                                                 URLDecoder,
+                                                 URLEncoder,
+                                                 UUID,
+                                                 ZoneInfo,
+                                                 //com.amazonaws.services.s3.model.S3Object,
+                                                 //com.amazonaws.services.s3.model.S3ObjectInputStream,
+                                                 com.sun.org.apache.xerces.internal.dom.DocumentImpl,
+                                                 com.sun.org.apache.xerces.internal.dom.ElementImpl,
+                                                 groovy.json.JsonOutput,
+                                                 groovy.json.JsonSlurper,
+                                                 groovy.util.Node,
+                                                 groovy.util.NodeList,
+                                                 groovy.util.XmlParser,
+                                                 groovy.util.XmlSlurper,
+                                                 groovy.xml.XmlUtil,
+                                                 java.net.URI,
+                                                 java.util.RandomAccessSubList,
+                                                 //org.apache.commons.codec.binary.Base64,
+                                                 //org.apache.xerces.dom.DocumentImpl,
+                                                 //org.apache.xerces.dom.ElementImpl,
+                                                 org.codehaus.groovy.runtime.EncodingGroovyMethods,
+                                                 //org.json.JSONArray,
+                                                 //org.json.JSONException,
+                                                 //org.json.JSONObject,
+                                                 //org.json.JSONObject.Null,
+                                                 biocomp.hubitatCiTest.emulation.Protocol,
+                                                 biocomp.hubitatCiTest.emulation.commonApi.HubAction,
+                                                 biocomp.hubitatCiTest.emulation.commonApi.HubResponse
 
     ] as List<Class>
 
 
-    static private HashSet<String> classNameWhiteList = new HashSet<String>(classWhiteList.collect { it.name } as List<String>)
+    static private HashSet<String> classNameWhiteList = new HashSet<String>(
+            classWhiteList.collect { it.name } as List<String>)
 
-    private static boolean isClassAllowed(ClassNode classNode)
-    {
-        if (classNameWhiteList.contains(classNode.name))
-        {
+    private static boolean isClassAllowed(ClassNode classNode) {
+        if (classNameWhiteList.contains(classNode.name)) {
             return true;
         }
 
@@ -272,18 +279,18 @@ class HubitatAppSandbox {
 
         def checker = { expr ->
             if (expr instanceof MethodCallExpression) {
-                return !forbiddenExpressions.contains(expr.methodAsString) &&
-                    isClassAllowed(expr.getObjectExpression().getType())
+                return !forbiddenExpressions.contains(expr.methodAsString) && isClassAllowed(
+                        expr.getObjectExpression().getType())
             }
 
             if (expr instanceof PropertyExpression) {
-                return !forbiddenExpressions.contains(expr.propertyAsString) &&
-                        isClassAllowed(expr.getObjectExpression().getType())
+                return !forbiddenExpressions.contains(expr.propertyAsString) && isClassAllowed(
+                        expr.getObjectExpression().getType())
             }
 
             if (expr instanceof AttributeExpression) {
-                return !forbiddenExpressions.contains(expr.propertyAsString) &&
-                        isClassAllowed(expr.getObjectExpression().getType())
+                return !forbiddenExpressions.contains(expr.propertyAsString) && isClassAllowed(
+                        expr.getObjectExpression().getType())
             }
 
             if (expr instanceof VariableExpression) {
@@ -291,8 +298,7 @@ class HubitatAppSandbox {
             }
 
             if (expr instanceof StaticMethodCallExpression) {
-                return !forbiddenExpressions.contains(expr.methodAsString) &&
-                        isClassAllowed(expr.getOwnerType())
+                return !forbiddenExpressions.contains(expr.methodAsString) && isClassAllowed(expr.getOwnerType())
             }
 
             return true;

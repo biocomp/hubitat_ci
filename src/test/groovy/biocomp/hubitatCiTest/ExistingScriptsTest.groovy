@@ -1,5 +1,6 @@
 package biocomp.hubitatCiTest
 
+import biocomp.hubitatCiTest.apppreferences.App
 import biocomp.hubitatCiTest.apppreferences.ValidationFlags
 import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
 import biocomp.hubitatCiTest.emulation.commonApi.Log
@@ -179,10 +180,15 @@ class EcoNetThermostatScriptTest extends
 {
     HubitatAppSandbox sandbox = new HubitatAppSandbox(new File("SubmodulesWithScripts/EcoNet/Hubitat/SmartApps/econet-thermostat-app.groovy"))
 
-    @NotYetImplemented
     def "Basic validation"() {
+        setup
+            def appState = [:]
+            AppExecutor api = Mock{
+                _ * getState() >> appState
+            }
+
         expect:
-            sandbox.run()
+            sandbox.run(api: api, validationFlags: [ValidationFlags.AllowTitleInPageCallingMethods])
     }
 }
 
@@ -207,5 +213,24 @@ class EcoNetTanklessAppScriptTest extends
                     script.getMetaClass().login = { -> true }
                     script.getMetaClass().getWaterHeaterList = { -> ["waterheater!"] }
                 })
+    }
+}
+
+class HomeRemoteScriptTest extends
+        Specification
+{
+    HubitatAppSandbox sandbox = new HubitatAppSandbox(new File("SubmodulesWithScripts/homeremote/hubitatapp"))
+
+    def "Basic validation"() {
+        setup:
+            Log log = Mock()
+            def appState = [:]
+            AppExecutor api = Mock{
+                _ * getLog() >> log
+                _ * getState() >> appState
+            }
+
+        expect:
+            sandbox.run(api: api, validationFlags: [ValidationFlags.AllowEmptyOptionValueStrings])
     }
 }

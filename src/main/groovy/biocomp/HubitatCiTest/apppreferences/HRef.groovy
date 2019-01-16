@@ -5,7 +5,6 @@ import groovy.transform.TypeChecked
 
 @TypeChecked
 class HRef {
-    final String title
     final String nextPageName
     final Map options
 
@@ -31,10 +30,10 @@ class HRef {
         stringParameter(name: "image", canBeEmpty: false)
     }
 
-    HRef(Map options, String title, EnumSet<ValidationFlags> flags)
+    HRef(Map options, String nextPageName, EnumSet<ValidationFlags> flags)
     {
         this.options = options
-        this.title = title
+        this.nextPageName = nextPageName
 
         validate(flags)
     }
@@ -52,7 +51,7 @@ class HRef {
     private void validate(EnumSet<ValidationFlags> flags)
     {
         if (!flags.contains(ValidationFlags.DontValidatePreferences)) {
-            paramValidator.validate(this.toString(), options, false)
+            paramValidator.validate(this.toString(), options, flags, false)
 
             // Extra validations ('page' is not compatible with 'style: external'):
             if (options?.containsKey('page'))
@@ -66,6 +65,6 @@ class HRef {
     @Override
     String toString()
     {
-        return "href(title: ${title}, nextPageName: ${nextPageName}, options: ${options})"
+        return "href(nextPageName: ${nextPageName}, options: ${options})"
     }
 }
