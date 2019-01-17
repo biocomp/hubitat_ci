@@ -181,14 +181,21 @@ class EcoNetThermostatScriptTest extends
     HubitatAppSandbox sandbox = new HubitatAppSandbox(new File("SubmodulesWithScripts/EcoNet/Hubitat/SmartApps/econet-thermostat-app.groovy"))
 
     def "Basic validation"() {
-        setup
+        setup:
             def appState = [:]
             AppExecutor api = Mock{
                 _ * getState() >> appState
             }
 
         expect:
-            sandbox.run(api: api, validationFlags: [ValidationFlags.AllowTitleInPageCallingMethods])
+            sandbox.run(
+                api: api,
+                validationFlags: [ValidationFlags.AllowTitleInPageCallingMethods],
+                userSettingValues: [username: "user", password: "pass"],
+                customizeScriptBeforeRun: { script ->
+                    script.getMetaClass().login = { -> true }
+                    script.getMetaClass().gethvaclist = { -> ["waterheater!"] }
+                })
     }
 }
 
