@@ -721,4 +721,10 @@ def makePage2() { foo() }"""]
             e.message.contains('badOption')
             e.message.contains('not supported')
     }
+
+    def "With 'oauth' definition(), 'oauthpage' in preferences() is a valid option. It points to valid page."()
+    {
+        expect:
+            assert false : "Not implemented :("
+    }
 }

@@ -19,6 +19,7 @@ class AppDefinitionReader implements
         stringParameter(name: "iconX3Url", required: true, canBeEmpty: true)
         stringParameter(name: "category", required: false, canBeEmpty: false)
         boolParameter(name: "singleInstance")
+        boolParameter(name: "oauth")
     }
 
     AppDefinitionReader(AppExecutor delegate, EnumSet<ValidationFlags> flags) {

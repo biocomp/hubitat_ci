@@ -241,3 +241,22 @@ class HomeRemoteScriptTest extends
             sandbox.run(api: api, validationFlags: [ValidationFlags.AllowEmptyOptionValueStrings])
     }
 }
+
+class Tonesto7HomebridgeScriptTest extends Specification
+{
+    def sandbox = new HubitatAppSandbox(new File("SubmodulesWithScripts/homebridge-hubitat-tonesto7/smartapps/tonesto7/homebridge-hubitat.src/homebridge-hubitat.groovy"))
+
+    def "Basic validation"()
+    {
+        setup:
+            //Log log = Mock()
+            def appState = [:]
+            AppExecutor api = Mock{
+                //_ * getLog() >> log
+                _ * getState() >> appState
+            }
+
+        expect:
+            sandbox.run(api: api)
+    }
+}

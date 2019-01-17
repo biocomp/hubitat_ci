@@ -39,19 +39,43 @@ class ParametersToValidate
                 }))
     }
 
+    private static String validateStringValue(
+            EnumSet<ValidationFlags> flags,
+            String context, String name,
+            def value,
+            Map options)
+    {
+        assert value != null: "${context}: '${name}' value can't be null"
+
+        String val = null
+
+        if (value instanceof String)
+        {
+            val = value as String
+        }
+        else if (value instanceof GString)
+        {
+            val = (value as GString).toString()
+        }
+        else
+        {
+            assert false: "${context}: '${name}''s value must be String/GString, not ${value.class}"
+        }
+
+        if (!options.getOrDefault("canBeEmpty", false) && !flags.contains(ValidationFlags.AllowEmptyOptionValueStrings)) {
+            assert val != "": "${context}: '${name}''s value can't be empty"
+        }
+
+        return val
+    }
+    
     void stringParameter(Map options)
     {
         assert options.name
 
         addParameter(new Parameter(options.name as String, options.get("required", false) as boolean,
                 { EnumSet<ValidationFlags> flags,  String context, String name, def value ->
-                    assert value != null: "${context}: '${name}' value can't be null"
-                    assert value instanceof String: "${context}: '${name}''s value must be String, not ${value.class}"
-                    String val = value as String
-
-                    if (!options.getOrDefault("canBeEmpty", false) && !flags.contains(ValidationFlags.AllowEmptyOptionValueStrings)) {
-                        assert val != "": "${context}: '${name}''s value can't be empty"
-                    }
+                    validateStringValue(flags, context, name, value, options)
                 }))
     }
 
@@ -63,11 +87,8 @@ class ParametersToValidate
         def validValues = new HashSet<String>(options.values as List<String>)
 
         addParameter(new Parameter(options.name as String, options.get("required", false) as boolean,
-                { def flags, String context, String name, def value ->
-                    assert value != null: "${context}: '${name}' value can't be null"
-                    assert value instanceof String: "${context}: '${name}''s value must be String, not ${value.class}"
-                    String val = value as String
-
+                { EnumSet<ValidationFlags> flags, String context, String name, def value ->
+                    def val = validateStringValue(flags, context, name, value, options)
                     assert validValues.contains(val) : "${context}: '${name}''s value is not supported. Valid values: ${validValues}"
                 }))
     }

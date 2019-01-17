@@ -15,4 +15,4 @@
 	url = https://github.com/mihaca/homeremote.git
 [submodule "SubmodulesWithScripts/homebridge-hubitat-tonesto7"]
 	path = SubmodulesWithScripts/homebridge-hubitat-tonesto7
-	url = https://github.com/tonesto7/homebridge-hubitat-tonesto7.git
+	url = https://github.com/biocomp/homebridge-hubitat-tonesto7.git

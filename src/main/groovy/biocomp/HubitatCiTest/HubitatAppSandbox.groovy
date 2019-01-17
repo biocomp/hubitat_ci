@@ -154,7 +154,7 @@ class HubitatAppSandbox {
     }
 
 
-    static final Set<String> forbiddenExpressions = ["execute",
+    static final Set<String> forbiddenExpressions = [//"execute",
                                                      "getClass",
                                                      "getMetaClass",
                                                      "setMetaClass",
@@ -172,6 +172,7 @@ class HubitatAppSandbox {
     ] as Set
 
     private static List<Class> classWhiteList = [java.lang.Object,
+                                                 java.lang.Exception,
                                                  groovy.lang.GString,
                                                  org.codehaus.groovy.runtime.InvokerHelper,
                                                  ArrayList,
@@ -258,7 +259,8 @@ class HubitatAppSandbox {
                                                  //org.json.JSONObject.Null,
                                                  biocomp.hubitatCiTest.emulation.Protocol,
                                                  biocomp.hubitatCiTest.emulation.commonApi.HubAction,
-                                                 biocomp.hubitatCiTest.emulation.commonApi.HubResponse
+                                                 biocomp.hubitatCiTest.emulation.commonApi.HubResponse,
+                                                 biocomp.hubitatCiTest.emulation.commonApi.Location
 
     ] as List<Class>
 
