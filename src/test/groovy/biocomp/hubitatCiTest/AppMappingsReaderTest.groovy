@@ -1,11 +1,10 @@
 package biocomp.hubitatCiTest
 
-import biocomp.hubitatCiTest.apppreferences.ValidationFlags
+import biocomp.hubitatCiTest.validation.Flags
 import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
 import biocomp.hubitatCiTest.emulation.commonApi.Log
 import groovy.transform.NotYetImplemented
 import spock.lang.Specification
-import spock.lang.Unroll
 
 class AppMappingsReaderTest extends
         Specification
@@ -13,7 +12,7 @@ class AppMappingsReaderTest extends
 
     def tryReadMappings(String fromScript) {
         return new HubitatAppSandbox(fromScript).run(
-                validationFlags: [ValidationFlags.DontValidateDefinition, ValidationFlags.DontValidatePreferences]).getProducedMappings()
+                validationFlags: [Flags.DontValidateDefinition, Flags.DontValidatePreferences]).getProducedMappings()
     }
 
     def "No mappings is OK"() {
@@ -157,14 +156,14 @@ mappings {
         path("/config") { action: [GET: "renderConfig"]  }
     }
 }
-
+mapp
 def authError() {
     [error: "Permission denied"]
 }
 """
     }
 
-    def "mappings() handlers can refer to implicit 'params' and 'request' args and still access the rest of script's methods and data"() {
+    def "mappings() handlers can refer to implicit 'params' and 'request' args and still access the rest of script's methods, data and even metamethods"() {
         given:
             Map state = [:]
             Log log = Mock()
@@ -173,80 +172,50 @@ def authError() {
                 _ * getState() >> state
             }
 
-            def mappings = new HubitatAppSandbox("""
-mappings{
-    path('/p') {
-        action: [
-            'GET': 'handlerForGet',
-            'PUT': 'handlerForPut'
-        ]
-    }
-}
-
-private static String foo()
-{
-    return "String from foo()"
-}
-
-def bar()
-{
-    return "String from bar()"
-}
-
-private handlerForGet()
-{
-    log.debug "handlerForGet foo(): \${foo()}"
-    log.debug "handlerForGet bar(): \${bar()}"
-    log.debug "state.blah = \${state.blah}"
-    log.debug "setting state.blah = 42"
-    state.blah = 42
-    log.debug "someInputName = \${someInputName}"
-    log.debug "settings.someOtherInput = \${settings.someOtherInput}"
-    log.debug "params = \${params}"
-    log.debug "request = \${request}"
-}
-
-private handlerForPut()
-{
-    log.debug "handlerForPut foo(): \${foo()}"
-    log.debug "state.blah = \${state.blah}"
-    log.debug "someInputName = \${someInputName}"
-    log.debug "settings.someOtherInput = \${settings.someOtherInput}"
-    log.debug "params = \${params}"
-    log.debug "request = \${request}"
-}
-
-""").run(validationFlags: [ValidationFlags.DontValidatePreferences, ValidationFlags.DontValidateDefinition],
+            def mappings = new HubitatAppSandbox(new File("Scripts/MappingParamInjection.groovy")).run(validationFlags: [Flags.DontValidatePreferences, Flags.DontValidateDefinition],
                     api: api,
                     userSettingValues: [someInputName : "some input value",
-                                        someOtherInput: "some other input value"]).getProducedMappings()
+                                        someOtherInput: "some other input value"],
+                    customizeScriptBeforeRun: { def script ->
+                        script.getMetaClass().myExistingMetaMethod = { -> "from existing method, overridden!"}
+                        script.getMetaClass().myNewMetaMethod = { -> "from metamethod!"}
+                    }).getProducedMappings()
 
         when:
             mappings['/p'].actions.GET(123, "I'm a request")
             mappings['/p'].actions.PUT("I'm params", "Another request")
+            mappings['/p/null'].actions.PUT(null, null)
 
         then: "GET called"
             with(log) {
                 // GET
                 1 * debug("handlerForGet foo(): String from foo()")
-                1 * debug("handlerForGet bar(): String from bar()")
+                1 * debug("handlerForGet bar(): String from bar() [params = 123, request = I'm a request]")
                 1 * debug("state.blah = null")
                 1 * debug("setting state.blah = 42")
                 1 * debug("someInputName = some input value")
                 1 * debug("settings.someOtherInput = some other input value")
-            }
-
-        then: "PUT called"
-            with(log) {
-                // PUT
                 1 * debug("params = 123")
                 1 * debug("request = I'm a request")
+                1 * debug("myExistingMetaMethod() = from existing method, overridden!")
+                1 * debug("myNewMetaMethod() = from metamethod!")
+
+                // PUT
                 1 * debug("handlerForPut foo(): String from foo()")
+                1 * debug("handlerForPut bar(): String from bar() [params = I'm params, request = Another request]")
                 1 * debug("state.blah = 42")
                 1 * debug("someInputName = some input value")
                 1 * debug("settings.someOtherInput = some other input value")
                 1 * debug("params = I'm params")
                 1 * debug("request = Another request")
+                1 * debug("myNewMetaMethod() #2 = from metamethod!")
+
+                // p/null: PUT
+                1 * debug("handlerForPut2 bar(): String from bar() [params = null, request = null]")
+                1 * debug("state.blah = 42")
+                1 * debug("params = null")
+                1 * debug("request = null")
+                1 * debug("myNewMetaMethod() #3 = from metamethod!")
             }
 
         then:

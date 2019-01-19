@@ -1,7 +1,11 @@
 package biocomp.hubitatCiTest
 
-import biocomp.hubitatCiTest.apppreferences.ValidationFlags
+
+import biocomp.hubitatCiTest.validation.Flags
+import biocomp.hubitatCiTest.validation.Validator
+
 import groovy.transform.TypeChecked
+import groovy.transform.TypeCheckingMode
 
 class AllowsAddingClassesClassLoader extends GroovyClassLoader
 {
@@ -17,56 +21,66 @@ class AllowsAddingClassesClassLoader extends GroovyClassLoader
 class MappingPath {
     static final HashSet<String> supportedActions = ["GET", "PUT", "POST", "DELETE"] as HashSet
 
-    static Class constructDerivedClass(ClassLoader parentClassLoader, MetaClass scriptMetaClass)
+    /**
+     * To be able to call script's mapping callbacks
+     * @return
+     */
+    @TypeChecked(TypeCheckingMode.SKIP)
+    static Closure<HubitatAppScript> makeScriptWithInjectedPropsFactory()
     {
-        def scriptClassName = scriptMetaClass.theClass.name
-        def classBody = """
-            class DerivedFrom${scriptClassName} extends ${scriptClassName}
-            {
-                DerivedFrom${scriptClassName}(def params, def request) 
-                { 
-                    this.params = params;
-                    this.request = request;
-                }
+        return { HubitatAppScript script, def params, def request ->
+            def scriptWithInjectedProps = script.getMetaClass().invokeConstructor()
+            scriptWithInjectedProps.metaClass = script.metaClass
 
-                final def params
-                final def request
-            }"""
-
-        def loader = new AllowsAddingClassesClassLoader(parentClassLoader)
-        loader.addClass(scriptMetaClass.theClass)
-
-        return loader.parseClass(classBody)
+            scriptWithInjectedProps.initialize(script)
+            scriptWithInjectedProps.installMappingInjectedProps(params, request)
+            return scriptWithInjectedProps
+        }
     }
 
-    MappingPath(HubitatAppScript script, String path, Map actions, EnumSet<ValidationFlags> flags, Class scriptDerivedClass)
+    MappingPath(HubitatAppScript script, String path, Map actions, Validator validator, Closure<HubitatAppScript> derivedScriptFactory)
     {
         this.actionNames = actions
         this.path = path
 
         this.actionNames.each
         {
-            this.actions[it.key as String] = makeActionHandler(script, it.key as String, it.value as String, flags, scriptDerivedClass)
+            this.actions[it.key as String] = makeActionHandler(script, it.key as String, it.value as String, validator, derivedScriptFactory)
         }
     }
 
-    //@TypeChecked(TypeCheckingMode.SKIP)
-    private static Closure makeActionHandler(HubitatAppScript script, String actionWord, String functionName, EnumSet<ValidationFlags> flags, Class scriptDerivedClass)
+    @TypeChecked(TypeCheckingMode.SKIP)
+    private static Closure makeActionHandler(HubitatAppScript script, String actionWord, String functionName, Validator validator, Closure<HubitatAppScript> derivedScriptFactory)
     {
         assert supportedActions.contains(actionWord) : "Action '${actionWord}' is not supported. Supported actions are: ${supportedActions}"
 
         // Now need to run named closure that is adding dynamic pages
         def methodWithNoArgs = script.getMetaClass().pickMethod(functionName, [] as Class[])
 
-        if (!flags.contains(ValidationFlags.DontValidateMappings)) {
+        if (!validator.hasFlag(Flags.DontValidateMappings)) {
             assert methodWithNoArgs: "${this}: action '${actionWord}' refers to method '${functionName}' which does not exist (method must have no args)."
         }
 
         return {
             def params, def request ->
-                def scriptWithInjectedProps = scriptDerivedClass.newInstance(params, request)
-                (scriptWithInjectedProps as HubitatAppScript).initialize(script)
-                scriptWithInjectedProps.&"${functionName}"()
+                def scriptWithInjectedProps = derivedScriptFactory(script, params, request)
+
+//                println "scriptWithInjectedProps(${scriptWithInjectedProps.class.name}).myStaticExistingMetaMethod() = ${scriptWithInjectedProps.myStaticExistingMetaMethod()}"
+//                println "scriptWithInjectedProps(${scriptWithInjectedProps.class.name}).myExistingMetaMethod() = ${scriptWithInjectedProps.myExistingMetaMethod()}"
+//                println "scriptWithInjectedProps(${scriptWithInjectedProps.class.name}).myNewMetaMethod() = ${scriptWithInjectedProps.myNewMetaMethod()}"
+
+                scriptWithInjectedProps."${functionName}"()
+
+//                println "script.TestmyExistingMetaMethod() = ${script.TestmyExistingMetaMethod()}"
+//                println "scriptWithInjectedProps.TestmyExistingMetaMethod() = ${scriptWithInjectedProps.TestmyExistingMetaMethod()}"
+//
+//                println "script.TestmyStaticExistingMetaMethod() = ${script.TestmyStaticExistingMetaMethod()}"
+//                println "scriptWithInjectedProps.TestmyStaticExistingMetaMethod() = ${scriptWithInjectedProps.TestmyStaticExistingMetaMethod()}"
+//
+//                println "scriptWithInjectedProps #2(${scriptWithInjectedProps.class.name}).myStaticExistingMetaMethod() = ${scriptWithInjectedProps.myStaticExistingMetaMethod()}"
+//                println "scriptWithInjectedProps #2(${scriptWithInjectedProps.class.name}).myExistingMetaMethod() = ${scriptWithInjectedProps.myExistingMetaMethod()}"
+//                println "scriptWithInjectedProps #2(${scriptWithInjectedProps.class.name}).myNewMetaMethod() = ${scriptWithInjectedProps.myNewMetaMethod()}"
+
         }
     }
 

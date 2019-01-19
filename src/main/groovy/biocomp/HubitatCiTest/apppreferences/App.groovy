@@ -1,6 +1,8 @@
 package biocomp.hubitatCiTest.apppreferences
 
-import biocomp.hubitatCiTest.util.NamedParametersValidator
+import biocomp.hubitatCiTest.validation.NamedParametersValidator
+import biocomp.hubitatCiTest.validation.Flags
+import biocomp.hubitatCiTest.validation.Validator
 import groovy.transform.TypeChecked
 
 @TypeChecked
@@ -18,15 +20,15 @@ class App {
         boolParameter(name: "multiple")
     }
 
-    App(Map options, String name, String namespace, String title, EnumSet<ValidationFlags> flags)
+    App(Map options, String name, String namespace, String title, Validator validator)
     {
         this.name = name
         this.namespace = namespace
         this.title = title
         this.options = options
 
-        if (!flags.contains(ValidationFlags.DontValidatePreferences)) {
-            paramValidator.validate(this.toString(), options, flags)
+        if (!validator.hasFlag(Flags.DontValidatePreferences)) {
+            paramValidator.validate(this.toString(), options, validator)
         }
     }
 

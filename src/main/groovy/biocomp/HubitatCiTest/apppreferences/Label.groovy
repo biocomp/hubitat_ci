@@ -1,6 +1,8 @@
 package biocomp.hubitatCiTest.apppreferences
 
-import biocomp.hubitatCiTest.util.NamedParametersValidator
+import biocomp.hubitatCiTest.validation.NamedParametersValidator
+import biocomp.hubitatCiTest.validation.Flags
+import biocomp.hubitatCiTest.validation.Validator
 import groovy.transform.TypeChecked
 
 @TypeChecked
@@ -12,11 +14,11 @@ class Label {
         boolParameter(name: "required")
     }
 
-    Label(Map options, EnumSet<ValidationFlags> flags) {
+    Label(Map options, Validator validator) {
         this.options = options
 
-        if (!flags.contains(ValidationFlags.DontValidatePreferences)) {
-            paramValidator.validate(this.toString(), options, flags)
+        if (!validator.hasFlag(Flags.DontValidatePreferences)) {
+            paramValidator.validate(this.toString(), options, validator)
         }
     }
 

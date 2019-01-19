@@ -1,6 +1,8 @@
 package biocomp.hubitatCiTest.apppreferences
 
-import biocomp.hubitatCiTest.util.NamedParametersValidator
+import biocomp.hubitatCiTest.validation.NamedParametersValidator
+import biocomp.hubitatCiTest.validation.Flags
+import biocomp.hubitatCiTest.validation.Validator
 import groovy.transform.TypeChecked
 
 @TypeChecked
@@ -14,13 +16,13 @@ class Mode {
         stringParameter(name: "image", canBeEmpty: false)
     }
 
-    Mode(Map options, EnumSet<ValidationFlags> validationFlags)
+    Mode(Map options, Validator validator)
     {
         this.options = options
 
-        if (!validationFlags.contains(ValidationFlags.DontValidatePreferences))
+        if (!validator.hasFlag(Flags.DontValidatePreferences))
         {
-            paramValidator.validate(this.toString(), options, validationFlags, true)
+            paramValidator.validate(this.toString(), options, validator, true)
         }
     }
 

@@ -1,15 +1,17 @@
 package biocomp.hubitatCiTest.apppreferences
 
+
+import biocomp.hubitatCiTest.validation.Validator
 import groovy.transform.TypeChecked
 
 @TypeChecked
 class PreferencesReaderState {
-    PreferencesReaderState(EnumSet<ValidationFlags> flags)
+    PreferencesReaderState(Validator validator)
     {
-        this.flags = flags;
+        this.validator = validator;
     }
 
-    final private EnumSet<ValidationFlags> flags
+    final private Validator validator
 
     Preferences currentPreferences
     Page currentPage
@@ -44,7 +46,6 @@ class PreferencesReaderState {
 
             currentPreferences = newPrefrences
             makeContents()
-            currentPreferences.validate(flags)
         }
         finally
         {
@@ -62,7 +63,7 @@ class PreferencesReaderState {
             makeContents()
 
             if (validate) {
-                currentPage.validate(flags)
+                currentPage.validate(validator)
             }
         } finally {
             currentPage = null
@@ -78,7 +79,7 @@ class PreferencesReaderState {
             currentDynamicMethod = methodName
             makeContents()
 
-            currentPreferences.validateSingleDynamicPageFor(flags, currentDynamicMethod)
+            validator.validateSingleDynamicPageFor(currentPreferences, currentDynamicMethod)
 
         } finally {
             currentDynamicMethod = null
@@ -92,7 +93,7 @@ class PreferencesReaderState {
             currentSection = newSection
             makeContents()
 
-            currentSection.validate(flags)
+            currentSection.validate(validator)
         } finally {
             currentSection = null
         }

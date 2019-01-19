@@ -1,6 +1,8 @@
 package biocomp.hubitatCiTest.apppreferences
 
-import biocomp.hubitatCiTest.util.NamedParametersValidator
+import biocomp.hubitatCiTest.validation.Validator
+import biocomp.hubitatCiTest.validation.NamedParametersValidator
+import biocomp.hubitatCiTest.validation.Flags
 import groovy.transform.TypeChecked
 
 @TypeChecked
@@ -30,28 +32,28 @@ class HRef {
         stringParameter(name: "image", canBeEmpty: false)
     }
 
-    HRef(Map options, String nextPageName, EnumSet<ValidationFlags> flags)
+    HRef(Map options, String nextPageName, Validator validator)
     {
         this.options = options
         this.nextPageName = nextPageName
 
-        validate(flags)
+        validate(validator)
     }
 
     HRef(String nextPageName) {
         this.nextPageName = nextPageName
     }
 
-    HRef(Map options, EnumSet<ValidationFlags> flags) {
+    HRef(Map options, Validator validator) {
         this.options = options
 
-        validate(flags)
+        validate(validator)
     }
 
-    private void validate(EnumSet<ValidationFlags> flags)
+    private void validate(Validator validator)
     {
-        if (!flags.contains(ValidationFlags.DontValidatePreferences)) {
-            paramValidator.validate(this.toString(), options, flags, false)
+        if (!validator.hasFlag(Flags.DontValidatePreferences)) {
+            paramValidator.validate(this.toString(), options, validator, false)
 
             // Extra validations ('page' is not compatible with 'style: external'):
             if (options?.containsKey('page'))

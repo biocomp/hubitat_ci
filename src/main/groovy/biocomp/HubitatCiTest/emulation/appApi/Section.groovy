@@ -51,6 +51,10 @@ interface Section {
      *                 phone 	A phone number
      *                 time 	A time of day. The value will be stored as a string in the Java SimpleDateFormat (e.g., "2015-01-09T15:50:32.000-0600")
      *                 text 	A text value
+     *       width (int) - default = 12.
+     *          Page has with of 12, and if this value is less than 12,
+     *          next input or label can be put on the same line (if their width is small enough).
+     *          see: https://community.hubitat.com/t/tabular-inputs-as-in-thermostat-manager/7482
      * @param name     - name of the input (could also be passed as options)
      * @param type     - type of the input (see option's type values)
      */
@@ -102,6 +106,10 @@ interface Section {
      *                 description (String) - the text in the input field.
      *                 required (Boolean) - true or false to specify this input is required. Defaults to false. Defaults to true.
      *                 image (String) - URL to an image to use, if desired.
+     *                 width (int) - default = 12.
+     *                      Page has with of 12, and if this value is less than 12,
+     *                      next input or label can be put on the same line (if their width is small enough).
+     *                      see: https://community.hubitat.com/t/tabular-inputs-as-in-thermostat-manager/7482
      */
     abstract def label(Map options)
 

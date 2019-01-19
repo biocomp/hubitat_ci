@@ -4,6 +4,8 @@ import biocomp.hubitatCiTest.emulation.appApi.Preferences as PreferencesInterfac
 import biocomp.hubitatCiTest.HubitatAppScript
 import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
 import biocomp.hubitatCiTest.emulation.appApi.DynamicPage
+import biocomp.hubitatCiTest.validation.Flags
+import biocomp.hubitatCiTest.validation.Validator
 import groovy.transform.TypeChecked
 
 @TypeChecked
@@ -13,18 +15,18 @@ class AppPreferencesReader implements
     AppPreferencesReader(
             HubitatAppScript parentScript,
             AppExecutor delegate,
-            EnumSet<ValidationFlags> validationFlags,
+            Validator validator,
             Map userSettingsValue)
     {
         this.parentScript = parentScript
         this.delegate = delegate
-        this.validationFlags = validationFlags
+        this.validator = validator
 
-        this.settingsContainer = new SettingsContainer(prefState, validationFlags, userSettingsValue);
+        this.settingsContainer = new SettingsContainer(prefState, validator, userSettingsValue);
     }
 
     Preferences getProducedPreferences() {
-        if (!validationFlags.contains(ValidationFlags.DontValidatePreferences)) {
+        if (!validator.hasFlag(Flags.DontValidatePreferences)) {
             assert preferences_: "preferences() method was never called or failed. Either way, you can't get the preferences."
         }
 
@@ -97,14 +99,14 @@ class AppPreferencesReader implements
      */
     @Override
     def page(Map options) {
-        if (validationFlags.contains(ValidationFlags.AllowTitleInPageCallingMethods)) {
+        if (validator.hasFlag(Flags.AllowTitleInPageCallingMethods)) {
             Page.dynamicPageInitialParamValidatorWithTitle.validate("page(${options}) - special case of reference to method",
-                    options, validationFlags)
+                    options, validator)
         }
         else
         {
             Page.dynamicPageInitialParamValidator.validate("page(${options}) - special case of reference to method",
-                    options, validationFlags)
+                    options, validator)
         }
 
         // Now need to run named closure that is adding dynamic pages
@@ -178,26 +180,6 @@ class AppPreferencesReader implements
         addSectionImpl(null, null, makeContents)
     }
 
-    //
-    //    @Override
-    //    def section(
-    //            String sectionTitle,
-    //            @DelegatesTo(Section) Closure makeContents)
-    //    {
-    //
-    //        println "Page adding section with just title = ${sectionTitle}"
-    //        sections << Utility.runClosureAndValidate(new Section(sections.size(), sectionTitle), makeContents)
-    //    }
-    //
-    //    @Override
-    //    def section(
-    //            Map options, String sectionTitle,
-    //            @DelegatesTo(Section) Closure makeContents)
-    //    {
-    //        println "Page adding section with title = ${sectionTitle} and options = ${options}"
-    //        sections << Utility.runClosureAndValidate(new Section(sections.size(), sectionTitle, options), makeContents)
-    //    }
-
     /*
 
     input()
@@ -206,19 +188,19 @@ class AppPreferencesReader implements
 
     @Override
     Object input(Map options, String name, String type) {
-        prefState.currentSection.children << new Input(options, name, type, validationFlags)
+        prefState.currentSection.children << new Input(options, name, type, validator)
         settingsContainer.userInputFound(name)
     }
 
     @Override
     Object input(String name, String type) {
-        prefState.currentSection.children << new Input(null, name, type, validationFlags)
+        prefState.currentSection.children << new Input(null, name, type, validator)
         settingsContainer.userInputFound(name)
     }
 
     @Override
     Object input(Map options) {
-        prefState.currentSection.children << new Input(options, null, null, validationFlags)
+        prefState.currentSection.children << new Input(options, null, null, validator)
         settingsContainer.userInputFound(options.name as String)
     }
 
@@ -237,13 +219,13 @@ class AppPreferencesReader implements
     @Override
     def href(Map options)
     {
-        prefState.currentSection.children << new HRef(options, validationFlags)
+        prefState.currentSection.children << new HRef(options, validator)
     }
 
     @Override
     def href(Map options, String nextPageName)
     {
-        prefState.currentSection.children << new HRef(options, nextPageName, validationFlags)
+        prefState.currentSection.children << new HRef(options, nextPageName, validator)
     }
 
     /*
@@ -254,7 +236,7 @@ class AppPreferencesReader implements
 
     @Override
     def label(Map options) {
-        prefState.currentSection.children << new Label(options, validationFlags)
+        prefState.currentSection.children << new Label(options, validator)
     }
 
 
@@ -268,7 +250,7 @@ class AppPreferencesReader implements
     @Override
     def mode(Map options)
     {
-        prefState.currentSection.children << new Mode(options, validationFlags)
+        prefState.currentSection.children << new Mode(options, validator)
     }
 
     /*
@@ -279,12 +261,12 @@ class AppPreferencesReader implements
 
     @Override
     def paragraph(Map options, String text) {
-        prefState.currentSection.children << new Paragraph(text, options, validationFlags)
+        prefState.currentSection.children << new Paragraph(text, options, validator)
     }
 
     @Override
     def paragraph(String text) {
-        prefState.currentSection.children << new Paragraph(text, null, validationFlags)
+        prefState.currentSection.children << new Paragraph(text, null, validator)
     }
 
     /*
@@ -295,17 +277,17 @@ class AppPreferencesReader implements
 
     @Override
     def app(Map options) {
-        prefState.currentSection.children << new App(options, null, null, null, validationFlags)
+        prefState.currentSection.children << new App(options, null, null, null, validator)
     }
 
     @Override
     def app(String name, String namespace, String title) {
-        prefState.currentSection.children << new App(null, name, namespace, title, validationFlags)
+        prefState.currentSection.children << new App(null, name, namespace, title, validator)
     }
 
     @Override
     def app(Map options, String name, String namespace, String title) {
-        prefState.currentSection.children << new App(options, name, namespace, title, validationFlags)
+        prefState.currentSection.children << new App(options, name, namespace, title, validator)
     }
 
     /*
@@ -334,15 +316,24 @@ class AppPreferencesReader implements
     */
 
     private void readPreferencesImpl(Map options, @DelegatesTo(PreferencesInterface) Closure makeContents) {
-        def newPreferences = new Preferences(parentScript, null)
+        def newPreferences = new Preferences(parentScript, options)
         preferences_ = prefState.initWithPreferences(newPreferences,
                 {
                     makeContents()
-                    newPreferences.registerDynamicPages(validationFlags)
+                    registerDynamicPages(newPreferences)
                 })
 
         settingsContainer.validateAfterPreferences()
     }
+
+
+
+    /**
+     * Calls methods that create dymaic pages that were discovered previously*/
+    void registerDynamicPages(Preferences preferences) {
+        preferences.dynamicRegistrations.each { it() }
+    }
+
 
     /*
 
@@ -350,9 +341,9 @@ class AppPreferencesReader implements
 
      */
 
-    private final EnumSet<ValidationFlags> validationFlags
+    private final Validator validator
 
-    private final PreferencesReaderState prefState = new PreferencesReaderState(validationFlags)
+    private final PreferencesReaderState prefState = new PreferencesReaderState(validator)
 
     private final SettingsContainer settingsContainer
 

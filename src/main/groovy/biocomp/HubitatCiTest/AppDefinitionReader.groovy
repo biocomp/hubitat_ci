@@ -1,8 +1,10 @@
 package biocomp.hubitatCiTest
 
-import biocomp.hubitatCiTest.apppreferences.ValidationFlags
+
+import biocomp.hubitatCiTest.validation.Flags
+import biocomp.hubitatCiTest.validation.Validator
 import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
-import biocomp.hubitatCiTest.util.NamedParametersValidator
+import biocomp.hubitatCiTest.validation.NamedParametersValidator
 import groovy.transform.TypeChecked
 
 @TypeChecked
@@ -22,9 +24,9 @@ class AppDefinitionReader implements
         boolParameter(name: "oauth")
     }
 
-    AppDefinitionReader(AppExecutor delegate, EnumSet<ValidationFlags> flags) {
+    AppDefinitionReader(AppExecutor delegate, Validator validator) {
         this.delegate = delegate
-        this.flags = flags
+        this.validator = validator
     }
 
     @Override
@@ -43,7 +45,7 @@ class AppDefinitionReader implements
     }
 
     private void verifyDefinitionMap(Map definitionsMap) {
-        if (!flags.contains(ValidationFlags.DontValidateDefinition)) {
+        if (!validator.hasFlag(Flags.DontValidateDefinition)) {
             assert definitionsMap: "Map passed into definition() can't be null"
 
             def assertPropertyIsSet = { String name, boolean notEvenEmpty ->
@@ -55,13 +57,13 @@ class AppDefinitionReader implements
 
             // Checking mandatory properties
             assert definitionsMap: "definitions should be provided"
-            paramValidator.validate("definition(): ", definitionsMap, flags, true)
+            paramValidator.validate("definition(): ", definitionsMap, validator, true)
         }
     }
 
     Map<String, Object> getDefinitions()
     {
-        if (!flags.contains(ValidationFlags.DontValidateDefinition)) {
+        if (!validator.hasFlag(Flags.DontValidateDefinition)) {
             assert definitions: "definition() method was never called or failed. Either way, definition list is empty."
         }
         return definitions
@@ -69,7 +71,7 @@ class AppDefinitionReader implements
 
     @Delegate
     final private AppExecutor delegate
-    final private EnumSet<ValidationFlags> flags
+    final private Validator validator
 
     private Map<String, Object> definitions
 }

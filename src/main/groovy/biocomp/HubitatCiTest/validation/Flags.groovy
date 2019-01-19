@@ -1,8 +1,8 @@
-package biocomp.hubitatCiTest.apppreferences
+package biocomp.hubitatCiTest.validation
 
 import groovy.transform.TypeChecked
 
-enum ValidationFlags
+enum Flags
 {
     Default,
     DontRunScript,
@@ -26,7 +26,7 @@ enum ValidationFlags
     AllowMissingInstall
 
     @TypeChecked
-    static EnumSet<ValidationFlags> from(ValidationFlags... settings)
+    static EnumSet<Flags> from(Flags... settings)
     {
         return  EnumSet.copyOf(settings.toList());
     }

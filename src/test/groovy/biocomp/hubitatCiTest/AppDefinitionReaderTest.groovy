@@ -1,6 +1,7 @@
 package biocomp.hubitatCiTest
 
-import biocomp.hubitatCiTest.apppreferences.ValidationFlags
+
+import biocomp.hubitatCiTest.validation.Flags
 import groovy.transform.TypeChecked
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -14,7 +15,7 @@ class AppDefinitionReaderTest extends
     {
         when:
             new HubitatAppSandbox("definition(${parameters.collect { "${it.key}: '${it.value}'" }.join(', ')})").run(
-                    validationFlags: [ValidationFlags.DontValidatePreferences])
+                    validationFlags: [Flags.DontValidatePreferences])
 
         then:
             AssertionError e = thrown()
@@ -40,7 +41,7 @@ class AppDefinitionReaderTest extends
     def "Script with no definition() call will fail"()
     {
         when:
-            new HubitatAppSandbox("int x = 0").run(validationFlags: [ValidationFlags.DontValidatePreferences])
+            new HubitatAppSandbox("int x = 0").run(validationFlags: [Flags.DontValidatePreferences])
 
         then:
             AssertionError e = thrown()
@@ -51,7 +52,7 @@ class AppDefinitionReaderTest extends
     def "Script with no definition() call will succeed, if definition validation disabled"()
     {
         expect:
-            new HubitatAppSandbox("int x = 0").run(validationFlags: [ValidationFlags.DontValidateDefinition, ValidationFlags.DontValidatePreferences])
+            new HubitatAppSandbox("int x = 0").run(validationFlags: [Flags.DontValidateDefinition, Flags.DontValidatePreferences])
     }
 
     @TypeChecked
@@ -66,7 +67,7 @@ class AppDefinitionReaderTest extends
                     iconUrl: "v",
                     iconX2Url: "v",
                     iconX3Url: "v",
-                    ${entry})/$).run(validationFlags: [ValidationFlags.DontValidatePreferences]).getProducedDefinition()
+                    ${entry})/$).run(validationFlags: [Flags.DontValidatePreferences]).getProducedDefinition()
     }
 
     def "Other supported parameters are accepted"()

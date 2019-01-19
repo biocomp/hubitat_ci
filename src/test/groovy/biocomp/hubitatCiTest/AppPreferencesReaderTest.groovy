@@ -3,7 +3,7 @@ package biocomp.hubitatCiTest
 import biocomp.hubitatCiTest.apppreferences.App
 import biocomp.hubitatCiTest.apppreferences.Mode
 import biocomp.hubitatCiTest.apppreferences.Preferences
-import biocomp.hubitatCiTest.apppreferences.ValidationFlags
+import biocomp.hubitatCiTest.validation.Flags
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -162,7 +162,7 @@ preferences{
     def "Reading valid page options"(String pageOptions, String propetyName, def expectedValue) {
         given:
             def preferences = new HubitatAppSandbox(makePageWithParams(pageOptions)).readPreferences(
-                    validationFlags: [ValidationFlags.AllowMissingInstall, ValidationFlags.AllowUnreachablePages])
+                    validationFlags: [Flags.AllowMissingInstall, Flags.AllowUnreachablePages])
 
         expect:
             preferences.pages[0].options."${propetyName}" == expectedValue
@@ -388,7 +388,7 @@ def makePage3()
                                         in2: ["makePage2": null,
                                               "makePage3": "input2 val on page3",
                                               "_"        : "should not be used"]],
-                    validationFlags: [ValidationFlags.AllowReadingNonInputSettings, ValidationFlags.AllowUnreachablePages])
+                    validationFlags: [Flags.AllowReadingNonInputSettings, Flags.AllowUnreachablePages])
 
         expect:
             preferences.dynamicPages[0].sections[0].title == 'input1 val everywhere section, unknown: null'
@@ -423,7 +423,7 @@ def makePage2()
     }
 }
 /$).readPreferences(userSettingValues: [it1: "input1val", it2: "input2val"],
-                    validationFlags: [ValidationFlags.AllowUnreachablePages])
+                    validationFlags: [Flags.AllowUnreachablePages])
 
         then:
             AssertionError e = thrown()
@@ -434,12 +434,13 @@ def makePage2()
     @Unroll
     def "href and page's nextPage fail if referring to invalid pages"(String script) {
         when:
-            new HubitatAppSandbox(script).readPreferences(validationFlags: [ValidationFlags.AllowMissingInstall])
+            new HubitatAppSandbox(script).readPreferences(validationFlags: [Flags.AllowMissingInstall])
 
         then:
             AssertionError e = thrown()
             e.message.contains("invalidPageName")
-            e.message.contains("reference")
+            e.message.contains("not valid")
+            e.message.contains("p1")
 
         where:
             script << ["""
@@ -462,7 +463,7 @@ preferences{
     @Unroll
     def "Page is not reachable (via initial pages or nextPage or href), thus validation fails"(String script) {
         when:
-            new HubitatAppSandbox(script).readPreferences(validationFlags: [ValidationFlags.AllowMissingInstall])
+            new HubitatAppSandbox(script).readPreferences(validationFlags: [Flags.AllowMissingInstall])
 
         then:
             AssertionError e = thrown()
@@ -602,7 +603,7 @@ def makePage2() { foo() }"""]
     def "href() with all supported parameters works"(String script, Map expectedValues) {
         when:
             def href = new HubitatAppSandbox(script).run(
-                    validationFlags: [ValidationFlags.DontValidateDefinition, ValidationFlags.AllowUnreachablePages]).getProducedPreferences().pages[
+                    validationFlags: [Flags.DontValidateDefinition, Flags.AllowUnreachablePages]).getProducedPreferences().pages[
                     0].sections[0].children[0]
 
         then:
@@ -623,7 +624,7 @@ def makePage2() { foo() }"""]
     def "href() 'page' option is not compatible with external style"() {
         when:
             new HubitatAppSandbox(pageWith("href(page: 'somePage', style: 'external')")).run(
-                    validationFlags: [ValidationFlags.DontValidateDefinition])
+                    validationFlags: [Flags.DontValidateDefinition])
 
         then:
             AssertionError e = thrown()
@@ -635,7 +636,7 @@ def makePage2() { foo() }"""]
     def "href() with unsupported parameter fails"() {
         when:
             new HubitatAppSandbox(pageWith("href(someBadVal: 'val')")).run(
-                    validationFlags: [ValidationFlags.DontValidateDefinition])
+                    validationFlags: [Flags.DontValidateDefinition])
 
         then:
             AssertionError e = thrown()
@@ -646,7 +647,7 @@ def makePage2() { foo() }"""]
     def "href() with unsupported style fails"() {
         when:
             new HubitatAppSandbox(pageWith("href(style: 'badStyle')")).run(
-                    validationFlags: [ValidationFlags.DontValidateDefinition])
+                    validationFlags: [Flags.DontValidateDefinition])
 
         then:
             AssertionError e = thrown()
@@ -658,14 +659,14 @@ def makePage2() { foo() }"""]
     def "href() with unsupported parameter succeeds, if validation is disabled"() {
         expect:
             new HubitatAppSandbox(pageWith("href(someBadVal: 'val')")).run(
-                    validationFlags: [ValidationFlags.DontValidatePreferences, ValidationFlags.DontValidateDefinition])
+                    validationFlags: [Flags.DontValidatePreferences, Flags.DontValidateDefinition])
     }
 
     def "mode() with all valid options"() {
         setup:
             def mode = new HubitatAppSandbox(
                     pageWith("mode (title: 'tit', required: false, multiple: true, image: 'someImg')")).readPreferences(
-                    validationFlags: [ValidationFlags.DontValidateDefinition]).pages[0].sections[0].children[0] as Mode
+                    validationFlags: [Flags.DontValidateDefinition]).pages[0].sections[0].children[0] as Mode
 
         expect:
             mode.options.title == 'tit'
@@ -677,7 +678,7 @@ def makePage2() { foo() }"""]
     def "mode() with invalid option"() {
         when:
             new HubitatAppSandbox(pageWith("mode (title: 'tit', badOption: 'bad')")).run(
-                    validationFlags: [ValidationFlags.DontValidateDefinition])
+                    validationFlags: [Flags.DontValidateDefinition])
 
         then:
             AssertionError e = thrown()
@@ -689,7 +690,7 @@ def makePage2() { foo() }"""]
     def "mode()'s title is required"() {
         when:
             new HubitatAppSandbox(pageWith("mode (required: false)")).run(
-                    validationFlags: [ValidationFlags.DontValidateDefinition])
+                    validationFlags: [Flags.DontValidateDefinition])
 
         then:
             AssertionError e = thrown()
@@ -722,9 +723,58 @@ def makePage2() { foo() }"""]
             e.message.contains('not supported')
     }
 
-    def "With 'oauth' definition(), 'oauthpage' in preferences() is a valid option. It points to valid page."()
+    def "Without 'oauth' definition(), 'oauthPage' in preferences() is an invalid option."()
+    {
+        when:
+            new HubitatAppSandbox("""
+preferences(oauthPage: 'whateverPageName') {
+    page(name: "p1", title: "p1 title", install: true) { ${validSection} }
+}
+""").run(validationFlags: [Flags.DontValidateDefinition])
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("oauthPage")
+    }
+
+    def "With 'oauth' definition(), 'oauthPage' in preferences() is a valid option. It points to valid page."()
     {
         expect:
-            assert false : "Not implemented :("
+            new HubitatAppSandbox("""
+preferences(oauthPage: 'myAuthPage') {
+    page(name: "myAuthPage", title: "myAuthPage title", install: true) { ${validSection} }
+}
+
+definition(oauth: true)
+""").run(validationFlags: [Flags.DontValidateDefinition])
+    }
+
+    def "With 'oauth' definition(), preferences don't need 'oauthPage' if it's a pageless app."()
+    {
+        expect:
+            new HubitatAppSandbox("""
+preferences {
+    ${validSection}
+}
+
+definition(oauth: true)
+""").run(validationFlags: [Flags.DontValidateDefinition])
+    }
+
+    def "If 'oauthPage' in preferences() points to invalid page, validation fails."()
+    {
+        when:
+            new HubitatAppSandbox("""
+preferences(oauthPage: 'someInvalidPage') {
+    page(name: "p1", title: "p1 title", install: true) { ${validSection} }
+}
+
+definition(oauth: true)
+""").run(validationFlags: [Flags.DontValidateDefinition])
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains('someInvalidPage')
+            e.message.contains('oauthPage')
     }
 }

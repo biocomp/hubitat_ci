@@ -1,7 +1,8 @@
 package biocomp.hubitatCiTest.apppreferences
 
-import biocomp.hubitatCiTest.util.NamedParametersValidator
-import groovy.transform.TupleConstructor
+import biocomp.hubitatCiTest.validation.NamedParametersValidator
+import biocomp.hubitatCiTest.validation.Flags
+import biocomp.hubitatCiTest.validation.Validator
 import groovy.transform.TypeChecked
 
 @TypeChecked
@@ -79,12 +80,12 @@ class Page
         return generationMethodName != null
     }
 
-    void validate(EnumSet<ValidationFlags> flags) {
-        if (!flags.contains(ValidationFlags.DontValidatePreferences)) {
+    void validate(Validator validator) {
+        if (!validator.hasFlag(Flags.DontValidatePreferences)) {
             if (!isDynamicPage()) {
-                paramValidator.validate(this.toString(), options, flags)
+                paramValidator.validate(this.toString(), options, validator)
             } else {
-                dynamicPageParamValidator.validate(this.toString(), options, flags)
+                dynamicPageParamValidator.validate(this.toString(), options, validator)
 
                 assert generationMethodName == readName() : "Page ${this}'s name does not match the method it was triggered with: ${generationMethodName}"
             }

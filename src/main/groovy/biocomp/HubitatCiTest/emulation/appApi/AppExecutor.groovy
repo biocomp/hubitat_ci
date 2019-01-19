@@ -36,7 +36,7 @@ public java.lang.Object com.hubitat.hub.executor.AppExecutor.appSetting(java.lan
 public java.util.List com.hubitat.hub.executor.AppExecutor.getAllDeviceIds(),
 public com.hubitat.appApi.DeviceWrapperList com.hubitat.hub.executor.AppExecutor.getAllDevicesByCapability(java.lang.String),
 ++ public static java.lang.String com.hubitat.hub.executor.AppExecutor.getApiServerUrl(),
-public com.hubitat.appApi.InstalledAppWrapper com.hubitat.hub.executor.AppExecutor.getApp(),
+++public com.hubitat.appApi.InstalledAppWrapper com.hubitat.hub.executor.AppExecutor.getApp(),
 public java.lang.Object com.hubitat.hub.executor.AppExecutor.getAppMappings(),
 public com.hubitat.hub.domain.AppType com.hubitat.hub.executor.AppExecutor.getAppType(),
 public java.lang.String com.hubitat.hub.executor.AppExecutor.getAppTypeType(),
@@ -476,4 +476,6 @@ interface AppExecutor extends
     abstract Date timeTodayAfter(String referenceTime, String timeString, TimeZone timeZone)
 
     abstract Date timeTodayAfter(String referenceTime, String timeString)
+
+    abstract InstalledAppWrapper getApp()
 };

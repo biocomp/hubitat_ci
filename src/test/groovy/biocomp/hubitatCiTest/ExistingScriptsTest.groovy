@@ -1,13 +1,11 @@
 package biocomp.hubitatCiTest
 
-import biocomp.hubitatCiTest.apppreferences.App
-import biocomp.hubitatCiTest.apppreferences.ValidationFlags
+
+import biocomp.hubitatCiTest.validation.Flags
 import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
+import biocomp.hubitatCiTest.emulation.commonApi.InstalledAppWrapper
 import biocomp.hubitatCiTest.emulation.commonApi.Log
-import groovy.transform.NotYetImplemented
-import org.junit.Assert
 import spock.lang.Specification
-import spock.lang.Unroll
 
 class AppTemplateScriptTest extends
         Specification
@@ -111,7 +109,7 @@ class IComfortAppScriptTest extends
         expect:
             sandbox.run(
                 api: api,
-                validationFlags: [ValidationFlags.DontRunScript, ValidationFlags.AllowWritingToSettings, ValidationFlags.AllowReadingNonInputSettings, ValidationFlags.AllowTitleInPageCallingMethods],
+                validationFlags: [Flags.DontRunScript, Flags.AllowWritingToSettings, Flags.AllowReadingNonInputSettings, Flags.AllowTitleInPageCallingMethods],
                 customizeScriptBeforeRun: { script ->
                     script.getMetaClass().loginCheck = { -> 1 }
                     script.getMetaClass().getThermostatList = { -> ["a"] }
@@ -131,7 +129,7 @@ class IComfortAppScriptTest extends
             def script = sandbox.run(
                 api: api,
                 userSettingValues: [username: userName, password: password],
-                validationFlags: [ValidationFlags.AllowWritingToSettings, ValidationFlags.AllowReadingNonInputSettings, ValidationFlags.AllowTitleInPageCallingMethods],
+                validationFlags: [Flags.AllowWritingToSettings, Flags.AllowReadingNonInputSettings, Flags.AllowTitleInPageCallingMethods],
                 customizeScriptBeforeRun: { script ->
                     script.getMetaClass().loginCheck = { -> 1 }
                     script.getMetaClass().getThermostatList = { -> ["a"] }
@@ -190,7 +188,7 @@ class EcoNetThermostatScriptTest extends
         expect:
             sandbox.run(
                 api: api,
-                validationFlags: [ValidationFlags.AllowTitleInPageCallingMethods],
+                validationFlags: [Flags.AllowTitleInPageCallingMethods],
                 userSettingValues: [username: "user", password: "pass"],
                 customizeScriptBeforeRun: { script ->
                     script.getMetaClass().login = { -> true }
@@ -214,7 +212,7 @@ class EcoNetTanklessAppScriptTest extends
         expect:
             sandbox.run(
                 api: api,
-                validationFlags: [ValidationFlags.AllowTitleInPageCallingMethods],
+                validationFlags: [Flags.AllowTitleInPageCallingMethods],
                 userSettingValues: [username: "user", password: "pass"],
                 customizeScriptBeforeRun: { script ->
                     script.getMetaClass().login = { -> true }
@@ -238,7 +236,7 @@ class HomeRemoteScriptTest extends
             }
 
         expect:
-            sandbox.run(api: api, validationFlags: [ValidationFlags.AllowEmptyOptionValueStrings])
+            sandbox.run(api: api, validationFlags: [Flags.AllowEmptyOptionValueStrings])
     }
 }
 
@@ -249,14 +247,20 @@ class Tonesto7HomebridgeScriptTest extends Specification
     def "Basic validation"()
     {
         setup:
-            //Log log = Mock()
-            def appState = [:]
+            InstalledAppWrapper app = Mock{
+                _ * getName() >> "MyAppName"
+            }
+
+            def appState = [isInstalled: true]
             AppExecutor api = Mock{
                 //_ * getLog() >> log
                 _ * getState() >> appState
+                _ * getApp() >> app
             }
 
         expect:
-            sandbox.run(api: api)
+            sandbox.run(
+                    api: api,
+                    validator: new validation.Validator([Flags.AllowEmptyOptionValueStrings], [], ["execute"]))
     }
 }

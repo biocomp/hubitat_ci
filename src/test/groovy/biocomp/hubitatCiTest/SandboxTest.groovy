@@ -1,6 +1,6 @@
 package biocomp.hubitatCiTest
 
-import biocomp.hubitatCiTest.apppreferences.ValidationFlags
+
 import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
 import biocomp.hubitatCiTest.emulation.commonApi.Log
 import org.codehaus.groovy.control.MultipleCompilationErrorsException

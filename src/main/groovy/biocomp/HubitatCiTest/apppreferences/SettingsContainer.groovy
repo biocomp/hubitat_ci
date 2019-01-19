@@ -1,5 +1,9 @@
 package biocomp.hubitatCiTest.apppreferences
 
+
+import biocomp.hubitatCiTest.validation.Validator
+import biocomp.hubitatCiTest.validation.Flags
+
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
 
@@ -11,9 +15,9 @@ class SettingsContainer implements Map<String, Object>
      * @param userSettingsValue - user can define settings in UTs, and rest of the settings will be added to it too.
      * @param mode - how to validate user actions with settings.
      */
-    SettingsContainer(PreferencesReaderState preferencesState, EnumSet<ValidationFlags> mode, Map userSettingsValue) {
+    SettingsContainer(PreferencesReaderState preferencesState, Validator validator, Map userSettingsValue) {
         this.preferencesState = preferencesState
-        this.mode = mode
+        this.validator = validator
         this.settingValues = userSettingsValue
     }
 
@@ -24,9 +28,9 @@ class SettingsContainer implements Map<String, Object>
      * 1. Verify that settings were only read, and not set.
      * 2. Verify that only settings from 'inputs' param were read.*/
     void validateAfterPreferences() {
-        if (!mode.contains(ValidationFlags.AllowReadingNonInputSettings)) {
+        if (!validator.hasFlag(Flags.AllowReadingNonInputSettings)) {
             def readSettingsThatAreNotInputs = settingsRead - registeredInputs
-            assert !readSettingsThatAreNotInputs : "Settings were read that are not registered inputs: ${readSettingsThatAreNotInputs}. These are registered inputs: ${registeredInputs}. This is not allowed in strict mode (add ValidationFlags.AllowReadingNonInputSettings to allow this)"
+            assert !readSettingsThatAreNotInputs : "Settings were read that are not registered inputs: ${readSettingsThatAreNotInputs}. These are registered inputs: ${registeredInputs}. This is not allowed in strict mode (add Flags.AllowReadingNonInputSettings to allow this)"
         }
     }
 
@@ -59,8 +63,8 @@ class SettingsContainer implements Map<String, Object>
 
     @Override
     Object put(String name, Object value) {
-        if (!mode.contains(ValidationFlags.AllowWritingToSettings)) {
-            assert false: "You tried assigning '${value}' to '${name}', but writing to settings is not allowed in strict mode (add ValidationFlags.AllowWritingToSettings to allow this)."
+        if (!validator.hasFlag(Flags.AllowWritingToSettings)) {
+            assert false: "You tried assigning '${value}' to '${name}', but writing to settings is not allowed in strict mode (add Flags.AllowWritingToSettings to allow this)."
         }
 
         return settingValues.put(name, value)
@@ -79,7 +83,7 @@ class SettingsContainer implements Map<String, Object>
     }
 
     private final PreferencesReaderState preferencesState
-    private final EnumSet<ValidationFlags> mode
+    private final Validator validator
 
     private final Set<String> settingsRead = []
     private final Set<String> registeredInputs = []
