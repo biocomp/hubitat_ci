@@ -300,7 +300,7 @@ class Validator {
 
             // Page names must be unique
             def allNames = preferences.pages.collect { it.readName() } + preferences.dynamicPages.collect { it.readName() }
-            def uniqueNames = [] as Set
+            def uniqueNames = [] as HashSet
             allNames.each {
                 assert !uniqueNames.contains(
                         it): "Page '${it}' is not a unique page name. Page names must be unique. Please fix that. All page names: ${allNames}"
@@ -321,18 +321,29 @@ class Validator {
             }
 
             // Validate oauth page
-            if (oauthEnabled && !preferences.hasSpecialSinglePage())
-            {
-                preferencesValidatorWithOauth.validate("preferences()", preferences.options, this)
-                assert uniqueNames.contains(preferences.options.oauthPage as String) :
-                        "preferences(): oauthPage = '${preferences.options.oauthPage}' does not point to a valid page"
-            }
-            else
-            {
-                preferencesValidatorNoOauth.validate("preferences()", preferences.options, this)
-            }
+            validateOauth(oauthEnabled, preferences, uniqueNames)
         }
     }
+
+    private void validateOauth(boolean oauthEnabled, Preferences preferences, HashSet<String> uniqueNames)
+    {
+        if (oauthEnabled && !preferences.hasSpecialSinglePage())
+        {
+            if (!hasFlag(Flags.AllowMissingOAuthPage)) {
+                def oauthPageName = preferences.options.oauthPage as String
+                preferencesValidatorWithOauth.validate("preferences()", preferences.options, this)
+                assert uniqueNames.contains(oauthPageName): "preferences(): oauthPage = '${oauthPageName}' does not point to a valid page"
+
+                assert preferences.allPages[0].readName() == oauthPageName: "Page '${oauthPageName}' pointed by 'oauthPage' must be a first page, but first page is ${preferences.allPages[0]}"
+                assert !preferences.allPages[0].isDynamicPage(): "Page '${oauthPageName}' pointed by 'oauthPage' must be static, not a dynamic page"
+            }
+        }
+        else
+        {
+            preferencesValidatorNoOauth.validate("preferences()", preferences.options, this)
+        }
+    }
+
 
     private static Page getPageOrAssert(Page currentPage, String referredPage, HashMap<String, Page> allPages)
     {

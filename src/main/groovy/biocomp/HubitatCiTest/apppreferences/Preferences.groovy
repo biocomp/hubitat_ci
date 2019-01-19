@@ -41,6 +41,11 @@ class Preferences
         return this.@specialSinglePage != null
     }
 
+    List<Page> getAllPages()
+    {
+        return pages + dynamicPages
+    }
+
     Page getSpecialSinglePage() {
         assert pages.size() == 0 || pages.size() == 1 && pages[0] == this.@specialSinglePage: "You can't use single-page section() calls when you already added pages: ${pages}"
 

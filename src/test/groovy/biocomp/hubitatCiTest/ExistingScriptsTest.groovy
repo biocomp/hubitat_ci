@@ -261,6 +261,10 @@ class Tonesto7HomebridgeScriptTest extends Specification
         expect:
             sandbox.run(
                     api: api,
-                    validator: new validation.Validator([Flags.AllowEmptyOptionValueStrings], [], ["execute"]))
+                    validator: new validation.Validator([
+                            Flags.AllowEmptyOptionValueStrings,
+                            Flags.AllowMissingOAuthPage],
+                            [],
+                            ["execute"]))
     }
 }

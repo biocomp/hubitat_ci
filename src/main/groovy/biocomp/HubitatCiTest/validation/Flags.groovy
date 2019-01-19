@@ -13,6 +13,7 @@ enum Flags
     AllowReadingNonInputSettings,
     AllowUnreachablePages,
     AllowTitleInPageCallingMethods,
+    AllowMissingOAuthPage,
 
     /**
      * Allow required properties (such as page(title: "")) to be empty strings.

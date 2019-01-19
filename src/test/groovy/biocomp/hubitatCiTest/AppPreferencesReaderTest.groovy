@@ -749,6 +749,50 @@ definition(oauth: true)
 """).run(validationFlags: [Flags.DontValidateDefinition])
     }
 
+    def "If 'oauthPage' is not first, fail."()
+    {
+        when:
+            new HubitatAppSandbox("""
+preferences(oauthPage: 'myPageForAuth') {
+    page(name: "page1", title: "tit", install: true, nextPage: "myPageForAuth") { ${validSection} }
+    page(name: "myPageForAuth", title: "myAuthPage title", install: true) { ${validSection} }
+}
+
+definition(oauth: true)
+""").run(validationFlags: [Flags.DontValidateDefinition])
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains('authPage')
+            e.message.contains('must be a first page')
+            e.message.contains('page1')
+            e.message.contains('myPageForAuth')
+    }
+
+    def "If 'oauthPage' is dynamic, fail."()
+    {
+        when:
+            new HubitatAppSandbox("""
+preferences(oauthPage: 'someNonStaticAuth') {
+    page(name: "someNonStaticAuth")
+}
+
+void someNonStaticAuth()
+{
+    dynamicPage(name: "someNonStaticAuth", title: "myAuthPage title", install: true) { ${validSection} }
+}
+
+definition(oauth: true)
+""").run(validationFlags: [Flags.DontValidateDefinition])
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains('authPage')
+            e.message.contains('static')
+            e.message.contains('someNonStaticAuth')
+            e.message.contains('dynamic')
+    }
+
     def "With 'oauth' definition(), preferences don't need 'oauthPage' if it's a pageless app."()
     {
         expect:
