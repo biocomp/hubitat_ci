@@ -2,7 +2,6 @@ package biocomp.hubitatCiTest
 
 import biocomp.hubitatCiTest.apppreferences.App
 import biocomp.hubitatCiTest.apppreferences.Mode
-import biocomp.hubitatCiTest.apppreferences.Preferences
 import biocomp.hubitatCiTest.validation.Flags
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 import spock.lang.Specification
@@ -11,58 +10,6 @@ import spock.lang.Unroll
 class AppPreferencesReaderTest extends
         Specification
 {
-    private static String validInput = 'input "temperature1", "number", title: "Temperature"'
-    private static String validSection = "section(\"sec\"){${validInput}}"
-
-    private static String makePropertiesWithPageWithSection(String sectionParams) {
-        return """
-preferences{
-    page("name", "title"){
-        section(${sectionParams}){${validInput}}
-    }
-}
-"""
-    }
-
-    private static String pageWith(String elementText) {
-        return """
-preferences{
-    page("name", "title", install: true){
-        section("sec"){
-            ${elementText}
-        }
-    }
-}
-"""
-    }
-
-    private static Object parseOneChild(String elementString) {
-        return fromScript(pageWith(elementString)).pages[0].sections[0].children[0]
-    }
-
-    private static String makePropertiesWithSection(String sectionParams) {
-        println "makePropertiesWithSection('${sectionParams}')"
-
-        return """
-preferences{
-    section(${sectionParams}){${validInput}}
-}
-"""
-    }
-
-    private static String makePageWithParams(String pageParams) {
-        return """
-preferences{
-    page(${pageParams}){${validSection}}
-}
-"""
-    }
-
-    static Preferences fromScript(String script) {
-        return new HubitatAppSandbox(script).readPreferences()
-    }
-
-
     def "Page can't be empty when it's not a dynamic page"() {
         given:
             def sandbox = new HubitatAppSandbox('''
@@ -91,17 +38,17 @@ preferences{
 
         where:
             script << ["""preferences{ 
-    page(name: "page2", title: "t2"){${validSection} }
-    page(name: "page2", title: "t2"){${validSection} }
+    page(name: "page2", title: "t2"){${PreferencesValidationCommon.validSection} }
+    page(name: "page2", title: "t2"){${PreferencesValidationCommon.validSection} }
 }""",
                        """preferences{ 
-    page(name: "page2", title: "t2"){${validSection} }
+    page(name: "page2", title: "t2"){${PreferencesValidationCommon.validSection} }
     page(name: "page2")
 }
 
 def page2()
 {
-    dynamicPage(name: "page2", title: "t2"){${validSection}
+    dynamicPage(name: "page2", title: "t2"){${PreferencesValidationCommon.validSection}
 }
 }"""]
     }
@@ -115,7 +62,7 @@ preferences{
 
 void imSoDynamic()
 {
-    dynamicPage(name:"imSoDynamic", title:"dynamicTitle", install: true){ ${validSection} }
+    dynamicPage(name:"imSoDynamic", title:"dynamicTitle", install: true){ ${PreferencesValidationCommon.validSection} }
 }
 """)
             def preferences = sandbox.readPreferences()
@@ -161,7 +108,7 @@ preferences{
     @Unroll
     def "Reading valid page options"(String pageOptions, String propetyName, def expectedValue) {
         given:
-            def preferences = new HubitatAppSandbox(makePageWithParams(pageOptions)).readPreferences(
+            def preferences = new HubitatAppSandbox(PreferencesValidationCommon.makePageWithParams(pageOptions)).readPreferences(
                     validationFlags: [Flags.AllowMissingInstall, Flags.AllowUnreachablePages])
 
         expect:
@@ -191,13 +138,13 @@ preferences{
             expectedErrorStrings.each { ex.message.contains(it) }
 
         where:
-            script                                | expectedErrorStrings
-            makePageWithParams('title:"p title"') | ["mandatory parameter", "name"]
-            makePageWithParams('null, "p title"') | ["null", "name"]
-            makePageWithParams('"", "p title"')   | ["empty", "name"]
-            makePageWithParams('name:"p name"')   | ["mandatory parameter", "title"]
-            makePageWithParams('"nam", null')     | ["null", "title"]
-            makePageWithParams('"p nam", ""')     | ["empty", "title"]
+            script                                                            | expectedErrorStrings
+            PreferencesValidationCommon.makePageWithParams('title:"p title"') | ["mandatory parameter", "name"]
+            PreferencesValidationCommon.makePageWithParams('null, "p title"') | ["null", "name"]
+            PreferencesValidationCommon.makePageWithParams('"", "p title"')   | ["empty", "name"]
+            PreferencesValidationCommon.makePageWithParams('name:"p name"')   | ["mandatory parameter", "title"]
+            PreferencesValidationCommon.makePageWithParams('"nam", null')     | ["null", "title"]
+            PreferencesValidationCommon.makePageWithParams('"p nam", ""')     | ["empty", "title"]
     }
 
     def "preferences() can't be empty"() {
@@ -230,8 +177,8 @@ preferences{
             ex.message ==~ /.*someUnsupportedOption.*/
 
         where:
-            script << [makePropertiesWithSection('someUnsupportedOption:"blah"'),
-                       makePropertiesWithPageWithSection('someUnsupportedOption:"blah"')]
+            script << [PreferencesValidationCommon.makePropertiesWithSection('someUnsupportedOption:"blah"'),
+                       PreferencesValidationCommon.makePropertiesWithPageWithSection('someUnsupportedOption:"blah"')]
     }
 
     def "preferences() could be calling methods of script to generate non-dynamic pages"() {
@@ -243,7 +190,7 @@ preferences{
 
 def userProvidedMethodToMakeStaticPages()
 {
-    page(name:"fromUserMethod", title:"titleFromUserMethod", install: true) { ${validSection} }
+    page(name:"fromUserMethod", title:"titleFromUserMethod", install: true) { ${PreferencesValidationCommon.validSection} }
 }
 """)
             def preferences = sandbox.readPreferences()
@@ -253,36 +200,9 @@ def userProvidedMethodToMakeStaticPages()
             preferences.pages[0].options['title'] == "titleFromUserMethod"
     }
 
-    def "input() can only consist of name and type"() {
-        given:
-            def input = parseOneChild("input 'nam', 'typ'")
-
-        expect:
-            input.name == "nam"
-            input.type == "typ"
-    }
-
-    def "input(name:'some name', type:text) should fail because text should be quoted"() {
-        when:
-            parseOneChild("input name:'some nam', type:text")
-
-        then:
-            AssertionError e = thrown()
-            e.message.contains('not registered inputs: [text]')
-    }
-
-    def "input() can't be empty"() {
-        when:
-            def input = parseOneChild("input()")
-
-        then:
-            MethodSelectionException e = thrown()
-            e.message.contains("input()")
-    }
-
     def "paragraph() with just the text"() {
         when:
-            def paragraph = parseOneChild("paragraph 'some text'")
+            def paragraph = PreferencesValidationCommon.parseOneChild("paragraph 'some text'")
 
         then:
             paragraph.text == "some text"
@@ -290,7 +210,7 @@ def userProvidedMethodToMakeStaticPages()
 
     def "paragraph() with map of valid options"() {
         given:
-            def paragraph = parseOneChild("paragraph(title:'tit', image:'some img', required: true, 'body')")
+            def paragraph = PreferencesValidationCommon.parseOneChild("paragraph(title:'tit', image:'some img', required: true, 'body')")
 
         expect:
             paragraph.text == 'body'
@@ -301,7 +221,7 @@ def userProvidedMethodToMakeStaticPages()
 
     def "paragraph() with map and invalid option fails"() {
         when:
-            parseOneChild("paragraph(badOption:'Im going to fail', title:'tit', 'body')")
+            PreferencesValidationCommon.parseOneChild("paragraph(badOption:'Im going to fail', title:'tit', 'body')")
 
         then:
             AssertionError e = thrown()
@@ -310,7 +230,7 @@ def userProvidedMethodToMakeStaticPages()
 
     def "paragraph() with no options is not supported"() {
         when:
-            parseOneChild("paragraph()")
+            PreferencesValidationCommon.parseOneChild("paragraph()")
 
         then:
             MethodSelectionException e = thrown()
@@ -320,7 +240,7 @@ def userProvidedMethodToMakeStaticPages()
     // label()
     def "label() with map of valid options"() {
         given:
-            def label = parseOneChild("""label(
+            def label = PreferencesValidationCommon.parseOneChild("""label(
                 title:'some text', 
                 description:'some desc', 
                 required: true,
@@ -335,7 +255,7 @@ def userProvidedMethodToMakeStaticPages()
 
     def "label() with map and invalid option fails"() {
         when:
-            parseOneChild("label(badOption:'Im going to fail', title:'some text')")
+            PreferencesValidationCommon.parseOneChild("label(badOption:'Im going to fail', title:'some text')")
 
         then:
             AssertionError e = thrown()
@@ -344,7 +264,7 @@ def userProvidedMethodToMakeStaticPages()
 
     def "label() with no options is not supported"() {
         when:
-            parseOneChild("label()")
+            PreferencesValidationCommon.parseOneChild("label()")
 
         then:
             AssertionError e = thrown()
@@ -445,7 +365,7 @@ def makePage2()
         where:
             script << ["""
 preferences{
-    page("p1", "tit", nextPage:'invalidPageName') { ${validSection}}
+    page("p1", "tit", nextPage:'invalidPageName') { ${PreferencesValidationCommon.validSection}}
 }
 """,
                        """
@@ -484,27 +404,27 @@ preferences{
     page("p2", "tit") {
         section("tit") { href('p4') }
     }
-    page("p3", "tit") {${validSection}}
-    page("p4", "tit") {${validSection}}
-    page("p5", "tit") {${validSection}}
+    page("p3", "tit") {${PreferencesValidationCommon.validSection}}
+    page("p4", "tit") {${PreferencesValidationCommon.validSection}}
+    page("p5", "tit") {${PreferencesValidationCommon.validSection}}
 }
 """,
                        """
 preferences{
-    page("p1", "tit", nextPage: 'p3') {${validSection}}
+    page("p1", "tit", nextPage: 'p3') {${PreferencesValidationCommon.validSection}}
     page(name: "p2")
-    page("p3", "tit") {${validSection}}
-    page("p4", "tit") {${validSection}}
+    page("p3", "tit") {${PreferencesValidationCommon.validSection}}
+    page("p4", "tit") {${PreferencesValidationCommon.validSection}}
 }
     
 def p2()
 {
-    dynamicPage(name: "p2", title: "tit", nextPage: 'p4') {${validSection}}
+    dynamicPage(name: "p2", title: "tit", nextPage: 'p4') {${PreferencesValidationCommon.validSection}}
 }
 
 def p4()
 {
-    dynamicPage(name: "p4", title: "tit") {${validSection}}
+    dynamicPage(name: "p4", title: "tit") {${PreferencesValidationCommon.validSection}}
 }
 
 """]
@@ -522,27 +442,27 @@ def p4()
         where:
             script << ["""
 preferences{
-    page("p1", "tit") {${validSection}}
-    page("p2", "tit") {${validSection}}
+    page("p1", "tit") {${PreferencesValidationCommon.validSection}}
+    page("p2", "tit") {${PreferencesValidationCommon.validSection}}
 }
 """
                        ,
                        """
 preferences{
-    page("p1", "tit") {${validSection}}
+    page("p1", "tit") {${PreferencesValidationCommon.validSection}}
 }
 """
                        ,
                        """
 preferences{page(name: "p1")}
 
-def p1() { dynamicPage(name: "p1", title: "t1", install:false) {${validSection}}}
+def p1() { dynamicPage(name: "p1", title: "t1", install:false) {${PreferencesValidationCommon.validSection}}}
 """
                        ,
                        """
 preferences{page(name: "p1")}
 
-def p1() { dynamicPage(name: "p1", title: "t1", install:false) {${validSection}}}
+def p1() { dynamicPage(name: "p1", title: "t1", install:false) {${PreferencesValidationCommon.validSection}}}
 """]
     }
 
@@ -562,14 +482,14 @@ def p1() { dynamicPage(name: "p1", title: "t1", install:false) {${validSection}}
 preferences{ page(name: "makePage2Method") }
 
 def makePage2Method() { 
-    dynamicPage(name: "makePage2", title: "tit2"){ ${validSection}} 
+    dynamicPage(name: "makePage2", title: "tit2"){ ${PreferencesValidationCommon.validSection}} 
 }""",
                        """
 preferences{ page(name: "makePage2Method") }
 
 def foo() { bar() }
 def bar() { baz() }
-def baz() { dynamicPage(name: "makePage2", title: "tit2"){ ${validSection}} }
+def baz() { dynamicPage(name: "makePage2", title: "tit2"){ ${PreferencesValidationCommon.validSection}} }
 
 def makePage2Method() { foo() }"""]
     }
@@ -587,15 +507,15 @@ def makePage2Method() { foo() }"""]
 preferences{ page(name: "makePage2") }
 
 def makePage2() { 
-    dynamicPage(name: "makePage2", title: "tit2"){ ${validSection}} 
-    dynamicPage(name: "makePage2", title: "tit2"){ ${validSection}}
+    dynamicPage(name: "makePage2", title: "tit2"){ ${PreferencesValidationCommon.validSection}} 
+    dynamicPage(name: "makePage2", title: "tit2"){ ${PreferencesValidationCommon.validSection}}
 }""",
                        """
 preferences{ page(name: "makePage2") }
 
 def foo() { bar() }
-def bar() { baz(); dynamicPage(name: "makePage2", title: "tit2"){ ${validSection}} }
-def baz() { dynamicPage(name: "makePage2", title: "tit2"){ ${validSection}} }
+def bar() { baz(); dynamicPage(name: "makePage2", title: "tit2"){ ${PreferencesValidationCommon.validSection}} }
+def baz() { dynamicPage(name: "makePage2", title: "tit2"){ ${PreferencesValidationCommon.validSection}} }
 
 def makePage2() { foo() }"""]
     }
@@ -613,17 +533,17 @@ def makePage2() { foo() }"""]
 
         where:
             script                                                                                                                                 | expectedValues
-            pageWith(
+            PreferencesValidationCommon.pageWith(
                     "href('SomePage')")                                                                                                            | [nextPageName: "SomePage", options: null]
-            pageWith(
+            PreferencesValidationCommon.pageWith(
                     "href(title: 'tit', required: false, description: 'desc', style:'page', url: 'http://a', page: 'somePage', image: 'someImg')") | [nextPageName: null, options: [title: 'tit', description: 'desc', style: 'page', url: 'http://a', page: 'somePage', image: 'someImg']]
-            pageWith(
+            PreferencesValidationCommon.pageWith(
                     "href('somePage', required: false, description: 'desc', style:'page', url: 'http://a', title: 'tit', image: 'someImg')")       | [nextPageName: 'somePage', options: [description: 'desc', style: 'page', url: 'http://a', image: 'someImg']]
     }
 
     def "href() 'page' option is not compatible with external style"() {
         when:
-            new HubitatAppSandbox(pageWith("href(page: 'somePage', style: 'external')")).run(
+            new HubitatAppSandbox(PreferencesValidationCommon.pageWith("href(page: 'somePage', style: 'external')")).run(
                     validationFlags: [Flags.DontValidateDefinition])
 
         then:
@@ -635,7 +555,7 @@ def makePage2() { foo() }"""]
 
     def "href() with unsupported parameter fails"() {
         when:
-            new HubitatAppSandbox(pageWith("href(someBadVal: 'val')")).run(
+            new HubitatAppSandbox(PreferencesValidationCommon.pageWith("href(someBadVal: 'val')")).run(
                     validationFlags: [Flags.DontValidateDefinition])
 
         then:
@@ -646,7 +566,7 @@ def makePage2() { foo() }"""]
 
     def "href() with unsupported style fails"() {
         when:
-            new HubitatAppSandbox(pageWith("href(style: 'badStyle')")).run(
+            new HubitatAppSandbox(PreferencesValidationCommon.pageWith("href(style: 'badStyle')")).run(
                     validationFlags: [Flags.DontValidateDefinition])
 
         then:
@@ -658,14 +578,14 @@ def makePage2() { foo() }"""]
 
     def "href() with unsupported parameter succeeds, if validation is disabled"() {
         expect:
-            new HubitatAppSandbox(pageWith("href(someBadVal: 'val')")).run(
+            new HubitatAppSandbox(PreferencesValidationCommon.pageWith("href(someBadVal: 'val')")).run(
                     validationFlags: [Flags.DontValidatePreferences, Flags.DontValidateDefinition])
     }
 
     def "mode() with all valid options"() {
         setup:
             def mode = new HubitatAppSandbox(
-                    pageWith("mode (title: 'tit', required: false, multiple: true, image: 'someImg')")).readPreferences(
+                    PreferencesValidationCommon.pageWith("mode (title: 'tit', required: false, multiple: true, image: 'someImg')")).readPreferences(
                     validationFlags: [Flags.DontValidateDefinition]).pages[0].sections[0].children[0] as Mode
 
         expect:
@@ -677,7 +597,7 @@ def makePage2() { foo() }"""]
 
     def "mode() with invalid option"() {
         when:
-            new HubitatAppSandbox(pageWith("mode (title: 'tit', badOption: 'bad')")).run(
+            new HubitatAppSandbox(PreferencesValidationCommon.pageWith("mode (title: 'tit', badOption: 'bad')")).run(
                     validationFlags: [Flags.DontValidateDefinition])
 
         then:
@@ -689,7 +609,7 @@ def makePage2() { foo() }"""]
 
     def "mode()'s title is required"() {
         when:
-            new HubitatAppSandbox(pageWith("mode (required: false)")).run(
+            new HubitatAppSandbox(PreferencesValidationCommon.pageWith("mode (required: false)")).run(
                     validationFlags: [Flags.DontValidateDefinition])
 
         then:
@@ -700,7 +620,7 @@ def makePage2() { foo() }"""]
 
     def "app() with all valid options"() {
         setup:
-            def app = new HubitatAppSandbox(pageWith(
+            def app = new HubitatAppSandbox(PreferencesValidationCommon.pageWith(
                     "app (name: 'nam', appName: 'app name', namespace: 'nms', title: 'tit', multiple: true)")).readPreferences().pages[
                     0].sections[0].children[0] as App
 
@@ -714,7 +634,7 @@ def makePage2() { foo() }"""]
 
     def "app() with invalid options fails"() {
         when:
-            new HubitatAppSandbox(pageWith(
+            new HubitatAppSandbox(PreferencesValidationCommon.pageWith(
                     "app (name: 'nam', badOption: 'bad', appName: 'app name', namespace: 'nms', title: 'tit', multiple: true)")).readPreferences()
 
         then:
@@ -728,7 +648,7 @@ def makePage2() { foo() }"""]
         when:
             new HubitatAppSandbox("""
 preferences(oauthPage: 'whateverPageName') {
-    page(name: "p1", title: "p1 title", install: true) { ${validSection} }
+    page(name: "p1", title: "p1 title", install: true) { ${PreferencesValidationCommon.validSection} }
 }
 """).run(validationFlags: [Flags.DontValidateDefinition])
 
@@ -742,7 +662,7 @@ preferences(oauthPage: 'whateverPageName') {
         expect:
             new HubitatAppSandbox("""
 preferences(oauthPage: 'myAuthPage') {
-    page(name: "myAuthPage", title: "myAuthPage title", install: true) { ${validSection} }
+    page(name: "myAuthPage", title: "myAuthPage title", install: true) { ${PreferencesValidationCommon.validSection} }
 }
 
 definition(oauth: true)
@@ -754,8 +674,8 @@ definition(oauth: true)
         when:
             new HubitatAppSandbox("""
 preferences(oauthPage: 'myPageForAuth') {
-    page(name: "page1", title: "tit", install: true, nextPage: "myPageForAuth") { ${validSection} }
-    page(name: "myPageForAuth", title: "myAuthPage title", install: true) { ${validSection} }
+    page(name: "page1", title: "tit", install: true, nextPage: "myPageForAuth") { ${PreferencesValidationCommon.validSection} }
+    page(name: "myPageForAuth", title: "myAuthPage title", install: true) { ${PreferencesValidationCommon.validSection} }
 }
 
 definition(oauth: true)
@@ -779,7 +699,7 @@ preferences(oauthPage: 'someNonStaticAuth') {
 
 void someNonStaticAuth()
 {
-    dynamicPage(name: "someNonStaticAuth", title: "myAuthPage title", install: true) { ${validSection} }
+    dynamicPage(name: "someNonStaticAuth", title: "myAuthPage title", install: true) { ${PreferencesValidationCommon.validSection} }
 }
 
 definition(oauth: true)
@@ -798,7 +718,7 @@ definition(oauth: true)
         expect:
             new HubitatAppSandbox("""
 preferences {
-    ${validSection}
+    ${PreferencesValidationCommon.validSection}
 }
 
 definition(oauth: true)
@@ -810,7 +730,7 @@ definition(oauth: true)
         when:
             new HubitatAppSandbox("""
 preferences(oauthPage: 'someInvalidPage') {
-    page(name: "p1", title: "p1 title", install: true) { ${validSection} }
+    page(name: "p1", title: "p1 title", install: true) { ${PreferencesValidationCommon.validSection} }
 }
 
 definition(oauth: true)
