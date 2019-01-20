@@ -106,9 +106,10 @@ preferences{
     }
 
     @Unroll
-    def "Reading valid page options"(String pageOptions, String propetyName, def expectedValue) {
+    def "Reading valid page() options"(String pageOptions, String propetyName, def expectedValue) {
         given:
-            def preferences = new HubitatAppSandbox(PreferencesValidationCommon.makePageWithParams(pageOptions)).readPreferences(
+            def preferences = new HubitatAppSandbox(
+                    PreferencesValidationCommon.makePageWithParams(pageOptions)).readPreferences(
                     validationFlags: [Flags.AllowMissingInstall, Flags.AllowUnreachablePages])
 
         expect:
@@ -116,14 +117,15 @@ preferences{
             preferences.pages[0].options."${propetyName}".class == expectedValue.class
 
         where:
-            pageOptions                                  | propetyName || expectedValue
-            '"nam", "titl"'                              | 'name'      || "nam"
-            'title:"titl", name:"nam"'                   | 'name'      || "nam"
-            '"nam", "titl"'                              | 'title'     || "titl"
-            'title:"titl", name:"nam"'                   | 'title'     || "titl"
-            'name:"n", title:"t", nextPage: "next page"' | 'nextPage'  || "next page"
-            'name:"n", title:"t", install:true'          | 'install'   || true
-            'name:"n", title:"t", uninstall: false'      | 'uninstall' || false
+            pageOptions                                  | propetyName   || expectedValue
+            '"nam", "titl"'                              | 'name'        || "nam"
+            'title:"titl", name:"nam"'                   | 'name'        || "nam"
+            '"nam", "titl"'                              | 'title'       || "titl"
+            'title:"titl", name:"nam"'                   | 'title'       || "titl"
+            'name:"n", title:"t", nextPage: "next page"' | 'nextPage'    || "next page"
+            'name:"n", title:"t", install:true'          | 'install'     || true
+            'name:"n", title:"t", uninstall: false'      | 'uninstall'   || false
+            'title:"titl", name:"nam", hideWhenEmpty: true' | 'hideWhenEmpty' || true
     }
 
 
@@ -166,6 +168,21 @@ preferences{
             ex.message.contains("never called")
     }
 
+    def "section() with all valid parameters reads them correctly"()
+    {
+        when:
+            def section = new HubitatAppSandbox(
+PreferencesValidationCommon.makePropertiesWithSection("hideWhenEmpty: true, hideable: true, hidden: true, mobileOnly: true"))
+                    .readPreferences(validationFlags: [Flags.DontValidateDefinition]).pages[0].sections[0]
+
+        then:
+            section.options.hideWhenEmpty == true;
+            section.options.hideable == true;
+            section.options.hidden == true;
+            section.options.mobileOnly == true;
+    }
+    
+
     @Unroll
     def "section()'s unsupported properties fail compilation"(String script) {
         when:
@@ -190,7 +207,9 @@ preferences{
 
 def userProvidedMethodToMakeStaticPages()
 {
-    page(name:"fromUserMethod", title:"titleFromUserMethod", install: true) { ${PreferencesValidationCommon.validSection} }
+    page(name:"fromUserMethod", title:"titleFromUserMethod", install: true) { ${
+                PreferencesValidationCommon.validSection
+            } }
 }
 """)
             def preferences = sandbox.readPreferences()
@@ -210,7 +229,8 @@ def userProvidedMethodToMakeStaticPages()
 
     def "paragraph() with map of valid options"() {
         given:
-            def paragraph = PreferencesValidationCommon.parseOneChild("paragraph(title:'tit', image:'some img', required: true, 'body')")
+            def paragraph = PreferencesValidationCommon.parseOneChild(
+                    "paragraph(title:'tit', image:'some img', required: true, 'body')")
 
         expect:
             paragraph.text == 'body'
@@ -543,7 +563,8 @@ def makePage2() { foo() }"""]
 
     def "href() 'page' option is not compatible with external style"() {
         when:
-            new HubitatAppSandbox(PreferencesValidationCommon.pageWith("href(page: 'somePage', style: 'external')")).run(
+            new HubitatAppSandbox(
+                    PreferencesValidationCommon.pageWith("href(page: 'somePage', style: 'external')")).run(
                     validationFlags: [Flags.DontValidateDefinition])
 
         then:
@@ -584,8 +605,8 @@ def makePage2() { foo() }"""]
 
     def "mode() with all valid options"() {
         setup:
-            def mode = new HubitatAppSandbox(
-                    PreferencesValidationCommon.pageWith("mode (title: 'tit', required: false, multiple: true, image: 'someImg')")).readPreferences(
+            def mode = new HubitatAppSandbox(PreferencesValidationCommon.pageWith(
+                    "mode (title: 'tit', required: false, multiple: true, image: 'someImg')")).readPreferences(
                     validationFlags: [Flags.DontValidateDefinition]).pages[0].sections[0].children[0] as Mode
 
         expect:
@@ -643,8 +664,7 @@ def makePage2() { foo() }"""]
             e.message.contains('not supported')
     }
 
-    def "Without 'oauth' definition(), 'oauthPage' in preferences() is an invalid option."()
-    {
+    def "Without 'oauth' definition(), 'oauthPage' in preferences() is an invalid option."() {
         when:
             new HubitatAppSandbox("""
 preferences(oauthPage: 'whateverPageName') {
@@ -657,8 +677,7 @@ preferences(oauthPage: 'whateverPageName') {
             e.message.contains("oauthPage")
     }
 
-    def "With 'oauth' definition(), 'oauthPage' in preferences() is a valid option. It points to valid page."()
-    {
+    def "With 'oauth' definition(), 'oauthPage' in preferences() is a valid option. It points to valid page."() {
         expect:
             new HubitatAppSandbox("""
 preferences(oauthPage: 'myAuthPage') {
@@ -669,12 +688,13 @@ definition(oauth: true)
 """).run(validationFlags: [Flags.DontValidateDefinition])
     }
 
-    def "If 'oauthPage' is not first, fail."()
-    {
+    def "If 'oauthPage' is not first, fail."() {
         when:
             new HubitatAppSandbox("""
 preferences(oauthPage: 'myPageForAuth') {
-    page(name: "page1", title: "tit", install: true, nextPage: "myPageForAuth") { ${PreferencesValidationCommon.validSection} }
+    page(name: "page1", title: "tit", install: true, nextPage: "myPageForAuth") { ${
+                PreferencesValidationCommon.validSection
+            } }
     page(name: "myPageForAuth", title: "myAuthPage title", install: true) { ${PreferencesValidationCommon.validSection} }
 }
 
@@ -689,8 +709,7 @@ definition(oauth: true)
             e.message.contains('myPageForAuth')
     }
 
-    def "If 'oauthPage' is dynamic, fail."()
-    {
+    def "If 'oauthPage' is dynamic, fail."() {
         when:
             new HubitatAppSandbox("""
 preferences(oauthPage: 'someNonStaticAuth') {
@@ -699,7 +718,9 @@ preferences(oauthPage: 'someNonStaticAuth') {
 
 void someNonStaticAuth()
 {
-    dynamicPage(name: "someNonStaticAuth", title: "myAuthPage title", install: true) { ${PreferencesValidationCommon.validSection} }
+    dynamicPage(name: "someNonStaticAuth", title: "myAuthPage title", install: true) { ${
+                PreferencesValidationCommon.validSection
+            } }
 }
 
 definition(oauth: true)
@@ -713,8 +734,7 @@ definition(oauth: true)
             e.message.contains('dynamic')
     }
 
-    def "With 'oauth' definition(), preferences don't need 'oauthPage' if it's a pageless app."()
-    {
+    def "With 'oauth' definition(), preferences don't need 'oauthPage' if it's a pageless app."() {
         expect:
             new HubitatAppSandbox("""
 preferences {
@@ -725,8 +745,7 @@ definition(oauth: true)
 """).run(validationFlags: [Flags.DontValidateDefinition])
     }
 
-    def "If 'oauthPage' in preferences() points to invalid page, validation fails."()
-    {
+    def "If 'oauthPage' in preferences() points to invalid page, validation fails."() {
         when:
             new HubitatAppSandbox("""
 preferences(oauthPage: 'someInvalidPage') {

@@ -19,6 +19,7 @@ class Section {
         boolParameter(name:"hideable")
         boolParameter(name:"hidden")
         boolParameter(name:"mobileOnly")
+        boolParameter(name:"hideWhenEmpty")
     }
 
     void validate(Validator validator)

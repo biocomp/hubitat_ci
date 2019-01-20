@@ -16,7 +16,7 @@ def pageConfig() {
 
 		section("") {
 			input(name: "ventDevices", type: "capability.switch", title: "Trigger Devices", multiple: true)
-			input(name: "numberOption", type: "number", defaultValue: "10", range: "1..*", title: "", description: "",
+			input(name: "numberOption", type: "number", defaultValue: "10", range: "1..*", title: "t", description: "d",
 					required: true)
 		}
 

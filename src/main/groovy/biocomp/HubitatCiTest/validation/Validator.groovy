@@ -6,14 +6,18 @@ import biocomp.hubitatCiTest.DoNotCallMeBinding
 import biocomp.hubitatCiTest.HubitatAppScript
 import biocomp.hubitatCiTest.RemovePrivateFromScriptCompilationCustomizer
 import biocomp.hubitatCiTest.SandboxClassLoader
+
 import biocomp.hubitatCiTest.apppreferences.AppPreferencesReader
 import biocomp.hubitatCiTest.apppreferences.HRef
 import biocomp.hubitatCiTest.apppreferences.Page
 import biocomp.hubitatCiTest.apppreferences.Preferences
+import biocomp.hubitatCiTest.apppreferences.Input
+
 import groovy.json.JsonBuilder
 import groovy.time.TimeCategory
 import groovy.transform.TypeChecked
 import groovy.xml.MarkupBuilder
+
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.expr.AttributeExpression
 import org.codehaus.groovy.ast.expr.MethodCallExpression
@@ -159,6 +163,22 @@ class Validator {
     private static final NamedParametersValidator preferencesValidatorNoOauth = NamedParametersValidator.make {
     }
 
+    private static final NamedParametersValidator inputValidator = NamedParametersValidator.make {
+        boolParameter(name: "capitalization")
+        objParameter(name: "defaultValue")
+        stringParameter(name: "name")
+        stringParameter(name: "title")
+        stringParameter(name: "description")
+        boolParameter(name: "multiple")
+        numericRangeParameter(name: "range")
+        boolParameter(name: "required")
+        boolParameter(name: "submitOnChange")
+        listOfStringsParameter(name: "options")
+        stringParameter(name: "type")
+        boolParameter(name: "hideWhenEmpty")
+    }
+
+
     Validator(
             EnumSet<Flags> flags = EnumSet.noneOf(Flags), List<Class> extraAllowedClasses = [],
             List<String> extraAllowedExpressions = [])
@@ -218,13 +238,10 @@ class Validator {
         def sac = new SourceAwareCustomizer(scz)
 
         sac.sourceUnitValidator = {
-            println "SourceUnit: ${it}"
             return true
         }
 
         sac.classValidator = { ClassNode cn ->
-            println "ClassNode: ${cn}. scriptBody = ${cn.scriptBody}"
-
             if (!cn.scriptBody) {
                 throw new SecurityException("Can't define classes in the script, but you defined '${cn}'")
             }
@@ -391,6 +408,13 @@ class Validator {
 
             def unreachablePages = allPages.keySet() - reachablePages
             assert !unreachablePages: "${this}: pages ${unreachablePages} are not reachable via 'href' or 'nextPage', and thus don't make sense to have";
+        }
+    }
+
+    void validateInput(Input input)
+    {
+        if (!hasFlag(Flags.DontValidatePreferences)) {
+            inputValidator.validate(input.toString(), input.options, this)
         }
     }
 

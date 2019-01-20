@@ -52,6 +52,7 @@ class Page
         stringParameter(name: "nextPage")
         boolParameter(name: "install")
         boolParameter(name: "uninstall")
+        boolParameter(name: "hideWhenEmpty")
     }
 
     private static final NamedParametersValidator dynamicPageParamValidator = NamedParametersValidator.make {

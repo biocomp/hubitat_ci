@@ -263,6 +263,7 @@ class Tonesto7HomebridgeScriptTest extends Specification
                     api: api,
                     validator: new validation.Validator([
                             Flags.AllowEmptyOptionValueStrings,
+                            Flags.AllowNullListOptions,
                             Flags.AllowMissingOAuthPage],
                             [],
                             ["execute"]))

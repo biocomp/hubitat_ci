@@ -28,13 +28,11 @@ preferences{
 """
     }
 
-    static Object parseOneChild(String elementString) {
-        return fromScript(pageWith(elementString)).pages[0].sections[0].children[0]
+    static Object parseOneChild(Map options = [:], String elementString) {
+        return fromScript(options, pageWith(elementString)).pages[0].sections[0].children[0]
     }
 
     static String makePropertiesWithSection(String sectionParams) {
-        println "makePropertiesWithSection('${sectionParams}')"
-
         return """
 preferences{
     section(${sectionParams}){${validInput}}
@@ -50,7 +48,7 @@ preferences{
 """
     }
 
-    static Preferences fromScript(String script) {
-        return new HubitatAppSandbox(script).readPreferences()
+    static Preferences  fromScript(Map options = [:], String script) {
+        return new HubitatAppSandbox(script).readPreferences(options)
     }
 }

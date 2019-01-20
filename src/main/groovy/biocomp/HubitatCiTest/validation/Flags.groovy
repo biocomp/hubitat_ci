@@ -14,7 +14,8 @@ enum Flags
     AllowUnreachablePages,
     AllowTitleInPageCallingMethods,
     AllowMissingOAuthPage,
-
+    AllowNullListOptions,
+    
     /**
      * Allow required properties (such as page(title: "")) to be empty strings.
      * It's just a workaround to be able to support existing scripts.

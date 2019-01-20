@@ -177,8 +177,8 @@ def authError() {
                     userSettingValues: [someInputName : "some input value",
                                         someOtherInput: "some other input value"],
                     customizeScriptBeforeRun: { def script ->
-                        script.getMetaClass().myExistingMetaMethod = { -> "from existing method, overridden!"}
-                        script.getMetaClass().myNewMetaMethod = { -> "from metamethod!"}
+                        script.getMetaClass().myExistingMetaMethod = { -> "from existing method, overridden!" }
+                        script.getMetaClass().myNewMetaMethod = { -> "from metamethod!" }
                     }).getProducedMappings()
 
         when:
@@ -220,5 +220,11 @@ def authError() {
 
         then:
             state.blah == 42
+    }
+
+    def "mappings() method itself is called to handle requests and sees 'params' and 'request' too"()
+    {
+        expect:
+            assert false : "Not implemented :("
     }
 }
