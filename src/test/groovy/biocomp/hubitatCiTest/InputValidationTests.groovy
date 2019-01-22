@@ -6,6 +6,8 @@ import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 import spock.lang.Specification
 
 import static biocomp.hubitatCiTest.PreferencesValidationCommon.parseOneChild
+import static org.codehaus.groovy.runtime.DefaultGroovyMethods.combinations
+
 
 /**
  * Validation tests for preferences' inputs
@@ -81,5 +83,59 @@ hideWhenEmpty: true)
             AssertionError e = thrown()
             e.message.contains("not supported")
             e.message.contains("someInvalidOption")
+    }
+
+    def "Checking that valid input() types succeed"(String type)
+    {
+        when:
+            def input = [
+                    parseOneChild("""input("nam1", '${type}')""") as Input,
+                    parseOneChild("""input(name: "nam1", type: '${type}')""") as Input]
+
+
+            then:
+                input[0].readType() == type
+                input[1].readType() == type
+
+            where:
+                type << [
+                        "capability.thermostat",
+                        "device.someDeviceName",
+                        "bool",
+                        //"boolean",
+                        "decimal",
+                        "email",
+                        "enum",
+                        "hub",
+                        "icon",
+                        "number",
+                        "password",
+                        "phone",
+                        "time",
+                        "text"
+                ]
+    }
+
+    def "Invalid input(name, type) types fail"(List typeAndInputType)
+    {
+        when:
+            def type = typeAndInputType[0]
+            def input = typeAndInputType[1] ?
+                    parseOneChild("""input("nam1", '${type}')""") as Input :
+                    parseOneChild("""input(name: "nam1", type: '${type}')""") as Input
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("type")
+            e.message.contains("not valid")
+            e.message.contains("nam1")
+
+        where:
+            typeAndInputType << combinations([[
+                    "capability.badCapability",
+                    "devic.someDeviceName",
+                    "devicee.someDeviceName",
+                    "blah",
+                    "bool"], [true, false]])
     }
 }

@@ -163,7 +163,7 @@ class Validator {
     private static final NamedParametersValidator preferencesValidatorNoOauth = NamedParametersValidator.make {
     }
 
-    private static final NamedParametersValidator inputValidator = NamedParametersValidator.make {
+    private static final NamedParametersValidator inputOptionsValidator = NamedParametersValidator.make {
         boolParameter(name: "capitalization")
         objParameter(name: "defaultValue")
         stringParameter(name: "name")
@@ -177,6 +177,21 @@ class Validator {
         stringParameter(name: "type")
         boolParameter(name: "hideWhenEmpty")
     }
+
+    private static final HashSet<String> validStaticInputTypes = [
+        "bool",
+        //"bolean",
+        "decimal",
+        "email",
+        "enum",
+        "hub",
+        "icon",
+        "number",
+        "password",
+        "phone",
+        "time",
+        "text"
+    ] as HashSet
 
 
     Validator(
@@ -332,10 +347,7 @@ class Validator {
             }
 
             // Pages must be reachable
-            if (!hasFlag(Flags.AllowUnreachablePages))
-            {
-                validatePagesAreReachable(preferences)
-            }
+            validatePagesAreReachable(preferences)
 
             // Validate oauth page
             validateOauth(oauthEnabled, preferences, uniqueNames)
@@ -393,29 +405,48 @@ class Validator {
 
     private void validatePagesAreReachable(Preferences preferences)
     {
-        def reachablePages = [] as HashSet<String>
+        if (!hasFlag(Flags.AllowUnreachablePages)) {
+            def reachablePages = [] as HashSet<String>
 
-        def pagesCombined = (preferences.pages + preferences.dynamicPages)
+            def pagesCombined = (preferences.pages + preferences.dynamicPages)
 
-        if (!pagesCombined.isEmpty()) {
-            def allPages = [] as HashMap<String, Page>;
-            (pagesCombined).each {
-                allPages[it.readName()] = it
+            if (!pagesCombined.isEmpty()) {
+                def allPages = [] as HashMap<String, Page>;
+                (pagesCombined).each {
+                    allPages[it.readName()] = it
+                }
+
+
+                addReachablePages(pagesCombined[0], allPages, reachablePages);
+
+                def unreachablePages = allPages.keySet() - reachablePages
+                assert !unreachablePages: "${this}: pages ${unreachablePages} are not reachable via 'href' or 'nextPage', and thus don't make sense to have";
             }
-
-
-            addReachablePages(pagesCombined[0], allPages, reachablePages);
-
-            def unreachablePages = allPages.keySet() - reachablePages
-            assert !unreachablePages: "${this}: pages ${unreachablePages} are not reachable via 'href' or 'nextPage', and thus don't make sense to have";
         }
     }
 
     void validateInput(Input input)
     {
         if (!hasFlag(Flags.DontValidatePreferences)) {
-            inputValidator.validate(input.toString(), input.options, this)
+            inputOptionsValidator.validate(input.toString(), input.options, this)
+
+            validateInputType(input)
         }
+    }
+
+    private void validateInputType(Input input)
+    {
+        if (validStaticInputTypes.contains(input.readType()))
+        {
+            return
+        }
+
+        if (input.readType() =~ /device\.[a-zA-Z0-9._]+/)
+        {
+            return
+        }
+
+        assert false : "Input ${input}'s type ${input.readType()} is not valid. Valid types are: ${validStaticInputTypes} + 'device.yourDeviceName'"
     }
 
     void validateSingleDynamicPageFor(Preferences preferences, String methodName) {
