@@ -298,7 +298,7 @@ def userProvidedMethodToMakeStaticPages()
 preferences{
     page("static page", "static title"){
         section(){
-            input "in1", "fromPage0"
+            input "in1", "bool", title: "device.fromPage0"
         }
     }
 
@@ -311,7 +311,7 @@ def makePage2()
     dynamicPage(name: "makePage2", title: "tit2", install: true){
         section("$${in1} section, unknown: $${blah}"){
             paragraph "$${in1} paragraph1, unknown: $${in2}"
-            input "in2", "in2 = $${in1} input type"
+            input "in2", "bool", title: "in2 = $${in1} input type"
         }
     }
 }
@@ -334,7 +334,7 @@ def makePage3()
             preferences.dynamicPages[0].sections[0].title == 'input1 val everywhere section, unknown: null'
             preferences.dynamicPages[0].sections[0].children[
                     0].text == 'input1 val everywhere paragraph1, unknown: null'
-            preferences.dynamicPages[0].sections[0].children[1].readType() == 'in2 = input1 val everywhere input type'
+            preferences.dynamicPages[0].sections[0].children[1].options.title == 'in2 = input1 val everywhere input type'
 
             preferences.dynamicPages[1].sections[0].title == 'input2 val on page3 section'
             preferences.dynamicPages[1].sections[0].children[0].text == 'input1 val everywhere paragraph2'
@@ -346,8 +346,8 @@ def makePage3()
 preferences{
     page("static page", "static title"){
         section(){
-            input "in1", "fromPage0"
-            input "in3", "fromPage0"
+            input "in1", "bool", title: "fromPage0"
+            input "in3", "bool", title: "fromPage0"
         }
     }
 

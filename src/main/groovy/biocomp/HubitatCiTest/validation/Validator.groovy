@@ -12,7 +12,7 @@ import biocomp.hubitatCiTest.apppreferences.HRef
 import biocomp.hubitatCiTest.apppreferences.Page
 import biocomp.hubitatCiTest.apppreferences.Preferences
 import biocomp.hubitatCiTest.apppreferences.Input
-
+import biocomp.hubitatCiTest.capabilities.Capabilities
 import groovy.json.JsonBuilder
 import groovy.time.TimeCategory
 import groovy.transform.TypeChecked
@@ -166,7 +166,7 @@ class Validator {
     private static final NamedParametersValidator inputOptionsValidator = NamedParametersValidator.make {
         boolParameter(name: "capitalization")
         objParameter(name: "defaultValue")
-        stringParameter(name: "name")
+        stringParameter(name: "name", required: true)
         stringParameter(name: "title")
         stringParameter(name: "description")
         boolParameter(name: "multiple")
@@ -174,7 +174,7 @@ class Validator {
         boolParameter(name: "required")
         boolParameter(name: "submitOnChange")
         listOfStringsParameter(name: "options")
-        stringParameter(name: "type")
+        stringParameter(name: "type", required: true)
         boolParameter(name: "hideWhenEmpty")
     }
 
@@ -428,7 +428,11 @@ class Validator {
     void validateInput(Input input)
     {
         if (!hasFlag(Flags.DontValidatePreferences)) {
-            inputOptionsValidator.validate(input.toString(), input.options, this)
+            inputOptionsValidator.validate(
+                    input.toString(),
+                    input.unnamedOptions,
+                    input.options,
+                    this)
 
             validateInputType(input)
         }
@@ -436,17 +440,30 @@ class Validator {
 
     private void validateInputType(Input input)
     {
-        if (validStaticInputTypes.contains(input.readType()))
+        final def inputType = input.readType()
+        if (validStaticInputTypes.contains(inputType))
         {
             return
         }
 
-        if (input.readType() =~ /device\.[a-zA-Z0-9._]+/)
+        if (inputType =~ /capability\.[a-zA-Z0-9._]+/)
+        {
+            if (Capabilities.capabilitiesByDeviceSelector.containsKey(inputType.substring(11)))
+            {
+                return
+            }
+            else
+            {
+                assert false : "Input ${input}'s capability '${inputType}' is not supported. Supported capabilities: ${Capabilities.capabilitiesByDeviceSelector.keySet()}"
+            }
+        }
+
+        if (inputType =~ /device\.[a-zA-Z0-9._]+/)
         {
             return
         }
 
-        assert false : "Input ${input}'s type ${input.readType()} is not valid. Valid types are: ${validStaticInputTypes} + 'device.yourDeviceName'"
+        assert false : "Input ${input}'s type ${inputType} is not supported. Valid types are: ${validStaticInputTypes} + 'device.yourDeviceName'"
     }
 
     void validateSingleDynamicPageFor(Preferences preferences, String methodName) {

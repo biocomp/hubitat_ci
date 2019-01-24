@@ -188,21 +188,21 @@ class AppPreferencesReader implements
 
     @Override
     Object input(Map options, String name, String type) {
-        prefState.currentSection.children << new Input(options, name, type, validator)
+        prefState.currentSection.children << new Input([name: name, type: type], options, validator)
         settingsContainer.userInputFound(name)
         validator.validateInput(prefState.currentSection.children.last() as Input)
     }
 
     @Override
     Object input(String name, String type) {
-        prefState.currentSection.children << new Input(null, name, type, validator)
+        prefState.currentSection.children << new Input([name: name, type: type], null, validator)
         settingsContainer.userInputFound(name)
         validator.validateInput(prefState.currentSection.children.last() as Input)
     }
 
     @Override
     Object input(Map options) {
-        prefState.currentSection.children << new Input(options, null, null, validator)
+        prefState.currentSection.children << new Input([:], options, validator)
         settingsContainer.userInputFound(options.name as String)
         validator.validateInput(prefState.currentSection.children.last() as Input)
     }

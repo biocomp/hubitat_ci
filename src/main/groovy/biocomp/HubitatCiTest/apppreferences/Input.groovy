@@ -8,24 +8,18 @@ import groovy.transform.TypeChecked
 @TupleConstructor
 @CompileStatic
 class Input {
+    final Map unnamedOptions
     final Map options
-    final String name
-    final String type
     final Validator validator
 
     String readType()
     {
-        if (type != null)
-        {
-            return type
-        }
-
-        return options?.type
+        return unnamedOptions.type ? unnamedOptions.type : options?.type
     }
 
     @Override
     String toString()
     {
-        return "input(options: ${options}, name: ${name}, type: ${type})"
+        return "input(options: ${options}, unnamedOptions: ${unnamedOptions})"
     }
 }
