@@ -30,9 +30,10 @@ def mainPage() {
     page(name:"mainPage", title:"Settings", install: true, uninstall: true) {
         section("Choose thermostat and virtual dimmers to sync with") {
             input (name:"thermostat", type: "capability.thermostat", title: "Thermostat", required: true, multiple: false)
-            input (name:"setpointDimmer", type: "capability.switchLevel", title: "Setpoint dimmer", required: true, multiple: false)
-            input (name:"tempDimmer", type: "capability.switchLevel", title: "Temperature dimmer", required: true, multiple: false)
+            input (name:"coolingDimmer", type: "capability.switchLevel", title: "Cooling setpoint dimmer", required: true, multiple: false)
+            input (name:"heatingDimmer", type: "capability.switchLevel", title: "Heating setpoint dimmer", required: true, multiple: false)
         }
+
         section("Logging", hideable: true, hidden: true) {
             input ("debugLogging", "bool", title: "Enable verbose/debug logging")
         }
@@ -51,55 +52,74 @@ def updated() {
 
 def initialize() {
     log.debug "Initializing"
-    subscribe(thermostat, "thermostatSetpoint", realSetpointHandler)
-    subscribe(thermostat, "temperature", tempHandler)
-    subscribe(setpointDimmer, "level", virtualSetpointHandler)
+    subscribe(thermostat, "thermostatCoolingSetpoint", realCoolingSetpointHandler)
+    subscribe(thermostat, "thermostatHeatingSetpoint", realHeatingSetpointHandler)
+
+    subscribe(coolingDimmer, "level", virtualCoolongSetpointHandler)
+    subscribe(heatingDimmer, "level", virtualHeatingSetpointHandler)
 }
 
-def realSetpointHandler(evt) {
-    if (debugLogging) log.debug("Thermostat setpoint changed...")
-    def newSetpoint = thermostat.currentValue("thermostatSetpoint")
-    def currLevel = setpointDimmer.currentLevel
+def realCoolingSetpointHandler(def evt)
+{
+    realSetpointHandler(coolingDimmer, "coolingSetpoint")
+}
+
+def realHeatingSetpointHandler(def evt)
+{
+    realSetpointHandler(heatingDimmer, "heatingSetpoint")
+}
+
+def logDebug(String s)
+{
+    if (debugLogging) {
+        log.debug s
+    }
+}
+
+def realSetpointHandler(def dimmer, String thermostatSetpointName) {
+    logDebug("Thermostat ${thermostatSetpointName} changed...")
+
+    def newSetpoint = thermostat.currentValue(thermostatSetpointName)
+    def currLevel = dimmer.currentLevel
     if (currLevel > newSetpoint - 0.5 && currLevel < newSetpoint + 0.5) {
-        log.debug "Virtual dimmer not changed because setpoint of ${newSetpoint} is already close to virtual dimmer level of ${currLevel}"
+        logDebug "Virtual dimmer not changed because setpoint of ${newSetpoint} is already close to virtual dimmer level of ${currLevel}"
     }
     else {
-        setpointDimmer.setLevel(newSetpoint)
-        log.debug "Changed virtual setpoint dimmer level to ${newSetpoint} because thermostat setpoint changed"
+        dimmer.setLevel(newSetpoint)
+        logDebug "Changed virtual setpoint dimmer level to ${newSetpoint} because thermostat setpoint changed"
     }
-    if (debugLogging) log.debug("...done handling thermostat setpoint change.")
+
+    logDebug("...done handling thermostat setpoint change.")
 }
 
-def tempHandler(evt){
-    if (debugLogging) log.debug("Thermostat temperature changed...")
-    def newTemp = thermostat.currentValue("temperature")
-    newTemp = Math.round(newTemp)
-    tempDimmer.setLevel(newTemp)
-    log.debug "Changed virtual temperature dimmer level to ${newTemp} because thermostat temperature changed"
-    if (debugLogging) log.debug("...done handling thermostat temperature change.")
+
+def virtualCoolongSetpointHandler(def evt)
+{
+    virtualSetpointHandler(coolingDimmer, "coolingSetpoint", { def newValue -> thermostat.setCoolingSetpoint(newValue)})
 }
 
-def virtualSetpointHandler(evt) {
-    if (debugLogging) log.debug("Virtual setpoint dimmer level changed...")
-    def targetSetpoint = setpointDimmer.currentLevel
-    def currSetpoint = thermostat.currentValue("thermostatSetpoint")
-    def thermostatMode = thermostat.currentValue("thermostatMode")
-    if (debugLogging) log.debug("Target setpoint = ${targetSetpoint}; current setpoint = ${currSetpoint}; thermostat mode = ${thermostatMode}")
+def virtualHeatingSetpointHandler(def evt)
+{
+    virtualSetpointHandler(heatingDimmer, "heatingSetpoint", { def newValue -> thermostat.setHeatingSetpoint(newValue)})
+}
+
+def virtualSetpointHandler(def dimmer, String thermostatSetpointName, Closure thermostatSetter) {
+    logDebug("Virtual setpoint dimmer level changed...")
+
+    def targetSetpoint = dimmer.currentLevel
+    def currSetpoint = thermostat.currentValue(thermostatSetpointName)
+
+    logDebug("Target setpoint = ${targetSetpoint}; current setpoint = ${currSetpoint};")
+
     if (currSetpoint > targetSetpoint - 0.5 && currSetpoint < targetSetpoint + 0.5) {
-        log.debug "Thermostat not changed because setpoint of ${currSetpoint} is already close to virtual dimmer target of ${targetSetpoint}"
+        logDebug "Thermostat not changed because setpoint of ${currSetpoint} is already close to virtual dimmer target of ${targetSetpoint}"
     }
-    else {
-        if (thermostatMode == "cool") {
-            thermostat.setCoolingSetpoint(targetSetpoint)
-            log.debug "Set thermostat cooling setpoint to ${targetSetpoint} because virtual dimmer changed"
-        }
-        else if (thermostatMode == "heat") {
-            thermostat.setHeatingSetpoint(targetSetpoint)
-            log.debug "Set thermostat heating setpoint to ${targetSetpoint} because virtual dimmer changed"
-        }
-        else {
-            log.debug "Thermostat not adjusted because not in heat or cool mode (mode = ${thermostatMode})"
-        }
+    else
+    {
+        logDebug "Set thermostat ${thermostatSetpointName} to ${targetSetpoint} because virtual dimmer changed"
+
+        thermostatSetter(targetSetpoint)
     }
-    if (debugLogging) log.debug("...done handling virtual setpoint dimmer change.")
+
+    logDebug("...done handling virtual setpoint dimmer change.")
 }
