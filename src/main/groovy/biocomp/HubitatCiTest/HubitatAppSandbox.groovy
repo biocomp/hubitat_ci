@@ -101,7 +101,7 @@ class HubitatAppSandbox {
 
             assert options['userSettingValues'] != null
             assert (options[
-                    'userSettingValues'] as Map<String, Object>): "'userSettingValues' must be a map of String->Object options"
+                    'userSettingValues'] as Map<String, Object>) != null: "'userSettingValues' must be a map of String->Object options"
         }
 
         if (options.containsKey('customizeScriptBeforeRun')) {

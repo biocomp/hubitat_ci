@@ -10,9 +10,13 @@ class AppMappingsReaderTest extends
         Specification
 {
 
-    def tryReadMappings(String fromScript) {
+    def tryReadMappings(Map userSettingValues = new HashMap<String, Object>(), String fromScript) {
+        return tryGetMappingsReader(userSettingValues, fromScript).mappings
+    }
+
+    def tryGetMappingsReader(Map userSettingValues = new HashMap<String, Object>(), String fromScript) {
         return new HubitatAppSandbox(fromScript).run(
-                validationFlags: [Flags.DontValidateDefinition, Flags.DontValidatePreferences]).getProducedMappings()
+                userSettingValues: userSettingValues, validationFlags: [Flags.DontValidateDefinition, Flags.DontValidatePreferences]).mappingsReader
     }
 
     def "No mappings is OK"() {
@@ -222,9 +226,34 @@ def authError() {
             state.blah == 42
     }
 
-    def "mappings() method itself is called to handle requests and sees 'params' and 'request' too"()
+    def "mappings() method's closure itself is called to handle requests and sees 'params' and 'request' too"()
+    {
+        setup:
+            def log = Mock(Log)
+            def mappings = tryGetMappingsReader("""
+mappings{
+    myCustomLog?.debug "Inside mapping's closure: params = \${params}, request = \${request}"
+}
+""",
+                    myCustomLog: log)
+        when:
+            mappings.mappingClosure("ParamsString", "42")
+
+        then:
+            with(log)
+            {
+                1*debug("Inside mapping's closure: params = ParamsString, request = 42")
+            }
+    }
+
+    def "mappings() during initial validation receives null 'request' and 'params'"()
     {
         expect:
-            assert false : "Not implemented :("
+            new HubitatAppSandbox("""
+mappings{
+    assert params == null
+    assert request == null
+}
+""").run(validationFlags: [Flags.DontValidateDefinition, Flags.DontValidatePreferences])
     }
 }

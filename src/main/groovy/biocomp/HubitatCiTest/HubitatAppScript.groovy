@@ -75,6 +75,11 @@ abstract class HubitatAppScript extends Script
         mappingsReader.getMappings()
     }
 
+    AppMappingsReader getMappingsReader()
+    {
+        return mappingsReader
+    }
+
     /*
         Don't let Script base class to redirect properties to binding,
             it causes confusing issues when using non-supported methods and properties.

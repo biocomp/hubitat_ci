@@ -20,7 +20,34 @@ class AppMappingsReader implements AppExecutor {
     def mappings(@DelegatesTo(Mappings) Closure makeContents)
     {
         assert makeContents : "mappings() can't be called with null closure"
-        makeContents()
+
+        currentMappings = mappings
+        try {
+            makeContents()
+        }
+        finally {
+            currentMappings = null
+        }
+
+        // Store this for future manual calls by user,
+        // but don't touch initially captured mappings during that call.
+        makeContentsClosure = {
+            def params, def request ->
+
+                currentMappings = [:]
+
+                try
+                {
+                    def scriptWithInjectedProps = derivedScriptFactory(script, params, request)
+                    def makeContentsWithInjectedProps = makeContents.rehydrate(scriptWithInjectedProps, scriptWithInjectedProps, scriptWithInjectedProps)
+
+                    makeContentsWithInjectedProps()
+                }
+                finally
+                {
+                    currentMappings = null
+                }
+        }
     }
 
     @Override
@@ -29,11 +56,21 @@ class AppMappingsReader implements AppExecutor {
         Map contents = makeContents() as Map
 
         if (!validator.hasFlag(Flags.DontValidateMappings)) {
-            assert !mappings.containsKey(relativePath) : "path() must define unique paths, but '${relativePath}' was added twice."
+            assert !currentMappings.containsKey(relativePath) : "path() must define unique paths, but '${relativePath}' was added twice."
         }
 
-        mappings.put(relativePath, new MappingPath(script, relativePath, contents, validator, derivedScriptFactory));
+        currentMappings.put(relativePath, new MappingPath(script, relativePath, contents, validator, derivedScriptFactory));
     }
+
+    Closure getMappingClosure()
+    {
+        return makeContentsClosure
+    }
+
+
+    private Map<String, MappingPath> currentMappings
+
+    Closure makeContentsClosure = null
 
     final Map<String, MappingPath> mappings = [:]
 
