@@ -1,6 +1,6 @@
-package biocomp.hubitatCiTest
+package biocomp.hubitatCi
 
-import biocomp.hubitatCiTest.util.Utility
+import biocomp.hubitatCi.util.Utility
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll

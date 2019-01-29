@@ -1,12 +1,12 @@
-package biocomp.hubitatCiTest
+package biocomp.hubitatCi
 
-import biocomp.hubitatCiTest.apppreferences.Input
+import biocomp.hubitatCi.apppreferences.Input
 import spock.lang.Unroll
 
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 import spock.lang.Specification
 
-import static biocomp.hubitatCiTest.PreferencesValidationCommon.parseOneChild
+import static biocomp.hubitatCi.PreferencesValidationCommon.parseOneChild
 import static org.codehaus.groovy.runtime.DefaultGroovyMethods.combinations
 
 

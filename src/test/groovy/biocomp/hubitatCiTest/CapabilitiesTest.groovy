@@ -1,6 +1,6 @@
-package biocomp.hubitatCiTest
+package biocomp.hubitatCi
 
-import biocomp.hubitatCiTest.capabilities.Capabilities
+import biocomp.hubitatCi.capabilities.Capabilities
 import spock.lang.Specification
 import groovy.transform.TupleConstructor
 

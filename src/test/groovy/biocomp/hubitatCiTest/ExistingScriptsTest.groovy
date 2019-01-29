@@ -1,10 +1,10 @@
-package biocomp.hubitatCiTest
+package biocomp.hubitatCi
 
 
-import biocomp.hubitatCiTest.validation.Flags
-import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
-import biocomp.hubitatCiTest.emulation.commonApi.InstalledAppWrapper
-import biocomp.hubitatCiTest.emulation.commonApi.Log
+import biocomp.hubitatCi.validation.Flags
+import biocomp.hubitatCi.emulation.appApi.AppExecutor
+import biocomp.hubitatCi.emulation.commonApi.InstalledAppWrapper
+import biocomp.hubitatCi.emulation.commonApi.Log
 import spock.lang.Specification
 
 class AppTemplateScriptTest extends

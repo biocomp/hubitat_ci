@@ -1,8 +1,8 @@
-package biocomp.hubitatCiTest
+package biocomp.hubitatCi
 
-import biocomp.hubitatCiTest.apppreferences.App
-import biocomp.hubitatCiTest.apppreferences.Mode
-import biocomp.hubitatCiTest.validation.Flags
+import biocomp.hubitatCi.apppreferences.App
+import biocomp.hubitatCi.apppreferences.Mode
+import biocomp.hubitatCi.validation.Flags
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 import spock.lang.Specification
 import spock.lang.Unroll

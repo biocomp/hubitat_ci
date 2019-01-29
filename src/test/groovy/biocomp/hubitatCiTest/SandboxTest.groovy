@@ -1,8 +1,8 @@
-package biocomp.hubitatCiTest
+package biocomp.hubitatCi
 
 
-import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
-import biocomp.hubitatCiTest.emulation.commonApi.Log
+import biocomp.hubitatCi.emulation.appApi.AppExecutor
+import biocomp.hubitatCi.emulation.commonApi.Log
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import spock.lang.Specification
 import spock.lang.Unroll

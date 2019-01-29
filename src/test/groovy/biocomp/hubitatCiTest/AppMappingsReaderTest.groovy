@@ -1,8 +1,8 @@
-package biocomp.hubitatCiTest
+package biocomp.hubitatCi
 
-import biocomp.hubitatCiTest.validation.Flags
-import biocomp.hubitatCiTest.emulation.appApi.AppExecutor
-import biocomp.hubitatCiTest.emulation.commonApi.Log
+import biocomp.hubitatCi.validation.Flags
+import biocomp.hubitatCi.emulation.appApi.AppExecutor
+import biocomp.hubitatCi.emulation.commonApi.Log
 import groovy.transform.NotYetImplemented
 import spock.lang.Specification
 

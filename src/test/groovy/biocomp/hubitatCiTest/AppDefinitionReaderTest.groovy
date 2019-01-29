@@ -1,7 +1,7 @@
-package biocomp.hubitatCiTest
+package biocomp.hubitatCi
 
 
-import biocomp.hubitatCiTest.validation.Flags
+import biocomp.hubitatCi.validation.Flags
 import groovy.transform.TypeChecked
 import spock.lang.Specification
 import spock.lang.Unroll

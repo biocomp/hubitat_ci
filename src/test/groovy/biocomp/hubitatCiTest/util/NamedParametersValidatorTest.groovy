@@ -1,7 +1,7 @@
-package biocomp.hubitatCiTest.util
+package biocomp.hubitatCi.util
 
-import biocomp.hubitatCiTest.validation.Validator
-import biocomp.hubitatCiTest.validation.NamedParametersValidator
+import biocomp.hubitatCi.validation.Validator
+import biocomp.hubitatCi.validation.NamedParametersValidator
 import spock.lang.Specification
 
 class NamedParametersValidatorTest extends
