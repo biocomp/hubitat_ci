@@ -9,7 +9,7 @@
 	url = https://github.com/jca1/konnected.git
 [submodule "SubmodulesWithScripts/Hubitat_iComfort"]
 	path = SubmodulesWithScripts/Hubitat_iComfort
-	url = https://github.com/bspranger/Hubitat_iComfort.git
+	url = https://github.com/biocomp/Hubitat_iComfort.git
 [submodule "SubmodulesWithScripts/homeremote"]
 	path = SubmodulesWithScripts/homeremote
 	url = https://github.com/mihaca/homeremote.git
