@@ -1,0 +1,98 @@
+Cabability, capability.*, Present in SmartThings, Attributes, Commands
+
+AccelerationSensor, capability.accelerationSensor, yes, acceleration: [active; inactive], -
+Actuator, capability.actuator, yes (deprecated), - , -
+[Only SmartThings] Air Conditioner Mode, -, yes, -, -
+[Only SmartThings] Air Quality Sensor, -, yes, -, - 
+Alarm, capability.alarm, yes, alarm ["strobe"; "off"; "both"; "siren"], both(); off(); siren(); strobe()
+[Only SmartThings] Audio Mute, - , yes, -, -
+AudioNotification, capability.audioNotification, yes, 
+5 AudioVolume
+6 Battery
+7 Beacon
+8 Bulb
+9 Button (Deprecated)
+10 CarbonDioxideMeasurement
+11 CarbonMonoxideDetector
+12 ChangeLevel
+13 Chime
+14 ColorControl
+15 ColorMode
+16 ColorTemperature
+17 Configuration
+18 Consumable
+19 ContactSensor
+20 DoorControl
+21 DoubleTapableButton
+22 EnergyMeter
+23 EstimatedTimeOfArrival
+24 FanControl
+25 FilterStatus
+26 GarageDoorControl
+27 HealthCheck
+28 HoldableButton
+29 IlluminanceMeasurement
+30 ImageCapture
+31 Indicator
+32 Initialize
+33 Light
+34 LightEffects
+35 LocationMode
+36 Lock
+37 LockCodes
+38 MediaController
+39 Momentary
+40 MotionSensor
+41 MusicPlayer
+42 Notification
+43 Outlet
+44 Polling
+45 PowerMeter
+46 PowerSource
+47 PresenceSensor
+48 PressureMeasurement
+49 PushableButton
+50 Refresh
+51 RelativeHumidityMeasurement
+52 RelaySwitch
+53 ReleasableButton
+54 SamsungTV
+55 SecurityKeypad
+56 Sensor
+57 ShockSensor
+58 SignalStrength
+59 SleepSensor
+60 SmokeDetector
+61 SoundPressureLevel
+62 SoundSensor
+63 SpeechRecognition
+64 SpeechSynthesis
+65 StepSensor
+66 Switch
+67 SwitchLevel
+68 TV
+69 TamperAlert
+70 Telnet
+71 TemperatureMeasurement
+72 TestCapability
+73 Thermostat
+74 ThermostatCoolingSetpoint
+75 ThermostatFanMode
+76 ThermostatHeatingSetpoint
+77 ThermostatMode
+78 ThermostatOperatingState
+79 ThermostatSchedule
+80 ThermostatSetpoint
+81 ThreeAxis
+82 TimedSession
+83 Tone
+84 TouchSensor
+85 UltravioletIndex
+86 Valve
+87 VideoCamera
+88 VideoCapture
+89 VoltageMeasurement
+90 WaterSensor
+91 WindowShade
+92 ZwMultichannel
+93 pHMeasurement
