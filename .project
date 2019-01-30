@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>HubitatCiTest</name>
-	<comment>Project HubitatCiTest created by Buildship.</comment>
+	<name>HubitatCi</name>
+	<comment>Project HubitatCi</comment>
 	<projects>
 	</projects>
 	<buildSpec>
