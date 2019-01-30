@@ -30,6 +30,16 @@ publishing {
             artifact javadocJar
         }
     }
+
+    repositories{
+        maven {
+            url 'https://biocomp.pkgs.visualstudio.com/_packaging/HubitatCiPackages/maven/v1'
+            credentials {
+            username "AZURE_ARTIFACTS"
+            password System.getenv("AZURE_ARTIFACTS_ENV_ACCESS_TOKEN") ?: "${azureArtifactsGradleAccessToken}"
+            }
+        } 
+    }
 }
 
 dependencies {
