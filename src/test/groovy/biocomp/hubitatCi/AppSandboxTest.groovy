@@ -114,7 +114,7 @@ import spock.lang.Unroll
 
  */
 
-class SandboxTest extends Specification {
+class AppSandboxTest extends Specification {
     List<Tuple2<String, String>> makeScriptVariations(List<Tuple2<String, String>> expressionsAndResults)
     {
         def result = []

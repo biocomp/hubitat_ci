@@ -1,5 +1,6 @@
-package biocomp.hubitatCi
+package biocomp.hubitatCi.apppreferences
 
+import biocomp.hubitatCi.HubitatAppSandbox
 import biocomp.hubitatCi.apppreferences.Preferences
 
 class PreferencesValidationCommon {
