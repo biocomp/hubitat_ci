@@ -32,129 +32,9 @@ import sun.util.calendar.ZoneInfo
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 
+
 @TypeChecked
-class Validator {
-    private final static Set<String> originalForbiddenExpressions =
-            ["execute",
-             "getClass",
-             "getMetaClass",
-             "setMetaClass",
-             "propertyMissing",
-             "methodMissing",
-             "invokeMethod",
-             "print",
-             "println",
-             "printf",
-             "sleep",
-             "getProducedPreferences", // Script's test-only use method
-             "producedPreferences", // Script's test-only use property
-             "getProducedDefinition", // Script's test-only use method
-             "producedDefinition" // Script's test-only use property
-            ] as HashSet
-
-    private static HashSet<Class> classOriginalWhiteList = [java.lang.Object,
-                                                            java.lang.Exception,
-                                                            groovy.lang.GString,
-                                                            org.codehaus.groovy.runtime.InvokerHelper,
-                                                            ArrayList,
-                                                            int,
-                                                            boolean,
-                                                            byte,
-                                                            char,
-                                                            short,
-                                                            long,
-                                                            float,
-                                                            double,
-                                                            BigDecimal,
-                                                            BigInteger,
-                                                            Boolean,
-                                                            Byte,
-                                                            ByteArrayInputStream,
-                                                            ByteArrayOutputStream,
-                                                            Calendar,
-                                                            Closure,
-                                                            Collection,
-                                                            Collections,
-                                                            Date,
-                                                            DecimalFormat,
-                                                            Double,
-                                                            Float,
-                                                            GregorianCalendar,
-                                                            HashMap,
-                                                            //HashMap.Entry,
-                                                            //                    HashMap,
-                                                            //                    HashMap.KeySet,
-                                                            //                    HashMap.Values,
-                                                            HashSet,
-                                                            Integer,
-                                                            JsonBuilder,
-                                                            LinkedHashMap,
-                                                            //LinkedHashMap.Entry,
-                                                            LinkedHashSet,
-                                                            LinkedList,
-                                                            List,
-                                                            Long,
-                                                            Map,
-                                                            MarkupBuilder,
-                                                            Math,
-                                                            Random,
-                                                            Set,
-                                                            Short,
-                                                            SimpleDateFormat,
-                                                            String,
-                                                            StringBuilder,
-                                                            StringReader,
-                                                            StringWriter,
-                                                            //SubList,
-                                                            TimeCategory,
-                                                            TimeZone,
-                                                            TreeMap,
-                                                            //                    TreeMap.Entry,
-                                                            //                    TreeMap.KeySet,
-                                                            //                    TreeMap.Values,
-                                                            TreeSet,
-                                                            URLDecoder,
-                                                            URLEncoder,
-                                                            UUID,
-                                                            ZoneInfo,
-                                                            //com.amazonaws.services.s3.model.S3Object,
-                                                            //com.amazonaws.services.s3.model.S3ObjectInputStream,
-                                                            com.sun.org.apache.xerces.internal.dom.DocumentImpl,
-                                                            com.sun.org.apache.xerces.internal.dom.ElementImpl,
-                                                            groovy.json.JsonOutput,
-                                                            groovy.json.JsonSlurper,
-                                                            groovy.util.Node,
-                                                            groovy.util.NodeList,
-                                                            groovy.util.XmlParser,
-                                                            groovy.util.XmlSlurper,
-                                                            groovy.xml.XmlUtil,
-                                                            java.net.URI,
-                                                            java.util.RandomAccessSubList,
-                                                            //org.apache.commons.codec.binary.Base64,
-                                                            //org.apache.xerces.dom.DocumentImpl,
-                                                            //org.apache.xerces.dom.ElementImpl,
-                                                            org.codehaus.groovy.runtime.EncodingGroovyMethods,
-                                                            //org.json.JSONArray,
-                                                            //org.json.JSONException,
-                                                            //org.json.JSONObject,
-                                                            //org.json.JSONObject.Null,
-                                                            biocomp.hubitatCi.emulation.Protocol,
-                                                            biocomp.hubitatCi.emulation.commonApi.HubAction,
-                                                            biocomp.hubitatCi.emulation.commonApi.HubResponse,
-                                                            biocomp.hubitatCi.emulation.commonApi.Location
-
-    ] as HashSet<Class>
-
-    private final HashSet<String> classNameWhiteList
-    private final HashSet<String> forbiddenExpressions
-
-    static private HashSet<String> initClassNames(List<Class> extraAllowedClasses) {
-        return (classOriginalWhiteList + (extraAllowedClasses as HashSet)).collect { it.name } as HashSet;
-    }
-
-    static private HashSet<String> initForbiddenExpressions(List<String> extraAllowedExpressions) {
-        return (originalForbiddenExpressions - (extraAllowedExpressions as HashSet)) as HashSet;
-    }
+class AppValidator extends ValidatorBase{
 
     private static final NamedParametersValidator preferencesValidatorWithOauth = NamedParametersValidator.make {
         stringParameter(name: "oauthPage", required: true)
@@ -193,116 +73,25 @@ class Validator {
         "text"
     ] as HashSet
 
-
-    Validator(
-            EnumSet<Flags> flags = EnumSet.noneOf(Flags), List<Class> extraAllowedClasses = [],
+    AppValidator(
+            EnumSet<Flags> setOfFlags = EnumSet.noneOf(Flags), List<Class> extraAllowedClasses = [],
             List<String> extraAllowedExpressions = [])
     {
-        this.flags = flags;
-
-        this.classNameWhiteList = initClassNames(extraAllowedClasses)
-        this.forbiddenExpressions = initForbiddenExpressions(extraAllowedExpressions)
+        super(setOfFlags, extraAllowedClasses, extraAllowedExpressions)
     }
 
-    Validator(
+    AppValidator(
             List<Flags> listOfFlags, List<Class> extraAllowedClasses = [], List<String> extraAllowedExpressions = [])
     {
-        def setOfFlags = EnumSet.noneOf(Flags)
-
-        listOfFlags?.each { setOfFlags.add(it) }
-
-        this.flags = setOfFlags
-
-        this.classNameWhiteList = initClassNames(extraAllowedClasses)
-        this.forbiddenExpressions = initForbiddenExpressions(extraAllowedExpressions)
+        super(listOfFlags, extraAllowedClasses, extraAllowedExpressions)
     }
-
-    void restrictScript(CompilerConfiguration options) {
-        def scz = new SecureASTCustomizer()
-
-
-        def checker = { expr ->
-            if (expr instanceof MethodCallExpression) {
-                return !forbiddenExpressions.contains(expr.methodAsString) && isClassAllowed(
-                        expr.getObjectExpression().getType())
-            }
-
-            if (expr instanceof PropertyExpression) {
-                return !forbiddenExpressions.contains(expr.propertyAsString) && isClassAllowed(
-                        expr.getObjectExpression().getType())
-            }
-
-            if (expr instanceof AttributeExpression) {
-                return !forbiddenExpressions.contains(expr.propertyAsString) && isClassAllowed(
-                        expr.getObjectExpression().getType())
-            }
-
-            if (expr instanceof VariableExpression) {
-                return !forbiddenExpressions.contains(expr.name)
-            }
-
-            if (expr instanceof StaticMethodCallExpression) {
-                return !forbiddenExpressions.contains(expr.methodAsString) && isClassAllowed(expr.getOwnerType())
-            }
-
-            return true;
-        } as SecureASTCustomizer.ExpressionChecker
-
-        scz.addExpressionCheckers(checker)
-
-        def sac = new SourceAwareCustomizer(scz)
-
-        sac.sourceUnitValidator = {
-            return true
-        }
-
-        sac.classValidator = { ClassNode cn ->
-            if (!cn.scriptBody) {
-                throw new SecurityException("Can't define classes in the script, but you defined '${cn}'")
-            }
-
-            return true
-        }
-
-        options.addCompilationCustomizers(sac)
-    }
-
-    private boolean isClassAllowed(ClassNode classNode) {
-        if (classNameWhiteList.contains(classNode.name)) {
-            return true;
-        }
-
-        return classNode.isScript()
-    }
-
-    static void makePrivatePublic(CompilerConfiguration options) {
-        options.addCompilationCustomizers(new RemovePrivateFromScriptCompilationCustomizer())
-    }
-
-    boolean hasFlag(Flags flag) {
-        return flags.contains(flag)
-    }
-
-    final EnumSet<Flags> flags
 
     HubitatAppScript parseScript(File scriptFile) {
-        return constructParser().parse(scriptFile) as HubitatAppScript
+        return constructParser(HubitatAppScript).parse(scriptFile) as HubitatAppScript
     }
 
     HubitatAppScript parseScript(String scriptText) {
-        return constructParser().parse(scriptText) as HubitatAppScript
-    }
-
-    private GroovyShell constructParser() {
-        def compilerConfiguration = new CompilerConfiguration()
-        compilerConfiguration.scriptBaseClass = HubitatAppScript.class.name
-
-        restrictScript(compilerConfiguration)
-        makePrivatePublic(compilerConfiguration)
-
-        return new GroovyShell(new SandboxClassLoader(this.class.classLoader),
-                new DoNotCallMeBinding(),
-                compilerConfiguration);
+        return constructParser(HubitatAppScript).parse(scriptText) as HubitatAppScript
     }
 
     void validateAfterRun(AppDefinitionReader definitionReader, AppPreferencesReader preferencesReader, AppMappingsReader mappingsReader)
@@ -318,7 +107,8 @@ class Validator {
 
 
     /**
-     * Run validations after all pages and sections were added*/
+     * Run validations after all pages and sections were added
+     * */
     void validatePreferences(Preferences preferences, boolean okEmptyIfRegisteredDynamicPages, boolean oauthEnabled) {
         if (preferences.hasSpecialSinglePage()) {
             preferences.specialSinglePage.validate(this)

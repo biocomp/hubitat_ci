@@ -5,7 +5,7 @@ import biocomp.hubitatCi.HubitatAppScript
 import biocomp.hubitatCi.emulation.appApi.AppExecutor
 import biocomp.hubitatCi.emulation.appApi.DynamicPage
 import biocomp.hubitatCi.validation.Flags
-import biocomp.hubitatCi.validation.Validator
+import biocomp.hubitatCi.validation.AppValidator
 import groovy.transform.TypeChecked
 
 @TypeChecked
@@ -15,7 +15,7 @@ class AppPreferencesReader implements
     AppPreferencesReader(
             HubitatAppScript parentScript,
             AppExecutor delegate,
-            Validator validator,
+            AppValidator validator,
             Map userSettingsValue)
     {
         this.parentScript = parentScript
@@ -344,7 +344,7 @@ class AppPreferencesReader implements
 
      */
 
-    private final Validator validator
+    private final AppValidator validator
 
     private final PreferencesReaderState prefState = new PreferencesReaderState(validator)
 

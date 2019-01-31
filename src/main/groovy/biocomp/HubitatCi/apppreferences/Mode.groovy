@@ -2,7 +2,7 @@ package biocomp.hubitatCi.apppreferences
 
 import biocomp.hubitatCi.validation.NamedParametersValidator
 import biocomp.hubitatCi.validation.Flags
-import biocomp.hubitatCi.validation.Validator
+import biocomp.hubitatCi.validation.AppValidator
 import groovy.transform.TypeChecked
 
 @TypeChecked
@@ -16,7 +16,7 @@ class Mode {
         stringParameter(name: "image", canBeEmpty: false)
     }
 
-    Mode(Map options, Validator validator)
+    Mode(Map options, AppValidator validator)
     {
         this.options = options
 

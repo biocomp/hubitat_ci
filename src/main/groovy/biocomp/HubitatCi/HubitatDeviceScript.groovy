@@ -1,9 +1,8 @@
 package biocomp.hubitatCi
 
-import biocomp.hubitatCi.apppreferences.AppPreferencesReader
-import biocomp.hubitatCi.apppreferences.Preferences
-import biocomp.hubitatCi.validation.Validator
-import biocomp.hubitatCi.emulation.appApi.AppExecutor
+import biocomp.hubitatCi.deviceMetadata.DeviceMetadataReader
+import biocomp.hubitatCi.emulation.deviceApi.DeviceExecutor
+import biocomp.hubitatCi.validation.DeviceValidator
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
@@ -11,74 +10,73 @@ import groovy.transform.TypeChecked
 * */
 
 @TypeChecked
-abstract class HubitatAppScript extends Script
+abstract class HubitatDeviceScript extends Script
 {
     private Map settingsMap
-    private AppPreferencesReader preferencesReader = null
-    private AppDefinitionReader definitionReader = null
-    private AppMappingsReader mappingsReader = null
-    private Validator validator = null
+    private DeviceMetadataReader metadataReader = null
+    private DeviceValidator validator = null
 
     @Delegate
-    private AppExecutor api = null
+    private DeviceExecutor api = null
 
-    @TypeChecked
-    @CompileStatic
-    void initialize(HubitatAppScript parent)
+//    @TypeChecked
+//    @CompileStatic
+//    void initialize(HubitatDeviceScript parent)
+//    {
+//        this.api = parent.@api
+//        this.preferencesReader = parent.@preferencesReader
+//        this.definitionReader = parent.@definitionReader
+//        this.mappingsReader = parent.@mappingsReader
+//        this.settingsMap = parent.@settingsMap
+//    }
+
+//    private Map<String, Object> injectedMappingHandlerData = [:]
+//    @CompileStatic
+//    void installMappingInjectedProps(def params, def request)
+//    {
+//        injectedMappingHandlerData['params'] = params
+//        injectedMappingHandlerData['request'] = request
+//    }
+
+    void initialize(DeviceExecutor api, DeviceValidator validator/*, Map userSettingValues, Closure customizeScriptBeforeRun*/)
     {
-        this.api = parent.@api
-        this.preferencesReader = parent.@preferencesReader
-        this.definitionReader = parent.@definitionReader
-        this.mappingsReader = parent.@mappingsReader
-        this.settingsMap = parent.@settingsMap
-    }
-
-    private Map<String, Object> injectedMappingHandlerData = [:]
-    @CompileStatic
-    void installMappingInjectedProps(def params, def request)
-    {
-        injectedMappingHandlerData['params'] = params
-        injectedMappingHandlerData['request'] = request
-    }
-
-    void initialize(AppExecutor api, Validator validator, Map userSettingValues, Closure customizeScriptBeforeRun)
-    {
-        customizeScriptBeforeRun?.call(this)
-
-        this.preferencesReader = new AppPreferencesReader(this, api, validator, userSettingValues)
-        api = this.preferencesReader;
-
-        this.definitionReader = new AppDefinitionReader(api, validator)
-        api = this.definitionReader
-
-        this.mappingsReader = new AppMappingsReader(api, this, validator)
-        api = mappingsReader
+//        customizeScriptBeforeRun?.call(this)
+//
+          this.metadataReader = new DeviceMetadataReader(api/*this, api, validator, userSettingValues*/)
+          api = this.metadataReader;
+//
+//        this.definitionReader = new AppDefinitionReader(api, validator)
+//        api = this.definitionReader
+//
+//        this.mappingsReader = new AppMappingsReader(api, this, validator)
+//        api = mappingsReader
 
         this.api = api
-        this.settingsMap = preferencesReader.getSettings()
+//        this.settingsMap = preferencesReader.getSettings()
+        this.settingsMap = [:]
 
         this.validator = validator
     }
 
-    Preferences getProducedPreferences()
-    {
-        preferencesReader.getProducedPreferences()
-    }
-
-    Map<String, Object> getProducedDefinition()
-    {
-        definitionReader.getDefinitions()
-    }
-
-    Map<String, MappingPath> getProducedMappings()
-    {
-        mappingsReader.getMappings()
-    }
-
-    AppMappingsReader getMappingsReader()
-    {
-        return mappingsReader
-    }
+//    Preferences getProducedPreferences()
+//    {
+//        preferencesReader.getProducedPreferences()
+//    }
+//
+//    Map<String, Object> getProducedDefinition()
+//    {
+//        definitionReader.getDefinitions()
+//    }
+//
+//    Map<String, MappingPath> getProducedMappings()
+//    {
+//        mappingsReader.getMappings()
+//    }
+//
+//    AppMappingsReader getMappingsReader()
+//    {
+//        return mappingsReader
+//    }
 
     /*
         Don't let Script base class to redirect properties to binding,
@@ -94,19 +92,19 @@ abstract class HubitatAppScript extends Script
             case "metaClass":
                 return getMetaClass();
 
-            case "params":
-                if (this.@injectedMappingHandlerData != null) {
-                    return this.@injectedMappingHandlerData['params']
-                }
-
-                break;
-
-            case "request":
-                if (this.@injectedMappingHandlerData != null) {
-                    return this.@injectedMappingHandlerData['request']
-                }
-
-                break;
+//            case "params":
+//                if (this.@injectedMappingHandlerData != null) {
+//                    return this.@injectedMappingHandlerData['params']
+//                }
+//
+//                break;
+//
+//            case "request":
+//                if (this.@injectedMappingHandlerData != null) {
+//                    return this.@injectedMappingHandlerData['request']
+//                }
+//
+//                break;
 
             // default: - continue processing below
         }
@@ -144,20 +142,20 @@ abstract class HubitatAppScript extends Script
                 setMetaClass((MetaClass)newValue);
                 return;
 
-            case "params":
-                if (this.@injectedMappingHandlerData != null) {
-                    throw new ReadOnlyPropertyException("'params' injected value in mapping handler is for reading only", this.class)
-                }
-
-                break;
-
-            case "request":
-                if (this.@injectedMappingHandlerData != null) {
-                    throw new ReadOnlyPropertyException(
-                            "'request' injected value in mapping handler is for reading only", this.class)
-                }
-
-                break;
+//            case "params":
+//                if (this.@injectedMappingHandlerData != null) {
+//                    throw new ReadOnlyPropertyException("'params' injected value in mapping handler is for reading only", this.class)
+//                }
+//
+//                break;
+//
+//            case "request":
+//                if (this.@injectedMappingHandlerData != null) {
+//                    throw new ReadOnlyPropertyException(
+//                            "'request' injected value in mapping handler is for reading only", this.class)
+//                }
+//
+//                break;
         }
 
         this.@settingsMap.put(property, newValue)
@@ -167,7 +165,7 @@ abstract class HubitatAppScript extends Script
     def run()
     {
         scriptBody()
-        validator.validateAfterRun(definitionReader, preferencesReader, mappingsReader)
+        //validator.validateAfterRun(definitionReader, preferencesReader, mappingsReader)
     }
 
     abstract void scriptBody()

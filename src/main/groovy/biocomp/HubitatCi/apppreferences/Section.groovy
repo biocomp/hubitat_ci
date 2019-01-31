@@ -1,8 +1,9 @@
 package biocomp.hubitatCi.apppreferences
 
+
 import biocomp.hubitatCi.validation.Flags
 import biocomp.hubitatCi.validation.NamedParametersValidator
-import biocomp.hubitatCi.validation.Validator
+import biocomp.hubitatCi.validation.AppValidator
 import groovy.transform.TupleConstructor
 import groovy.transform.TypeChecked
 
@@ -22,7 +23,7 @@ class Section {
         boolParameter(name:"hideWhenEmpty")
     }
 
-    void validate(Validator validator)
+    void validate(AppValidator validator)
     {
         if (!validator.hasFlag(Flags.DontValidatePreferences)) {
             paramValidator.validate(this.toString(), options, validator)

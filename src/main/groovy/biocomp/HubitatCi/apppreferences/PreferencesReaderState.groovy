@@ -1,17 +1,17 @@
 package biocomp.hubitatCi.apppreferences
 
 
-import biocomp.hubitatCi.validation.Validator
+import biocomp.hubitatCi.validation.AppValidator
 import groovy.transform.TypeChecked
 
 @TypeChecked
 class PreferencesReaderState {
-    PreferencesReaderState(Validator validator)
+    PreferencesReaderState(AppValidator validator)
     {
         this.validator = validator;
     }
 
-    final private Validator validator
+    final private AppValidator validator
 
     Preferences currentPreferences
     Page currentPage

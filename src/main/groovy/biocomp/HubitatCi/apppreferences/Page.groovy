@@ -1,8 +1,9 @@
 package biocomp.hubitatCi.apppreferences
 
+
 import biocomp.hubitatCi.validation.NamedParametersValidator
 import biocomp.hubitatCi.validation.Flags
-import biocomp.hubitatCi.validation.Validator
+import biocomp.hubitatCi.validation.AppValidator
 import groovy.transform.TypeChecked
 
 @TypeChecked
@@ -81,7 +82,7 @@ class Page
         return generationMethodName != null
     }
 
-    void validate(Validator validator) {
+    void validate(AppValidator validator) {
         if (!validator.hasFlag(Flags.DontValidatePreferences)) {
             if (!isDynamicPage()) {
                 paramValidator.validate(this.toString(), options, validator)

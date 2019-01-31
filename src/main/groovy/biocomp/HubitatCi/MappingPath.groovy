@@ -2,7 +2,7 @@ package biocomp.hubitatCi
 
 
 import biocomp.hubitatCi.validation.Flags
-import biocomp.hubitatCi.validation.Validator
+import biocomp.hubitatCi.validation.AppValidator
 
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
@@ -38,7 +38,7 @@ class MappingPath {
         }
     }
 
-    MappingPath(HubitatAppScript script, String path, Map actions, Validator validator, Closure<HubitatAppScript> derivedScriptFactory)
+    MappingPath(HubitatAppScript script, String path, Map actions, AppValidator validator, Closure<HubitatAppScript> derivedScriptFactory)
     {
         this.actionNames = actions
         this.path = path
@@ -50,7 +50,7 @@ class MappingPath {
     }
 
     @TypeChecked(TypeCheckingMode.SKIP)
-    private static Closure makeActionHandler(HubitatAppScript script, String actionWord, String functionName, Validator validator, Closure<HubitatAppScript> derivedScriptFactory)
+    private static Closure makeActionHandler(HubitatAppScript script, String actionWord, String functionName, AppValidator validator, Closure<HubitatAppScript> derivedScriptFactory)
     {
         assert supportedActions.contains(actionWord) : "Action '${actionWord}' is not supported. Supported actions are: ${supportedActions}"
 

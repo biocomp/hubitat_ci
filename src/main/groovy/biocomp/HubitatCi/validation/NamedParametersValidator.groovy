@@ -36,7 +36,7 @@ class NamedParametersValidator {
     void validate(
             String context,
             Map options,
-            Validator validator,
+            AppValidator validator,
             boolean mustBeNonNull = false)
     {
         validate(context, [:], options, validator, mustBeNonNull)
@@ -47,7 +47,7 @@ class NamedParametersValidator {
             String context,
             Map unnamedOptions,
             Map options,
-            Validator validator,
+            AppValidator validator,
             boolean mustBeNonNull = false)
     {
         def mandatoryParameters = mandatoryParameters.clone() as HashSet<String>

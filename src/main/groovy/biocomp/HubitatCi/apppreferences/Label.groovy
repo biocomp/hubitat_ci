@@ -2,7 +2,7 @@ package biocomp.hubitatCi.apppreferences
 
 import biocomp.hubitatCi.validation.NamedParametersValidator
 import biocomp.hubitatCi.validation.Flags
-import biocomp.hubitatCi.validation.Validator
+import biocomp.hubitatCi.validation.AppValidator
 import groovy.transform.TypeChecked
 
 @TypeChecked
@@ -14,7 +14,7 @@ class Label {
         boolParameter(name: "required")
     }
 
-    Label(Map options, Validator validator) {
+    Label(Map options, AppValidator validator) {
         this.options = options
 
         if (!validator.hasFlag(Flags.DontValidatePreferences)) {

@@ -1,9 +1,6 @@
 package biocomp.hubitatCi.validation
 
 
-import biocomp.hubitatCi.validation.Flags
-import biocomp.hubitatCi.validation.NamedParametersValidator
-import biocomp.hubitatCi.validation.Parameter
 import groovy.transform.TypeChecked
 import biocomp.hubitatCi.util.SimpleRange
 
@@ -63,7 +60,7 @@ class ParametersToValidate
     {
         assert options.name
 
-        addParameter(new Parameter(options.name as String, options.get("required", false) as boolean, { Validator validator, String context, String name, def value ->
+        addParameter(new Parameter(options.name as String, options.get("required", false) as boolean, { AppValidator validator, String context, String name, def value ->
                 if (!validator.hasFlag(Flags.AllowNullListOptions)) {
                     assert value != null: "${context}: '${name}' value can't be null"
                 }
@@ -75,7 +72,7 @@ class ParametersToValidate
     }
 
     private static String validateStringValue(
-            Validator validator,
+            AppValidator validator,
             String context, String name,
             def value,
             Map options)
@@ -109,7 +106,7 @@ class ParametersToValidate
         assert options.name
 
         addParameter(new Parameter(options.name as String, options.get("required", false) as boolean,
-                { Validator validator,  String context, String name, def value ->
+                { AppValidator validator,  String context, String name, def value ->
                     validateStringValue(validator, context, name, value, options)
                 }))
     }
@@ -122,7 +119,7 @@ class ParametersToValidate
         def validValues = new HashSet<String>(options.values as List<String>)
 
         addParameter(new Parameter(options.name as String, options.get("required", false) as boolean,
-                { Validator validator, String context, String name, def value ->
+                { AppValidator validator, String context, String name, def value ->
                     def val = validateStringValue(validator, context, name, value, options)
                     assert validValues.contains(val) : "${context}: '${name}''s value is not supported. Valid values: ${validValues}"
                 }))

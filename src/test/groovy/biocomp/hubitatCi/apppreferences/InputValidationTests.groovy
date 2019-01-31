@@ -1,4 +1,4 @@
-package biocomp.hubitatCi
+package biocomp.hubitatCi.apppreferences
 
 import biocomp.hubitatCi.apppreferences.Input
 import spock.lang.Unroll

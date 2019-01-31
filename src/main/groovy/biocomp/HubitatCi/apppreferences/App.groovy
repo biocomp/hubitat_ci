@@ -2,7 +2,7 @@ package biocomp.hubitatCi.apppreferences
 
 import biocomp.hubitatCi.validation.NamedParametersValidator
 import biocomp.hubitatCi.validation.Flags
-import biocomp.hubitatCi.validation.Validator
+import biocomp.hubitatCi.validation.AppValidator
 import groovy.transform.TypeChecked
 
 @TypeChecked
@@ -20,7 +20,7 @@ class App {
         boolParameter(name: "multiple")
     }
 
-    App(Map options, String name, String namespace, String title, Validator validator)
+    App(Map options, String name, String namespace, String title, AppValidator validator)
     {
         this.name = name
         this.namespace = namespace

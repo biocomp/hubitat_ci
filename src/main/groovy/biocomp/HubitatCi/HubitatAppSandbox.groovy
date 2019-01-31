@@ -1,21 +1,12 @@
 package biocomp.hubitatCi
 
-
 import biocomp.hubitatCi.apppreferences.Preferences
 import biocomp.hubitatCi.validation.Flags
-import biocomp.hubitatCi.validation.Validator
+import biocomp.hubitatCi.validation.AppValidator
 import biocomp.hubitatCi.emulation.appApi.AppExecutor
-import groovy.json.JsonBuilder
-import groovy.time.TimeCategory
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
-import groovy.xml.MarkupBuilder
-import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.control.CompilerConfiguration
-import sun.util.calendar.ZoneInfo
-
-import java.text.DecimalFormat
-import java.text.SimpleDateFormat
 
 @TypeChecked
 class HubitatAppSandbox {
@@ -68,18 +59,18 @@ class HubitatAppSandbox {
     }
 
     @TypeChecked(TypeCheckingMode.SKIP)
-    private static Validator readValidator(Map options) {
+    private static AppValidator readValidator(Map options) {
         if (options.validationFlags)
         {
-            return new Validator(options.validationFlags as List<String>)
+            return new AppValidator(options.validationFlags as List<String>)
         }
         else if (options.validator)
         {
             assert options.validator
-            return options.validator as Validator
+            return options.validator as AppValidator
         }
 
-        return new Validator()
+        return new AppValidator()
     }
 
     private static Map readUserSettingValues(Map options) {
@@ -125,7 +116,7 @@ class HubitatAppSandbox {
 
             assert options['validator'] != null
             assert options[
-                    'validator'] as Validator: "'validator' should be an instance of 'Validator'"
+                    'validator'] as AppValidator: "'validator' should be an instance of 'AppValidator'"
         }
 
         if (options.containsKey('noValidation')) {

@@ -2,7 +2,7 @@ package biocomp.hubitatCi.apppreferences
 
 import biocomp.hubitatCi.validation.NamedParametersValidator
 import biocomp.hubitatCi.validation.Flags
-import biocomp.hubitatCi.validation.Validator
+import biocomp.hubitatCi.validation.AppValidator
 import groovy.transform.TypeChecked
 
 @TypeChecked
@@ -13,7 +13,7 @@ class Paragraph {
         boolParameter(name: "required")
     }
 
-    Paragraph(String text, Map options, Validator validator) {
+    Paragraph(String text, Map options, AppValidator validator) {
         this.text = text
         this.options = options
 

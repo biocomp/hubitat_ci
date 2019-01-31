@@ -1,14 +1,15 @@
 package biocomp.hubitatCi
 
+
 import biocomp.hubitatCi.validation.Flags
-import biocomp.hubitatCi.validation.Validator
+import biocomp.hubitatCi.validation.AppValidator
 import biocomp.hubitatCi.emulation.appApi.AppExecutor
 import biocomp.hubitatCi.emulation.appApi.Mappings
 import groovy.transform.TypeChecked
 
 @TypeChecked
 class AppMappingsReader implements AppExecutor {
-    AppMappingsReader(AppExecutor delegate, HubitatAppScript script, Validator validator)
+    AppMappingsReader(AppExecutor delegate, HubitatAppScript script, AppValidator validator)
     {
         this.delegate = delegate
         this.validator = validator
@@ -74,7 +75,7 @@ class AppMappingsReader implements AppExecutor {
 
     final Map<String, MappingPath> mappings = [:]
 
-    final private Validator validator
+    final private AppValidator validator
 
     final HubitatAppScript script
     final Closure<HubitatAppScript> derivedScriptFactory

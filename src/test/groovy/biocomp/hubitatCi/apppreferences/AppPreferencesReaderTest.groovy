@@ -1,7 +1,7 @@
-package biocomp.hubitatCi
+package biocomp.hubitatCi.apppreferences
 
-import biocomp.hubitatCi.apppreferences.App
-import biocomp.hubitatCi.apppreferences.Mode
+import biocomp.hubitatCi.HubitatAppSandbox
+import biocomp.hubitatCi.PreferencesValidationCommon
 import biocomp.hubitatCi.validation.Flags
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 import spock.lang.Specification

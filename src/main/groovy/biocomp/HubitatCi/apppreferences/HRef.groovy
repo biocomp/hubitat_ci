@@ -1,6 +1,6 @@
 package biocomp.hubitatCi.apppreferences
 
-import biocomp.hubitatCi.validation.Validator
+import biocomp.hubitatCi.validation.AppValidator
 import biocomp.hubitatCi.validation.NamedParametersValidator
 import biocomp.hubitatCi.validation.Flags
 import groovy.transform.TypeChecked
@@ -32,7 +32,7 @@ class HRef {
         stringParameter(name: "image", canBeEmpty: false)
     }
 
-    HRef(Map options, String nextPageName, Validator validator)
+    HRef(Map options, String nextPageName, AppValidator validator)
     {
         this.options = options
         this.nextPageName = nextPageName
@@ -44,13 +44,13 @@ class HRef {
         this.nextPageName = nextPageName
     }
 
-    HRef(Map options, Validator validator) {
+    HRef(Map options, AppValidator validator) {
         this.options = options
 
         validate(validator)
     }
 
-    private void validate(Validator validator)
+    private void validate(AppValidator validator)
     {
         if (!validator.hasFlag(Flags.DontValidatePreferences)) {
             paramValidator.validate(this.toString(), options, validator, false)

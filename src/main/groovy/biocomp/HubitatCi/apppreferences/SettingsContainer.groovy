@@ -1,7 +1,7 @@
 package biocomp.hubitatCi.apppreferences
 
 
-import biocomp.hubitatCi.validation.Validator
+import biocomp.hubitatCi.validation.AppValidator
 import biocomp.hubitatCi.validation.Flags
 
 import groovy.transform.TypeChecked
@@ -15,7 +15,7 @@ class SettingsContainer implements Map<String, Object>
      * @param userSettingsValue - user can define settings in UTs, and rest of the settings will be added to it too.
      * @param mode - how to validate user actions with settings.
      */
-    SettingsContainer(PreferencesReaderState preferencesState, Validator validator, Map userSettingsValue) {
+    SettingsContainer(PreferencesReaderState preferencesState, AppValidator validator, Map userSettingsValue) {
         this.preferencesState = preferencesState
         this.validator = validator
         this.settingValues = userSettingsValue
@@ -83,7 +83,7 @@ class SettingsContainer implements Map<String, Object>
     }
 
     private final PreferencesReaderState preferencesState
-    private final Validator validator
+    private final AppValidator validator
 
     private final Set<String> settingsRead = []
     private final Set<String> registeredInputs = []

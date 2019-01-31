@@ -2,7 +2,7 @@ package biocomp.hubitatCi
 
 import biocomp.hubitatCi.apppreferences.AppPreferencesReader
 import biocomp.hubitatCi.apppreferences.Preferences
-import biocomp.hubitatCi.validation.Validator
+import biocomp.hubitatCi.validation.AppValidator
 import biocomp.hubitatCi.emulation.appApi.AppExecutor
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
@@ -17,7 +17,7 @@ abstract class HubitatAppScript extends Script
     private AppPreferencesReader preferencesReader = null
     private AppDefinitionReader definitionReader = null
     private AppMappingsReader mappingsReader = null
-    private Validator validator = null
+    private AppValidator validator = null
 
     @Delegate
     private AppExecutor api = null
@@ -41,7 +41,7 @@ abstract class HubitatAppScript extends Script
         injectedMappingHandlerData['request'] = request
     }
 
-    void initialize(AppExecutor api, Validator validator, Map userSettingValues, Closure customizeScriptBeforeRun)
+    void initialize(AppExecutor api, AppValidator validator, Map userSettingValues, Closure customizeScriptBeforeRun)
     {
         customizeScriptBeforeRun?.call(this)
 

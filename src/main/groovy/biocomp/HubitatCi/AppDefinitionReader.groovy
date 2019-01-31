@@ -2,7 +2,7 @@ package biocomp.hubitatCi
 
 
 import biocomp.hubitatCi.validation.Flags
-import biocomp.hubitatCi.validation.Validator
+import biocomp.hubitatCi.validation.AppValidator
 import biocomp.hubitatCi.emulation.appApi.AppExecutor
 import biocomp.hubitatCi.validation.NamedParametersValidator
 import groovy.transform.TypeChecked
@@ -24,7 +24,7 @@ class AppDefinitionReader implements
         boolParameter(name: "oauth")
     }
 
-    AppDefinitionReader(AppExecutor delegate, Validator validator) {
+    AppDefinitionReader(AppExecutor delegate, AppValidator validator) {
         this.delegate = delegate
         this.validator = validator
     }
@@ -71,7 +71,7 @@ class AppDefinitionReader implements
 
     @Delegate
     final private AppExecutor delegate
-    final private Validator validator
+    final private AppValidator validator
 
     private Map<String, Object> definitions
 }

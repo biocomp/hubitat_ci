@@ -1,4 +1,6 @@
 package biocomp.hubitatCi
 
-class DeviceDefinitionsReaderTest {
+import spock.lang.Specification
+
+class DeviceDefinitionsReaderTest extends Specification{
 }
