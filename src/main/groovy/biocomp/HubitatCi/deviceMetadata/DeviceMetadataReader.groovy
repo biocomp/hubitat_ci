@@ -8,13 +8,18 @@ import biocomp.hubitatCi.emulation.deviceApi.DeviceMultiAttributeTile
 import biocomp.hubitatCi.emulation.deviceApi.DevicePreferences
 import biocomp.hubitatCi.emulation.deviceApi.DeviceTile
 import biocomp.hubitatCi.emulation.deviceApi.DeviceTiles
+import biocomp.hubitatCi.validation.DeviceValidator
 import groovy.transform.TypeChecked
 
 @TypeChecked
 class DeviceMetadataReader implements DeviceMetadataSource
 {
-    DeviceMetadataReader(DeviceExecutor delegate) {
+    DeviceMetadataReader(
+            DeviceExecutor delegate,
+            DeviceValidator validator)
+    {
         this.delegate = delegate
+        this.validator = validator
     }
 
     @Override
@@ -105,7 +110,9 @@ class DeviceMetadataReader implements DeviceMetadataSource
 
     @Override
     void definition(Map options, @DelegatesTo(DeviceDefinition) Closure makeContents) {
-
+        def definition = new Definition(options)
+        validator.validateDefinition(definition)
+        producedDefinition = definition
     }
 
     @Override
@@ -120,10 +127,18 @@ class DeviceMetadataReader implements DeviceMetadataSource
 
     @Override
     void metadata(@DelegatesTo(DeviceMetadata) Closure makeContents) {
-
+        makeContents();
     }
 
     @Delegate
     private final DeviceExecutor delegate
+
+    private final DeviceValidator validator
+
+    private Definition producedDefinition
+
+    Definition getProducedDefinition() {
+        return producedDefinition
+    }
 }
 

@@ -3,6 +3,7 @@ package biocomp.hubitatCi.validation
 import biocomp.hubitatCi.*
 import biocomp.hubitatCi.apppreferences.*
 import biocomp.hubitatCi.capabilities.Capabilities
+import biocomp.hubitatCi.deviceMetadata.Definition
 import groovy.json.JsonBuilder
 import groovy.time.TimeCategory
 import groovy.transform.TypeChecked
@@ -249,4 +250,14 @@ class DeviceValidator extends ValidatorBase{
 //            }
 //        }
 //    }
+
+    private static final NamedParametersValidator definitionOptionsValidator = NamedParametersValidator.make {
+        stringParameter(name: "name", required: true)
+        stringParameter(name: "namespace")
+        stringParameter(name: "author")
+    }
+
+    void validateDefinition(Definition definition) {
+        definitionOptionsValidator.validate("definition(${definition.options})", definition.options, this, true);
+    }
 }

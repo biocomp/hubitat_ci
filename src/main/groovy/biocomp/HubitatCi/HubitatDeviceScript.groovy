@@ -1,5 +1,6 @@
 package biocomp.hubitatCi
 
+import biocomp.hubitatCi.deviceMetadata.Definition
 import biocomp.hubitatCi.deviceMetadata.DeviceMetadataReader
 import biocomp.hubitatCi.emulation.deviceApi.DeviceExecutor
 import biocomp.hubitatCi.validation.DeviceValidator
@@ -42,7 +43,7 @@ abstract class HubitatDeviceScript extends Script
     {
 //        customizeScriptBeforeRun?.call(this)
 //
-          this.metadataReader = new DeviceMetadataReader(api/*this, api, validator, userSettingValues*/)
+          this.metadataReader = new DeviceMetadataReader(api/*this, api*/, validator/*, userSettingValues*/)
           api = this.metadataReader;
 //
 //        this.definitionReader = new AppDefinitionReader(api, validator)
@@ -60,13 +61,13 @@ abstract class HubitatDeviceScript extends Script
 
 //    Preferences getProducedPreferences()
 //    {
-//        preferencesReader.getProducedPreferences()
+//        metadataReader.getProducedPreferences()
 //    }
-//
-//    Map<String, Object> getProducedDefinition()
-//    {
-//        definitionReader.getDefinitions()
-//    }
+
+    Definition getProducedDefinition()
+    {
+        metadataReader.getProducedDefinition()
+    }
 //
 //    Map<String, MappingPath> getProducedMappings()
 //    {

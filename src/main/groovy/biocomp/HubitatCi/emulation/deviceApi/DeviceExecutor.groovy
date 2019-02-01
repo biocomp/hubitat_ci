@@ -149,7 +149,7 @@ import biocomp.hubitatCi.emulation.deviceApi.zwave.Zwave
  * public void com.hubitat.hub.executor.DeviceExecutor.setZwave(hubitat.zwave.Zwave),
  * */
 
-trait DeviceTileAttribute
+interface DeviceTileAttribute
 {
     /**
      * Same as state() above for multi-attribute tiles.
@@ -160,8 +160,7 @@ trait DeviceTileAttribute
 
 }
 
-
-trait DeviceMultiAttributeTile extends DeviceTileAttribute {
+trait DeviceMultiAttributeTile implements DeviceTileAttribute {
     /**
      * Add attribute to multi-attribute tile (use inside multiAttributeTile()'s closure)
      *
@@ -187,7 +186,7 @@ trait DeviceMultiAttributeTile extends DeviceTileAttribute {
     abstract void tileAttribute(Map options = [:], String associatedAttributeName, Closure makeContents = null)
 }
 
-trait DeviceTile
+interface DeviceTile
 {
     /**
      * Bind tile to device's state (for single-attribute tile).
@@ -266,7 +265,7 @@ trait DeviceDefinition
     abstract void fingerprint(Map options)
 }
 
-trait DeviceTiles implements DeviceMultiAttributeTile, DeviceTile
+trait DeviceTiles extends DeviceMultiAttributeTile implements DeviceTile
 {
     /**
      * Define which tile is main tile (use inside closure passed into tiles())
@@ -398,18 +397,18 @@ trait DevicePreferences
 /**
  * What can be declared inside metadata's closure.
  */
-trait DeviceMetadata implements DeviceDefinition, DeviceTiles, DevicePreferences
+interface DeviceMetadata extends DeviceDefinition, DeviceTiles, DevicePreferences
 {
     /**
      * Piece of metadata(), defines major device's properties.
      *
      * @param options.supported parameters are:
-     *
-     * name (String) The name of the Device Handler.
-     * namespace (String) The namespace for this Device Handler. This should be your github user name. This is used
+     * <ul>
+     * <li><code>name</code> (String) The name of the Device Handler.</li>
+     * <li><code>namespace</code> (String) The namespace for this Device Handler. This should be your github user name. This is used
      * when looking up Device Handlers by name to ensure the correct one is found, even if someone else has used the same name.
-     * author (String) The author of this Device Handler.
-     *
+     * <li><code>author</code> (String) The author of this Device Handler.</li>
+     * </ul>
      * @param makeContents
      */
     abstract void definition(Map options, @DelegatesTo(DeviceDefinition) Closure makeContents)
@@ -431,7 +430,7 @@ trait DeviceMetadata implements DeviceDefinition, DeviceTiles, DevicePreferences
     abstract void tiles(Map options, @DelegatesTo(DeviceTiles) Closure makeContents)
 }
 
-trait DeviceMetadataSource implements DeviceMetadata
+interface DeviceMetadataSource extends DeviceMetadata
 {
     /**
      * Defines metadata for the device.
