@@ -43,17 +43,11 @@ abstract class HubitatDeviceScript extends Script
     {
 //        customizeScriptBeforeRun?.call(this)
 //
-          this.metadataReader = new DeviceMetadataReader(api/*this, api*/, validator/*, userSettingValues*/)
-          api = this.metadataReader;
-//
-//        this.definitionReader = new AppDefinitionReader(api, validator)
-//        api = this.definitionReader
-//
-//        this.mappingsReader = new AppMappingsReader(api, this, validator)
-//        api = mappingsReader
+        this.metadataReader = new DeviceMetadataReader(api/*this, api*/, validator/*, userSettingValues*/)
+        api = this.metadataReader
 
         this.api = api
-//        this.settingsMap = preferencesReader.getSettings()
+
         this.settingsMap = [:]
 
         this.validator = validator

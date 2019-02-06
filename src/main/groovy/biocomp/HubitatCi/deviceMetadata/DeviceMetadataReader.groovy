@@ -8,6 +8,7 @@ import biocomp.hubitatCi.emulation.deviceApi.DeviceMultiAttributeTile
 import biocomp.hubitatCi.emulation.deviceApi.DevicePreferences
 import biocomp.hubitatCi.emulation.deviceApi.DeviceTile
 import biocomp.hubitatCi.emulation.deviceApi.DeviceTiles
+import biocomp.hubitatCi.util.ReaderState
 import biocomp.hubitatCi.validation.DeviceValidator
 import groovy.transform.TypeChecked
 
@@ -24,7 +25,9 @@ class DeviceMetadataReader implements DeviceMetadataSource
 
     @Override
     void capability(String capabilityName) {
-
+        def definition = states.getState('definition()') as Definition
+        validator.validateCapability(capabilityName)
+        definition.addCapability(capabilityName)
     }
 
     @Override
@@ -112,7 +115,7 @@ class DeviceMetadataReader implements DeviceMetadataSource
     void definition(Map options, @DelegatesTo(DeviceDefinition) Closure makeContents) {
         def definition = new Definition(options)
         validator.validateDefinition(definition)
-        producedDefinition = definition
+        producedDefinition = states.withState('definition()', definition, makeContents)
     }
 
     @Override
@@ -127,11 +130,16 @@ class DeviceMetadataReader implements DeviceMetadataSource
 
     @Override
     void metadata(@DelegatesTo(DeviceMetadata) Closure makeContents) {
-        makeContents();
+        states.withState('metadata()', this, makeContents)
     }
 
     @Delegate
     private final DeviceExecutor delegate
+
+    private final ReaderState states = new ReaderState([
+            'metadata()' : [],
+            'definition()': ['metadata()']
+    ])
 
     private final DeviceValidator validator
 

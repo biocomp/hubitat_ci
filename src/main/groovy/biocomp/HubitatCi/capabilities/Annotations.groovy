@@ -16,3 +16,9 @@ import java.lang.annotation.Target
 @interface CustomDriverDefinition { 
     String driverDefinition() 
 }
+
+@Retention(RetentionPolicy.RUNTIME)
+@Target([ElementType.TYPE])
+@interface CustomPrettyName {
+    String prettyName()
+}

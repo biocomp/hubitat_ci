@@ -776,6 +776,7 @@ interface ReleasableButton extends Capability
 }
 
 @CustomDeviceSelector(deviceSelector = 'samsungTV')
+@CustomPrettyName(prettyName = 'Samsung TV')
 interface SamsungTV extends Capability
 {
     enum MuteValue
@@ -1025,6 +1026,7 @@ interface SwitchLevel extends Capability
 }
 
 @CustomDeviceSelector(deviceSelector = 'tv')
+@CustomPrettyName(prettyName = 'TV')
 interface TV extends Capability
 {
     abstract int getChannel()
@@ -1365,6 +1367,7 @@ interface ZwMultichannel extends Capability
 
 @CustomDeviceSelector(deviceSelector = 'pHMeasurement')
 @CustomDriverDefinition(driverDefinition = 'pHMeasurement')
+@CustomPrettyName(prettyName = 'Ph Measurement')
 interface PhMeasurement extends Capability
 {
     abstract double getPH()

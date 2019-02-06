@@ -260,4 +260,8 @@ class DeviceValidator extends ValidatorBase{
     void validateDefinition(Definition definition) {
         definitionOptionsValidator.validate("definition(${definition.options})", definition.options, this, true);
     }
+
+    void validateCapability(String capabilityName) {
+        assert (Capabilities.capabilitiesByPrettyName.containsKey(capabilityName) || Capabilities.capabilitiesByDriverDefinition.containsKey(capabilityName)) : "capability '${capabilityName}' is not supported. Valid capabilities are: ${Capabilities.capabilitiesByPrettyName.keySet() + Capabilities.capabilitiesByDriverDefinition.keySet()}."
+    }
 }

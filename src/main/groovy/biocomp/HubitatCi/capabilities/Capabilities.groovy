@@ -47,6 +47,19 @@ class Capabilities
         }
     }
 
+    static String getCapabilityPrettyName(Class c)
+    {
+        def val = getAnnotation(c, CustomPrettyName)
+        if (val)
+        {
+            def annotation = val as CustomPrettyName
+            return annotation.prettyName()
+        }
+        else {
+            return c.simpleName.split(/(?=[A-Z])/).join(' ')
+        }
+    }
+
     private static HashMap<String, Class> makeCapabilities()
     {
         HashMap<String, Class> capabilities = [:]
@@ -153,4 +166,5 @@ class Capabilities
 
     static final HashMap<String, Class> capabilitiesByDeviceSelector = makeCapabilities()
     static final HashMap<String, Class> capabilitiesByDriverDefinition = makeCapabilities().values().collectEntries{[(getDriverDefinition(it)): it ]} as HashMap<String, Class>
+    static final HashMap<String, Class> capabilitiesByPrettyName = makeCapabilities().values().collectEntries{[(getCapabilityPrettyName(it)): it ]} as HashMap<String, Class>
 }
