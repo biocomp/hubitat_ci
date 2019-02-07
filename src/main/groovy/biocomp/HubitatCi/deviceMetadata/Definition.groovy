@@ -11,9 +11,14 @@ class Definition {
 
     final Map options
 
-    List capabilities = []
+    List<String> capabilities = []
+    List<Attribute> attributes = []
 
     void addCapability(String name) {
         capabilities.add(name)
+    }
+
+    void addAttribute(Attribute attribute) {
+        attributes.add(attribute)
     }
 }

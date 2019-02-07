@@ -160,7 +160,7 @@ abstract class HubitatDeviceScript extends Script
     def run()
     {
         scriptBody()
-        //validator.validateAfterRun(definitionReader, preferencesReader, mappingsReader)
+        validator.validateAfterRun(this.metadataReader)
     }
 
     abstract void scriptBody()

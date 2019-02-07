@@ -9,6 +9,7 @@ enum Flags
     DontValidatePreferences,
     DontValidateDefinition,
     DontValidateMappings,
+    DontValidateCapabilities,
     AllowWritingToSettings,
     AllowReadingNonInputSettings,
     AllowUnreachablePages,

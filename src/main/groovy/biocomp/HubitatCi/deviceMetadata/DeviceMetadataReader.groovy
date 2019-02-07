@@ -32,7 +32,10 @@ class DeviceMetadataReader implements DeviceMetadataSource
 
     @Override
     void attribute(String attributeName, String attributeType, List<String> possibleValues) {
-
+        def definition = states.getState('definition()') as Definition
+        def attribute = new Attribute(attributeName, attributeType, possibleValues)
+        validator.validateAttribute(attribute)
+        definition.addAttribute(attribute)
     }
 
     @Override

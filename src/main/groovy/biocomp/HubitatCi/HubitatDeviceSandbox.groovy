@@ -41,13 +41,13 @@ class HubitatDeviceSandbox {
 //    }
 
     private HubitatDeviceScript setupImpl(Map options) {
-//        validateAndUpdateSandboxOptions(options)
+        validateAndUpdateSandboxOptions(options)
 
         // Use custom HubitatDeviceScript.
         def compilerConfiguration = new CompilerConfiguration()
         compilerConfiguration.scriptBaseClass = HubitatDeviceScript.class.name
 
-        def validator = readValidator(/*options*/)
+        def validator = readValidator(options)
 
         HubitatDeviceScript script = file ? validator.parseScript(file) : validator.parseScript(text);
 
@@ -61,11 +61,11 @@ class HubitatDeviceSandbox {
     }
 
     @TypeChecked(TypeCheckingMode.SKIP)
-    private static DeviceValidator readValidator(/*Map options*/) {
-//        if (options.validationFlags)
-//        {
-//            return new DeviceValidator(options.validationFlags as List<String>)
-//        }
+    private static DeviceValidator readValidator(Map options) {
+        if (options.validationFlags)
+        {
+            return new DeviceValidator(options.validationFlags as List<String>)
+        }
 //        else if (options.validator)
 //        {
 //            assert options.validator
@@ -79,8 +79,8 @@ class HubitatDeviceSandbox {
 //        return options.userSettingValues ? options.userSettingValues as Map : [:]
 //    }
 //
-//    private static void validateAndUpdateSandboxOptions(Map options) {
-//        def allKeys = new HashSet<String>(options.keySet());
+    private static void validateAndUpdateSandboxOptions(Map options) {
+        def allKeys = new HashSet<String>(options.keySet());
 //
 //        if (options.containsKey('api')) {
 //            allKeys.remove('api')
@@ -105,13 +105,13 @@ class HubitatDeviceSandbox {
 //                    'customizeScriptBeforeRun'] instanceof Closure: "'customizeScriptBeforeRun' should be a closure that takes HubitatDeviceScript as a single parameter"
 //        }
 //
-//        if (options.containsKey('validationFlags')) {
-//            allKeys.remove('validationFlags')
-//
-//            assert options['validationFlags'] != null
-//            assert options[
-//                    'validationFlags'] as List<Flags>: "'validationFlags' should be a list of validation flags"
-//        }
+        if (options.containsKey('validationFlags')) {
+            allKeys.remove('validationFlags')
+
+            assert options['validationFlags'] != null
+            assert options[
+                    'validationFlags'] as List<Flags>: "'validationFlags' should be a list of validation flags"
+        }
 //
 //        if (options.containsKey('validator')) {
 //            allKeys.remove('validator')
@@ -131,8 +131,8 @@ class HubitatDeviceSandbox {
 //            }
 //        }
 //
-//        assert allKeys.isEmpty(): "These options are not supported: ${allKeys}"
-//    }
+        assert allKeys.isEmpty(): "These options are not supported: ${allKeys}"
+    }
 //
 //    static private void addFlags(Map options, List<Flags> flags) {
 //        options.putIfAbsent('validationFlags', [])

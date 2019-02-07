@@ -167,4 +167,13 @@ class Capabilities
     static final HashMap<String, Class> capabilitiesByDeviceSelector = makeCapabilities()
     static final HashMap<String, Class> capabilitiesByDriverDefinition = makeCapabilities().values().collectEntries{[(getDriverDefinition(it)): it ]} as HashMap<String, Class>
     static final HashMap<String, Class> capabilitiesByPrettyName = makeCapabilities().values().collectEntries{[(getCapabilityPrettyName(it)): it ]} as HashMap<String, Class>
+
+    /**
+     * Searches capability in capabilitiesByPrettyName and capabilitiesByDriverDefinition.
+     * @param prettyNameOrDriverDefinition
+     * @return Class of capability, if found. {@code null} if not.
+     */
+    static Class findCapabilityByName(String prettyNameOrDriverDefinition) {
+        return capabilitiesByPrettyName.containsKey(prettyNameOrDriverDefinition) ? capabilitiesByPrettyName.get(prettyNameOrDriverDefinition) : Capabilities.capabilitiesByDriverDefinition.get(prettyNameOrDriverDefinition)
+    }
 }
