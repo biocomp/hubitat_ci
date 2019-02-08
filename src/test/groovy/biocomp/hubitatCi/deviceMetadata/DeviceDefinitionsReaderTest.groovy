@@ -6,9 +6,10 @@ import biocomp.hubitatCi.validation.Flags
 import spock.lang.Specification
 import spock.lang.Unroll
 
-class DeviceDefinitionsReaderTest extends Specification{
-    private static Definition readDefinition(Map options = [:], String definitionCall)
-    {
+class DeviceDefinitionsReaderTest extends
+        Specification
+{
+    private static Definition readDefinition(Map options = [:], String definitionCall) {
         return new HubitatDeviceSandbox("""
 metadata{
         ${definitionCall}
@@ -16,8 +17,7 @@ metadata{
 """).run(options).getProducedDefinition()
     }
 
-    private static Attribute readSingleAttribute(String attributeCall)
-    {
+    private static Attribute readSingleAttribute(String attributeCall) {
         def attributes = readDefinition("""definition(name: "n", namespace: "nm", author: "a"){
     ${attributeCall}
 }""", validationFlags: [Flags.DontValidateCapabilities]).attributes
@@ -26,8 +26,7 @@ metadata{
         return attributes[0]
     }
 
-    def "Reading all valid definition() options"()
-    {
+    def "Reading all valid definition() options"() {
         setup:
             def definition = readDefinition("""
     definition(name: "test device", namespace: "yournamespace", author: "your name"){
@@ -39,8 +38,7 @@ metadata{
             definition.options.author == 'your name'
     }
 
-    def "definition() with invalid option fails"()
-    {
+    def "definition() with invalid option fails"() {
         when:
             readDefinition("""
     definition(name: "test device", badOption: "i'm so bad", namespace: "yournamespace", author: "your name"){
@@ -54,8 +52,7 @@ metadata{
     }
 
     @Unroll
-    def "Valid capability '#capability' in definition() can be read"(String capability)
-    {
+    def "Valid capability '#capability' in definition() can be read"(String capability) {
         when:
             def capabilitiesResult = readDefinition("""
     definition(name: "nam"){
@@ -66,13 +63,12 @@ metadata{
             assert capabilitiesResult == [capability]
 
         where:
-            capability <<
-                    Capabilities.capabilitiesByPrettyName.collect{it.key} +
-                    Capabilities.capabilitiesByDriverDefinition.collect{it.key}
+            capability << Capabilities.capabilitiesByPrettyName.collect {
+                it.key
+            } + Capabilities.capabilitiesByDriverDefinition.collect { it.key }
     }
 
-    def "Invalid capability in definition() fails"()
-    {
+    def "Invalid capability in definition() fails"() {
         when:
             def capabilitiesResult = readDefinition("""
     definition(name: "nam"){
@@ -87,8 +83,7 @@ metadata{
             error.message.contains(Capabilities.capabilitiesByPrettyName.keySet().asList()[10])
     }
 
-    def "There must be at least one capability"()
-    {
+    def "There must be at least one capability"() {
         when:
             readDefinition("""
     definition(name: "nam"){
@@ -100,8 +95,7 @@ metadata{
     }
 
     @Unroll
-    def "attribute() with valid type = '#type' can be read"(String type)
-    {
+    def "attribute() with valid type = '#type' can be read"(String type) {
         when:
             def attribute = readSingleAttribute("attribute 'nam', '${type}'")
 
@@ -114,8 +108,7 @@ metadata{
             type << ['string', 'number']
     }
 
-    def "attribute() with invalid type fails"()
-    {
+    def "attribute() with invalid type fails"() {
         when:
             readSingleAttribute("attribute 'nam', 'blah'")
 
@@ -127,8 +120,7 @@ metadata{
             error.message.contains('not supported')
     }
 
-    def "attribute() with empty type fails"()
-    {
+    def "attribute() with empty type fails"() {
         when:
             readSingleAttribute("attribute 'nam', ''")
 
@@ -138,8 +130,7 @@ metadata{
             error.message.contains("doesn't have a type")
     }
 
-    def "attribute() with empty name fails"()
-    {
+    def "attribute() with empty name fails"() {
         when:
             readSingleAttribute("attribute '', 'number'")
 
@@ -148,8 +139,7 @@ metadata{
             error.message.contains("doesn't have a name")
     }
 
-    def "attribute() with non-enum type can't have 'possibleValues'"()
-    {
+    def "attribute() with non-enum type can't have 'possibleValues'"() {
         when:
             readSingleAttribute("attribute 'nam', 'number', ['one', 'two']")
 
@@ -162,7 +152,8 @@ metadata{
     }
 
     @Unroll
-    def "attribute() with 'enum' type fails if doesn't have 'possibleValues' (possibleValues = '#possibleValues')"(String possibleValues)
+    def "attribute() with 'enum' type fails if doesn't have 'possibleValues' (possibleValues = '#possibleValues')"(
+            String possibleValues)
     {
         when:
             readSingleAttribute("attribute 'nam', 'enum'${possibleValues}")
@@ -177,8 +168,7 @@ metadata{
             possibleValues << [", []", "", ", null"]
     }
 
-    def "Can't have duplicate capabilities"()
-    {
+    def "Can't have duplicate capabilities"() {
         when:
             readDefinition("""definition(name: "n", namespace: "nm", author: "a"){
                     capability 'Valve'
@@ -189,11 +179,10 @@ metadata{
             AssertionError error = thrown()
             error.message.contains('Valve')
             error.message.contains('duplicate')
-            error.message.contains("capability")
+            error.message.contains("capabilit")
     }
 
-    def "Can't have duplicate attributes"()
-    {
+    def "Can't have duplicate attributes"() {
         when:
             readDefinition("""definition(name: "n", namespace: "nm", author: "a"){
                 attribute 'nam', 'number'
@@ -205,5 +194,74 @@ metadata{
             error.message.contains('nam')
             error.message.contains('duplicate')
             error.message.matches(/.*(?i)attribute.*/)
+    }
+
+    @Unroll
+    def "Can't have duplicate commands with same args. Testing: '#commands', expected errors: '#expectedErrorParts'."(
+            String commands, List<String> expectedErrorParts)
+    {
+        when:
+            readDefinition("""definition(name: "n", namespace: "nm", author: "a"){
+                ${commands}
+            }""", validationFlags: [Flags.DontValidateCapabilities])
+
+        then:
+            AssertionError e = thrown()
+            expectedErrorParts.each { e.message.contains(it) }
+
+        where:
+            commands                                        | expectedErrorParts
+            """command('cmd')
+               command('cmd')"""             | ['cmd', 'duplicate']
+            """command('cmd', ['number'])
+               command('cmd', ['number'])""" | ['cmd', 'duplicate', 'number']
+    }
+
+    @Unroll
+    def "duplicate commands(): '#commands' with different args are fine"(String commands, int expectedSize) {
+        when:
+            def producedCommands = readDefinition("""definition(name: "n", namespace: "nm", author: "a"){
+                ${commands}
+            }""", validationFlags: [Flags.DontValidateCapabilities]).commands
+
+        then:
+            producedCommands.size() == expectedSize
+
+        where:
+            commands                                              | expectedSize
+            "command 'cmd';command 'cmd', ['string', 'number']"   | 2
+            "command 'cmd'"                                       | 1
+            "command 'cmd', ['string'];command 'cmd', ['number']" | 2
+    }
+
+    @Unroll
+    def "command() data type #(type) is valid"(String type) {
+        when:
+            def producedCommands = readDefinition("""definition(name: "n", namespace: "nm", author: "a"){
+                command 'name', ['${type}']
+            }""", validationFlags: [Flags.DontValidateCapabilities]).commands
+
+        then:
+            producedCommands.size() == 1
+            producedCommands[0].parameterTypes.size() == 1
+            producedCommands[0].parameterTypes[0] == type
+
+        where:
+            type << ['number', 'string']
+    }
+
+    def "command() fails with invalid data type"() {
+        when:
+            readDefinition("""definition(name: "n", namespace: "nm", author: "a"){
+                command 'cmd', ["I'm bad type"]
+            }""", validationFlags: [Flags.DontValidateCapabilities])
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("I'm bad type")
+            e.message.contains("not supported")
+            e.message.matches(/.*(?i)argument type.*/)
+            e.message.contains("string")
+            e.message.contains("number")
     }
 }

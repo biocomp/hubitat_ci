@@ -4,6 +4,7 @@ import biocomp.hubitatCi.*
 import biocomp.hubitatCi.apppreferences.*
 import biocomp.hubitatCi.capabilities.Capabilities
 import biocomp.hubitatCi.deviceMetadata.Attribute
+import biocomp.hubitatCi.deviceMetadata.Command
 import biocomp.hubitatCi.deviceMetadata.Definition
 import biocomp.hubitatCi.deviceMetadata.DeviceMetadataReader
 import groovy.json.JsonBuilder
@@ -304,7 +305,6 @@ class DeviceValidator extends
 
         //{
         def duplicateAttributes = findDuplicates(deviceMetadataReader.producedDefinition.attributes.collect { it.name })
-
         assert duplicateAttributes.size() == 0 : "Attributes ${duplicateAttributes} are duplicate, this is not useful."
         //}
 
@@ -316,6 +316,19 @@ class DeviceValidator extends
             })
 
             assert duplicateCapabilities.size() == 0: "Capabilities ${duplicateCapabilities} are duplicate, this is not useful."
+        }
+
+        //{
+        def duplicateCommands = findDuplicates(deviceMetadataReader.producedDefinition.commands.collect { it.toString() })
+        assert duplicateCommands.size() == 0 : "Commands ${duplicateCommands} are duplicate, this is not useful."
+        //}
+    }
+
+    private final HashSet<String> supportedCommandArgumentTypes = ['number', 'string'] as HashSet
+
+    void validateCommand(Command command) {
+        command.parameterTypes.each{
+            assert supportedCommandArgumentTypes.contains(it) : "${command}: Argument type '${it}' is not supported. Supported types are: ${supportedCommandArgumentTypes}"
         }
     }
 }

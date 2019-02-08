@@ -40,7 +40,10 @@ class DeviceMetadataReader implements DeviceMetadataSource
 
     @Override
     void command(String commandName, List parameterTypes) {
-
+        def definition = states.getState('definition()') as Definition
+        def command = new Command(commandName, parameterTypes)
+        validator.validateCommand(command)
+        definition.addCommand(command)
     }
 
     @Override

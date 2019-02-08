@@ -13,6 +13,7 @@ class Definition {
 
     List<String> capabilities = []
     List<Attribute> attributes = []
+    List<Command> commands = []
 
     void addCapability(String name) {
         capabilities.add(name)
@@ -20,5 +21,9 @@ class Definition {
 
     void addAttribute(Attribute attribute) {
         attributes.add(attribute)
+    }
+
+    void addCommand(Command command) {
+        commands.add(command)
     }
 }

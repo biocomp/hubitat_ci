@@ -253,7 +253,7 @@ trait DeviceDefinition
      * @param commandName - The name of the command. You must also define a method in your Device Handler with the same name.
      * @param parameterTypes - Optional. An ordered list of the parameter types for the command method, if needed.
      */
-    abstract void command(String commandName, List parameterTypes)
+    abstract void command(String commandName, List parameterTypes = [])
 
     /**
      * Fingerprints for z-wave and zigbee devices.
