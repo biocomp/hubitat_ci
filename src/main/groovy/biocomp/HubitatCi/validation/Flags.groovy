@@ -16,7 +16,12 @@ enum Flags
     AllowTitleInPageCallingMethods,
     AllowMissingOAuthPage,
     AllowNullListOptions,
-    
+
+    /**
+     * When validating command() arguments, don't try to find corresponding real method in Script class.
+     */
+    AllowMissingCommandMethod,
+
     /**
      * Allow required properties (such as page(title: "")) to be empty strings.
      * It's just a workaround to be able to support existing scripts.

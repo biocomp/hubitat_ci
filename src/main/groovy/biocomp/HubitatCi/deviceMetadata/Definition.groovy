@@ -14,6 +14,7 @@ class Definition {
     List<String> capabilities = []
     List<Attribute> attributes = []
     List<Command> commands = []
+    List<Map> fingerprints = []
 
     void addCapability(String name) {
         capabilities.add(name)
@@ -25,5 +26,9 @@ class Definition {
 
     void addCommand(Command command) {
         commands.add(command)
+    }
+
+    void addFingerprint(Map fingerprint) {
+        fingerprints.add(fingerprint)
     }
 }

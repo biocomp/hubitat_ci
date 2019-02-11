@@ -17,10 +17,12 @@ class DeviceMetadataReader implements DeviceMetadataSource
 {
     DeviceMetadataReader(
             DeviceExecutor delegate,
-            DeviceValidator validator)
+            DeviceValidator validator,
+            MetaClass scriptMetaClass)
     {
         this.delegate = delegate
         this.validator = validator
+        this.scriptMetaClass = scriptMetaClass
     }
 
     @Override
@@ -41,14 +43,16 @@ class DeviceMetadataReader implements DeviceMetadataSource
     @Override
     void command(String commandName, List parameterTypes) {
         def definition = states.getState('definition()') as Definition
-        def command = new Command(commandName, parameterTypes)
+        def command = new Command(commandName, parameterTypes, validator.findMethodForCommand(scriptMetaClass, commandName, parameterTypes))
         validator.validateCommand(command)
         definition.addCommand(command)
     }
 
     @Override
     void fingerprint(Map options) {
-
+        def definition = states.getState('definition()') as Definition
+        validator.validateFingerprint(options)
+        definition.addFingerprint(options)
     }
 
     @Override
@@ -150,6 +154,8 @@ class DeviceMetadataReader implements DeviceMetadataSource
     private final DeviceValidator validator
 
     private Definition producedDefinition
+
+    private final MetaClass scriptMetaClass
 
     Definition getProducedDefinition() {
         return producedDefinition

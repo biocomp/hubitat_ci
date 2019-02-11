@@ -9,6 +9,7 @@ import biocomp.hubitatCi.deviceMetadata.Definition
 import biocomp.hubitatCi.deviceMetadata.DeviceMetadataReader
 import groovy.json.JsonBuilder
 import groovy.time.TimeCategory
+import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
 import groovy.xml.MarkupBuilder
@@ -19,6 +20,7 @@ import org.codehaus.groovy.control.customizers.SecureASTCustomizer
 import org.codehaus.groovy.control.customizers.SourceAwareCustomizer
 import sun.util.calendar.ZoneInfo
 
+import java.lang.reflect.Method
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 
@@ -62,6 +64,7 @@ class DeviceValidator extends
     //        "time",
     //        "text"
     //    ] as HashSet
+
 
     DeviceValidator(
             EnumSet<Flags> setOfFlags = EnumSet.noneOf(Flags), List<Class> extraAllowedClasses = [],
@@ -324,11 +327,67 @@ class DeviceValidator extends
         //}
     }
 
-    private final HashSet<String> supportedCommandArgumentTypes = ['number', 'string'] as HashSet
+    private static final HashMap<String, Class> supportedCommandArgumentTypes = ['number': Integer, 'string': String] as HashMap
+
+    private static Class parameterTypeToClass(Command command, String typeName) {
+        assert supportedCommandArgumentTypes.containsKey(typeName) : "${command}: Argument type '${typeName}' is not supported. Supported types are: ${supportedCommandArgumentTypes}"
+        return supportedCommandArgumentTypes.get(typeName)
+    }
+
+    @CompileStatic
+    MetaMethod findMethodForCommand(MetaClass scriptMetaClass, String name, List<String> parameterTypes)
+    {
+        def command = new Command(name, parameterTypes, null)
+
+        def pickedMethod = scriptMetaClass.pickMethod(name, parameterTypes.collect { parameterTypeToClass(command, it) } as Class[])
+
+        // MetaClass.pickMethod will ignore 1-argument parameterTypes, if method takes 0 arguments, so add extra validation.
+        if (pickedMethod == null || pickedMethod.parameterTypes.size() != parameterTypes.size())
+        {
+            return null
+        }
+
+//        List<List<Class>> listsOfArgs =
+//        try {
+//            return scriptMetaClass.theClass.getMethod(name,
+//                    parameterTypes.collect { parameterTypeToClass(command, it) } as Class[])
+//        }
+//        catch (NoSuchMethodException)
+//        {
+//            return null
+//        }
+
+        return pickedMethod
+    }
 
     void validateCommand(Command command) {
-        command.parameterTypes.each{
-            assert supportedCommandArgumentTypes.contains(it) : "${command}: Argument type '${it}' is not supported. Supported types are: ${supportedCommandArgumentTypes}"
+        if (!hasFlag(Flags.AllowMissingCommandMethod)) {
+            assert command.method != null: "Command ${command} does not have a method with matching signature in current script."
         }
     }
+
+    private static final NamedParametersValidator fingerprintOptionsValidator = NamedParametersValidator.make {
+        stringParameter(name: "type")
+        stringParameter(name: "mfr")
+        stringParameter(name: "prod")
+        stringParameter(name: "model")
+        stringParameter(name: "cc")
+        stringParameter(name: "ccOut")
+        stringParameter(name: "sec")
+        stringParameter(name: "secOut")
+        stringParameter(name: "ff")
+        stringParameter(name: "ui")
+        stringParameter(name: "deviceJoinName")
+        stringParameter(name: "profileId")
+        stringParameter(name: "inClusters")
+        stringParameter(name: "outClusters")
+        stringParameter(name: "manufacturer")
+        stringParameter(name: "deviceId")
+    }
+
+    void validateFingerprint(Map fingerprint)
+    {
+        fingerprintOptionsValidator.validate("fingerprint(${fingerprint})", fingerprint, this, true)
+    }
+
 }
