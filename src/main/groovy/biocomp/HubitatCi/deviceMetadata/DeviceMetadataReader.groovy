@@ -56,6 +56,12 @@ class DeviceMetadataReader implements DeviceMetadataSource
     }
 
     @Override
+    void simulator(Closure closure)
+    {
+        // Just do nothing, this is probably not supported, but method is sometimes called.
+    }
+
+    @Override
     def input(Map options, String name, String type) {
         return null
     }

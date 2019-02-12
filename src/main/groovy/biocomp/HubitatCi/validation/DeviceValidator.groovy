@@ -339,22 +339,16 @@ class DeviceValidator extends
     {
         def command = new Command(name, parameterTypes, null)
 
-        def pickedMethod = scriptMetaClass.pickMethod(name, parameterTypes.collect { parameterTypeToClass(command, it) } as Class[])
+        MetaMethod pickedMethod = scriptMetaClass.pickMethod(name,
+                parameterTypes.collect { parameterTypeToClass(command, it) } as Class[])
 
         // MetaClass.pickMethod will ignore 1-argument parameterTypes, if method takes 0 arguments, so add extra validation.
-        if (pickedMethod == null || pickedMethod.parameterTypes.size() != parameterTypes.size())
-        {
+        if (pickedMethod != null && pickedMethod.parameterTypes.size() != parameterTypes.size() && !hasFlag(Flags.AllowCommandDefinitionWithNoArgsMatchAnyCommandWithSameName)) {
             return null
         }
-
-//        List<List<Class>> listsOfArgs =
-//        try {
-//            return scriptMetaClass.theClass.getMethod(name,
-//                    parameterTypes.collect { parameterTypeToClass(command, it) } as Class[])
-//        }
-//        catch (NoSuchMethodException)
-//        {
-//            return null
+//
+//        if (pickedMethod == null && parameterTypes.size() == 0 && ) {
+//            pickedMethod = scriptMetaClass.metaMethods.find{ it.name == name }
 //        }
 
         return pickedMethod

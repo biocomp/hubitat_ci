@@ -394,4 +394,19 @@ metadata
             'TYpe: "10", cc: "25,32"'                                                                                                                                                                                 | 'TYpe'
             'profileId: "0104", inClusters: "0000, 0003, 0004, 0005, 0006, 0008, 0702, 0B05", outClusters: "000A, 0019", manufacturer: "Jasco Products", model: "45857", deviceJoinNamee: "GE Zigbee In-Wall Dimmer"' | 'deviceJoinNamee'
     }
+
+    def "simulator() can be called. Does nothing."()
+    {
+        expect:
+            new HubitatDeviceSandbox("""
+metadata
+{
+    definition(name: "n", namespace: "nm", author: "a"){
+        simulator{ }
+    }
+}
+""").run(validationFlags: [Flags.DontValidateCapabilities])
+
+    }
+
 }

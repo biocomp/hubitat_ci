@@ -16,6 +16,7 @@ enum Flags
     AllowTitleInPageCallingMethods,
     AllowMissingOAuthPage,
     AllowNullListOptions,
+    AllowCommandDefinitionWithNoArgsMatchAnyCommandWithSameName,
 
     /**
      * When validating command() arguments, don't try to find corresponding real method in Script class.

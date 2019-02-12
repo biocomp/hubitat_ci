@@ -465,6 +465,12 @@ trait DeviceExecutor implements biocomp.hubitatCi.emulation.commonApi.BaseExecut
     abstract String getDataValue(String name)
 
     /**
+     * Undocumented Hubitat simulator support (may not be working at all, but some scripts call this method).
+     * @param closure. Probably called at some point.
+     */
+    abstract void simulator(Closure closure)
+
+    /**
      * The Device object, from which its current properties and history can be accessed.
      *
      */

@@ -234,7 +234,12 @@ class ValidatorBase {
 
     private static boolean isClassAllowed(HashSet<String> classNameWhiteList, ClassNode classNode) {
         if (classNameWhiteList.contains(classNode.name)) {
-            return true;
+            return true
+        }
+
+        if (classNode.name.startsWith('biocomp.hubitatCi.emulation.deviceApi.zwave'))
+        {
+            return true
         }
 
         return classNode.isScript()

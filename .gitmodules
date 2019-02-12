@@ -16,3 +16,6 @@
 [submodule "SubmodulesWithScripts/homebridge-hubitat-tonesto7"]
 	path = SubmodulesWithScripts/homebridge-hubitat-tonesto7
 	url = https://github.com/biocomp/homebridge-hubitat-tonesto7.git
+[submodule "SubmodulesWithScripts/Hubitat"]
+	path = SubmodulesWithScripts/Hubitat
+	url = https://github.com/erocm123/Hubitat.git
