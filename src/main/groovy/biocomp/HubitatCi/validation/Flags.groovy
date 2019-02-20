@@ -10,6 +10,7 @@ enum Flags
     DontValidateDefinition,
     DontValidateMappings,
     DontValidateCapabilities,
+    DontValidateAttributes,
     AllowWritingToSettings,
     AllowReadingNonInputSettings,
     AllowUnreachablePages,

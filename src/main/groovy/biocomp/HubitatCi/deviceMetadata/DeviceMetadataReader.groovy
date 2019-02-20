@@ -160,11 +160,17 @@ class DeviceMetadataReader implements DeviceMetadataSource
     private final DeviceValidator validator
 
     private Definition producedDefinition
+    private List<DeviceInput> producedPreferences = []
 
     private final MetaClass scriptMetaClass
 
     Definition getProducedDefinition() {
         return producedDefinition
+    }
+
+    List<DeviceInput> getProducedPreferences()
+    {
+        return producedPreferences
     }
 }
 
