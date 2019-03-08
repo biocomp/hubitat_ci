@@ -132,5 +132,44 @@ metadata{
             "title: 'tit', '', 'bool'"    | [Flags.AllowEmptyDeviceInputName] || ""           | "bool"
             "title: 'tit', null, 'bool'"  | [Flags.AllowEmptyDeviceInputName] || null         | "bool"
     }
+
+    @Unroll
+    def "Calling with valid type: input(#type) succeeds"(String type)
+    {
+        when:
+            def input = readInput("name: 'nam', type: '${type}'")
+
+        then:
+            input.type == type
+
+        where:
+            type << [
+                'bool',
+                'decimal',
+                'email',
+                'enum',
+                'number',
+                'password',
+                'phone',
+                'time',
+                'text'
+            ]
+    }
+
+    def "Calling input() with every valid option succeeds"()
+    {
+        when:
+            def input = readInput("""name: 'nam', type: 'enum', title: 'tit', description: 'desc', required: true, displayDuringSetup: true, range: '10..1000', options: ['val1', 'val2']""")
+
+        then:
+            input.name == 'nam'
+            input.type == 'enum'
+            input.options.title == 'tit'
+            input.options.description == 'desc'
+            input.options.required == true
+            input.options.displayDuringSetup == true
+            input.options.range == '10..1000'
+            input.options.options == ['val1', 'val2']
+    }
 }
 
