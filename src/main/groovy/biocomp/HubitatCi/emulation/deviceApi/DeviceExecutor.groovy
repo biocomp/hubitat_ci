@@ -395,6 +395,7 @@ trait DevicePreferences {
      *      displayDuringSetup (boolean) default - false
      *      range (String) valid values range. Format "*..*", "10..100"
      *      options (List) - list of values if type == "enum"
+     *      defaultValue (Object) - undocumented but works in Hubitat (actually provides the default in UI).
      */
     abstract def input(Map options, String name = null, String type = null)
 

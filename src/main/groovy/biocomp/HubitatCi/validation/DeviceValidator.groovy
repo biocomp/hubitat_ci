@@ -387,6 +387,28 @@ class DeviceValidator extends
         fingerprintOptionsValidator.validate("fingerprint(${fingerprint})", fingerprint, this, true)
     }
 
+    private static final NamedParametersValidator inputOptionsValidator = NamedParametersValidator.make {
+        stringParameter(name: "name", canBeEmpty: true)
+        enumStringParameter(name: "type", required: true, values: [
+            'bool',
+            'decimal',
+            'email',
+            'enum',
+            'number',
+            'password',
+            'phone',
+            'time',
+            'text'
+        ])
+        stringParameter(name: "title")
+        stringParameter(name: "description")
+        objParameter(name: "defaultValue")
+        boolParameter(name: "required")
+        boolParameter(name: "displayDuringSetup")
+        numericRangeParameter(name: "range")
+        listOfStringsParameter(name: "options")
+    }
+
     void validateInput(DeviceInput input)
     {
         if (!hasFlag(Flags.AllowEmptyDeviceInputName)) {
@@ -394,6 +416,7 @@ class DeviceValidator extends
         }
 
         assert input.type, "Input ${input}'s type is missing"
+        inputOptionsValidator.validate(input as String, input.mergedOptions, this, true)
     }
 
     void validateSection(String name)

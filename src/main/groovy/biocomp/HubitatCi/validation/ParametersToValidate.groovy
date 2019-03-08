@@ -121,7 +121,7 @@ class ParametersToValidate
         addParameter(new Parameter(options.name as String, options.get("required", false) as boolean,
                 { ValidatorBase validator, String context, String name, def value ->
                     def val = validateStringValue(validator, context, name, value, options)
-                    assert validValues.contains(val) : "${context}: '${name}''s value is not supported. Valid values: ${validValues}"
+                    assert validValues.contains(val) : "${context}: '${name}''s value ('${val}') is not supported. Valid values: ${validValues}"
                 }))
     }
 

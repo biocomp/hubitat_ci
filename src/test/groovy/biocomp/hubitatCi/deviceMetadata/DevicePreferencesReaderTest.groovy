@@ -156,6 +156,17 @@ metadata{
             ]
     }
 
+    def "Calling with invalid input type fails"()
+    {
+        when:
+            def input = readInput("name: 'nam', type: 'badType'")
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains('not supported')
+            e.message.contains('badType')
+    }
+
     def "Calling input() with every valid option succeeds"()
     {
         when:
