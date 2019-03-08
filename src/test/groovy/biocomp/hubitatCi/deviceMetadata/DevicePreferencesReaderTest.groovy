@@ -152,7 +152,9 @@ metadata{
                 'password',
                 'phone',
                 'time',
-                'text'
+                'text',
+                // TODO: figure out if 'paragraph' is supported. It works, and produces a text input, but is not documented.
+                // TODO: figure out if any type of input should work.
             ]
     }
 
