@@ -84,7 +84,7 @@ class HubitatAppSandbox {
             allKeys.remove('api')
 
             assert options['api'] == null || options[
-                    'api'] instanceof AppExecutor: "'app' value must be null or implement AppExecutor interface"
+                    'api'] instanceof AppExecutor: "'api' value must be null or implement AppExecutor interface"
         }
 
         if (options.containsKey('userSettingValues')) {

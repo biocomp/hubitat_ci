@@ -44,7 +44,7 @@ import biocomp.hubitatCi.emulation.deviceApi.zwave.Zwave
  * public static java.lang.String com.hubitat.hub.executor.DeviceExecutor.getLinkText(com.hubitat.appApi.DeviceWrapper),
  * ++ public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.getParent(),
  * public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.getPreferences(),
- * ++ public java.util.Map com.hubitat.hub.executor.DeviceExecutor.getState(),
+ * ++ public java.util.Map com.hubitat.hub.executor.DeviceExecutor.getCurrentState(),
  * public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.getTiles(),
  * ++ public com.hubitat.zigbee.Zigbee com.hubitat.hub.executor.DeviceExecutor.getZigbee(),
  * ++ public hubitat.zwave.Zwave com.hubitat.hub.executor.DeviceExecutor.getZwave(),
@@ -132,8 +132,8 @@ import biocomp.hubitatCi.emulation.deviceApi.zwave.Zwave
  * ++ public void com.hubitat.hub.executor.DeviceExecutor.details(java.lang.String),
  * ++ public void com.hubitat.hub.executor.DeviceExecutor.details(java.util.List),
  *
- * public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.section(groovy.lang.Closure),
- * public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.section(java.lang.String,groovy.lang.Closure),
+ * ++ public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.section(groovy.lang.Closure),
+ * ++ public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.section(java.lang.String,groovy.lang.Closure),
  *
  * Setters:
  * public void com.hubitat.hub.executor.DeviceExecutor.setAttributes(java.lang.Object),
@@ -149,8 +149,7 @@ import biocomp.hubitatCi.emulation.deviceApi.zwave.Zwave
  * public void com.hubitat.hub.executor.DeviceExecutor.setZwave(hubitat.zwave.Zwave),
  * */
 
-interface DeviceTileAttribute
-{
+interface DeviceTileAttribute {
     /**
      * Same as state() above for multi-attribute tiles.
      * @param options. See state() method options parameter.
@@ -160,7 +159,9 @@ interface DeviceTileAttribute
 
 }
 
-trait DeviceMultiAttributeTile implements DeviceTileAttribute {
+trait DeviceMultiAttributeTile implements
+        DeviceTileAttribute
+{
     /**
      * Add attribute to multi-attribute tile (use inside multiAttributeTile()'s closure)
      *
@@ -186,13 +187,12 @@ trait DeviceMultiAttributeTile implements DeviceTileAttribute {
     abstract void tileAttribute(Map options = [:], String associatedAttributeName, Closure makeContents = null)
 }
 
-interface DeviceTile
-{
+interface DeviceTile {
     /**
      * Bind tile to device's state (for single-attribute tile).
      * (use inside closure passed into a specific tile creation method())
      *
-     * @param options: Valid options are:
+     * @param options : Valid options are:
      *      label (String) what to print on a tile for this attribute.
      *             Could be '${currentValue}' (single quotes are required!) to reflect value dynamically.
      *             Could be '${name}' (single quotes are required!) if value has named values such as "on" and "off".
@@ -221,8 +221,7 @@ interface DeviceTile
     abstract void state(Map options, String stateNameOrAttributeNameOrValue)
 }
 
-trait DeviceDefinition
-{
+trait DeviceDefinition {
     /**
      * Called in the definition() method to define that this device supports the specified capability.
      *
@@ -265,11 +264,12 @@ trait DeviceDefinition
     abstract void fingerprint(Map options)
 }
 
-trait DeviceTiles extends DeviceMultiAttributeTile implements DeviceTile
+trait DeviceTiles extends
+        DeviceMultiAttributeTile implements
+        DeviceTile
 {
     /**
-     * Define which tile is main tile (use inside closure passed into tiles())
-     */
+     * Define which tile is main tile (use inside closure passed into tiles())*/
     abstract void main(String tileTitle)
 
     /**
@@ -303,7 +303,9 @@ trait DeviceTiles extends DeviceMultiAttributeTile implements DeviceTile
      *      canChangeIcon (boolean) default = false. Allows user to change icon.
      *      decoration (String) "ring" is default, "flat" is also supported.
      */
-    abstract void standardTile(options = [:], String name, String associatedAttributeName, @DelegatesTo(DeviceTile) Closure makeContents = null)
+    abstract void standardTile(
+            options = [:], String name, String associatedAttributeName,
+            @DelegatesTo(DeviceTile) Closure makeContents = null)
 
 
     /**
@@ -321,7 +323,9 @@ trait DeviceTiles extends DeviceMultiAttributeTile implements DeviceTile
      * @param associatedAttributeName
      * @param makeContents
      */
-    abstract void valueTile(Map options = [:], String name, String associatedAttributeName, @DelegatesTo(DeviceTile) Closure makeContents = null)
+    abstract void valueTile(
+            Map options = [:], String name, String associatedAttributeName,
+            @DelegatesTo(DeviceTile) Closure makeContents = null)
 
     /**
      * Define a slider or color control tile (use inside closure passed into tiles())
@@ -340,7 +344,9 @@ trait DeviceTiles extends DeviceMultiAttributeTile implements DeviceTile
      * @param associatedAttributeName
      * @param makeContents
      */
-    abstract void controlTile(Map options, String name, String associatedAttributeName, @DelegatesTo(DeviceTile) Closure makeContents = null)
+    abstract void controlTile(
+            Map options, String name, String associatedAttributeName,
+            @DelegatesTo(DeviceTile) Closure makeContents = null)
 
     /**
      * Define a multi-attribute tile (use inside closure passed into tiles())
@@ -366,8 +372,7 @@ trait DeviceTiles extends DeviceMultiAttributeTile implements DeviceTile
     abstract void multiAttributeTile(Map options, @DelegatesTo(DeviceMultiAttributeTile) Closure makeContents = null)
 }
 
-trait DevicePreferences
-{
+trait DevicePreferences {
     /**
      * Define a setting inside preferences.
      * (to be used inside closure passed into preferences())
@@ -392,12 +397,24 @@ trait DevicePreferences
      *      options (List) - list of values if type == "enum"
      */
     abstract def input(Map options, String name = null, String type = null)
+
+    /**
+     * Really, undocumented anywhere.
+     * Not supported in SmartThings, but used (successfully?) by at least
+     * one hubitat script in the wild.
+     * And obviously exists in real Hubitat DeviceExecutror class.
+     * @param name of the section
+     * @param makeContents
+     */
+    abstract def section(String name = null, groovy.lang.Closure makeContents)
 }
 
 /**
- * What can be declared inside metadata's closure.
- */
-interface DeviceMetadata extends DeviceDefinition, DeviceTiles, DevicePreferences
+ * What can be declared inside metadata's closure.*/
+interface DeviceMetadata extends
+        DeviceDefinition,
+        DeviceTiles,
+        DevicePreferences
 {
     /**
      * Piece of metadata(), defines major device's properties.
@@ -414,8 +431,7 @@ interface DeviceMetadata extends DeviceDefinition, DeviceTiles, DevicePreference
     abstract void definition(Map options, @DelegatesTo(DeviceDefinition) Closure makeContents)
 
     /**
-     * Define device's preferences (to be used inside closure passed into metadata())
-     */
+     * Define device's preferences (to be used inside closure passed into metadata())*/
     abstract void preferences(@DelegatesTo(DevicePreferences) Closure makeContents)
 
     /**
@@ -430,7 +446,8 @@ interface DeviceMetadata extends DeviceDefinition, DeviceTiles, DevicePreference
     abstract void tiles(Map options, @DelegatesTo(DeviceTiles) Closure makeContents)
 }
 
-interface DeviceMetadataSource extends DeviceMetadata
+interface DeviceMetadataSource extends
+        DeviceMetadata
 {
     /**
      * Defines metadata for the device.
@@ -440,7 +457,9 @@ interface DeviceMetadataSource extends DeviceMetadata
     abstract void metadata(@DelegatesTo(DeviceMetadata) Closure makeContents)
 }
 
-trait DeviceExecutor implements biocomp.hubitatCi.emulation.commonApi.BaseExecutor, DeviceMetadataSource
+trait DeviceExecutor implements
+        biocomp.hubitatCi.emulation.commonApi.BaseExecutor,
+        DeviceMetadataSource
 {
     // Command can be invoked by name
     // Needs to be defined by user
@@ -458,10 +477,15 @@ trait DeviceExecutor implements biocomp.hubitatCi.emulation.commonApi.BaseExecut
     abstract void sendHubCommand(HubAction hubAction)
 
     abstract Map getState()
+
     abstract Zwave getZwave()
+
     abstract Zigbee getZigbee()
+
     abstract Object getParent()
+
     abstract void updateDataValue(String name, String value)
+
     abstract String getDataValue(String name)
 
     /**
@@ -472,27 +496,39 @@ trait DeviceExecutor implements biocomp.hubitatCi.emulation.commonApi.BaseExecut
 
     /**
      * The Device object, from which its current properties and history can be accessed.
-     *
-     */
+     **/
     abstract DeviceWrapper getDevice()
 
     abstract String getDeviceDataByName(String name)
+
     abstract HubAction response(String cmd)
+
     abstract HubAction response(zwave.Command cmd)
+
     abstract HubMultiAction response(List cmds)
+
     abstract Short getZwaveHubNodeId()
+
     abstract void sendEvent(Map properties)
+
     abstract List<Event> eventsSince(Date startDate, Map options = null)
+
     abstract void telnetConnect(Map options, String ip, int port, String username, String password)
+
     abstract void telnetConnect(String ip, int port, String username, String password)
+
     abstract void telnetClose()
+
     abstract Map createEvent(Map options)
 
     abstract List<String> delayBetween(List<String> cmds, Long delay)
+
     abstract List<String> delayBetween(List<String> cmds)
 
     abstract ChildDeviceWrapper addChildDevice(String typeName, String deviceNetworkId, Map properties = [:])
-    abstract ChildDeviceWrapper addChildDevice(String namespace, String typeName, String deviceNetworkId, Map properties = [:])
+
+    abstract ChildDeviceWrapper addChildDevice(
+            String namespace, String typeName, String deviceNetworkId, Map properties = [:])
 
     /**
      * @throws NotFoundException
@@ -500,6 +536,7 @@ trait DeviceExecutor implements biocomp.hubitatCi.emulation.commonApi.BaseExecut
     abstract void deleteChildDevice(String deviceNetworkId)
 
     abstract ChildDeviceWrapper getChildDevice(String deviceNetworkId)
+
     abstract List<ChildDeviceWrapper> getChildDevices()
 }
 

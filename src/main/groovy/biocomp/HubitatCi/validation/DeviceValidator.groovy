@@ -6,6 +6,7 @@ import biocomp.hubitatCi.capabilities.Capabilities
 import biocomp.hubitatCi.deviceMetadata.Attribute
 import biocomp.hubitatCi.deviceMetadata.Command
 import biocomp.hubitatCi.deviceMetadata.Definition
+import biocomp.hubitatCi.deviceMetadata.DeviceInput
 import biocomp.hubitatCi.deviceMetadata.DeviceMetadataReader
 import groovy.json.JsonBuilder
 import groovy.time.TimeCategory
@@ -386,4 +387,19 @@ class DeviceValidator extends
         fingerprintOptionsValidator.validate("fingerprint(${fingerprint})", fingerprint, this, true)
     }
 
+    void validateInput(DeviceInput input)
+    {
+        if (!hasFlag(Flags.AllowEmptyDeviceInputName)) {
+            assert input.name, "Input ${input}'s name is missing"
+        }
+
+        assert input.type, "Input ${input}'s type is missing"
+    }
+
+    void validateSection(String name)
+    {
+        if (!hasFlag(Flags.AllowSectionsInDevicePreferences)) {
+            assert false, "section('${name}') was used in preferences(), and while the method exists, it's not documented anywhere"
+        }
+    }
 }

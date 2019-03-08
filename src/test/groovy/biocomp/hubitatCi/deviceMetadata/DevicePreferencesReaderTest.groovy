@@ -1,18 +1,34 @@
 package biocomp.hubitatCi.deviceMetadata
 
 import biocomp.hubitatCi.HubitatDeviceSandbox
+import biocomp.hubitatCi.emulation.commonApi.Log
+import biocomp.hubitatCi.emulation.deviceApi.DeviceExecutor
 import biocomp.hubitatCi.validation.Flags
+import spock.lang.Unroll
 
-class DevicePreferencesReaderTest extends spock.lang.Specification
+class DevicePreferencesReaderTest extends
+        spock.lang.Specification
 {
-    private static List<DeviceInput> readPreferences(String script)
-    {
-        return new HubitatDeviceSandbox(script).run(validationFlags: [Flags.DontValidateDefinition]).producedPreferences
+    private static List<DeviceInput> readPreferences(String script, List<Flags> extraFlags = []) {
+        return new HubitatDeviceSandbox(script).run(validationFlags: extraFlags + [Flags.DontValidateDefinition]).producedPreferences
     }
 
-    def "Reading complex configuration with setting additional unrelated state should apparently work"()
-    {
+    private static DeviceInput readInput(String inputParameters, List<Flags> extraFlags = []) {
+        return readPreferences("""
+metadata {
+    preferences {
+        input ${inputParameters}
+    }
+}
+""", extraFlags)[0]
+    }
+
+
+    def "Reading complex configuration with setting additional unrelated state should apparently work"() {
         setup:
+            def log = Mock(Log)
+            DeviceExecutor api = Mock{ _ * getLog() >> log }
+
             HubitatDeviceSandbox sandbox = new HubitatDeviceSandbox("""
 metadata {
     preferences() {
@@ -66,17 +82,55 @@ def LOGINFO(txt){
 """)
 
         expect:
-            sandbox.run(validationFlags: [Flags.DontValidateDefinition])
+            sandbox.run(api: api, validationFlags: [Flags.DontValidateDefinition, Flags.AllowSectionsInDevicePreferences])
     }
 
-    def "preferences() with no inputs work"()
-    {
+    def "preferences() with no inputs work"() {
         expect:
             readPreferences("""
 metadata{
     preferences()
 }
 """).size() == 0
+    }
+
+    @Unroll
+    def "input(#inputDef) fails when name or type are missing"(String inputDef, String[] failureMessages) {
+        when:
+            readInput(inputDef)
+
+        then:
+            AssertionError e = thrown()
+            failureMessages.each { e.message.contains(it) }
+
+        where:
+            inputDef              | failureMessages
+            "name: 'nam'"         | ["nam", "type", "missing"]
+            "type: 'bool'"        | ["bool", "name", "missing"]
+            "title: 'tit'"        | ["tit", "name", "type", "missing"]
+            "title: 'tit', 'nam'" | ["nam", "type", "missing"]
+    }
+
+    @Unroll
+    def "input(#inputDef) can be created if only name (= #expectedName) and type (= #expectedType) are specified"(
+            String inputDef, List<Flags> extraFlags, String expectedName, String expectedType)
+    {
+        when:
+            def input = readInput(inputDef, extraFlags)
+
+        then:
+            input.name == expectedName
+            input.type == expectedType
+
+        where:
+            inputDef                      | extraFlags                        || expectedName | expectedType
+            "name: 'nam', type: 'bool'"   | []                                || "nam"        | "bool"
+            "type: 'bool', 'nam'"         | []                                || "nam"        | "bool"
+            "title: 'tit', 'nam', 'bool'" | []                                || "nam"        | "bool"
+            "name: '', type: 'bool'"      | [Flags.AllowEmptyDeviceInputName] || ""           | "bool"
+            "type: 'bool'"                | [Flags.AllowEmptyDeviceInputName] || null         | "bool"
+            "title: 'tit', '', 'bool'"    | [Flags.AllowEmptyDeviceInputName] || ""           | "bool"
+            "title: 'tit', null, 'bool'"  | [Flags.AllowEmptyDeviceInputName] || null         | "bool"
     }
 }
 

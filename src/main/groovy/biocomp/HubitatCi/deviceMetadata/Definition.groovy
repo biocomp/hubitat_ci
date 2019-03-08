@@ -15,6 +15,7 @@ class Definition {
     List<Attribute> attributes = []
     List<Command> commands = []
     List<Map> fingerprints = []
+    List<DeviceInput> preferences = []
 
     void addCapability(String name) {
         capabilities.add(name)

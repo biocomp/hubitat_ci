@@ -27,14 +27,14 @@ class DeviceMetadataReader implements DeviceMetadataSource
 
     @Override
     void capability(String capabilityName) {
-        def definition = states.getState('definition()') as Definition
+        def definition = states.getCurrentState('definition()') as Definition
         validator.validateCapability(capabilityName)
         definition.addCapability(capabilityName)
     }
 
     @Override
     void attribute(String attributeName, String attributeType, List<String> possibleValues) {
-        def definition = states.getState('definition()') as Definition
+        def definition = states.getCurrentState('definition()') as Definition
         def attribute = new Attribute(attributeName, attributeType, possibleValues)
         validator.validateAttribute(attribute)
         definition.addAttribute(attribute)
@@ -42,7 +42,7 @@ class DeviceMetadataReader implements DeviceMetadataSource
 
     @Override
     void command(String commandName, List parameterTypes) {
-        def definition = states.getState('definition()') as Definition
+        def definition = states.getCurrentState('definition()') as Definition
         def command = new Command(commandName, parameterTypes, validator.findMethodForCommand(scriptMetaClass, commandName, parameterTypes))
         validator.validateCommand(command)
         definition.addCommand(command)
@@ -50,7 +50,7 @@ class DeviceMetadataReader implements DeviceMetadataSource
 
     @Override
     void fingerprint(Map options) {
-        def definition = states.getState('definition()') as Definition
+        def definition = states.getCurrentState('definition()') as Definition
         validator.validateFingerprint(options)
         definition.addFingerprint(options)
     }
@@ -63,7 +63,10 @@ class DeviceMetadataReader implements DeviceMetadataSource
 
     @Override
     def input(Map options, String name, String type) {
-        return null
+        def preferences = states.getOneOfCurrentStates('preferences()', 'section()') as List<DeviceInput>
+        def input = new DeviceInput(options, name, type)
+        validator.validateInput(input)
+        preferences.add(input)
     }
 
     @Override
@@ -128,6 +131,13 @@ class DeviceMetadataReader implements DeviceMetadataSource
     }
 
     @Override
+    def section(String name, @DelegatesTo(DevicePreferences) Closure makeContents)
+    {
+        validator.validateSection(name)
+        states.withState('section()', states.getOneOfParentStates('preferences()'), makeContents)
+    }
+
+    @Override
     void definition(Map options, @DelegatesTo(DeviceDefinition) Closure makeContents) {
         def definition = new Definition(options)
         validator.validateDefinition(definition)
@@ -136,7 +146,7 @@ class DeviceMetadataReader implements DeviceMetadataSource
 
     @Override
     void preferences(@DelegatesTo(DevicePreferences) Closure makeContents) {
-
+        producedPreferences = states.withState('preferences()', new ArrayList<DeviceInput>(), makeContents)
     }
 
     @Override
@@ -154,7 +164,9 @@ class DeviceMetadataReader implements DeviceMetadataSource
 
     private final ReaderState states = new ReaderState([
             'metadata()' : [],
-            'definition()': ['metadata()']
+            'definition()': ['metadata()'],
+            'preferences()': ['metadata()'],
+            'section()': ['metadata()', 'preferences()']
     ])
 
     private final DeviceValidator validator

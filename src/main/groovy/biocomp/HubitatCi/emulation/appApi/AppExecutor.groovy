@@ -62,7 +62,7 @@ java.util.Map),
 public java.util.List com.hubitat.hub.executor.AppExecutor.getPages(),
 ++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.getParent(),
 public java.util.Map com.hubitat.hub.executor.AppExecutor.getPreferences(),
-++ public java.util.Map com.hubitat.hub.executor.AppExecutor.getState(),
+++ public java.util.Map com.hubitat.hub.executor.AppExecutor.getCurrentState(),
 ++ public com.hubitat.appApi.DeviceWrapper com.hubitat.hub.executor.AppExecutor.getSubscribedDeviceById(java.lang.Long),
 ++ public java.util.Map com.hubitat.hub.executor.AppExecutor.getSunriseAndSunset(),
 ++ public java.util.Map com.hubitat.hub.executor.AppExecutor.getSunriseAndSunset(java.util.Map),
@@ -211,8 +211,8 @@ interface AppExecutor extends
     /**
      * @return A map of name/value pairs that App can use to save and retrieve
      * data across App executions.
-     * This is similar to getState(), but will immediately write and read from the backing data store.
-     * Prefer using getState() over getAtomicState() when possible.
+     * This is similar to getCurrentState(), but will immediately write and read from the backing data store.
+     * Prefer using getCurrentState() over getAtomicState() when possible.
      */
     abstract Map getAtomicState()
 

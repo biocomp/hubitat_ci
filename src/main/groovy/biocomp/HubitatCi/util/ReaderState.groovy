@@ -17,8 +17,8 @@ class ReaderState
 
     public <T> T withState(String name, T state, Closure callback)
     {
-        assert whatLeadsToState.containsKey(name)
-        assert currentStateNames == whatLeadsToState[name]
+        assert whatLeadsToState.containsKey(name), "${name} is not supported"
+        assert currentStateNames == whatLeadsToState[name], "${name} should be called inside these: ${whatLeadsToState[name]}, put it was called with this sequence: ${currentStateNames}"
 
         currentStates.add(state)
         currentStateNames.add(name)
@@ -26,7 +26,9 @@ class ReaderState
         def stateNamesBefore = currentStateNames.clone()
         def statesBefore = currentStates.clone()
 
-        callback()
+        if (callback) {
+            callback()
+        }
 
         assert stateNamesBefore == currentStateNames : "Internal test error: ${stateNamesBefore} != ${currentStateNames} - after running closure, state names are not the same as they were before"
         assert statesBefore == currentStates : "Internal test error: ${statesBefore} != ${currentStates} - after running closure, states are not the same as they were before"
@@ -37,11 +39,33 @@ class ReaderState
         return state
     }
 
-    def getState(String name)
-    {
-        assert currentStateNames.last() == name
-        assert whatLeadsToState[name] == currentStateNames.subList(0, currentStateNames.size() - 1)
+    private def tryGetCurrentState(String name) {
+        if (currentStateNames.last() == name) {
+            return currentStates.last()
+        }
 
+        return null
+    }
+
+    def getCurrentState(String name)
+    {
+        def state = tryGetCurrentState(name)
+        assert state, "State ${name} is not a current state, you're calling it in incorrect place. Currently you're here: ${currentStateNames}."
+        return state
+    }
+
+    def getOneOfParentStates(String parentStateName)
+    {
+        final def stateIndex = currentStateNames.indexOf(parentStateName)
+        assert stateIndex != -1, "We're not within ${parentStateName}, so it can't be retieved. Currently you're here: ${currentStateNames}."
+        return currentStates[stateIndex]
+    }
+
+    def getOneOfCurrentStates(String[] names)
+    {
+        def currentName = names.find{currentStateNames.last() == it}
+
+        assert currentName, "Asking for one of ${names} is incorrect. Currently you're here: ${currentStateNames}."
         return currentStates.last()
     }
 

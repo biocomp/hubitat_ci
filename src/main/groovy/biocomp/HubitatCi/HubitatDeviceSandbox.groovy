@@ -82,12 +82,12 @@ class HubitatDeviceSandbox {
     private static void validateAndUpdateSandboxOptions(Map options) {
         def allKeys = new HashSet<String>(options.keySet());
 //
-//        if (options.containsKey('api')) {
-//            allKeys.remove('api')
-//
-//            assert options['api'] == null || options[
-//                    'api'] instanceof AppExecutor: "'app' value must be null or implement AppExecutor interface"
-//        }
+        if (options.containsKey('api')) {
+            allKeys.remove('api')
+
+            assert options['api'] == null || options[
+                    'api'] instanceof DeviceExecutor: "'api' value must be null or implement DeviceExecutor interface"
+        }
 //
 //        if (options.containsKey('userSettingValues')) {
 //            allKeys.remove('userSettingValues')

@@ -18,7 +18,8 @@ enum Flags
     AllowMissingOAuthPage,
     AllowNullListOptions,
     AllowCommandDefinitionWithNoArgsMatchAnyCommandWithSameName,
-
+    AllowEmptyDeviceInputName,
+    AllowSectionsInDevicePreferences,
     /**
      * When validating command() arguments, don't try to find corresponding real method in Script class.
      */

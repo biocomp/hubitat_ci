@@ -7,7 +7,8 @@ class CapturingLog implements Log
     enum Level
     {
         debug,
-        info
+        info,
+        error
     }
 
     @Override
@@ -18,6 +19,11 @@ class CapturingLog implements Log
     @Override
     void debug(String record) {
         records << new Tuple(Level.debug, record)
+    }
+
+    @Override
+    void error(String record) {
+        records << new Tuple(Level.error, record)
     }
 
     ArrayList<Tuple> records = new ArrayList<Tuple>()

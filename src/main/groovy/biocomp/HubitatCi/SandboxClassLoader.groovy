@@ -26,7 +26,6 @@ class SandboxClassLoader extends ClassLoader {
                 return 'biocomp.hubitatCi.emulation.Protocol'
 
             case ~/hubitat\.zwave\..*/:
-                println "Boom! matching ${name} as my zwave!: ${name.replace('hubitat.zwave', 'biocomp.hubitatCi.emulation.deviceApi.zwave')}"
                 return name.replace('hubitat.zwave', 'biocomp.hubitatCi.emulation.deviceApi.zwave')
 
             default:
