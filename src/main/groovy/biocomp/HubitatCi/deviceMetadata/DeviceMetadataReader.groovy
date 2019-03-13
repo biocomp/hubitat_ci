@@ -64,10 +64,27 @@ class DeviceMetadataReader implements DeviceMetadataSource
     @Override
     def input(Map options, String name, String type) {
         def preferences = states.getOneOfCurrentStates('preferences()', 'section()') as List<DeviceInput>
-        def input = new DeviceInput(options, name, type)
+        def input = new DeviceInput([name: name, type: type], options)
         validator.validateInput(input)
         preferences.add(input)
     }
+
+    @Override
+    def input(String name, String type) {
+        def preferences = states.getOneOfCurrentStates('preferences()', 'section()') as List<DeviceInput>
+        def input = new DeviceInput([name: name, type: type], [:])
+        validator.validateInput(input)
+        preferences.add(input)
+    }
+
+    @Override
+    def input(Map options) {
+        def preferences = states.getOneOfCurrentStates('preferences()', 'section()') as List<DeviceInput>
+        def input = new DeviceInput([:], options)
+        validator.validateInput(input)
+        preferences.add(input)
+    }
+
 
     @Override
     void main(String tileTitle) {

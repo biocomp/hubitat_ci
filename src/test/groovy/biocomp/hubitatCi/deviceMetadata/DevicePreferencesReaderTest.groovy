@@ -10,7 +10,8 @@ class DevicePreferencesReaderTest extends
         spock.lang.Specification
 {
     private static List<DeviceInput> readPreferences(String script, List<Flags> extraFlags = []) {
-        return new HubitatDeviceSandbox(script).run(validationFlags: extraFlags + [Flags.DontValidateDefinition]).producedPreferences
+        return new HubitatDeviceSandbox(script).run(
+                validationFlags: extraFlags + [Flags.DontValidateDefinition]).producedPreferences
     }
 
     private static DeviceInput readInput(String inputParameters, List<Flags> extraFlags = []) {
@@ -27,7 +28,7 @@ metadata {
     def "Reading complex configuration with setting additional unrelated state should apparently work"() {
         setup:
             def log = Mock(Log)
-            DeviceExecutor api = Mock{ _ * getLog() >> log }
+            DeviceExecutor api = Mock { _ * getLog() >> log }
 
             HubitatDeviceSandbox sandbox = new HubitatDeviceSandbox("""
 metadata {
@@ -82,7 +83,8 @@ def LOGINFO(txt){
 """)
 
         expect:
-            sandbox.run(api: api, validationFlags: [Flags.DontValidateDefinition, Flags.AllowSectionsInDevicePreferences])
+            sandbox.run(api: api,
+                    validationFlags: [Flags.DontValidateDefinition, Flags.AllowSectionsInDevicePreferences])
     }
 
     def "preferences() with no inputs work"() {
@@ -104,64 +106,60 @@ metadata{
             failureMessages.each { e.message.contains(it) }
 
         where:
-            inputDef              | failureMessages
-            "name: 'nam'"         | ["nam", "type", "missing"]
-            "type: 'bool'"        | ["bool", "name", "missing"]
-            "title: 'tit'"        | ["tit", "name", "type", "missing"]
-            "title: 'tit', 'nam'" | ["nam", "type", "missing"]
+            inputDef       | failureMessages
+            "name: 'nam'"  | ["nam", "type", "missing"]
+            "type: 'bool'" | ["bool", "name", "missing"]
+            "title: 'tit'" | ["tit", "name", "type", "missing"]
+            "'nam', null"  | ["nam", "type", "missing"]
     }
 
     @Unroll
-    def "input(#inputDef) can be created if only name (= #expectedName) and type (= #expectedType) are specified"(
+    def "input(#inputDef) can be created if only name (= #expectedName) and type (= #expectedType) are specified. Flags: #extraFlags"(
             String inputDef, List<Flags> extraFlags, String expectedName, String expectedType)
     {
         when:
             def input = readInput(inputDef, extraFlags)
 
         then:
-            input.name == expectedName
-            input.type == expectedType
+            input.readName() == expectedName
+            input.readType() == expectedType
 
         where:
             inputDef                      | extraFlags                        || expectedName | expectedType
             "name: 'nam', type: 'bool'"   | []                                || "nam"        | "bool"
-            "type: 'bool', 'nam'"         | []                                || "nam"        | "bool"
             "title: 'tit', 'nam', 'bool'" | []                                || "nam"        | "bool"
             "name: '', type: 'bool'"      | [Flags.AllowEmptyDeviceInputName] || ""           | "bool"
             "type: 'bool'"                | [Flags.AllowEmptyDeviceInputName] || null         | "bool"
             "title: 'tit', '', 'bool'"    | [Flags.AllowEmptyDeviceInputName] || ""           | "bool"
-            "title: 'tit', null, 'bool'"  | [Flags.AllowEmptyDeviceInputName] || null         | "bool"
+            "null, 'bool'"                | [Flags.AllowEmptyDeviceInputName] || null         | "bool"
     }
 
     @Unroll
-    def "Calling with valid type: input(#type) succeeds"(String type)
-    {
+    def "Calling with valid type: input(#type) succeeds"(String type) {
         when:
             def input = readInput("name: 'nam', type: '${type}'")
 
         then:
-            input.type == type
+            input.readType() == type
 
         where:
-            type << [
-                'bool',
-                'decimal',
-                'email',
-                'enum',
-                'number',
-                'password',
-                'phone',
-                'time',
-                'text',
-                // TODO: figure out if 'paragraph' is supported. It works, and produces a text input, but is not documented.
-                // TODO: figure out if any type of input should work.
+            type << ['bool',
+                     'decimal',
+                     'email',
+                     'enum',
+                     'number',
+                     'password',
+                     'phone',
+                     'time',
+                     'text',
+                     'paragraph' // TODO: figure out if 'paragraph' is supported. It works, and produces a text input, but is not documented.
+                     // TODO: figure out if any type of input should work.
             ]
     }
 
-    def "Calling with invalid input type fails"()
-    {
+    def "Calling with invalid input type fails"() {
         when:
-            def input = readInput("name: 'nam', type: 'badType'")
+            def input = readInput("'nam', 'badType'")
 
         then:
             AssertionError e = thrown()
@@ -169,14 +167,14 @@ metadata{
             e.message.contains('badType')
     }
 
-    def "Calling input() with every valid option succeeds"()
-    {
+    def "Calling input() with every valid option succeeds"() {
         when:
-            def input = readInput("""name: 'nam', type: 'enum', title: 'tit', description: 'desc', required: true, displayDuringSetup: true, range: '10..1000', options: ['val1', 'val2']""")
+            def input = readInput(
+                    """name: 'nam', type: 'enum', title: 'tit', description: 'desc', required: true, displayDuringSetup: true, range: '10..1000', options: ['val1', 'val2']""")
 
         then:
-            input.name == 'nam'
-            input.type == 'enum'
+            input.options.name == 'nam'
+            input.options.type == 'enum'
             input.options.title == 'tit'
             input.options.description == 'desc'
             input.options.required == true

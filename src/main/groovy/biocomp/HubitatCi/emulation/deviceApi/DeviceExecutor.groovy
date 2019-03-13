@@ -389,6 +389,7 @@ trait DevicePreferences {
      *          phone
      *          time
      *          text
+     *          paragraph - it's not clear that it's "supported". I saw scripts using it and Hubitat displays it as text input.
      *      title (String)
      *      description (String)
      *      required (boolean)  true
@@ -397,7 +398,9 @@ trait DevicePreferences {
      *      options (List) - list of values if type == "enum"
      *      defaultValue (Object) - undocumented but works in Hubitat (actually provides the default in UI).
      */
-    abstract def input(Map options, String name = null, String type = null)
+    abstract def input(Map options, String name, String type)
+    abstract def input(String name, String type)
+    abstract def input(Map options)
 
     /**
      * Really, undocumented anywhere.

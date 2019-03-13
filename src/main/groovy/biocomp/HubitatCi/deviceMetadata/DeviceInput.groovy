@@ -1,52 +1,29 @@
 package biocomp.hubitatCi.deviceMetadata
 
+import com.sun.org.apache.xalan.internal.xsltc.cmdline.Compile
+import groovy.transform.CompileStatic
 import groovy.transform.TupleConstructor
 import groovy.transform.TypeChecked
 
 @TypeChecked
+@TupleConstructor
 class DeviceInput {
-    DeviceInput(
-        Map options,
-        String name,
-        String type)
-    {
-        this.options = options
-        this.name = name
-        this.type = type
-        this.mergedOptions = options.clone() as Map
-
-        if (this.name != null) {
-            this.mergedOptions.name = name
-        }
-
-        if (this.type != null) {
-            this.mergedOptions.type = type
-        }
-    }
-
+    final Map unnamedOptions
     final Map options
-    final Map mergedOptions
-    final String name
-    final String type
 
-    String getName()
+    String readName()
     {
-        return mergedOptions.name
+        return unnamedOptions.name != null ? unnamedOptions.name : options.name
     }
 
-    String getType()
+    String readType()
     {
-        return mergedOptions.type
+        return unnamedOptions.type != null ? unnamedOptions.type: options.type
     }
 
     @Override
     String toString()
     {
-        return "input('${getName()}', ${getType()}, options = ${options})"
-    }
-
-    Map getMergedOptions()
-    {
-        return mergedOptions
+        return "input(unnamed options: ${unnamedOptions}, options = ${options})"
     }
 }

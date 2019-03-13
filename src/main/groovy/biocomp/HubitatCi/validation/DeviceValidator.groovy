@@ -398,7 +398,8 @@ class DeviceValidator extends
             'password',
             'phone',
             'time',
-            'text'
+            'text',
+            'paragraph' // TODO: verify if it's really supported
         ])
         stringParameter(name: "title")
         stringParameter(name: "description")
@@ -412,11 +413,11 @@ class DeviceValidator extends
     void validateInput(DeviceInput input)
     {
         if (!hasFlag(Flags.AllowEmptyDeviceInputName)) {
-            assert input.name, "Input ${input}'s name is missing"
+            assert input.readName(), "Input ${input}'s name is missing"
         }
 
-        assert input.type, "Input ${input}'s type is missing"
-        inputOptionsValidator.validate(input as String, input.mergedOptions, this, true)
+        assert input.readType(), "Input ${input}'s type is missing"
+        inputOptionsValidator.validate(input as String, input.unnamedOptions, input.options, this, true)
     }
 
     void validateSection(String name)

@@ -42,6 +42,9 @@ class NamedParametersValidator {
         validate(context, [:], options, validator, mustBeNonNull)
     }
 
+    /**
+     * Pass not only a map, but other unnamed options that are passed separately.
+     */
     @TypeChecked
     void validate(
             String context,
