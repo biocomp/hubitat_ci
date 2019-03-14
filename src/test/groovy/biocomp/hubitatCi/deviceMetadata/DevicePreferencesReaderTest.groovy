@@ -182,5 +182,15 @@ metadata{
             input.options.range == '10..1000'
             input.options.options == ['val1', 'val2']
     }
+
+    def "Calling input() with invlaid option fails"()
+    {
+        when:
+            def input = readInput("badOption: 123, 'nam', 'bool'")
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("'badOption' is not supported")
+    }
 }
 
