@@ -125,13 +125,13 @@ metadata{
             input.readType() == expectedType
 
         where:
-            inputDef                      | extraFlags                        || expectedName | expectedType
-            "name: 'nam', type: 'bool'"   | []                                || "nam"        | "bool"
-            "title: 'tit', 'nam', 'bool'" | []                                || "nam"        | "bool"
-            "name: '', type: 'bool'"      | [Flags.AllowEmptyDeviceInputName] || ""           | "bool"
-            "type: 'bool'"                | [Flags.AllowEmptyDeviceInputName] || null         | "bool"
-            "title: 'tit', '', 'bool'"    | [Flags.AllowEmptyDeviceInputName] || ""           | "bool"
-            "null, 'bool'"                | [Flags.AllowEmptyDeviceInputName] || null         | "bool"
+            inputDef                      | extraFlags                                || expectedName | expectedType
+            "name: 'nam', type: 'bool'"   | []                                        || "nam"        | "bool"
+            "title: 'tit', 'nam', 'bool'" | []                                        || "nam"        | "bool"
+            "name: '', type: 'bool'"      | [Flags.DontValidateDeviceInputName]       || ""           | "bool"
+            "type: 'bool'"                | [Flags.AllowMissingDeviceInputNameOrType] || null         | "bool"
+            "title: 'tit', '', 'bool'"    | [Flags.DontValidateDeviceInputName]       || ""           | "bool"
+            "null, 'bool'"                | [Flags.DontValidateDeviceInputName]       || null         | "bool"
     }
 
     @Unroll

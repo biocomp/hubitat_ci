@@ -20,10 +20,7 @@ class ParametersToValidate
 
     void boolParameter(Map options)
     {
-        assert options.name
-
-        addParameter(new Parameter(options.name as String,
-                options.get("required", false) as boolean,
+        addParameter(new Parameter(options,
                 { def validator, String context, String name, def value ->
                     assert value != null: "${context}: '${name}' value can't be null"
                     String valuePrinted = value.toString()
@@ -33,16 +30,12 @@ class ParametersToValidate
 
     void objParameter(Map options)
     {
-        assert options.name
-
-        addParameter(new Parameter(options.name as String, options.get("required", false) as boolean, { def flags, def context, def name, def value -> }))
+        addParameter(new Parameter(options, { def flags, def context, def name, def value -> }))
     }
 
     void numericRangeParameter(Map options)
     {
-        assert options.name
-
-        addParameter(new Parameter(options.name as String, options.get("required", false) as boolean, { def flags, String context, String name, def value ->
+        addParameter(new Parameter(options, { def flags, String context, String name, def value ->
                 assert value != null: "${context}: '${name}' value can't be null"
                 
                 try
@@ -58,9 +51,7 @@ class ParametersToValidate
 
     void listOfStringsParameter(Map options)
     {
-        assert options.name
-
-        addParameter(new Parameter(options.name as String, options.get("required", false) as boolean, { ValidatorBase validator, String context, String name, def value ->
+        addParameter(new Parameter(options, { ValidatorBase validator, String context, String name, def value ->
                 if (!validator.hasFlag(Flags.AllowNullListOptions)) {
                     assert value != null: "${context}: '${name}' value can't be null"
                 }
@@ -103,9 +94,9 @@ class ParametersToValidate
     
     void stringParameter(Map options)
     {
-        assert options.name
-
-        addParameter(new Parameter(options.name as String, options.get("required", false) as boolean,
+        addParameter(new Parameter(
+                options,
+                ["canBeEmpty"],
                 { ValidatorBase validator,  String context, String name, def value ->
                     validateStringValue(validator, context, name, value, options)
                 }))
@@ -113,12 +104,11 @@ class ParametersToValidate
 
     void enumStringParameter(Map options)
     {
-        assert options.name
         assert options.values
 
         def validValues = new HashSet<String>(options.values as List<String>)
 
-        addParameter(new Parameter(options.name as String, options.get("required", false) as boolean,
+        addParameter(new Parameter(options, ["values", "canBeEmpty"],
                 { ValidatorBase validator, String context, String name, def value ->
                     def val = validateStringValue(validator, context, name, value, options)
                     assert validValues.contains(val) : "${context}: '${name}''s value ('${val}') is not supported. Valid values: ${validValues}"
@@ -127,9 +117,7 @@ class ParametersToValidate
 
     void mapParameter(Map options)
     {
-        assert options.name
-
-        addParameter(new Parameter(options.name as String, options.get("required", false) as boolean,
+        addParameter(new Parameter(options,
                 { def flags, String context, String name, def value ->
                     assert value != null: "${context}: '${name}' value can't be null"
                     assert value instanceof Map: "${context}: '${name}''s value must be Map, not ${value.class}"
@@ -138,9 +126,7 @@ class ParametersToValidate
 
     void intParameter(Map options)
     {
-        assert options.name
-
-        addParameter(new Parameter(options.name as String, options.get("required", false) as boolean,
+        addParameter(new Parameter(options,
                 { def flags, String context, String name, def value ->
                     assert value != null: "${context}: '${name}' value can't be null"
 

@@ -8,6 +8,7 @@ class NamedParametersValidator {
     static NamedParametersValidator make(@DelegatesTo(ParametersToValidate) Closure c) {
         def params = new ParametersToValidate()
         def makeParameters = c.rehydrate(params, c.owner, c.thisObject)
+        
         makeParameters()
 
         return new NamedParametersValidator(params.supportedParameters, params.mandatoryParameters)
@@ -32,15 +33,21 @@ class NamedParametersValidator {
         return options
     }
 
+    enum ValidatorOption
+    {
+        IgnoreMissingMandatoryInputs
+    }
+
     @TypeChecked
     void validate(
             String context,
             Map options,
             ValidatorBase validator,
-            boolean mustBeNonNull = false)
+            EnumSet<ValidatorOption> validatorOptions = EnumSet.noneOf(ValidatorOption))
     {
-        validate(context, [:], options, validator, mustBeNonNull)
+        validate(context, [:], options, validator, validatorOptions)
     }
+
 
     /**
      * Pass not only a map, but other unnamed options that are passed separately.
@@ -51,7 +58,7 @@ class NamedParametersValidator {
             Map unnamedOptions,
             Map options,
             ValidatorBase validator,
-            boolean mustBeNonNull = false)
+            EnumSet<ValidatorOption> validatorOptions = EnumSet.noneOf(ValidatorOption))
     {
         def mandatoryParameters = mandatoryParameters.clone() as HashSet<String>
 
@@ -71,7 +78,9 @@ class NamedParametersValidator {
         unnamedOptions?.each(validateOneParameter)
         options?.each(validateOneParameter)
 
-        assert mandatoryParameters.size() == 0: "${context}: mandatory parameters '${mandatoryParameters}' not set. All mandatory parameters are: ${supportedParameters.keySet().sort()}"
+        if (!validatorOptions.contains(ValidatorOption.IgnoreMissingMandatoryInputs)) {
+            assert mandatoryParameters.size() == 0: "${context}: mandatory parameters '${mandatoryParameters}' not set. All mandatory parameters are: ${supportedParameters.keySet().sort()}"
+        }
     }
 
     final HashMap<String, Parameter> supportedParameters

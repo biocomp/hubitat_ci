@@ -260,4 +260,8 @@ class ValidatorBase {
                 new DoNotCallMeBinding(),
                 compilerConfiguration);
     }
+
+    boolean hasAnyOfFlags(Set<Flags> flags) {
+        return this.flags.intersect(flags)
+    }
 }

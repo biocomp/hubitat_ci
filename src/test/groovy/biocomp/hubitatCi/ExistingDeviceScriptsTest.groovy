@@ -26,6 +26,6 @@ class Fibaro223SciptTest extends Specification
 
     def "Basic validation"() {
         expect:
-            sandbox.run(validationFlags: [Flags.AllowEmptyDeviceInputName, Flags.AllowCommandDefinitionWithNoArgsMatchAnyCommandWithSameName])
+            sandbox.run(validationFlags: [Flags.AllowMissingDeviceInputNameOrType, Flags.AllowCommandDefinitionWithNoArgsMatchAnyCommandWithSameName])
     }
 }

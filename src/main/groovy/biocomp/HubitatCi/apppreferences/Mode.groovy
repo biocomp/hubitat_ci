@@ -22,7 +22,7 @@ class Mode {
 
         if (!validator.hasFlag(Flags.DontValidatePreferences))
         {
-            paramValidator.validate(this.toString(), options, validator, true)
+            paramValidator.validate(this.toString(), options, validator)
         }
     }
 

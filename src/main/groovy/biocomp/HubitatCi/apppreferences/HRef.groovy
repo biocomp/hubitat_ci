@@ -53,7 +53,7 @@ class HRef {
     private void validate(AppValidator validator)
     {
         if (!validator.hasFlag(Flags.DontValidatePreferences)) {
-            paramValidator.validate(this.toString(), options, validator, false)
+            paramValidator.validate(this.toString(), options, validator)
 
             // Extra validations ('page' is not compatible with 'style: external'):
             if (options?.containsKey('page'))

@@ -269,7 +269,7 @@ class DeviceValidator extends
     }
 
     void validateDefinition(Definition definition) {
-        definitionOptionsValidator.validate("definition(${definition.options})", definition.options, this, true);
+        definitionOptionsValidator.validate("definition(${definition.options})", definition.options, this);
     }
 
     void validateCapability(String capabilityName) {
@@ -384,11 +384,11 @@ class DeviceValidator extends
 
     void validateFingerprint(Map fingerprint)
     {
-        fingerprintOptionsValidator.validate("fingerprint(${fingerprint})", fingerprint, this, true)
+        fingerprintOptionsValidator.validate("fingerprint(${fingerprint})", fingerprint, this)
     }
 
     private static final NamedParametersValidator inputOptionsValidator = NamedParametersValidator.make {
-        stringParameter(name: "name", canBeEmpty: true)
+        stringParameter(name: "name", canBeEmpty: true, required: true, dontValidateIfFlags: [Flags.DontValidateDeviceInputName])
         enumStringParameter(name: "type", required: true, values: [
             'bool',
             'decimal',
@@ -412,12 +412,14 @@ class DeviceValidator extends
 
     void validateInput(DeviceInput input)
     {
-        if (!hasFlag(Flags.AllowEmptyDeviceInputName)) {
-            assert input.readName(), "Input ${input}'s name is missing"
-        }
-
-        assert input.readType(), "Input ${input}'s type is missing"
-        inputOptionsValidator.validate(input as String, input.unnamedOptions, input.options, this, true)
+        inputOptionsValidator.validate(
+                input as String,
+                input.unnamedOptions,
+                input.options,
+                this,
+                hasFlag(Flags.AllowMissingDeviceInputNameOrType)
+                    ? EnumSet.of(NamedParametersValidator.ValidatorOption.IgnoreMissingMandatoryInputs)
+                    : EnumSet.noneOf(NamedParametersValidator.ValidatorOption))
     }
 
     void validateSection(String name)
