@@ -27,15 +27,15 @@ class SettingsContainer implements Map<String, Object>
 
      * 1. Verify that settings were only read, and not set.
      * 2. Verify that only settings from 'inputs' param were read.*/
-    void validateAfterPreferences() {
+    void validateAfterPreferences(String methodName = "[initialization]") {
         if (!validator.hasFlag(Flags.AllowReadingNonInputSettings)) {
             def readSettingsThatAreNotInputs = settingsRead - registeredInputs
-            assert !readSettingsThatAreNotInputs : "Settings were read that are not registered inputs: ${readSettingsThatAreNotInputs}. These are registered inputs: ${registeredInputs}. This is not allowed in strict mode (add Flags.AllowReadingNonInputSettings to allow this)"
+            assert !readSettingsThatAreNotInputs : "In ${methodName} settings were read that are not registered inputs: ${readSettingsThatAreNotInputs}. These are registered inputs: ${registeredInputs}. This is not allowed in strict mode (add Flags.AllowReadingNonInputSettings to allow this)"
         }
     }
 
     /**
-     * Registeres data for future validation + gets actual value from user-provided data.
+     * Registers data for future validation + gets actual value from user-provided data.
      * User data may contain either name-value pair for input values,
      * or value could itself be a map with page names as key and corresponding values.
      * @param name

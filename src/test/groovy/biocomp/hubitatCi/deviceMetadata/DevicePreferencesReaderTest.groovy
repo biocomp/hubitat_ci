@@ -183,7 +183,7 @@ metadata{
             input.options.options == ['val1', 'val2']
     }
 
-    def "Calling input() with invlaid option fails"()
+    def "Calling input() with invalid option fails"()
     {
         when:
             def input = readInput("badOption: 123, 'nam', 'bool'")
@@ -191,6 +191,33 @@ metadata{
         then:
             AssertionError e = thrown()
             e.message.contains("'badOption' is not supported")
+    }
+
+    def "Accessing 'inputs' that were not defined when running the script fails"()
+    {
+        setup:
+            def script = new HubitatDeviceSandbox("""
+metadata {
+    preferences() {
+         input "goodInput", "text"
+    }
+}
+
+def foo()
+{
+    def good = goodInput
+    def bad = missingInput
+}
+""").run(validationFlags: [Flags.DontValidateDefinition])
+
+        when:
+            script.foo()
+
+        then:
+            AssertionError e = thrown()
+            !e.message.contains("goodInput")
+            e.message.contains("missingInput")
+            e.message.contains("not an input")
     }
 }
 

@@ -16,7 +16,7 @@ class AppMappingsReaderTest extends
 
     def tryGetMappingsReader(Map userSettingValues = new HashMap<String, Object>(), String fromScript) {
         return new HubitatAppSandbox(fromScript).run(
-                userSettingValues: userSettingValues, validationFlags: [Flags.DontValidateDefinition, Flags.DontValidatePreferences]).mappingsReader
+                userSettingValues: userSettingValues, validationFlags: [Flags.AllowReadingNonInputSettings, Flags.DontValidateDefinition, Flags.DontValidatePreferences]).mappingsReader
     }
 
     def "No mappings is OK"() {
@@ -176,7 +176,8 @@ def authError() {
                 _ * getState() >> state
             }
 
-            def mappings = new HubitatAppSandbox(new File("Scripts/MappingParamInjection.groovy")).run(validationFlags: [Flags.DontValidatePreferences, Flags.DontValidateDefinition],
+            def mappings = new HubitatAppSandbox(new File("Scripts/MappingParamInjection.groovy")).run(
+                    validationFlags: [Flags.AllowReadingNonInputSettings, Flags.DontValidatePreferences, Flags.DontValidateDefinition],
                     api: api,
                     userSettingValues: [someInputName : "some input value",
                                         someOtherInput: "some other input value"],

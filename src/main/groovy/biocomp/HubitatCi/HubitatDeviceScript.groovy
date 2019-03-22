@@ -68,6 +68,16 @@ abstract class HubitatDeviceScript extends Script
     {
         return metadataReader.producedPreferences
     }
+
+    /**
+     * Call to this method is injected into every user's method.
+     * This allows additional validations while calling separate methods on script object.
+     */
+    void hubitatciValidateAfterMethodCall(String methodName)
+    {
+        //println "hubitatciValidateAfterMethodCall(${methodName} called!)"
+        //this.preferencesReader.settings.validateAfterPreferences()
+    }
 //
 //    Map<String, MappingPath> getProducedMappings()
 //    {

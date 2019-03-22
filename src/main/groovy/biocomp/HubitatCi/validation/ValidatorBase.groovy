@@ -1,7 +1,8 @@
 package biocomp.hubitatCi.validation
 
+import biocomp.hubitatCi.util.AddValidationAfterEachMethodCompilationCustomizer
 import biocomp.hubitatCi.DoNotCallMeBinding
-import biocomp.hubitatCi.RemovePrivateFromScriptCompilationCustomizer
+import biocomp.hubitatCi.util.RemovePrivateFromScriptCompilationCustomizer
 import biocomp.hubitatCi.SandboxClassLoader
 import groovy.json.JsonBuilder
 import groovy.time.TimeCategory
@@ -249,12 +250,17 @@ class ValidatorBase {
         options.addCompilationCustomizers(new RemovePrivateFromScriptCompilationCustomizer())
     }
 
+    private static void validateAfterEachMethod(CompilerConfiguration options) {
+        options.addCompilationCustomizers(new AddValidationAfterEachMethodCompilationCustomizer())
+    }
+
     protected GroovyShell constructParser(Class c) {
         def compilerConfiguration = new CompilerConfiguration()
         compilerConfiguration.scriptBaseClass = c.name
 
         restrictScript(compilerConfiguration)
         makePrivatePublic(compilerConfiguration)
+        validateAfterEachMethod(compilerConfiguration)
 
         return new GroovyShell(new SandboxClassLoader(c.classLoader),
                 new DoNotCallMeBinding(),

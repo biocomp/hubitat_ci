@@ -1,6 +1,7 @@
 package biocomp.hubitatCi.apppreferences
 
-
+import biocomp.hubitatCi.HubitatAppSandbox
+import biocomp.hubitatCi.validation.Flags
 import spock.lang.Unroll
 
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
@@ -212,5 +213,33 @@ hideWhenEmpty: true)
                                                "devicee.someDeviceName",
                                                "blah",
                                                "booll"], [true, false]])
+    }
+
+    def "Script can only read inputs that were defined, and fails for undefined"()
+    {
+        setup:
+            def script = new HubitatAppSandbox("""
+preferences{
+    page("p", "t"){
+        section(){
+            input "existingInput", "bool", title: "fromPage0"
+        }
+    }
+}
+
+def methodThatUsesInputs()
+{
+    def good = existingInput
+    def bad = missingInput
+}
+""").run(validationFlags: [Flags.DontValidateDefinition, Flags.AllowMissingInstall])
+
+        when:
+            script.methodThatUsesInputs()
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("not registered inputs: [missingInput]")
+            e.message.contains("registered inputs: [existingInput]")
     }
 }

@@ -1,4 +1,4 @@
-package biocomp.hubitatCi
+package biocomp.hubitatCi.util
 
 import groovy.transform.TypeChecked
 import org.codehaus.groovy.ast.ClassNode
@@ -10,6 +10,10 @@ import org.codehaus.groovy.control.customizers.CompilationCustomizer
 
 import org.objectweb.asm.Opcodes
 
+/**
+ * Removing 'private' allows overriding methods.
+ * This allows user to mock any internal methods of the script under test.
+ */
 @TypeChecked
 class RemovePrivateFromScriptCompilationCustomizer extends CompilationCustomizer{
 

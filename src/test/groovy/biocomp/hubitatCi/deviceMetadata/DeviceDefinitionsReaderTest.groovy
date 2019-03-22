@@ -68,6 +68,26 @@ metadata{
             } + Capabilities.capabilitiesByDriverDefinition.collect { it.key }
     }
 
+    def "When capability used, and capability's methods are missing, fails"()
+    {
+        when:
+            def capabilitiesResult = readDefinition("""
+    definition(name: "nam"){
+        capability 'Bulb'
+    }
+    
+    def on()
+    {
+    }
+    """).capabilities
+
+        then:
+            AssertionError e = thrown()
+            !e.message.contains('on')
+            e.message.contains('capability \'Bulb\' method [\'off\', \'getSwitch\'] not implemented')
+            e.message.contains('off')
+    }
+
     def "Invalid capability in definition() fails"() {
         when:
             def capabilitiesResult = readDefinition("""

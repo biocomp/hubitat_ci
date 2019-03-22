@@ -41,10 +41,6 @@ class HubitatAppSandbox {
     private HubitatAppScript setupImpl(Map options) {
         validateAndUpdateSandboxOptions(options)
 
-        // Use custom HubitatAppScript.
-        def compilerConfiguration = new CompilerConfiguration()
-        compilerConfiguration.scriptBaseClass = HubitatAppScript.class.name
-
         def validator = readValidator(options)
 
         HubitatAppScript script = file ? validator.parseScript(file) : validator.parseScript(text);

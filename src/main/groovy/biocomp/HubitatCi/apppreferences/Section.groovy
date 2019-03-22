@@ -30,4 +30,10 @@ class Section {
             assert children.size() != 0: "Section ${this} must have at least some content"
         }
     }
+
+    @Override
+    String toString()
+    {
+        return "section #${index}(\"${title}\", ${options})"
+    }
 }

@@ -60,6 +60,15 @@ abstract class HubitatAppScript extends Script
         this.validator = validator
     }
 
+    /**
+     * Call to this method is injected into every user's method.
+     * This allows additional validations while calling separate methods on script object.
+     */
+    void hubitatciValidateAfterMethodCall(String methodName)
+    {
+        this.preferencesReader.validateAfterMethodCall()
+    }
+
     Preferences getProducedPreferences()
     {
         preferencesReader.getProducedPreferences()

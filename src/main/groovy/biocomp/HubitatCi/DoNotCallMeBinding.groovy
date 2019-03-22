@@ -8,13 +8,13 @@ class DoNotCallMeBinding extends Binding
     @Override
     def getProperty(String property)
     {
-        ThisBindingShouldNotBeUsed()
+        ThisBindingShouldNotBeUsed("getProperty('${property}')")
     }
 
     @Override
     def getVariable(String name)
     {
-        ThisBindingShouldNotBeUsed()
+        ThisBindingShouldNotBeUsed("getVariable('${name}')")
     }
 
     @Override
@@ -28,23 +28,23 @@ class DoNotCallMeBinding extends Binding
     @Override
     boolean hasVariable(String name)
     {
-        ThisBindingShouldNotBeUsed()
+        ThisBindingShouldNotBeUsed("hasVariable('${name}')")
     }
 
     @Override
     void setProperty(String property, Object newValue)
     {
-        ThisBindingShouldNotBeUsed()
+        ThisBindingShouldNotBeUsed("setPropety('${property}')")
     }
 
     @Override
     void setVariable(String name, Object value)
     {
-        ThisBindingShouldNotBeUsed()
+        ThisBindingShouldNotBeUsed("setVariable('${name}')")
     }
 
-    private static ThisBindingShouldNotBeUsed()
+    private static ThisBindingShouldNotBeUsed(String name)
     {
-        throw new SecurityException("This Binding's methods should not be called")
+        throw new SecurityException("This Binding's methods (${name}) should not be called")
     }
 }

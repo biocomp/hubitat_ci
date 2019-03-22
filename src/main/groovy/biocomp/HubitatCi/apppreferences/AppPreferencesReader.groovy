@@ -329,7 +329,10 @@ class AppPreferencesReader implements
         settingsContainer.validateAfterPreferences()
     }
 
-
+    void validateAfterMethodCall()
+    {
+        settingsContainer.validateAfterPreferences()
+    }
 
     /**
      * Calls methods that create dymaic pages that were discovered previously*/

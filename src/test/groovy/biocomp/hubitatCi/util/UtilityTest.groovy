@@ -1,11 +1,8 @@
-package biocomp.hubitatCi
+package biocomp.hubitatCi.util
 
-import biocomp.hubitatCi.util.Utility
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
-
-import javax.rmi.CORBA.Util
 
 class UtilityTest extends
         Specification
