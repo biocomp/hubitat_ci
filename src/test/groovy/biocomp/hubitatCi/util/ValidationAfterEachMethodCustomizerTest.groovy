@@ -66,13 +66,15 @@ class ValidationAfterEachMethodCustomizerTest extends
             returnVal == originalReturnVal
 
         where:
-            fullMethod                                                           || expectedCalls
-            "void foo() { def i = 3 }"                                           || ["validate(foo)"]
-            "def foo() { def i = 3 }"                                            || ["validate(foo)"]
-            "String foo() { funcA()\nreturn 'returned string' }"                 || ["funcA", "validate(foo)"]
-            "int foo() { if (true) return 42\nreturn 123 }"                      || ["validate(foo)"]
-            "int foo() { 42 }"                                                   || ["validate(foo)"]
-            "String foo() { return funcB() }"                                    || ["funcB", "validate(foo)"]
-            "String foo() { return bar() }\n String bar() { return 'I am bar' }" || ["validate(bar)", "validate(foo)"]
+            fullMethod                                                                                              || expectedCalls
+            "void foo() { def i = 3 }"                                                                              || ["validate(foo)"]
+            "def foo() { def i = 3 }"                                                                               || ["validate(foo)"]
+            "String foo() { funcA()\nreturn 'returned string' }"                                                    || ["funcA", "validate(foo)"]
+            "int foo() { if (true) return 42\nreturn 123 }"                                                         || ["validate(foo)"]
+            "int foo() { 42 }"                                                                                      || ["validate(foo)"]
+            "String foo() { return funcB() }"                                                                       || ["funcB", "validate(foo)"]
+            "String foo() { return bar() }\n String bar() { return 'I am bar' }"                                    || ["validate(bar)", "validate(foo)"]
+            "String foo() { return bar() }\n static String bar() { return 'I am static bar' }"                      || ["validate(foo)"]
+            "String foo() { return bar('bararg') }\n String bar(String arg) { return \"I have an arg = \${arg}!\" }" || ["validate(bar)", "validate(foo)"]
     }
 }

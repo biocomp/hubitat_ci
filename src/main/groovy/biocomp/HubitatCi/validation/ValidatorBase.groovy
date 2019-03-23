@@ -2,6 +2,7 @@ package biocomp.hubitatCi.validation
 
 import biocomp.hubitatCi.util.AddValidationAfterEachMethodCompilationCustomizer
 import biocomp.hubitatCi.DoNotCallMeBinding
+import biocomp.hubitatCi.util.LoggingCompilationCustomizer
 import biocomp.hubitatCi.util.RemovePrivateFromScriptCompilationCustomizer
 import biocomp.hubitatCi.SandboxClassLoader
 import groovy.json.JsonBuilder
@@ -14,6 +15,7 @@ import org.codehaus.groovy.ast.expr.MethodCallExpression
 import org.codehaus.groovy.ast.expr.PropertyExpression
 import org.codehaus.groovy.ast.expr.StaticMethodCallExpression
 import org.codehaus.groovy.ast.expr.VariableExpression
+import org.codehaus.groovy.control.CompilePhase
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer
 import org.codehaus.groovy.control.customizers.SourceAwareCustomizer
@@ -252,6 +254,7 @@ class ValidatorBase {
 
     private static void validateAfterEachMethod(CompilerConfiguration options) {
         options.addCompilationCustomizers(new AddValidationAfterEachMethodCompilationCustomizer())
+        options.addCompilationCustomizers(new LoggingCompilationCustomizer())
     }
 
     protected GroovyShell constructParser(Class c) {

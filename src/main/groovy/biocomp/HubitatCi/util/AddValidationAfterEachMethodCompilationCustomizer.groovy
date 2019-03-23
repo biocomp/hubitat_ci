@@ -1,5 +1,6 @@
 package biocomp.hubitatCi.util
 
+import groovy.inspect.swingui.AstNodeToScriptVisitor
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.codehaus.groovy.ast.ClassHelper
@@ -24,6 +25,7 @@ import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.control.customizers.CompilationCustomizer
 import org.codehaus.groovy.syntax.Token
 import org.codehaus.groovy.syntax.Types
+
 
 @TypeChecked
 class AddValidationAfterEachMethodCompilationCustomizer extends CompilationCustomizer{
@@ -68,23 +70,19 @@ class AddValidationAfterEachMethodCompilationCustomizer extends CompilationCusto
     void call(SourceUnit source, GeneratorContext context, ClassNode classNode) throws CompilationFailedException {
         if (classNode.isScript())
         {
+            println "Updating ${classNode.name} with hubitatciValidateAfterMethodCall..."
+            
             List<MethodNode> originalMethods = []
             classNode.methods.each {
-                if (it.name != "hubitatciValidateAfterMethodCall") {
-
+                // Not modifying validating method, and not touching static methods.
+                // Static methods can't call non-static hubitatciValidateAfterMethodCall,
+                // and can't touch anything that needs to be validated.
+                if (it.name != "hubitatciValidateAfterMethodCall" && !it.static) {
                     def original = it
-//                    if (it.code instanceof BlockStatement) {
-//                        ((BlockStatement) it.code).statements.add(callValidator(it.name))
-//                    } else {
-//                        def newStatement = new BlockStatement()
-//                        newStatement.statements.add(it.code)
-//                        newStatement.statements.add(callValidator(it.name))
-//                        it.code = newStatement
-//                    }
 
                     def methodArgsExpression = new ArgumentListExpression();
                     original.parameters.each {
-                        methodArgsExpression.addExpression(new VariableExpression(original.name))
+                        methodArgsExpression.addExpression(new VariableExpression(((Parameter)it).name))
                     }
 
                     originalMethods.add(new MethodNode(

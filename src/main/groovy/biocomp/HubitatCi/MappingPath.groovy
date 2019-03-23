@@ -64,23 +64,9 @@ class MappingPath {
         return {
             def params, def request ->
                 def scriptWithInjectedProps = derivedScriptFactory(script, params, request)
-
-//                println "scriptWithInjectedProps(${scriptWithInjectedProps.class.name}).myStaticExistingMetaMethod() = ${scriptWithInjectedProps.myStaticExistingMetaMethod()}"
-//                println "scriptWithInjectedProps(${scriptWithInjectedProps.class.name}).myExistingMetaMethod() = ${scriptWithInjectedProps.myExistingMetaMethod()}"
-//                println "scriptWithInjectedProps(${scriptWithInjectedProps.class.name}).myNewMetaMethod() = ${scriptWithInjectedProps.myNewMetaMethod()}"
-
+                println "Calling scriptWithInjectedProps.\"${functionName}\"()"
+                println "scriptWithInjectedProps.methods = ${scriptWithInjectedProps.metaClass.methods.collect{it.name}}"
                 scriptWithInjectedProps."${functionName}"()
-
-//                println "script.TestmyExistingMetaMethod() = ${script.TestmyExistingMetaMethod()}"
-//                println "scriptWithInjectedProps.TestmyExistingMetaMethod() = ${scriptWithInjectedProps.TestmyExistingMetaMethod()}"
-//
-//                println "script.TestmyStaticExistingMetaMethod() = ${script.TestmyStaticExistingMetaMethod()}"
-//                println "scriptWithInjectedProps.TestmyStaticExistingMetaMethod() = ${scriptWithInjectedProps.TestmyStaticExistingMetaMethod()}"
-//
-//                println "scriptWithInjectedProps #2(${scriptWithInjectedProps.class.name}).myStaticExistingMetaMethod() = ${scriptWithInjectedProps.myStaticExistingMetaMethod()}"
-//                println "scriptWithInjectedProps #2(${scriptWithInjectedProps.class.name}).myExistingMetaMethod() = ${scriptWithInjectedProps.myExistingMetaMethod()}"
-//                println "scriptWithInjectedProps #2(${scriptWithInjectedProps.class.name}).myNewMetaMethod() = ${scriptWithInjectedProps.myNewMetaMethod()}"
-
         }
     }
 
