@@ -21,6 +21,14 @@ class SettingsContainer implements Map<String, Object>
         this.settingValues = userSettingsValue
     }
 
+    /**
+     * After reading preferences, this method is called.
+     * Any call to validateAfterPreferences() should happen after this method, or is ignored.
+     */
+    void preferencesReadingDone()
+    {
+        this.@preferencesReadingIsDone = true
+    }
 
     /**
      * After all the relevant script methods were run, execute this method to (if in strict mode):
@@ -28,7 +36,7 @@ class SettingsContainer implements Map<String, Object>
      * 1. Verify that settings were only read, and not set.
      * 2. Verify that only settings from 'inputs' param were read.*/
     void validateAfterPreferences(String methodName = "[initialization]") {
-        if (!validator.hasFlag(Flags.AllowReadingNonInputSettings)) {
+        if (!validator.hasFlag(Flags.AllowReadingNonInputSettings) && this.@preferencesReadingIsDone) {
             def readSettingsThatAreNotInputs = settingsRead - registeredInputs
             assert !readSettingsThatAreNotInputs : "In ${methodName} settings were read that are not registered inputs: ${readSettingsThatAreNotInputs}. These are registered inputs: ${registeredInputs}. This is not allowed in strict mode (add Flags.AllowReadingNonInputSettings to allow this)"
         }
@@ -90,4 +98,6 @@ class SettingsContainer implements Map<String, Object>
 
     @Delegate
     private final Map settingValues
+
+    private boolean preferencesReadingIsDone = false
 }

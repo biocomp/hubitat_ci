@@ -326,6 +326,7 @@ class AppPreferencesReader implements
                     registerDynamicPages(newPreferences)
                 })
 
+        settingsContainer.preferencesReadingDone()
         settingsContainer.validateAfterPreferences()
     }
 
