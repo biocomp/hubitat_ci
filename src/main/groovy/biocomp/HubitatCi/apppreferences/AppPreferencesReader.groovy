@@ -22,7 +22,10 @@ class AppPreferencesReader implements
         this.delegate = delegate
         this.validator = validator
 
-        this.settingsContainer = new SettingsContainer(prefState, validator, userSettingsValue);
+        this.settingsContainer = new SettingsContainer(
+                { prefState.hasCurrentPage() ? prefState.currentPage.readName() : null },
+                validator,
+                userSettingsValue);
     }
 
     Preferences getProducedPreferences() {

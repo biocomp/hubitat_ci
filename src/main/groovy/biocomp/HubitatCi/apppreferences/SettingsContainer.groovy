@@ -3,20 +3,22 @@ package biocomp.hubitatCi.apppreferences
 
 import biocomp.hubitatCi.validation.AppValidator
 import biocomp.hubitatCi.validation.Flags
-
+import biocomp.hubitatCi.validation.ValidatorBase
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
 
+/**
+ * Helps ensure that scripts accesses only defined inputs.
+ */
 @TypeChecked
 class SettingsContainer implements Map<String, Object>
 {
     /**
-     * @param delegate - forward all of AppExecutor's methods to this delegate (except for getSettings).
      * @param userSettingsValue - user can define settings in UTs, and rest of the settings will be added to it too.
      * @param mode - how to validate user actions with settings.
      */
-    SettingsContainer(PreferencesReaderState preferencesState, AppValidator validator, Map userSettingsValue) {
-        this.preferencesState = preferencesState
+    SettingsContainer(Closure<String> getCurrentPageName, ValidatorBase validator, Map userSettingsValue) {
+        this.getCurrentPageName = getCurrentPageName
         this.validator = validator
         this.settingValues = userSettingsValue
     }
@@ -56,7 +58,7 @@ class SettingsContainer implements Map<String, Object>
         settingsRead << name
 
         // We have per page mapping of values
-        def currentPageName = preferencesState.hasCurrentPage() ? preferencesState.currentPage.readName() : null
+        def currentPageName = getCurrentPageName()
         if (currentPageName && settingValues.get(name) instanceof Map && settingValues.get(name).containsKey('_') && settingValues.get(name).containsKey(currentPageName))
         {
             return settingValues.get(name)."${currentPageName}"
@@ -90,8 +92,8 @@ class SettingsContainer implements Map<String, Object>
         registeredInputs << name
     }
 
-    private final PreferencesReaderState preferencesState
-    private final AppValidator validator
+    private final Closure<String> getCurrentPageName
+    private final ValidatorBase validator
 
     private final Set<String> settingsRead = []
     private final Set<String> registeredInputs = []

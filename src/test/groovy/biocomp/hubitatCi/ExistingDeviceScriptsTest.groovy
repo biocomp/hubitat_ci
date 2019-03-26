@@ -16,7 +16,7 @@ class WeatherDisplayScriptTest extends
             DeviceExecutor api = Mock{ _ * getLog() >> log }
 
         expect:
-            sandbox.run(api: api, validationFlags: [Flags.AllowSectionsInDevicePreferences])
+            sandbox.run(api: api, validationFlags: [Flags.AllowSectionsInDevicePreferences, Flags.AllowWritingToSettings])
     }
 }
 

@@ -49,7 +49,7 @@ abstract class HubitatDeviceScript extends Script
 
         this.api = api
 
-        this.settingsMap = [:]
+        this.settingsMap = this.metadataReader.settings
 
         this.validator = validator
     }
@@ -76,7 +76,7 @@ abstract class HubitatDeviceScript extends Script
     void hubitatciValidateAfterMethodCall(String methodName)
     {
         //println "hubitatciValidateAfterMethodCall(${methodName} called!)"
-        //this.preferencesReader.settings.validateAfterPreferences()
+        this.metadataReader.settings.validateAfterPreferences()
     }
 //
 //    Map<String, MappingPath> getProducedMappings()

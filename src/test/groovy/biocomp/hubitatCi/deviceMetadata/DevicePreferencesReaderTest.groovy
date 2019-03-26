@@ -84,7 +84,7 @@ def LOGINFO(txt){
 
         expect:
             sandbox.run(api: api,
-                    validationFlags: [Flags.DontValidateDefinition, Flags.AllowSectionsInDevicePreferences])
+                    validationFlags: [Flags.DontValidateDefinition, Flags.AllowSectionsInDevicePreferences, Flags.AllowWritingToSettings])
     }
 
     def "preferences() with no inputs work"() {
@@ -215,9 +215,8 @@ def foo()
 
         then:
             AssertionError e = thrown()
-            !e.message.contains("goodInput")
-            e.message.contains("missingInput")
-            e.message.contains("not an input")
+            e.message.contains("are registered inputs: [goodInput]")
+            e.message.contains("not registered inputs: [missingInput]")
     }
 }
 

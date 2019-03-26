@@ -425,7 +425,7 @@ class DeviceValidator extends
     void validateSection(String name)
     {
         if (!hasFlag(Flags.AllowSectionsInDevicePreferences)) {
-            assert false, "section('${name}') was used in preferences(), and while the method exists, it's not documented anywhere"
+            assert false, "section('${name}') was used in preferences(), and while the method exists, it's not documented anywhere. Add Flags.AllowSectionsInDevicePreferences to allow sections."
         }
     }
 }
