@@ -167,8 +167,8 @@ class DeviceMetadataReader implements DeviceMetadataSource
     @Override
     void definition(Map options, @DelegatesTo(DeviceDefinition) Closure makeContents) {
         def definition = new Definition(options)
-        validator.validateDefinition(definition)
         producedDefinition = states.withState('definition()', definition, makeContents)
+        validator.validateDefinition(definition, scriptMetaClass)
     }
 
     @Override

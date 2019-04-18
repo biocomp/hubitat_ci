@@ -38,6 +38,24 @@ metadata{
             definition.options.author == 'your name'
     }
 
+    @Unroll
+    def "definition(#params)'s parameter #missingParam is required"(String params, String missingParam) {
+        when:
+            def definition = readDefinition("""
+    definition(${params}){
+    }""", validationFlags: [Flags.DontValidateCapabilities])
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("[${missingParam}]' not set")
+
+        where:
+            params                        | missingParam
+            "name: 'n', namespace: 'n'"   | "author"
+            "namespace: 'n', author: 'a'" | "name"
+            "name: 'n', author: 'a'"      | "namespace"
+    }
+
     def "definition() with invalid option fails"() {
         when:
             readDefinition("""
@@ -54,8 +72,9 @@ metadata{
     @Unroll
     def "Valid capability '#capability' in definition() can be read"(String capability) {
         when:
-            def capabilitiesResult = readDefinition("""
-    definition(name: "nam"){
+            def capabilitiesResult = readDefinition(
+                    [validationFlags: [Flags.DontRequireCapabilityImplementationMethods]], """
+    definition(name: "nam", namespace: "n", author: "a"){
         capability '${capability}'
     }""").capabilities
 
@@ -68,24 +87,25 @@ metadata{
             } + Capabilities.capabilitiesByDriverDefinition.collect { it.key }
     }
 
-    def "When capability used, and capability's methods are missing, fails"()
-    {
+    def "When capability used, and capability's methods are missing, fails"() {
         when:
-            def capabilitiesResult = readDefinition("""
-    definition(name: "nam"){
+            new HubitatDeviceSandbox("""
+metadata{
+    definition(name: "nam", namespace: "n", author: "a"){
         capability 'Bulb'
     }
-    
-    def on()
-    {
-    }
-    """).capabilities
+}
+ 
+def on()
+{
+}
+""").run(validationFlags: [Flags.DontRequireCapabilityImplementationMethods])
 
         then:
             AssertionError e = thrown()
-            !e.message.contains('on')
-            e.message.contains('capability \'Bulb\' method [\'off\', \'getSwitch\'] not implemented')
-            e.message.contains('off')
+            !e.message.contains('on()')
+            e.message.contains('capability \'Bulb\' method [off(), getSwitch()] not implemented')
+            e.message.contains('off()')
     }
 
     def "Invalid capability in definition() fails"() {
@@ -106,7 +126,7 @@ metadata{
     def "There must be at least one capability"() {
         when:
             readDefinition("""
-    definition(name: "nam"){
+    definition(name: "nam", author: 'a', namespace: 'n'){
     }""")
 
         then:
@@ -190,7 +210,7 @@ metadata{
 
     def "Can't have duplicate capabilities"() {
         when:
-            readDefinition("""definition(name: "n", namespace: "nm", author: "a"){
+            readDefinition([validationFlags: [Flags.DontRequireCapabilityImplementationMethods]],"""definition(name: "n", namespace: "nm", author: "a"){
                     capability 'Valve'
                     capability 'Valve'
                 }""")
@@ -415,8 +435,7 @@ metadata
             'profileId: "0104", inClusters: "0000, 0003, 0004, 0005, 0006, 0008, 0702, 0B05", outClusters: "000A, 0019", manufacturer: "Jasco Products", model: "45857", deviceJoinNamee: "GE Zigbee In-Wall Dimmer"' | 'deviceJoinNamee'
     }
 
-    def "simulator() can be called. Does nothing."()
-    {
+    def "simulator() can be called. Does nothing."() {
         expect:
             new HubitatDeviceSandbox("""
 metadata

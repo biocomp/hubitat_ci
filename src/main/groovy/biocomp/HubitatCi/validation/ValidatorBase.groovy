@@ -254,7 +254,7 @@ class ValidatorBase {
 
     private static void validateAfterEachMethod(CompilerConfiguration options) {
         options.addCompilationCustomizers(new AddValidationAfterEachMethodCompilationCustomizer())
-        options.addCompilationCustomizers(new LoggingCompilationCustomizer())
+        // debug - print out resulting script: options.addCompilationCustomizers(new LoggingCompilationCustomizer())
     }
 
     protected GroovyShell constructParser(Class c) {

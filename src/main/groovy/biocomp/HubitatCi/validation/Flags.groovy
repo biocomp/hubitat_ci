@@ -61,7 +61,12 @@ enum Flags
      * Parameter is just for information there. Still it's probably not a common case?
      * This flags doesn't require 'name' or 'type' being present.
      */
-    AllowMissingDeviceInputNameOrType
+    AllowMissingDeviceInputNameOrType,
+
+    /**
+     * Do not require that capability's methods be implemented.
+     */
+    DontRequireCapabilityImplementationMethods
 
     /**
      * Generate EnumSet

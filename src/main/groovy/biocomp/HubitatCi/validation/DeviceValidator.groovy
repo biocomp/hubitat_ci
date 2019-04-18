@@ -264,12 +264,45 @@ class DeviceValidator extends
 
     private static final NamedParametersValidator definitionOptionsValidator = NamedParametersValidator.make {
         stringParameter(name: "name", required: true)
-        stringParameter(name: "namespace")
-        stringParameter(name: "author")
+        stringParameter(name: "namespace", required: true)
+        stringParameter(name: "author", required: true)
     }
 
-    void validateDefinition(Definition definition) {
+    private static String printMethod(Method m)
+    {
+        def params = m.parameters.collect{
+            "${it.type.simpleName} ${it.name}"
+        }.join(", ")
+
+        return "${m.name}(${params})"
+    }
+
+    void validateDefinition(Definition definition, MetaClass scriptMetaClass) {
         definitionOptionsValidator.validate("definition(${definition.options})", definition.options, this);
+
+        if (!hasFlag(Flags.DontRequireCapabilityImplementationMethods)) {
+            def scriptActualMethods = scriptMetaClass.theClass.methods.findAll {
+                it.declaringClass == scriptMetaClass.theClass
+            }.collectEntries {
+                println "### Actual method ${it.name}."
+
+                [it.name, it]
+            }
+
+            definition.capabilities.each {
+                def capabilityClass = Capabilities.findCapabilityByName(it)
+
+                def missingMethods = capabilityClass.methods.findAll {
+                    if (it.declaringClass == capabilityClass) {
+                        //println "### Expecting method ${it.name}. Map ${scriptActualMethods.containsKey(it.name) ? "has it" : "doesn't have it" }"
+
+                        return !scriptActualMethods.containsKey(it.name)
+                    }
+                }.collect { printMethod(it) }
+
+                assert !missingMethods, "capability '${capabilityClass.simpleName}' method ${missingMethods} not implemented"
+            }
+        }
     }
 
     void validateCapability(String capabilityName) {
