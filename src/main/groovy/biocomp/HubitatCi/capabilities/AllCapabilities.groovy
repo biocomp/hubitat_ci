@@ -1,5 +1,10 @@
 package biocomp.hubitatCi.capabilities
 
+Map<String, CapabilityAttributeInfo> makeAttributes(List<CapabilityAttributeInfo> attributes)
+{
+    return attributes.collectEntries { it -> [it.name, it]}
+}
+
 /**
  * Base capability traits, all capabilities derive from it.
  */
@@ -16,7 +21,9 @@ interface AccelerationSensor extends Capability
         inactive
     }
 
-    abstract AccelerationValue getAcceleration() // Called 'ActivityState' in SmartThings
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("acceleration", AccelerationValue) // Called 'ActivityState' in SmartThings
+    ])
 }
 
 // Deprecated in SmartThings
@@ -37,7 +44,9 @@ interface Alarm extends Capability
         siren
     }
 
-    abstract AlarmValue getAlarm()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("alarm", AlarmValue)
+    ])
 
     abstract both()
     abstract off()
@@ -96,8 +105,10 @@ interface AudioVolume extends Capability
         muted
     }
 
-    abstract MuteValue getMute()
-    abstract double getVolume()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("mute", MuteValue),
+            new CapabilityAttributeInfo("volume", double)
+    ])
 
     abstract void mute()
 
@@ -113,10 +124,9 @@ interface AudioVolume extends Capability
 
 interface Battery extends Capability
 {
-    /**
-     * @return 0-100% of battery charge
-     */
-    abstract double getBattery()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("battery", double, min: 0, max: 100) // 0-100% battery charge
+    ])
 }
 
 // Deprecated in SmartThings
@@ -139,7 +149,9 @@ interface Beacon extends Capability
         }
     }
 
-    abstract PresenceValue getPresence()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("presence", PresenceValue)
+    ])
 }
 
 // SmartThings only: Bridge
@@ -153,7 +165,9 @@ interface Bulb extends Capability
         off
     }
 
-    abstract SwitchValue getSwitch()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("switch", SwitchValue)
+    ])
 
     abstract void on()
     abstract void off()
@@ -179,14 +193,18 @@ interface Button extends Capability
         }
     }
 
-    abstract int getButton()
-    abstract HoldableButtonValue getHoldableButton()
-    abstract int getNumberOfButtons()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("button", int),
+            new CapabilityAttributeInfo("holdableButton", HoldableButtonValue),
+            new CapabilityAttributeInfo("numberOfButtons", int),
+    ])
 }
 
 interface CarbonDioxideMeasurement extends Capability
 {
-    abstract double getCarbonDioxide()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("carbonDioxide", double)
+    ])
 }
 
 interface CarbonMonoxideDetector extends Capability
@@ -196,7 +214,9 @@ interface CarbonMonoxideDetector extends Capability
         detected, tested, clear
     }
 
-    abstract CarbonMonoxideValue getCarbonMonoxide()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("carbonMonoxide", CarbonMonoxideValue)
+    ])
 }
 
 interface ChangeLevel extends Capability
@@ -218,12 +238,11 @@ interface Chime extends Capability
         playing, stopped
     }
 
-    /**
-     * @return  - JSON_OBJECT
-     */
-    abstract def getSoundEffects()
-    abstract String getSoundName()
-    abstract StatusValue getStatus()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("soundEffects", Object), // JSON_OBJECT
+            new CapabilityAttributeInfo("soundName", String),
+            new CapabilityAttributeInfo("status", StatusValue),
+    ])
 
     abstract void playSound(int soundNumber)
     abstract void stop()
@@ -231,11 +250,14 @@ interface Chime extends Capability
 
 interface ColorControl extends Capability
 {
-    abstract String getRGB()
-    abstract String getColor()
-    abstract String getColorName()
-    abstract double getHue()
-    abstract double getSaturation()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+        new CapabilityAttributeInfo("rGB", String),
+        new CapabilityAttributeInfo("color", String),
+        new CapabilityAttributeInfo("colorName", String),
+        new CapabilityAttributeInfo("hue", double),
+        new CapabilityAttributeInfo("saturation", double),
+    ])
+
 
     /**
      *
@@ -261,13 +283,17 @@ interface ColorMode extends Capability
         CT, RGB
     }
 
-    abstract ColorModeValue getColorMode()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("colorMode", ColorModeValue),
+    ])
 }
 
 interface ColorTemperature extends Capability
 {
-    abstract String getColorName()
-    abstract double getColorTemperature()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("colorName", String),
+            new CapabilityAttributeInfo("colorTemperature", double)
+    ])
 }
 
 interface Configuration extends Capability
@@ -282,7 +308,10 @@ interface Consumable extends Capability
         missing, order, maintenance_required, good, replace
     }
 
-    abstract ConsumableStatusValue getConsumableStatus()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+        new CapabilityAttributeInfo("consumableStatus", ConsumableStatusValue),
+    ])
+
     abstract void setConsumableStatus(ConsumableStatusValue status)
 }
 
@@ -295,7 +324,10 @@ interface ContactSensor extends Capability
         closed, open
     }
 
-    abstract ContactValue getContact()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("contact", ContactValue),
+    ])
+
 }
 
 // SmartThings only: Demand Response Load Control
@@ -309,7 +341,9 @@ interface DoorControl extends Capability
         unknown, closed, open, closing, opening
     }
 
-    abstract DoorValue getDoor()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("door", DoorValue),
+    ])
 
     abstract void open()
     abstract void close()
@@ -321,20 +355,23 @@ interface DoorControl extends Capability
 
 interface DoubleTapableButton extends Capability
 {
-    abstract int getDoubleTapped()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("doubleTapped", int),
+    ])
 }
 
 interface EnergyMeter extends Capability
 {
-    /**
-     * @return energy used ing kWh
-     */
-    abstract double getEnergy()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("energy", double), // in kWh
+    ])
 }
 
 interface EstimatedTimeOfArrival extends Capability
 {
-    abstract Date getEta()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("eta", Date),
+    ])
 }
 
 // Execute
@@ -365,7 +402,11 @@ interface FanControl extends Capability
         }
     }
 
-    abstract SpeedValue getSpeed()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("speed", SpeedValue),
+    ])
+
+
     abstract void setSpeed(SpeedValue speed)
 }
 
@@ -376,7 +417,9 @@ interface FilterStatus extends Capability
         normal, replace
     }
 
-    abstract FilterStatusValue getFilterStatus()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("filterStatus", FilterStatusValue),
+    ])
 }
 
 interface GarageDoorControl extends Capability
@@ -386,7 +429,9 @@ interface GarageDoorControl extends Capability
         unknown, open, closing, closed, opening
     }
 
-    abstract DoorValue getDoor()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("door", DoorValue),
+    ])
 
     abstract  void close()
     abstract  void open()
@@ -396,24 +441,33 @@ interface GarageDoorControl extends Capability
 
 interface HealthCheck extends Capability
 {
-    abstract int getCheckInterval()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("checkInterval", int),
+    ])
 
     abstract void ping()
 }
 
 interface HoldableButton extends Capability
 {
-    abstract int getHeld()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("held", int),
+    ])
 }
 
 interface IlluminanceMeasurement extends Capability
 {
-    abstract double getIlluminance()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("illuminance", double),
+    ])
 }
 
 interface ImageCapture extends Capability
 {
-    abstract String getImage()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("image", String),
+    ])
+
     abstract void take()
 }
 
@@ -437,7 +491,9 @@ interface Indicator extends Capability
         }
     }
 
-    abstract IndicatorStatusValue getIndicatorStatus()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("indicatorStatus", IndicatorStatusValue),
+    ])
 
     abstract void indicatorNever()
     abstract void indicatorWhenOff()
@@ -455,7 +511,9 @@ interface Light extends Capability
 {
     enum SwitchValue { on, off }
 
-    abstract SwitchValue getSwitch()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("switch", SwitchValue)
+    ])
 
     abstract void on()
     abstract void off()
@@ -463,18 +521,15 @@ interface Light extends Capability
 
 interface LightEffects extends Capability
 {
-    abstract String getEffectName()
-
-    /**
-     * @return JSON object
-     */
-    abstract def getLightEffects()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("effectName", String),
+            new CapabilityAttributeInfo("lightEffects", Object) // JSON object
+    ])
 
     /**
      * @param effectNumber required (NUMBER) - Effect number to enable
      */
     abstract void setEffect(int effectNumber)
-
 
     abstract void setNextEffect()
     abstract void setPreviousEffect()
@@ -482,10 +537,9 @@ interface LightEffects extends Capability
 
 interface LocationMode extends Capability
 {
-    /**
-     * @return DYNAMIC_ENUM with mode
-     */
-    abstract String getMode()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("mode", String), // DYNAMIC_ENUM with mode
+    ])
 }
 
 // Lock only
@@ -511,7 +565,9 @@ interface Lock extends Capability
         }
     }
 
-    abstract LockValue getLock()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("lock", LockValue),
+    ])
 
     abstract void lock()
     abstract void unlock()
@@ -524,15 +580,12 @@ interface LockCodes extends Capability
         added, changed, deleted, failed
     }
 
-    abstract CodeChangedValue getCodeChanged()
-    abstract int getCodeLengt()
-
-    /**
-     * @return JSON object
-     */
-    abstract def getLockCodes()
-
-    abstract int getMaxCodes()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("codeChanged", CodeChangedValue),
+            new CapabilityAttributeInfo("codeLength", int),
+            new CapabilityAttributeInfo("lockCodes", Object), // JSON object
+            new CapabilityAttributeInfo("maxCodes", int)
+    ])
 
     /**
      * @param codePosition required (NUMBER) - Code position number to delete
@@ -557,11 +610,10 @@ interface LockCodes extends Capability
 
 interface MediaController extends Capability
 {
-    /**
-     * @return JSON object with activities
-     */
-    abstract def getActivities()
-    abstract String getCurrentActivity()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("activities", Object), // JSON object with activities
+            new CapabilityAttributeInfo("currentActivity", String)
+    ])
 }
 
 // Media Input Source
@@ -583,7 +635,9 @@ interface MotionSensor extends Capability
         inactive, active
     }
 
-    abstract MotionValue getMotion()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            //        new CapabilityAttributeInfo("motion", MotionValue),
+    ])
 }
 
 interface MusicPlayer extends Capability
@@ -593,15 +647,13 @@ interface MusicPlayer extends Capability
         unmuted, muted
     }
 
-    abstract double getLevel()
-    abstract MuteValue getMute()
-    abstract String getStatus()
-
-    /**
-     * @return JSON object
-     */
-    abstract def getTrackData()
-    abstract String getTrackDescription()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("level", double),
+            new CapabilityAttributeInfo("mute", MuteValue),
+            new CapabilityAttributeInfo("status", String),
+            new CapabilityAttributeInfo("trackData", Object), // JSON object
+            new CapabilityAttributeInfo("trackDescription", String)
+    ])
 
     abstract void mute()
     abstract void nextTrack()
@@ -669,7 +721,9 @@ interface Outlet extends Capability
         on, off
     }
 
-    abstract SwitchValue getSwitch()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("switch", SwitchValue),
+    ])
 
     abstract void off()
     abstract void on()
@@ -689,10 +743,9 @@ interface Polling extends Capability
 
 interface PowerMeter extends Capability
 {
-    /**
-     * @return power in Watts
-     */
-    abstract double getPower()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("power", double), // In Watts
+    ])
 }
 
 /**
@@ -705,7 +758,9 @@ interface PowerSource extends Capability
         battery, dc, mains, unknown
     }
 
-    abstract PowerSourceValue getPowerSource()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("powerSource", PowerSourceValue),
+    ])
 }
 
 interface PresenceSensor extends Capability
@@ -727,14 +782,19 @@ interface PresenceSensor extends Capability
         }
     }
 
-    abstract PresenceValue getPresence()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("presense", PresenceValue),
+    ])
+
 }
 
 // Rapid Cooling
 
 interface PressureMeasurement extends Capability
 {
-    abstract double getPressure()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("pressure", double),
+    ])
 }
 
 interface PushableButton extends Capability
@@ -750,7 +810,9 @@ interface Refresh extends Capability
 
 interface RelativeHumidityMeasurement extends Capability
 {
-    abstract double getHumidity()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("humidity", double),
+    ])
 }
 
 interface RelaySwitch extends Capability
@@ -760,7 +822,9 @@ interface RelaySwitch extends Capability
         on, off
     }
 
-    abstract SwitchValue getSwitch()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("switch", SwitchValue),
+    ])
 
     abstract void on()
     abstract void off()
@@ -772,7 +836,9 @@ interface RelaySwitch extends Capability
 
 interface ReleasableButton extends Capability
 {
-    abstract int getReleased()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("released", int),
+    ])
 }
 
 @CustomDeviceSelector(deviceSelector = 'samsungTV')
@@ -799,16 +865,14 @@ interface SamsungTV extends Capability
         on, off
     }
 
-    /**
-     * @return JSON
-     */
-    abstract def getMessageButton()
-    abstract MuteValue getMute()
-    abstract PictureModeValue getPictureMode()
-    abstract SoundModeValue getSoundMode()
-    abstract SwitchValue getSwitch()
-    abstract double getVolume()
-
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("messageButton", Object), // JSON object
+            new CapabilityAttributeInfo("mute", MuteValue),
+            new CapabilityAttributeInfo("pictureMode", PictureModeValue),
+            new CapabilityAttributeInfo("soundMode", SoundModeValue),
+            new CapabilityAttributeInfo("switch", SwitchValue),
+            new CapabilityAttributeInfo("volume", double)
+    ])
 
     abstract void mute()
     abstract void off()
@@ -852,16 +916,15 @@ interface SecurityKeypad extends Capability
         }
     }
 
-    abstract CodeChangedValue codeChanged()
-    abstract int codeLength()
 
-    /**
-     * @return JSON_OBJECT
-     */
-    abstract def lockCodes()
-    abstract int maxCodes()
-    abstract SecurityKeypadValue securityKeypad()
 
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("codeChanged", CodeChangedValue),
+            new CapabilityAttributeInfo("codeLength", int),
+            new CapabilityAttributeInfo("lockCodes", Object), // JSON object
+            new CapabilityAttributeInfo("maxCodes", int),
+            new CapabilityAttributeInfo("securityKeypad", SecurityKeypadValue),
+    ])
 
     abstract void armAway()
     abstract void armHome()
@@ -874,7 +937,9 @@ interface SecurityKeypad extends Capability
     abstract void deleteCode(int codePosition)
 
     abstract void disarm()
+
     abstract void getCodes()
+
 
     /**
      * @param codePosition required (NUMBER) - Code position number
@@ -909,7 +974,9 @@ interface ShockSensor extends Capability
         clear, detected
     }
 
-    abstract ShockSensor getShock()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("shock", ShockSensor),
+    ])
 }
 
 interface SignalStrength extends Capability
@@ -945,7 +1012,9 @@ interface SleepSensor extends Capability
         }
     }
 
-    abstract SleepingValue getSleeping()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("sleeping", SleepingValue),
+    ])
 }
 
 interface SmokeDetector extends Capability
@@ -955,12 +1024,16 @@ interface SmokeDetector extends Capability
         clear, tested, detected
     }
 
-    abstract SmokeValue getSmoke()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("smoke", SmokeValue),
+    ])
 }
 
 interface SoundPressureLevel extends Capability
 {
-    abstract double getSoundPressureLevel()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("soundPressureLevel", double),
+    ])
 }
 
 interface SoundSensor extends Capability
@@ -982,12 +1055,16 @@ interface SoundSensor extends Capability
         }
     }
 
-    abstract SoundValue getSound()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("sound", SoundValue),
+    ])
 }
 
 interface SpeechRecognition extends Capability
 {
-    abstract String getPhraseSpoken()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("phraseSpoken", String),
+    ])
 }
 
 interface SpeechSynthesis extends Capability
@@ -997,15 +1074,19 @@ interface SpeechSynthesis extends Capability
 
 interface StepSensor extends Capability
 {
-    abstract double getGoal()
-    abstract double getSteps()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("goal", double),
+            new CapabilityAttributeInfo("steps", double)
+    ])
 }
 
 interface Switch extends Capability
 {
     enum SwitchValue { on, off }
 
-    abstract SwitchValue getSwitch()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("switch", SwitchValue)
+    ])
 
     abstract void on()
     abstract void off()
@@ -1013,10 +1094,9 @@ interface Switch extends Capability
 
 interface SwitchLevel extends Capability
 {
-    /**
-     * @return 0-100
-     */
-    abstract double getLevel()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("level", double, min: 0, max: 100)
+    ])
 
     /**
     * @param level required (NUMBER) - Level to set (0 to 100)
@@ -1029,12 +1109,14 @@ interface SwitchLevel extends Capability
 @CustomPrettyName(prettyName = 'TV')
 interface TV extends Capability
 {
-    abstract int getChannel()
-    abstract String getMovieMode()
-    abstract String getPicture()
-    abstract String getPower()
-    abstract String getSound()
-    abstract double getVolume()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+        new CapabilityAttributeInfo("channel",  int),
+        new CapabilityAttributeInfo("movieMode",  String),
+        new CapabilityAttributeInfo("picture",  String),
+        new CapabilityAttributeInfo("power",  String),
+        new CapabilityAttributeInfo("sound",  String),
+        new CapabilityAttributeInfo("volume",  double)
+    ])
 
     abstract void channelDown()
     abstract void channelUp()
@@ -1049,7 +1131,9 @@ interface TamperAlert extends Capability
         clear, detected
     }
 
-    abstract TamperAlert getTamper()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("tamper", TamperAlert),
+    ])
 }
 
 interface Telnet extends Capability
@@ -1058,7 +1142,9 @@ interface Telnet extends Capability
 
 interface TemperatureMeasurement extends Capability
 {
-    abstract double getTemperature()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            //        new CapabilityAttributeInfo("temperature", double),
+    ])
 }
 
 interface TestCapability extends Capability {}
@@ -1072,18 +1158,18 @@ interface Thermostat extends
         ThermostatSchedule,
         ThermostatSetpoint
 {
-    abstract List<ThermostatFanModeValue> getSupportedThermostatFanModes()
-    abstract List<ThermostatModeValue> getSupportedThermostatModes()
-    abstract double getTemperature()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("supportedThermostatFanModes", new ArrayList<ThermostatFanModeValue>().class),
+            new CapabilityAttributeInfo("supportedThermostatModes", new ArrayList<ThermostatModeValue>().class),
+            new CapabilityAttributeInfo("temperature", double)
+    ])
 }
 
 interface ThermostatCoolingSetpoint extends Capability
 {
-    /**
-     *
-     * @return temperature in degrees
-     */
-    abstract double getCoolingSetpoint()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("coolingSetpoint", double),
+    ])
 
     /**
      *
@@ -1099,7 +1185,9 @@ interface ThermostatFanMode extends Capability
         auto, circulate, on
     }
 
-    abstract ThermostatFanModeValue getThermostatFanMode()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("thermostatFanMode", ThermostatFanModeValue),
+    ])
 
     abstract void fanAuto()
     abstract void fanCirculate()
@@ -1110,11 +1198,9 @@ interface ThermostatFanMode extends Capability
 
 interface ThermostatHeatingSetpoint extends Capability
 {
-    /**
-     *
-     * @return temperature in degrees
-     */
-    abstract double getHeatingSetpoint()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("heatingSetpoint", double) // temperature in degrees
+    ])
 
     /**
      *
@@ -1145,7 +1231,9 @@ interface ThermostatMode extends Capability
         }
     }
 
-    abstract ThermostatModeValue getThermostatMode()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("thermostatMode", ThermostatModeValue),
+    ])
 
     abstract void auto()
     abstract void cool()
@@ -1180,27 +1268,32 @@ interface ThermostatOperatingState extends Capability
         }
     }
 
-    abstract ThermostatOperatingStateValue getThermostatOperatingState()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("thermostatOperatingState", ThermostatOperatingStateValue),
+    ])
 }
 
 interface ThermostatSchedule extends Capability
 {
-    /**
-     * @return JSON
-     */
-    abstract def getSchedule()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("schedule", Object), // JSON object
+    ])
 
     abstract void setSchedule(def jsonObject)
 }
 
 interface ThermostatSetpoint extends Capability
 {
-    abstract double getThermostatSetpoint()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("thermostatSetpoint", double),
+    ])
 }
 
 interface ThreeAxis extends Capability
 {
-    abstract Tuple3<Integer, Integer, Integer> getThreeAxis()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("threeAxis", new Tuple3<Integer, Integer, Integer>().class),
+    ])
 }
 
 interface TimedSession extends Capability
@@ -1210,8 +1303,10 @@ interface TimedSession extends Capability
         stopped, canceled, running, paused
     }
 
-    abstract SessionStatusValue getSessionStatus()
-    abstract double getTimeRemaining()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("sessionStatus", SessionStatusValue),
+            new CapabilityAttributeInfo("timeRemaining", double)
+    ])
 
     abstract void cancel()
     abstract void pause()
@@ -1233,17 +1328,18 @@ interface TouchSensor extends Capability
         touched
     }
 
-    abstract TouchValue getTouch()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("touch", TouchValue),
+    ])
 }
 
 // Tv Channel
 
 interface UltravioletIndex extends Capability
 {
-    /**
-     * @return 0 - 255
-     */
-    abstract double getUltravioletIndex()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("ultravioletIndex", double, min: 0, max: 255)
+    ])
 }
 
 interface Valve extends Capability
@@ -1253,7 +1349,9 @@ interface Valve extends Capability
         open, closed
     }
 
-    abstract ValveValue getValve()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("valve", ValveValue),
+    ])
 
     abstract void open()
     abstract void close()
@@ -1274,14 +1372,12 @@ interface VideoCamera extends Capability
         unmuted, muted
     }
 
-    abstract CameraValue getCamera()
-    abstract MuteValue getMute()
-
-    /**
-     * @return JSON object
-     */
-    abstract def getSettings()
-    abstract String getStatusMessage()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("camera", CameraValue),
+            new CapabilityAttributeInfo("mute", MuteValue),
+            new CapabilityAttributeInfo("settings", Object), // JSON object
+            new CapabilityAttributeInfo("statusMessage", String),
+    ])
 
     abstract void flip()
     abstract void mute()
@@ -1292,17 +1388,18 @@ interface VideoCamera extends Capability
 
 interface VideoCapture extends Capability
 {
-    abstract def getClip()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("clip", Object),
+    ])
 
     abstract void capture(Date a, Date b, Date c)
 }
 
 interface VoltageMeasurement extends Capability
 {
-    /**
-     * @return voltage in Volts
-     */
-    abstract double getVolage()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("voltage", double), // In Volts
+    ])
 }
 
 // Washer Mode
@@ -1315,7 +1412,9 @@ interface WaterSensor extends Capability
         wet, dry
     }
 
-    abstract WaterValue getWater()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("water", WaterValue),
+    ])
 }
 
 interface WindowShade extends Capability
@@ -1341,24 +1440,22 @@ interface WindowShade extends Capability
         }
     }
 
-    abstract double getPosition()
-    abstract WindowShadeValue getWindowShade()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("position", double, min: 0, max: 100),
+            new CapabilityAttributeInfo("windowShade", WindowShadeValue)
+    ])
 
     abstract void close()
     abstract void open()
-
-    /**
-     *
-     * @param position 0 - 100
-     * @return
-     */
     abstract void setPosition(double position)
 }
 
 interface ZwMultichannel extends Capability
 {
-    abstract String getEpEvent()
-    abstract String getEpInfo()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("epEvent", String),
+            new CapabilityAttributeInfo("epInfo", String),
+    ])
 
     abstract void enableEpEvents(String a)
 
@@ -1370,5 +1467,7 @@ interface ZwMultichannel extends Capability
 @CustomPrettyName(prettyName = 'Ph Measurement')
 interface PhMeasurement extends Capability
 {
-    abstract double getPH()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("PH", double)
+    ])
 }
