@@ -99,12 +99,12 @@ metadata{
 def on()
 {
 }
-""").run(validationFlags: [Flags.DontRequireCapabilityImplementationMethods])
+""").run()
 
         then:
             AssertionError e = thrown()
             !e.message.contains('on()')
-            e.message.contains('capability \'Bulb\' method [off(), getSwitch()] not implemented')
+            e.message.contains('capability \'Bulb\' method [off()] not implemented')
             e.message.contains('off()')
     }
 

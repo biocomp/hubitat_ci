@@ -799,13 +799,15 @@ interface PressureMeasurement extends Capability
 
 interface PushableButton extends Capability
 {
-    abstract int numberOfButtons()
-    abstract int pushed()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = makeAttributes([
+            new CapabilityAttributeInfo("numberOfButtons", int),
+            new CapabilityAttributeInfo("pushed", int)
+    ])
 }
 
 interface Refresh extends Capability
 {
-    abstract void referesh()
+    abstract void refresh()
 }
 
 interface RelativeHumidityMeasurement extends Capability
