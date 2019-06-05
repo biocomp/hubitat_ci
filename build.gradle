@@ -22,7 +22,7 @@ publishing {
         maven(MavenPublication){
             groupId = 'biocomp.HubitatCi'
             artifactId = 'hubitatCi'
-            version = 0.4
+            version = 0.5
 
             from components.java
 
