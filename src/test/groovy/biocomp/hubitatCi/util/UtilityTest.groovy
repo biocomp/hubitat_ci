@@ -23,8 +23,8 @@ class UtilityTest extends
             today.seconds == expectedSec
 
             today.year > 2017
-            today.month > 0
-            today.month <= 12
+            today.month >= 0
+            today.month < 12
             today.day > 0
             today.day <= 31
 

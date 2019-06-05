@@ -43,7 +43,7 @@ final class Utility
                 .plusMinutes(time.minutes)
                 .plusSeconds(time.seconds);
 
-        return new Date(updatedDate.year, updatedDate.monthValue, updatedDate.year, updatedDate.hour,
+        return new Date(updatedDate.year, updatedDate.monthValue, updatedDate.dayOfMonth, updatedDate.hour,
                 updatedDate.minute, updatedDate.second);
     }
 
