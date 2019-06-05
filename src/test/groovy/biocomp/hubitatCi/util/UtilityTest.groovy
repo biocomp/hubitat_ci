@@ -14,7 +14,7 @@ class UtilityTest extends
     def myTimeZone = new GregorianCalendar().getTimeZone()
 
     @Unroll
-    def "timeToday properly appends time"(String timeString, TimeZone tz, int expectedHr, int expectedMin,
+    def "timeToday properly appends time (#timeString)"(String timeString, TimeZone tz, int expectedHr, int expectedMin,
                                           int expectedSec) {
         expect:
             Date today = Utility.timeToday(timeString, tz)
