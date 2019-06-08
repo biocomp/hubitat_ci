@@ -12,16 +12,16 @@ class AppDefinitionReader implements
         AppExecutor
 {
     private static final NamedParametersValidator paramValidator = NamedParametersValidator.make {
-        stringParameter(name: "name", required: true, canBeEmpty: false)
-        stringParameter(name: "namespace", required: true, canBeEmpty: false)
-        stringParameter(name: "author", required: true, canBeEmpty: true)
-        stringParameter(name: "description", required: true, canBeEmpty: false)
-        stringParameter(name: "iconUrl", required: true, canBeEmpty: true)
-        stringParameter(name: "iconX2Url", required: true, canBeEmpty: true)
-        stringParameter(name: "iconX3Url", required: true, canBeEmpty: true)
-        stringParameter(name: "category", required: false, canBeEmpty: false)
-        boolParameter(name: "singleInstance")
-        boolParameter(name: "oauth")
+        stringParameter("name", required(), mustNotBeEmpty())
+        stringParameter("namespace", required(), mustNotBeEmpty())
+        stringParameter("author", required(), canBeEmpty())
+        stringParameter("description", required(), mustNotBeEmpty())
+        stringParameter("iconUrl", required(), canBeEmpty())
+        stringParameter("iconX2Url", required(), canBeEmpty())
+        stringParameter("iconX3Url", required(), canBeEmpty())
+        stringParameter("category", notRequired(), mustNotBeEmpty())
+        boolParameter("singleInstance", notRequired())
+        boolParameter("oauth", notRequired())
     }
 
     AppDefinitionReader(AppExecutor delegate, AppValidator validator) {

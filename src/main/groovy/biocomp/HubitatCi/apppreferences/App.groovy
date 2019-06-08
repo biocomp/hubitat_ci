@@ -13,11 +13,11 @@ class App {
     final Map options
 
     private static final NamedParametersValidator paramValidator = NamedParametersValidator.make {
-        stringParameter(name: "name", canBeEmpty: false)
-        stringParameter(name: "appName", canBeEmpty: false)
-        stringParameter(name: "namespace", canBeEmpty: false)
-        stringParameter(name: "title", canBeEmpty: false)
-        boolParameter(name: "multiple")
+        stringParameter("name", notRequired(), mustNotBeEmpty())
+        stringParameter("appName", notRequired(), mustNotBeEmpty())
+        stringParameter("namespace", notRequired(), mustNotBeEmpty())
+        stringParameter("title", notRequired(), mustNotBeEmpty())
+        boolParameter("multiple", notRequired())
     }
 
     App(Map options, String name, String namespace, String title, AppValidator validator)

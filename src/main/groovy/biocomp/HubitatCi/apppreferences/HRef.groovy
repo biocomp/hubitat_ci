@@ -20,16 +20,16 @@ class HRef {
     }
 
     private static final NamedParametersValidator paramValidator = NamedParametersValidator.make {
-        stringParameter(name: "title", required: false, canBeEmpty: false)
-        boolParameter(name: "required")
-        stringParameter(name: "description", required: false, canBeEmpty: false)
-        enumStringParameter(name: "style", required: false, values: ["external", "embedded", "page"])
-        stringParameter(name: "url", required: false, canBeEmpty: false)
+        stringParameter("title", notRequired(), mustNotBeEmpty())
+        boolParameter("required", notRequired())
+        stringParameter("description", notRequired(), mustNotBeEmpty())
+        enumStringParameter("style", notRequired(), ["external", "embedded", "page"])
+        stringParameter("url", notRequired(), mustNotBeEmpty())
 
-        mapParameter(name: "params", required: false)
+        mapParameter("params", notRequired())
 
-        stringParameter(name: "page", canBeEmpty: false)
-        stringParameter(name: "image", canBeEmpty: false)
+        stringParameter("page", notRequired(), mustNotBeEmpty())
+        stringParameter("image", notRequired(), mustNotBeEmpty())
     }
 
     HRef(Map options, String nextPageName, AppValidator validator)

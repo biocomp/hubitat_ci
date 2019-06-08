@@ -8,9 +8,9 @@ import groovy.transform.TypeChecked
 @TypeChecked
 class Paragraph {
     private static final NamedParametersValidator paramValidator = NamedParametersValidator.make {
-        stringParameter(name: "title")
-        stringParameter(name: "image")
-        boolParameter(name: "required")
+        stringParameter("title", notRequired(), mustNotBeEmpty())
+        stringParameter("image", notRequired(), mustNotBeEmpty())
+        boolParameter("required", notRequired())
     }
 
     Paragraph(String text, Map options, AppValidator validator) {

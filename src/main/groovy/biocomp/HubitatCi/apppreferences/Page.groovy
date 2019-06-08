@@ -48,26 +48,26 @@ class Page
     }
 
     private static final NamedParametersValidator paramValidator = NamedParametersValidator.make {
-        stringParameter(name: "name", required: true)
-        stringParameter(name: "title", required: true)
-        stringParameter(name: "nextPage")
-        boolParameter(name: "install")
-        boolParameter(name: "uninstall")
-        boolParameter(name: "hideWhenEmpty")
+        stringParameter("name", required(), mustNotBeEmpty())
+        stringParameter("title", required(), mustNotBeEmpty())
+        stringParameter("nextPage", notRequired(), mustNotBeEmpty())
+        boolParameter("install", notRequired())
+        boolParameter("uninstall", notRequired())
+        boolParameter("hideWhenEmpty", notRequired())
     }
 
     private static final NamedParametersValidator dynamicPageParamValidator = NamedParametersValidator.make {
         add(paramValidator)
-        intParameter(name: "refreshInterval")
+        intParameter("refreshInterval", notRequired())
     }
 
     public static final NamedParametersValidator dynamicPageInitialParamValidator = NamedParametersValidator.make{
-        stringParameter(name:"name", required:true)
+        stringParameter("name", required(), mustNotBeEmpty())
     }
 
     public static final NamedParametersValidator dynamicPageInitialParamValidatorWithTitle = NamedParametersValidator.make{
         add(dynamicPageInitialParamValidator)
-        stringParameter(name:"title")
+        stringParameter("title", notRequired(), mustNotBeEmpty())
     }
 
     List<Section> sections = []

@@ -263,9 +263,9 @@ class DeviceValidator extends
     //    }
 
     private static final NamedParametersValidator definitionOptionsValidator = NamedParametersValidator.make {
-        stringParameter(name: "name", required: true)
-        stringParameter(name: "namespace", required: true)
-        stringParameter(name: "author", required: true)
+        stringParameter("name", required(), mustNotBeEmpty())
+        stringParameter("namespace", required(), mustNotBeEmpty())
+        stringParameter("author", required(), mustNotBeEmpty())
     }
 
     private static String printMethod(Method m)
@@ -397,22 +397,22 @@ class DeviceValidator extends
     }
 
     private static final NamedParametersValidator fingerprintOptionsValidator = NamedParametersValidator.make {
-        stringParameter(name: "type")
-        stringParameter(name: "mfr")
-        stringParameter(name: "prod")
-        stringParameter(name: "model")
-        stringParameter(name: "cc")
-        stringParameter(name: "ccOut")
-        stringParameter(name: "sec")
-        stringParameter(name: "secOut")
-        stringParameter(name: "ff")
-        stringParameter(name: "ui")
-        stringParameter(name: "deviceJoinName")
-        stringParameter(name: "profileId")
-        stringParameter(name: "inClusters")
-        stringParameter(name: "outClusters")
-        stringParameter(name: "manufacturer")
-        stringParameter(name: "deviceId")
+        stringParameter("type", notRequired(), canBeEmpty())
+        stringParameter("mfr", notRequired(), canBeEmpty())
+        stringParameter("prod", notRequired(), canBeEmpty())
+        stringParameter("model", notRequired(), canBeEmpty())
+        stringParameter("cc", notRequired(), canBeEmpty())
+        stringParameter("ccOut", notRequired(), canBeEmpty())
+        stringParameter("sec", notRequired(), canBeEmpty())
+        stringParameter("secOut", notRequired(), canBeEmpty())
+        stringParameter("ff", notRequired(), canBeEmpty())
+        stringParameter("ui", notRequired(), canBeEmpty())
+        stringParameter("deviceJoinName", notRequired(), canBeEmpty())
+        stringParameter("profileId", notRequired(), canBeEmpty())
+        stringParameter("inClusters", notRequired(), canBeEmpty())
+        stringParameter("outClusters", notRequired(), canBeEmpty())
+        stringParameter("manufacturer", notRequired(), canBeEmpty())
+        stringParameter("deviceId", notRequired(), canBeEmpty())
     }
 
     void validateFingerprint(Map fingerprint)
@@ -421,8 +421,8 @@ class DeviceValidator extends
     }
 
     private static final NamedParametersValidator inputOptionsValidator = NamedParametersValidator.make {
-        stringParameter(name: "name", canBeEmpty: true, required: true, dontValidateIfFlags: [Flags.DontValidateDeviceInputName])
-        enumStringParameter(name: "type", required: true, values: [
+        stringParameter("name", required(), canBeEmpty(), [Flags.DontValidateDeviceInputName])
+        enumStringParameter("type", required(), [
             'bool',
             'decimal',
             'email',
@@ -434,13 +434,13 @@ class DeviceValidator extends
             'text',
             'paragraph' // TODO: verify if it's really supported
         ])
-        stringParameter(name: "title")
-        stringParameter(name: "description")
-        objParameter(name: "defaultValue")
-        boolParameter(name: "required")
-        boolParameter(name: "displayDuringSetup")
-        numericRangeParameter(name: "range")
-        listOfStringsParameter(name: "options")
+        stringParameter("title", notRequired(), canBeEmpty())
+        stringParameter("description", notRequired(), canBeEmpty())
+        objParameter("defaultValue", notRequired(), canBeNull())
+        boolParameter("required", notRequired())
+        boolParameter("displayDuringSetup", notRequired())
+        numericRangeParameter("range", notRequired())
+        listOfStringsParameter("options", notRequired())
     }
 
     void validateInput(DeviceInput input)

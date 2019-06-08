@@ -2,11 +2,19 @@ package biocomp.hubitatCi.validation
 
 import groovy.transform.TypeChecked
 
+/**
+ * All the validation flags.
+ */
 enum Flags
 {
     // ## Common ##:
     Default,
+
+    /**
+     * Do not execute any code in the script after compilation.
+     */
     DontRunScript,
+
     AllowNullListOptions,
     /**
      * Allow required properties (such as page(title: "")) to be empty strings.
@@ -69,7 +77,7 @@ enum Flags
     DontRequireCapabilityImplementationMethods
 
     /**
-     * Generate EnumSet
+     * Helper to generate EnumSet<Flags> from variadic list of flags.
      */
     @TypeChecked
     static EnumSet<Flags> from(Flags... settings)

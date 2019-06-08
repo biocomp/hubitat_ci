@@ -1,6 +1,6 @@
 package biocomp.hubitatCi.validation
 
-
+import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
 @TypeChecked
@@ -15,12 +15,13 @@ class NamedParametersValidator {
     }
 
     private NamedParametersValidator(
-            HashMap<String, Parameter> supportedParameters, HashSet<String> mandatoryParameters)
+            HashMap<String, ParametersToValidate.Parameter> supportedParameters, HashSet<String> mandatoryParameters)
     {
         this.supportedParameters = supportedParameters
         this.mandatoryParameters = mandatoryParameters
     }
 
+    @CompileStatic
     static Map addOptionAsNamedParam(Map options, String paramNameInMap, def valueToAdd) {
         if (options == null) {
             options = new HashMap<String, Object>()
@@ -52,7 +53,7 @@ class NamedParametersValidator {
     /**
      * Pass not only a map, but other unnamed options that are passed separately.
      */
-    @TypeChecked
+    @CompileStatic
     void validate(
             String context,
             Map unnamedOptions,
@@ -66,7 +67,7 @@ class NamedParametersValidator {
             assert it.key instanceof String: "${context}: Option's name '${it.key}' must be a String"
             def paramValidator = supportedParameters[it.key as String]?.validator
             assert paramValidator: "${context}: Option '${it.key}' is not supported. Valid options are: ${supportedParameters.keySet()}."
-            paramValidator(validator, context, it.key, it.value)
+            paramValidator(validator, context, it.value)
             mandatoryParameters.remove(it.key)
         }
 
@@ -83,6 +84,6 @@ class NamedParametersValidator {
         }
     }
 
-    final HashMap<String, Parameter> supportedParameters
+    final HashMap<String, ParametersToValidate.Parameter> supportedParameters
     final HashSet<String> mandatoryParameters
 }

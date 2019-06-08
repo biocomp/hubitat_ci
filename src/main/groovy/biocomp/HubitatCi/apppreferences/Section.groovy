@@ -17,10 +17,10 @@ class Section {
     List children = []
 
     static private final NamedParametersValidator paramValidator = NamedParametersValidator.make{
-        boolParameter(name:"hideable")
-        boolParameter(name:"hidden")
-        boolParameter(name:"mobileOnly")
-        boolParameter(name:"hideWhenEmpty")
+        boolParameter("hideable", notRequired())
+        boolParameter("hidden", notRequired())
+        boolParameter("mobileOnly", notRequired())
+        boolParameter("hideWhenEmpty", notRequired())
     }
 
     void validate(AppValidator validator)

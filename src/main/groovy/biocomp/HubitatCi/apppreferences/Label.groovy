@@ -8,10 +8,10 @@ import groovy.transform.TypeChecked
 @TypeChecked
 class Label {
     private static final NamedParametersValidator paramValidator = NamedParametersValidator.make {
-        stringParameter(name: "title", required: true)
-        stringParameter(name: "description")
-        stringParameter(name: "image")
-        boolParameter(name: "required")
+        stringParameter("title", required(), mustNotBeEmpty())
+        stringParameter("description", notRequired(), mustNotBeEmpty())
+        stringParameter("image", notRequired(), mustNotBeEmpty())
+        boolParameter("required", notRequired())
     }
 
     Label(Map options, AppValidator validator) {

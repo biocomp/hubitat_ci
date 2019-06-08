@@ -4,26 +4,54 @@ import biocomp.hubitatCi.apppreferences.Preferences
 import biocomp.hubitatCi.validation.Flags
 import biocomp.hubitatCi.validation.AppValidator
 import biocomp.hubitatCi.emulation.appApi.AppExecutor
+import biocomp.hubitatCi.validation.NamedParametersValidator
+import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
 import org.codehaus.groovy.control.CompilerConfiguration
 
+/**
+ * This sanbox can load script from file or string,
+ * parse it, while wrapping into a sandbox.
+ *
+ * Then it can run initialization methods and
+ * produce script object that user can then test further by calling its methods.
+ */
 @TypeChecked
 class HubitatAppSandbox {
+    /**
+     * Read script from file.
+     * @param file
+     */
     HubitatAppSandbox(File file) {
         this.file = file
         assert file
     }
 
+    /**
+     * Read script from string.
+     * @param scriptText
+     */
     HubitatAppSandbox(String scriptText) {
         this.text = scriptText
     }
 
+    /**
+     * Compile script only.
+     * @param options:
+     *
+     * @return script object. User can now call script's methods manually.
+     */
     HubitatAppScript compile(Map options = [:]) {
         addFlags(options, [Flags.DontRunScript])
         return setupImpl(options)
     }
 
+    /**
+     * Compile script and run initialization methods.
+     * @param options (see compile() method for options).
+     * @return script object. User can now call script's methods manually.
+     */
     HubitatAppScript run(Map options = [:]) {
         return setupImpl(options)
     }
@@ -38,8 +66,7 @@ class HubitatAppSandbox {
         setupImpl(options).getProducedPreferences()
     }
 
-    private HubitatAppScript setupImpl(Map options) {
-        validateAndUpdateSandboxOptions(options)
+    private HubitatAppScript setupImpl(Map options) {validateAndUpdateSandboxOptions(options)
 
         def validator = readValidator(options)
 
@@ -73,59 +100,71 @@ class HubitatAppSandbox {
         return options.userSettingValues ? options.userSettingValues as Map : [:]
     }
 
+    private static final NamedParametersValidator optionsValidator = NamedParametersValidator.make {
+        objParameter("api", notRequired(), canBeNull(), { v -> new Tuple2("AppExecutor", v instanceof AppExecutor)} )
+        objParameter("userSettingValues", notRequired(), mustNotBeNull(), { v -> new Tuple2("Map<String, Object>", v as Map<String, Object>) })
+        objParameter("customizeScriptBeforeRun", notRequired(), mustNotBeNull(), { v -> new Tuple2("Closure taking HubitatAppScript", v as Closure) })
+        objParameter("validationFlags", notRequired(), mustNotBeNull(), { v -> new Tuple2("List<Flags>", v as List<Flags>) })
+        objParameter("validator", notRequired(), mustNotBeNull(), { v -> new Tuple2("AppValidator", v as AppValidator) })
+        boolParameter("noValidation", notRequired())
+    }
+
+    @CompileStatic
     private static void validateAndUpdateSandboxOptions(Map options) {
-        def allKeys = new HashSet<String>(options.keySet());
+//        def allKeys = new HashSet<String>(options.keySet());
+//
+//        if (options.containsKey('api')) {
+//            allKeys.remove('api')
+//
+//            assert options['api'] == null || options[
+//                    'api'] instanceof AppExecutor: "'api' value must be null or implement AppExecutor interface"
+//        }
 
-        if (options.containsKey('api')) {
-            allKeys.remove('api')
+//        if (options.containsKey('userSettingValues')) {
+//            allKeys.remove('userSettingValues')
+//
+//            assert options['userSettingValues'] != null
+//            assert (options[
+//                    'userSettingValues'] as Map<String, Object>) != null: "'userSettingValues' must be a map of String->Object options"
+//        }
+//
+//        if (options.containsKey('customizeScriptBeforeRun')) {
+//            allKeys.remove('customizeScriptBeforeRun')
+//
+//            assert options['customizeScriptBeforeRun'] != null
+//            assert options[
+//                    'customizeScriptBeforeRun'] instanceof Closure: "'customizeScriptBeforeRun' should be a closure that takes HubitatAppScript as a single parameter"
+//        }
 
-            assert options['api'] == null || options[
-                    'api'] instanceof AppExecutor: "'api' value must be null or implement AppExecutor interface"
+//        if (options.containsKey('validationFlags')) {
+//            allKeys.remove('validationFlags')
+//
+//            assert options['validationFlags'] != null
+//            assert options[
+//                    'validationFlags'] as List<Flags>: "'validationFlags' should be a list of validation flags"
+//        }
+//
+//        if (options.containsKey('validator')) {
+//            allKeys.remove('validator')
+//
+//            assert options['validator'] != null
+//            assert options[
+//                    'validator'] as AppValidator: "'validator' should be an instance of 'AppValidator'"
+//        }
+
+//        if (options.containsKey('noValidation')) {
+//            allKeys.remove('noValidation')
+//
+//            assert options['noValidation'] != null
+
+        optionsValidator.validate("Validating sandbox options", options, new AppValidator())
+
+        if (options.noValidation) {
+            addFlags(options, [Flags.DontValidateDefinition, Flags.DontValidatePreferences])
         }
+//        }
 
-        if (options.containsKey('userSettingValues')) {
-            allKeys.remove('userSettingValues')
-
-            assert options['userSettingValues'] != null
-            assert (options[
-                    'userSettingValues'] as Map<String, Object>) != null: "'userSettingValues' must be a map of String->Object options"
-        }
-
-        if (options.containsKey('customizeScriptBeforeRun')) {
-            allKeys.remove('customizeScriptBeforeRun')
-
-            assert options['customizeScriptBeforeRun'] != null
-            assert options[
-                    'customizeScriptBeforeRun'] instanceof Closure: "'customizeScriptBeforeRun' should be a closure that takes HubitatAppScript as a single parameter"
-        }
-
-        if (options.containsKey('validationFlags')) {
-            allKeys.remove('validationFlags')
-
-            assert options['validationFlags'] != null
-            assert options[
-                    'validationFlags'] as List<Flags>: "'validationFlags' should be a list of validation flags"
-        }
-
-        if (options.containsKey('validator')) {
-            allKeys.remove('validator')
-
-            assert options['validator'] != null
-            assert options[
-                    'validator'] as AppValidator: "'validator' should be an instance of 'AppValidator'"
-        }
-
-        if (options.containsKey('noValidation')) {
-            allKeys.remove('noValidation')
-
-            assert options['noValidation'] != null
-
-            if (options.noValidation) {
-                addFlags(options, [Flags.DontValidateDefinition, Flags.DontValidatePreferences])
-            }
-        }
-
-        assert allKeys.isEmpty(): "These options are not supported: ${allKeys}"
+        // assert allKeys.isEmpty(): "These options are not supported: ${allKeys}"
     }
 
     static private void addFlags(Map options, List<Flags> flags) {

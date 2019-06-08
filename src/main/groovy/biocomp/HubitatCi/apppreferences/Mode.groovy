@@ -10,10 +10,10 @@ class Mode {
     final Map options
 
     private static final NamedParametersValidator paramValidator = NamedParametersValidator.make {
-        stringParameter(name: "title", required: true, canBeEmpty: false)
-        boolParameter(name: "required")
-        boolParameter(name: "multiple")
-        stringParameter(name: "image", canBeEmpty: false)
+        stringParameter("title", required(), mustNotBeEmpty())
+        boolParameter("required", notRequired())
+        boolParameter("multiple", notRequired())
+        stringParameter("image", notRequired(), mustNotBeEmpty())
     }
 
     Mode(Map options, AppValidator validator)

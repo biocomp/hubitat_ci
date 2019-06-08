@@ -39,6 +39,17 @@ class SimpleRange
         }
     }
 
+    /**
+     * Supported range formats:
+     * <code>
+     *     "*..*",
+     *     "2..7",
+     *     "-5.3..8.9",
+     *     "1..*"
+     * </code>
+     * @param range string
+     * @return range object
+     */
     static SimpleRange parse(String s)
     {
         if (s == null)

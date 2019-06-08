@@ -15,25 +15,25 @@ import groovy.transform.TypeChecked
 class AppValidator extends ValidatorBase{
 
     private static final NamedParametersValidator preferencesValidatorWithOauth = NamedParametersValidator.make {
-        stringParameter(name: "oauthPage", required: true)
+        stringParameter("oauthPage", required(), mustNotBeEmpty())
     }
 
     private static final NamedParametersValidator preferencesValidatorNoOauth = NamedParametersValidator.make {
     }
 
     private static final NamedParametersValidator inputOptionsValidator = NamedParametersValidator.make {
-        boolParameter(name: "capitalization")
-        objParameter(name: "defaultValue")
-        stringParameter(name: "name", required: true)
-        stringParameter(name: "title")
-        stringParameter(name: "description")
-        boolParameter(name: "multiple")
-        numericRangeParameter(name: "range")
-        boolParameter(name: "required")
-        boolParameter(name: "submitOnChange")
-        listOfStringsParameter(name: "options")
-        stringParameter(name: "type", required: true)
-        boolParameter(name: "hideWhenEmpty")
+        boolParameter("capitalization", notRequired())
+        objParameter("defaultValue", notRequired(), canBeNull())
+        stringParameter("name", required(), mustNotBeEmpty())
+        stringParameter("title", notRequired(), mustNotBeEmpty())
+        stringParameter("description", notRequired(), mustNotBeEmpty())
+        boolParameter("multiple", notRequired())
+        numericRangeParameter("range", notRequired())
+        boolParameter("required", notRequired())
+        boolParameter("submitOnChange", notRequired())
+        listOfStringsParameter("options", notRequired())
+        stringParameter("type", required(), mustNotBeEmpty())
+        boolParameter("hideWhenEmpty", notRequired())
     }
 
     private static final HashSet<String> validStaticInputTypes = [
