@@ -3,6 +3,9 @@ package biocomp.hubitatCi.validation
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
+/**
+ * Validates map of options given map of supported/mandatory parameters and their validators.
+ */
 @TypeChecked
 class NamedParametersValidator {
     static NamedParametersValidator make(@DelegatesTo(ParametersToValidate) Closure c) {
@@ -34,12 +37,31 @@ class NamedParametersValidator {
         return options
     }
 
+    /**
+     * Copy contents into provided containers.
+     */
+    @CompileStatic
+    void copyTo(
+            HashMap<String, ParametersToValidate.Parameter> supportedParameters,
+            HashSet<String> mandatoryParameters)
+    {
+        this.supportedParameters.each { supportedParameters[it.key] = it.value }
+        this.mandatoryParameters.each { mandatoryParameters.add(it) }
+    }
+
     enum ValidatorOption
     {
         IgnoreMissingMandatoryInputs
     }
 
-    @TypeChecked
+    /**
+     * Validate map of options.
+     * @param context - string is added to any error reported by validator.
+     * @param options - map to be validated.
+     * @param validator - validator object is passed into validation callbacks (and used to enable/disable validations).
+     * @param validatorOptions - extra options {@see #ValidationOption}
+     */
+    @CompileStatic
     void validate(
             String context,
             Map options,
@@ -51,7 +73,22 @@ class NamedParametersValidator {
 
 
     /**
-     * Pass not only a map, but other unnamed options that are passed separately.
+     * Validate map of options with unnamed parameters.
+     * Same as {@link #validate(String, Map, ValidatorBase, EnumSet<ValidationOption>)},
+     *  but also takes unnamedOptions. This is used when method takes some arguments, and map of options.
+     *  Map may also have same parameters that were passed separately.
+     *  This method ensures this is not the case, and also applies validator logic to those extra parameters.
+     *  <p>Example:</p>
+     *  <code>
+     *      // Two overloads of foo, first takes common parameter outside of Map of options.
+     *      void foo(int usefulOption1, Map options); //  Where 'options' can also contain 'usefulOption'.
+     *      void foo(Map options); //  Where 'options' can also contain 'usefulOption'.
+     *  </code>
+     * @param context - string is added to any error reported by validator.
+     * @param Map unnamedOptions - options that were not named at method call.
+     * @param options - map to be validated.
+     * @param validator - validator object is passed into validation callbacks (and used to enable/disable validations).
+     * @param validatorOptions - extra options {@see #ValidationOption}
      */
     @CompileStatic
     void validate(
@@ -84,6 +121,6 @@ class NamedParametersValidator {
         }
     }
 
-    final HashMap<String, ParametersToValidate.Parameter> supportedParameters
-    final HashSet<String> mandatoryParameters
+    private final HashMap<String, ParametersToValidate.Parameter> supportedParameters
+    private final HashSet<String> mandatoryParameters
 }

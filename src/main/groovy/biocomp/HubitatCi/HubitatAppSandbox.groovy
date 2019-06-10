@@ -111,67 +111,17 @@ class HubitatAppSandbox {
 
     @CompileStatic
     private static void validateAndUpdateSandboxOptions(Map options) {
-//        def allKeys = new HashSet<String>(options.keySet());
-//
-//        if (options.containsKey('api')) {
-//            allKeys.remove('api')
-//
-//            assert options['api'] == null || options[
-//                    'api'] instanceof AppExecutor: "'api' value must be null or implement AppExecutor interface"
-//        }
-
-//        if (options.containsKey('userSettingValues')) {
-//            allKeys.remove('userSettingValues')
-//
-//            assert options['userSettingValues'] != null
-//            assert (options[
-//                    'userSettingValues'] as Map<String, Object>) != null: "'userSettingValues' must be a map of String->Object options"
-//        }
-//
-//        if (options.containsKey('customizeScriptBeforeRun')) {
-//            allKeys.remove('customizeScriptBeforeRun')
-//
-//            assert options['customizeScriptBeforeRun'] != null
-//            assert options[
-//                    'customizeScriptBeforeRun'] instanceof Closure: "'customizeScriptBeforeRun' should be a closure that takes HubitatAppScript as a single parameter"
-//        }
-
-//        if (options.containsKey('validationFlags')) {
-//            allKeys.remove('validationFlags')
-//
-//            assert options['validationFlags'] != null
-//            assert options[
-//                    'validationFlags'] as List<Flags>: "'validationFlags' should be a list of validation flags"
-//        }
-//
-//        if (options.containsKey('validator')) {
-//            allKeys.remove('validator')
-//
-//            assert options['validator'] != null
-//            assert options[
-//                    'validator'] as AppValidator: "'validator' should be an instance of 'AppValidator'"
-//        }
-
-//        if (options.containsKey('noValidation')) {
-//            allKeys.remove('noValidation')
-//
-//            assert options['noValidation'] != null
-
         optionsValidator.validate("Validating sandbox options", options, new AppValidator())
 
         if (options.noValidation) {
             addFlags(options, [Flags.DontValidateDefinition, Flags.DontValidatePreferences])
         }
-//        }
-
-        // assert allKeys.isEmpty(): "These options are not supported: ${allKeys}"
     }
 
     static private void addFlags(Map options, List<Flags> flags) {
         options.putIfAbsent('validationFlags', [])
         (options.validationFlags as List<Flags>).addAll(flags)
     }
-
 
     final private File file = null
     final private String text = null

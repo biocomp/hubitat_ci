@@ -13,40 +13,14 @@ class ParametersToValidate
     {
         Parameter(String name, IsRequired required, List<Flags> dontValidateIfFlags, Closure validator)
         {
-            this([name: name, required: required == IsRequired.Yes, dontValidateIfFlags: dontValidateIfFlags], validator)
-        }
+            assert(name)
 
-        Parameter(Map<String, Object> options, Closure validator)
-        {
-            // Check that option's keys only has keys from known ones below and
-            // extraValidParameterNames
-            assert((
-                    options.keySet()
-                            - ((["name", "required", "dontValidateIfFlags"] as Set)
-                            )).size() == 0)
+            this.name = name
+            this.required = (required == IsRequired.Yes)
 
-            assert(options.name)
-            name = options.name
-
-            required = options.get("required", false)
-
-            def dontValidateWithFlagsValue = options.get("dontValidateIfFlags")
-            if (dontValidateWithFlagsValue == null)
-            {
-                dontValidateWithTheseFlags = EnumSet.noneOf(Flags)
-            }
-            else if (dontValidateWithFlagsValue instanceof List<Flags>)
-            {
-                dontValidateWithTheseFlags = EnumSet.noneOf(Flags)
-                dontValidateWithTheseFlags.addAll(dontValidateWithFlagsValue as List<Flags>)
-            }
-            else if (dontValidateWithFlagsValue instanceof EnumSet)
-            {
-                dontValidateWithTheseFlags = dontValidateWithFlagsValue as EnumSet
-            }
-            else
-            {
-                assert false, "${dontValidateWithFlagsValue} is not a supported way of passing set of flags for 'dontValidateIfFlags' parameter"
+            this.dontValidateWithTheseFlags = EnumSet.noneOf(Flags)
+            if (dontValidateIfFlags != null) {
+                this.dontValidateWithTheseFlags.addAll(dontValidateIfFlags)
             }
 
             this.validator = {
@@ -80,13 +54,14 @@ class ParametersToValidate
         return IsRequired.No
     }
 
+    @CompileStatic
     private void addParameter(Parameter p)
     {
         supportedParameters[p.name] = p
 
         if (p.required)
         {
-            mandatoryParameters << p.name
+            mandatoryParameters.add(p.name)
         }
     }
 
@@ -162,6 +137,7 @@ class ParametersToValidate
             }))
     }
 
+    @CompileStatic
     void listOfStringsParameter(String name, IsRequired required)
     {
         addParameter(new Parameter(name, required, [], { ValidatorBase validator, String context, def value ->
@@ -175,6 +151,7 @@ class ParametersToValidate
             }))
     }
 
+    @CompileStatic
     private static String validateStringValue(
             ValidatorBase validator,
             String context,
@@ -221,7 +198,8 @@ class ParametersToValidate
     {
         return CanBeEmpty.No
     }
-    
+
+    @CompileStatic
     void stringParameter(String name, IsRequired required, CanBeEmpty canBeEmpty, List<Flags> dontValidateIfFlags = null)
     {
         addParameter(new Parameter(
@@ -231,6 +209,7 @@ class ParametersToValidate
                 }))
     }
 
+    @CompileStatic
     void enumStringParameter(String name, IsRequired required, List<String> values)
     {
         assert values
@@ -244,6 +223,7 @@ class ParametersToValidate
                 }))
     }
 
+    @CompileStatic
     void mapParameter(String name, IsRequired required)
     {
         addParameter(new Parameter(name, required, [],
@@ -253,6 +233,7 @@ class ParametersToValidate
                 }))
     }
 
+    @CompileStatic
     void intParameter(String name, IsRequired required)
     {
         addParameter(new Parameter(name, required, [],
@@ -276,10 +257,10 @@ class ParametersToValidate
      * If names match, it's caller's problem.
      * @param copyFrom
      */
+    @CompileStatic
     void add(NamedParametersValidator copyFrom)
     {
-        copyFrom.supportedParameters.each { supportedParameters[it.key] = it.value }
-        copyFrom.mandatoryParameters.each { mandatoryParameters.add(it) }
+        copyFrom.copyTo(supportedParameters, mandatoryParameters)
     }
 
     final HashMap<String, Parameter> supportedParameters = [] as HashMap
