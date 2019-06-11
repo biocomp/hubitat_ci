@@ -19,8 +19,17 @@ abstract class HubitatAppScript extends Script
     private AppMappingsReader mappingsReader = null
     private AppValidator validator = null
 
+    private final HashSet<String> existingMethods = InitExistingMethods()
+
     @Delegate
     private AppExecutor api = null
+
+    @CompileStatic
+    private static HashSet<String> InitExistingMethods()
+    {
+        return getMetaClass().methods.collect{m -> m.name} as HashSet<String>;
+    }
+
 
     @TypeChecked
     @CompileStatic
@@ -120,11 +129,11 @@ abstract class HubitatAppScript extends Script
             // default: - continue processing below
         }
 
-        def methodName = "get${property.capitalize()}"
+        def getterMethodName = "get${property.capitalize()}"
         try {
             // Simple implementation of redirecting getter back to script class (if present)
             // Don't need to support MOP here, everything can be mocked via AppExecutorBase interface.
-            def getter = this.getClass().getMethod(methodName, new Class[0])
+            def getter = this.getClass().getMethod(getterMethodName, new Class[0])
             //System.out.println "FOUND getter ${methodName}!"
             return getter.invoke(this);
         }
@@ -133,11 +142,21 @@ abstract class HubitatAppScript extends Script
             // It's OK, let's hope it'll be found in metaclass
         }
 
+        // There's a property, return it.
+        if (getMetaClass().hasProperty(this, property))
+        {
+            return getMetaClass().getProperty(this as GroovyObjectSupport, property)
+        }
+        // There's a method handler taking one arg (Event), return that.
+        else if (getMetaClass().pickMethod(property, Object.class) != null)
+        {
+            return this.&"${property}"
+        }
+
+        // If no such property, take it from settingsMap
         if (!getMetaClass().hasProperty(this, property)) {
             return this.@settingsMap.get(property)
         }
-
-        return getMetaClass().getProperty(this as GroovyObjectSupport, property)
     }
 
     /*

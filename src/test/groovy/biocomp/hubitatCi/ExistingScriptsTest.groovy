@@ -81,6 +81,33 @@ class ThermostatDimerSyncHelperTest extends
         expect:
             sandbox.run()
     }
+
+    def "Installation succeeds"() {
+        setup:
+            def log = Mock(Log)
+            AppExecutor api = Mock { _ * getLog() >> log }
+
+            def thermostat = "ThermostatMock"
+            def coolingDimmer = "CoolingDimmerMock"
+            def heatingDimmer = "HeatingDimmerMock"
+
+            def script = sandbox.run(
+                    api: api, userSettingValues: [
+                    thermostat: thermostat,
+                    coolingDimmer: coolingDimmer,
+                    heatingDimmer: heatingDimmer]
+            )
+
+        when:
+            script.installed()
+
+        then:
+            1* log.debug("Initializing")
+            1* api.subscribe(thermostat, "thermostatCoolingSetpoint", _)
+            1* api.subscribe(thermostat, "thermostatHeatingSetpoint", _)
+            1* api.subscribe(coolingDimmer, "level", _)
+            1* api.subscribe(heatingDimmer, "level", _)
+    }
 }
 
 //class WeatherForecastScriptTest extends
