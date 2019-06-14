@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.deviceMetadata
+package biocomp.hubitatCi.device.metadata
 
 import spock.lang.Specification
 

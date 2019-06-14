@@ -1,7 +1,6 @@
-package biocomp.hubitatCi.apppreferences
+package biocomp.hubitatCi.app.preferences
 
-import biocomp.hubitatCi.HubitatAppSandbox
-import biocomp.hubitatCi.apppreferences.Preferences
+import biocomp.hubitatCi.app.HubitatAppSandbox
 
 class PreferencesValidationCommon {
     private static String validInput = 'input "temperature1", "number", title: "Temperature"'

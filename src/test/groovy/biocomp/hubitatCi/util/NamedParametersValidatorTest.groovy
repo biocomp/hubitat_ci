@@ -1,7 +1,7 @@
 package biocomp.hubitatCi.util
 
 
-import biocomp.hubitatCi.validation.AppValidator
+import biocomp.hubitatCi.app.AppValidator
 import biocomp.hubitatCi.validation.NamedParametersValidator
 import groovy.transform.TypeChecked
 import spock.lang.Specification

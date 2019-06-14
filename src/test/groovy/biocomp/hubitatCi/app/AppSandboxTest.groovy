@@ -1,14 +1,17 @@
-package biocomp.hubitatCi
+package biocomp.hubitatCi.app
 
-
-import biocomp.hubitatCi.emulation.appApi.AppExecutor
-import biocomp.hubitatCi.emulation.commonApi.Log
+import biocomp.hubitatCi.api.appApi.AppExecutor
+import biocomp.hubitatCi.api.commonApi.Log
+import biocomp.hubitatCi.app.HubitatAppSandbox
+import biocomp.hubitatCi.validation.Flags
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import spock.lang.Specification
 import spock.lang.Unroll
 
 /*
+*  Documented restrictions:
 *
+* Can't use these methods:
     addShutdownHook()
     execute()
     getClass()
@@ -256,5 +259,33 @@ def foo()
 
         expect:
             verifyMethodsWereOverridden(script)
+    }
+
+    def "subscribe() will fail validation for non-existing attribute"()
+    {
+        setup:
+            final def script = """
+preferences {
+    page(name:"mainPage", title:"Settings", install: true, uninstall: true) {
+        section() {
+            input (name:"thermostat", type: "capability.thermostat", title: "Thermostat", required: true, multiple: false)
+        }
+    }
+}
+
+def installed() {
+    initialize()
+}
+
+def initialize() {
+    subscribe(thermostat, "thermostatCoolingSetpoint", realCoolingSetpointHandler)
+}
+"""
+        when:
+            new HubitatAppSandbox(script).run(validationFlags: [Flags.DontValidateDefinition]).installed()
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("'Thermostat' does not contain attribute 'thermostatCoolingSetpoint'. Valid attributes are: [")
     }
 }

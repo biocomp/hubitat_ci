@@ -1,15 +1,13 @@
-package biocomp.hubitatCi.apppreferences
+package biocomp.hubitatCi.app.preferences
 
-import biocomp.hubitatCi.HubitatAppSandbox
+import biocomp.hubitatCi.app.HubitatAppSandbox
 import biocomp.hubitatCi.validation.Flags
-import spock.lang.Unroll
-
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 import spock.lang.Specification
+import spock.lang.Unroll
 
 import static PreferencesValidationCommon.parseOneChild
 import static org.codehaus.groovy.runtime.DefaultGroovyMethods.combinations
-
 
 /**
  * Validation tests for preferences' inputs

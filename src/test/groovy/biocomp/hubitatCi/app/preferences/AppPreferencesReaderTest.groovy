@@ -1,6 +1,6 @@
-package biocomp.hubitatCi.apppreferences
+package biocomp.hubitatCi.app.preferences
 
-import biocomp.hubitatCi.HubitatAppSandbox
+import biocomp.hubitatCi.app.HubitatAppSandbox
 import biocomp.hubitatCi.validation.Flags
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 import spock.lang.Specification
@@ -758,5 +758,25 @@ definition(oauth: true)
             AssertionError e = thrown()
             e.message.contains('someInvalidPage')
             e.message.contains('oauthPage')
+    }
+
+    def "When preferences{ section{ page() }}, error correctly states that section must be inside page"()
+    {
+        setup:
+            final def script = """
+preferences {
+    section() {
+        page(name:"mainPage", title:"Settings") {
+        }
+    }
+}
+"""
+        when:
+            new HubitatAppSandbox(script).run(validationFlags: [Flags.DontValidateDefinition])
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("page() is being called within section()")
+            !e.message.contains("recursive")
     }
 }

@@ -1,7 +1,7 @@
-package biocomp.hubitatCi.deviceMetadata
+package biocomp.hubitatCi.device.metadata
 
-import biocomp.hubitatCi.HubitatDeviceSandbox
 import biocomp.hubitatCi.capabilities.Capabilities
+import biocomp.hubitatCi.device.HubitatDeviceSandbox
 import biocomp.hubitatCi.validation.Flags
 import spock.lang.Specification
 import spock.lang.Unroll

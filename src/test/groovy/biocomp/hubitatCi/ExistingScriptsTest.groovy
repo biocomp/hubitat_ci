@@ -1,10 +1,11 @@
 package biocomp.hubitatCi
 
-
+import biocomp.hubitatCi.api.appApi.AppExecutor
+import biocomp.hubitatCi.api.commonApi.InstalledAppWrapper
+import biocomp.hubitatCi.api.commonApi.Log
+import biocomp.hubitatCi.app.AppValidator
+import biocomp.hubitatCi.app.HubitatAppSandbox
 import biocomp.hubitatCi.validation.Flags
-import biocomp.hubitatCi.emulation.appApi.AppExecutor
-import biocomp.hubitatCi.emulation.commonApi.InstalledAppWrapper
-import biocomp.hubitatCi.emulation.commonApi.Log
 import spock.lang.Specification
 
 class AppTemplateScriptTest extends
@@ -288,7 +289,7 @@ class Tonesto7HomebridgeScriptTest extends Specification
         expect:
             sandbox.run(
                     api: api,
-                    validator: new validation.AppValidator([
+                    validator: new AppValidator([
                             Flags.AllowEmptyOptionValueStrings,
                             Flags.AllowNullListOptions,
                             Flags.AllowMissingOAuthPage],
