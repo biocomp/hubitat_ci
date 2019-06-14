@@ -2,6 +2,7 @@ package biocomp.hubitatCi.capabilities
 
 class CapabilityAttributeInfo {
     private static Map supportedOptions = ["min", "max"]
+
     CapabilityAttributeInfo(String name, Class type, Map options)
     {
         assert name
@@ -27,8 +28,8 @@ class CapabilityAttributeInfo {
         max = (Double)readOption("max")
     }
 
-    private String name
-    private Class type
-    private Double min = null
-    private Double max = null
+    public final String name
+    public final Class type
+    public final Double min = null
+    public final Double max = null
 }

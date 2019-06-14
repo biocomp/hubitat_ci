@@ -1,5 +1,8 @@
 package biocomp.hubitatCi.capabilities
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 Map<String, CapabilityAttributeInfo> makeAttributes(List<CapabilityAttributeInfo> attributes)
 {
     return attributes.collectEntries { it -> [it.name, it]}

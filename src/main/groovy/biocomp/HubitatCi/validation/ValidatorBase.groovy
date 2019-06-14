@@ -1,21 +1,15 @@
 package biocomp.hubitatCi.validation
 
 import biocomp.hubitatCi.util.AddValidationAfterEachMethodCompilationCustomizer
-import biocomp.hubitatCi.DoNotCallMeBinding
-import biocomp.hubitatCi.util.LoggingCompilationCustomizer
+import biocomp.hubitatCi.util.DoNotCallMeBinding
 import biocomp.hubitatCi.util.RemovePrivateFromScriptCompilationCustomizer
-import biocomp.hubitatCi.SandboxClassLoader
+import biocomp.hubitatCi.util.SandboxClassLoader
 import groovy.json.JsonBuilder
 import groovy.time.TimeCategory
 import groovy.transform.TypeChecked
 import groovy.xml.MarkupBuilder
 import org.codehaus.groovy.ast.ClassNode
-import org.codehaus.groovy.ast.expr.AttributeExpression
-import org.codehaus.groovy.ast.expr.MethodCallExpression
-import org.codehaus.groovy.ast.expr.PropertyExpression
-import org.codehaus.groovy.ast.expr.StaticMethodCallExpression
-import org.codehaus.groovy.ast.expr.VariableExpression
-import org.codehaus.groovy.control.CompilePhase
+import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer
 import org.codehaus.groovy.control.customizers.SourceAwareCustomizer
@@ -130,10 +124,10 @@ class ValidatorBase {
                                                             //org.json.JSONException,
                                                             //org.json.JSONObject,
                                                             //org.json.JSONObject.Null,
-                                                            biocomp.hubitatCi.emulation.Protocol,
-                                                            biocomp.hubitatCi.emulation.commonApi.HubAction,
-                                                            biocomp.hubitatCi.emulation.commonApi.HubResponse,
-                                                            biocomp.hubitatCi.emulation.commonApi.Location
+                                                            biocomp.hubitatCi.api.Protocol,
+                                                            biocomp.hubitatCi.api.commonApi.HubAction,
+                                                            biocomp.hubitatCi.api.commonApi.HubResponse,
+                                                            biocomp.hubitatCi.api.commonApi.Location
 
     ] as HashSet<Class>
 
@@ -240,7 +234,7 @@ class ValidatorBase {
             return true
         }
 
-        if (classNode.name.startsWith('biocomp.hubitatCi.emulation.deviceApi.zwave'))
+        if (classNode.name.startsWith('biocomp.hubitatCi.api.deviceApi.zwave'))
         {
             return true
         }
