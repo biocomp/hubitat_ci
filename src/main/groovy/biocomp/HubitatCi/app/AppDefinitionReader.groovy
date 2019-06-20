@@ -31,7 +31,7 @@ class AppDefinitionReader implements
 
         this.definitions = definitions
 
-        assert definitions
+        assert definitions != null
         assert definitions.isEmpty(): "definitions map passed into AppDefinitionReader must be empty"
     }
 

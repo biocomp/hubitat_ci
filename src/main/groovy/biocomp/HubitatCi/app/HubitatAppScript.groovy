@@ -61,21 +61,21 @@ abstract class HubitatAppScript extends Script
         // and then does nothing in subscribe().
         this.subscriptionReader = new AppSubscriptionReader(api, validator, data)
         api = this.subscriptionReader
-        validateAfterRun.add{this.subscriptionReader.initializationComplete()}
+        validateAfterRun.add(this.subscriptionReader.&initializationComplete)
 
         this.preferencesReader = new AppPreferencesReader(this, api, validator, userSettingValues, data.preferences)
         api = this.preferencesReader
-        validateAfterRun.add{this.preferencesReader.validateAfterRun()}
+        validateAfterRun.add(this.preferencesReader.&validateAfterRun)
 
         this.definitionReader = new AppDefinitionReader(api, validator, data.definitions)
         api = this.definitionReader
-        validateAfterRun.add{this.definitionReader.validateAfterRun()}
+        validateAfterRun.add(this.definitionReader.&validateAfterRun)
 
         this.mappingsReader = new AppMappingsReader(api, this, validator)
         api = this.mappingsReader
-        validateAfterRun.add{this.mappingsReader.validateAfterRun()}
+        validateAfterRun.add(this.mappingsReader.&validateAfterRun)
 
-        validateAfterRun.add{ -> validator.validateAfterRun(data)}
+        validateAfterRun.add(validator.&validateAfterRun.curry(data))
 
         this.api = api
         this.userSettingsMap = preferencesReader.getSettings()

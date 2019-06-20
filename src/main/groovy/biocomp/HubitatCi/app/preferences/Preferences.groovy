@@ -9,7 +9,9 @@ class Preferences
 {
     @CompileStatic
     void assignOptions(Map options) {
-        this.options.putAll(options)
+        if (options != null) {
+            this.options.putAll(options)
+        }
     }
 
     /**
