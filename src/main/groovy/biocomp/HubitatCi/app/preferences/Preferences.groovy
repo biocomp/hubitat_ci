@@ -1,17 +1,16 @@
 package biocomp.hubitatCi.app.preferences
 
 
+import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
 @TypeChecked
 class Preferences
 {
-    Preferences(Script parentScript, Map options) {
-        this.parentScript = parentScript
-        this.options = options
+    @CompileStatic
+    void assignOptions(Map options) {
+        this.options.putAll(options)
     }
-
-    final Script parentScript
 
     /**
      * Pages for multiple-page apps.*/
@@ -21,13 +20,20 @@ class Preferences
      * Dynamic pages for multiple-page apps.*/
     final List<Page> dynamicPages = []
 
-
     /**
      * Methods to be called to generate dynamic pages.
      * Called via registerDynamicPages()*/
     final List<Closure> dynamicRegistrations = []
 
-    final Map options = null
+    @CompileStatic
+    List<Input> getAllInputs()
+    {
+        return (List<Input>)allPages.collect{
+            it.sections.collect{ it.children.findAll{ it instanceof Input }.collect{ (Input)it } }
+        }.flatten()
+    }
+
+    final Map options = [:]
 
     /**
      * Used when preferences().section() is used directly.

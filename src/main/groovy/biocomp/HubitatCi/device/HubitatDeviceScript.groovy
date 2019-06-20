@@ -28,7 +28,7 @@ abstract class HubitatDeviceScript extends Script
 //        this.preferencesReader = parent.@preferencesReader
 //        this.definitionReader = parent.@definitionReader
 //        this.mappingsReader = parent.@mappingsReader
-//        this.settingsMap = parent.@settingsMap
+//        this.userSettingsMap = parent.@userSettingsMap
 //    }
 
 //    private Map<String, Object> injectedMappingHandlerData = [:]

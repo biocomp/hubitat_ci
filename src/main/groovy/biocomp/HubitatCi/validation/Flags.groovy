@@ -31,7 +31,16 @@ enum Flags
 
     DontValidateDeviceInputName,
     AllowWritingToSettings,
+
+    /**
+     * Do not validate that: every setting that was read was an input,
+     * and that settings were never written to.
+     */
     AllowReadingNonInputSettings,
+
+    /**
+     * Do not validate that: every page can be reached by reference from other page.
+     */
     AllowUnreachablePages,
     AllowTitleInPageCallingMethods,
     AllowMissingOAuthPage,

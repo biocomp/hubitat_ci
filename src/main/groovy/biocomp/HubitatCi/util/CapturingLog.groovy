@@ -1,6 +1,6 @@
 package biocomp.hubitatCi.util
 
-import biocomp.hubitatCi.emulation.commonApi.Log
+import biocomp.hubitatCi.api.commonApi.Log
 
 class CapturingLog implements Log
 {

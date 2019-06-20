@@ -278,14 +278,16 @@ def installed() {
 }
 
 def initialize() {
-    subscribe(thermostat, "thermostatCoolingSetpoint", realCoolingSetpointHandler)
+    subscribe(thermostat, "badAttributeName", realCoolingSetpointHandler)
 }
+
+def realCoolingSetpointHandler(evt) {}
 """
         when:
             new HubitatAppSandbox(script).run(validationFlags: [Flags.DontValidateDefinition]).installed()
 
         then:
             AssertionError e = thrown()
-            e.message.contains("'Thermostat' does not contain attribute 'thermostatCoolingSetpoint'. Valid attributes are: [")
+            e.message.contains("'Thermostat' does not contain attribute 'badAttributeName'. Valid attributes are: [")
     }
 }

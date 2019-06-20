@@ -1,9 +1,9 @@
 package biocomp.hubitatCi.device.metadata
 
 import biocomp.hubitatCi.api.deviceApi.*
-import biocomp.hubitatCi.app.preferences.SettingsContainer
 import biocomp.hubitatCi.device.DeviceValidator
 import biocomp.hubitatCi.util.ReaderState
+import biocomp.hubitatCi.validation.SettingsContainer
 import groovy.transform.TypeChecked
 
 @TypeChecked

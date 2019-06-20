@@ -17,7 +17,7 @@ interface Subscription {
      */
     abstract void subscribe(Object toWhat, String attributeNameOrNameAndValueOrEventName, Object handlerMethod, Map options)
 
-    abstract void subscribe(Object toWhat, Object handlerMethod)
+    abstract void subscribe(Object location, Object handlerMethod)
 
     abstract void subscribe(Object toWhat, String attributeNameOrNameAndValueOrEventName, Object handler)
 

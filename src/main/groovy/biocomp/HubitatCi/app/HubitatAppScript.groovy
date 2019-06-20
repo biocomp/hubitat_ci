@@ -3,7 +3,6 @@ package biocomp.hubitatCi.app
 import biocomp.hubitatCi.api.appApi.AppExecutor
 import biocomp.hubitatCi.app.preferences.AppPreferencesReader
 import biocomp.hubitatCi.app.preferences.Preferences
-import biocomp.hubitatCi.util.MappingPath
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
@@ -13,11 +12,14 @@ import groovy.transform.TypeChecked
 @TypeChecked
 abstract class HubitatAppScript extends Script
 {
-    private Map settingsMap
+    private Map userSettingsMap
     private AppPreferencesReader preferencesReader = null
     private AppDefinitionReader definitionReader = null
     private AppMappingsReader mappingsReader = null
+    private AppSubscriptionReader subscriptionReader = null
+    final private List<Closure> validateAfterRun = []
     private AppValidator validator = null
+    private final AppData data = new AppData()
 
     private final HashSet<String> existingMethods = InitExistingMethods()
 
@@ -39,7 +41,7 @@ abstract class HubitatAppScript extends Script
         this.preferencesReader = parent.@preferencesReader
         this.definitionReader = parent.@definitionReader
         this.mappingsReader = parent.@mappingsReader
-        this.settingsMap = parent.@settingsMap
+        this.userSettingsMap = parent.@userSettingsMap
     }
 
     private Map<String, Object> injectedMappingHandlerData = [:]
@@ -55,17 +57,28 @@ abstract class HubitatAppScript extends Script
     {
         customizeScriptBeforeRun?.call(this)
 
-        this.preferencesReader = new AppPreferencesReader(this, api, validator, userSettingValues)
-        api = this.preferencesReader;
+        // This guy needs to be first - it checks if its api is null,
+        // and then does nothing in subscribe().
+        this.subscriptionReader = new AppSubscriptionReader(api, validator, data)
+        api = this.subscriptionReader
+        validateAfterRun.add{this.subscriptionReader.initializationComplete()}
 
-        this.definitionReader = new AppDefinitionReader(api, validator)
+        this.preferencesReader = new AppPreferencesReader(this, api, validator, userSettingValues, data.preferences)
+        api = this.preferencesReader
+        validateAfterRun.add{this.preferencesReader.validateAfterRun()}
+
+        this.definitionReader = new AppDefinitionReader(api, validator, data.definitions)
         api = this.definitionReader
+        validateAfterRun.add{this.definitionReader.validateAfterRun()}
 
         this.mappingsReader = new AppMappingsReader(api, this, validator)
-        api = mappingsReader
+        api = this.mappingsReader
+        validateAfterRun.add{this.mappingsReader.validateAfterRun()}
+
+        validateAfterRun.add{ -> validator.validateAfterRun(data)}
 
         this.api = api
-        this.settingsMap = preferencesReader.getSettings()
+        this.userSettingsMap = preferencesReader.getSettings()
 
         this.validator = validator
     }
@@ -81,12 +94,12 @@ abstract class HubitatAppScript extends Script
 
     Preferences getProducedPreferences()
     {
-        preferencesReader.getProducedPreferences()
+        data.preferences
     }
 
     Map<String, Object> getProducedDefinition()
     {
-        definitionReader.getDefinitions()
+        data.definitions
     }
 
     Map<String, MappingPath> getProducedMappings()
@@ -154,9 +167,9 @@ abstract class HubitatAppScript extends Script
             return this.&"${property}"
         }
 
-        // If no such property, take it from settingsMap
+        // If no such property, try taking it from userSettingsMap
         if (!getMetaClass().hasProperty(this, property)) {
-            return this.@settingsMap.get(property)
+            return this.@userSettingsMap.get(property)
         }
     }
 
@@ -189,14 +202,14 @@ abstract class HubitatAppScript extends Script
                 break;
         }
 
-        this.@settingsMap.put(property, newValue)
+        this.@userSettingsMap.put(property, newValue)
     }
 
     @Override
     def run()
     {
         scriptBody()
-        validator.validateAfterRun(definitionReader, preferencesReader, mappingsReader)
+        validateAfterRun.each{ it() }
     }
 
     abstract void scriptBody()

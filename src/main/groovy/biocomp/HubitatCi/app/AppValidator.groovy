@@ -1,10 +1,15 @@
 package biocomp.hubitatCi.app
 
-import biocomp.hubitatCi.app.preferences.*
+
+import biocomp.hubitatCi.app.preferences.HRef
+import biocomp.hubitatCi.app.preferences.Input
+import biocomp.hubitatCi.app.preferences.Page
+import biocomp.hubitatCi.app.preferences.Preferences
 import biocomp.hubitatCi.capabilities.Capabilities
 import biocomp.hubitatCi.validation.Flags
 import biocomp.hubitatCi.validation.NamedParametersValidator
 import biocomp.hubitatCi.validation.ValidatorBase
+import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
 @TypeChecked
@@ -68,17 +73,15 @@ class AppValidator extends ValidatorBase{
         return constructParser(HubitatAppScript).parse(scriptText) as HubitatAppScript
     }
 
-    void validateAfterRun(AppDefinitionReader definitionReader, AppPreferencesReader preferencesReader, AppMappingsReader mappingsReader)
+    @CompileStatic
+    void validateAfterRun(AppData data)
     {
-        def preferences = preferencesReader.getProducedPreferences() // Just to trigger validation
-        def definitions = definitionReader.getDefinitions() // Trigger definition validation
+        def preferences = data.preferences
 
-        if (preferences && !hasFlag(Flags.DontValidatePreferences))
-        {
-            validatePreferences(preferences, false, definitions?.oauth as boolean)
+        if (preferences && !hasFlag(Flags.DontValidatePreferences)) {
+            validatePreferences(preferences, false, data.definitions?.oauth as boolean)
         }
     }
-
 
     /**
      * Run validations after all pages and sections were added
@@ -202,6 +205,8 @@ class AppValidator extends ValidatorBase{
         }
     }
 
+
+
     private void validateInputType(Input input)
     {
         final def inputType = input.readType()
@@ -210,9 +215,9 @@ class AppValidator extends ValidatorBase{
             return
         }
 
-        if (inputType =~ /capability\.[a-zA-Z0-9._]+/)
+        if (Input.isCapabilityType(inputType))
         {
-            if (Capabilities.capabilitiesByDeviceSelector.containsKey(inputType.substring(11)))
+            if (Input.findCapabilityFromTypeString(inputType))
             {
                 return
             }

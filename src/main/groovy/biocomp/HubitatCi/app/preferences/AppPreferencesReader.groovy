@@ -6,6 +6,8 @@ import biocomp.hubitatCi.api.appApi.Preferences as PreferencesInterface
 import biocomp.hubitatCi.app.AppValidator
 import biocomp.hubitatCi.app.HubitatAppScript
 import biocomp.hubitatCi.validation.Flags
+import biocomp.hubitatCi.validation.SettingsContainer
+import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
 @TypeChecked
@@ -16,11 +18,15 @@ class AppPreferencesReader implements
             HubitatAppScript parentScript,
             AppExecutor delegate,
             AppValidator validator,
-            Map userSettingsValue)
+            Map userSettingsValue,
+            Preferences preferncesToFill)
     {
         this.parentScript = parentScript
         this.delegate = delegate
         this.validator = validator
+        this.preferences_ = preferncesToFill
+
+        assert preferncesToFill, "AppPreferencesReader will fill out existing Preferences object from AppData"
 
         this.settingsContainer = new SettingsContainer(
                 { prefState.hasCurrentPage() ? prefState.currentPage.readName() : null },
@@ -28,12 +34,11 @@ class AppPreferencesReader implements
                 userSettingsValue);
     }
 
-    Preferences getProducedPreferences() {
+    @CompileStatic
+    void validateAfterRun() {
         if (!validator.hasFlag(Flags.DontValidatePreferences)) {
-            assert preferences_: "preferences() method was never called or failed. Either way, you can't get the preferences."
+            assert preferencesCalled: "preferences() method was never called or failed. Either way, you can't get the preferences."
         }
-
-        return preferences_
     }
 
     /*
@@ -149,14 +154,15 @@ class AppPreferencesReader implements
         addSectionImpl(sectionTitle, null, makeContents)
     }
 
+    @CompileStatic
     private void addSectionImpl(String sectionTitle, Map options, Closure makeContents) {
         if (prefState.hasCurrentPage()) {
-            prefState.currentPage.sections << prefState.initWithSection(
-                    new Section(prefState.currentPage.sections.size(), sectionTitle, options), makeContents)
+            prefState.currentPage.sections.add(prefState.initWithSection(
+                    new Section(prefState.currentPage.sections.size(), sectionTitle, options), makeContents))
         } else {
             this.prefState.initWithPage(prefState.currentPreferences.specialSinglePage, {
-                prefState.currentPage.sections << prefState.initWithSection(
-                        new Section(prefState.currentPage.sections.size(), sectionTitle, options), makeContents)
+                prefState.currentPage.sections.add(prefState.initWithSection(
+                        new Section(prefState.currentPage.sections.size(), sectionTitle, options), makeContents))
             },
                     false)
         }
@@ -191,22 +197,25 @@ class AppPreferencesReader implements
 
     @Override
     Object input(Map options, String name, String type) {
-        prefState.currentSection.children << new Input([name: name, type: type], options, validator)
-        settingsContainer.userInputFound(name)
+        def input = new Input([name: name, type: type], options, validator)
+        prefState.currentSection.children << input
+        settingsContainer.userInputFound(input)
         validator.validateInput(prefState.currentSection.children.last() as Input)
     }
 
     @Override
     Object input(String name, String type) {
-        prefState.currentSection.children << new Input([name: name, type: type], null, validator)
-        settingsContainer.userInputFound(name)
+        def input = new Input([name: name, type: type], null, validator)
+        prefState.currentSection.children << input
+        settingsContainer.userInputFound(input)
         validator.validateInput(prefState.currentSection.children.last() as Input)
     }
 
     @Override
     Object input(Map options) {
-        prefState.currentSection.children << new Input([:], options, validator)
-        settingsContainer.userInputFound(options.name as String)
+        def input = new Input([:], options, validator)
+        prefState.currentSection.children << input
+        settingsContainer.userInputFound(input)
         validator.validateInput(prefState.currentSection.children.last() as Input)
     }
 
@@ -322,11 +331,13 @@ class AppPreferencesReader implements
     */
 
     private void readPreferencesImpl(Map options, @DelegatesTo(PreferencesInterface) Closure makeContents) {
-        def newPreferences = new Preferences(parentScript, options)
-        preferences_ = prefState.initWithPreferences(newPreferences,
+        preferencesCalled = true
+
+        preferences_.assignOptions(options)
+        prefState.initWithPreferences(preferences_,
                 {
                     makeContents()
-                    registerDynamicPages(newPreferences)
+                    registerDynamicPages(preferences_)
                 })
 
         settingsContainer.preferencesReadingDone()
@@ -357,7 +368,8 @@ class AppPreferencesReader implements
 
     private final SettingsContainer settingsContainer
 
-    private Preferences preferences_ = null
+    private boolean preferencesCalled = false
+    private final Preferences preferences_
 
     private final HubitatAppScript parentScript;
 

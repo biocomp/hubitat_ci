@@ -2,11 +2,13 @@ package biocomp.hubitatCi.app
 
 import biocomp.hubitatCi.api.appApi.AppExecutor
 import biocomp.hubitatCi.api.appApi.Mappings
-import biocomp.hubitatCi.util.MappingPath
 import biocomp.hubitatCi.validation.Flags
+import groovy.transform.CompileStatic
+import groovy.transform.PackageScope
 import groovy.transform.TypeChecked
 
 @TypeChecked
+@PackageScope
 class AppMappingsReader implements AppExecutor {
     AppMappingsReader(AppExecutor delegate, HubitatAppScript script, AppValidator validator)
     {
@@ -67,6 +69,11 @@ class AppMappingsReader implements AppExecutor {
         return makeContentsClosure
     }
 
+    /**
+     * Nothing to validate
+     */
+    @CompileStatic
+    void validateAfterRun() {}
 
     private Map<String, MappingPath> currentMappings
 

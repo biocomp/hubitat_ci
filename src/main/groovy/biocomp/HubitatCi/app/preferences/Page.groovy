@@ -69,7 +69,7 @@ class Page
         stringParameter("title", notRequired(), mustNotBeEmpty())
     }
 
-    List<Section> sections = []
+    final List<Section> sections = []
 
     static Page makeSinglePage()
     {

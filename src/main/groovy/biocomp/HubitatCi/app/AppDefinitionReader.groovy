@@ -3,9 +3,12 @@ package biocomp.hubitatCi.app
 import biocomp.hubitatCi.api.appApi.AppExecutor
 import biocomp.hubitatCi.validation.Flags
 import biocomp.hubitatCi.validation.NamedParametersValidator
+import groovy.transform.CompileStatic
+import groovy.transform.PackageScope
 import groovy.transform.TypeChecked
 
 @TypeChecked
+@PackageScope
 class AppDefinitionReader implements
         AppExecutor
 {
@@ -22,27 +25,42 @@ class AppDefinitionReader implements
         boolParameter("oauth", notRequired())
     }
 
-    AppDefinitionReader(AppExecutor delegate, AppValidator validator) {
+    AppDefinitionReader(AppExecutor delegate, AppValidator validator, Map<String, Object> definitions) {
         this.delegate = delegate
         this.validator = validator
+
+        this.definitions = definitions
+
+        assert definitions
+        assert definitions.isEmpty(): "definitions map passed into AppDefinitionReader must be empty"
     }
 
     @Override
     def definition(Map definitionsMap, Closure makeContents) {
         assert makeContents == null: "Our test framework doesn't support closure version of definition() call - it's not public in the API and not documented"
-        verifyDefinitionMap(definitionsMap)
 
-        definitions = definitionsMap as Map<String, Object>
+        verifyDefinitionMap(definitionsMap)
+        storeDefinitions(definitionsMap)
     }
 
     @Override
     def definition(Map definitionsMap) {
         verifyDefinitionMap(definitionsMap)
-
-        definitions = definitionsMap as Map<String, Object>
+        storeDefinitions(definitionsMap)
     }
 
+    @CompileStatic
+    private void storeDefinitions(Map definitionsMap)
+    {
+        definitions.putAll(definitionsMap as Map<String, Object>)
+    }
+
+    @CompileStatic
     private void verifyDefinitionMap(Map definitionsMap) {
+        if (!validator.hasFlag(Flags.DontValidateDefinition)) {
+            assert definitions.isEmpty(): "definition() called more than once"
+        }
+
         if (!validator.hasFlag(Flags.DontValidateDefinition)) {
             assert definitionsMap: "Map passed into definition() can't be null"
 
@@ -54,17 +72,16 @@ class AppDefinitionReader implements
             }
 
             // Checking mandatory properties
-            assert definitionsMap: "definitions should be provided"
             definitionOptionsValidator.validate("definition(): ", definitionsMap, validator)
         }
     }
 
-    Map<String, Object> getDefinitions()
+    @CompileStatic
+    void validateAfterRun()
     {
         if (!validator.hasFlag(Flags.DontValidateDefinition)) {
-            assert definitions: "definition() method was never called or failed. Either way, definition list is empty."
+            assert definitions.size() != 0: "definition() method was never called or failed. Either way, definition list is empty."
         }
-        return definitions
     }
 
     @Delegate
