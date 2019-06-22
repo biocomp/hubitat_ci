@@ -141,3 +141,17 @@ class CapabilitiesTest extends Specification
     }
 }
 
+/**
+ * Just testing instantiation of one of the more complicated capabilities
+ */
+class ThermostatCapabilityTest extends Specification
+{
+    def "foo"()
+    {
+        expect:
+            ThermostatCoolingSetpoint._internalAttributes
+            Thermostat._internalAttributes
+            Capabilities.readAttributes(Thermostat.class).keySet() == ["supportedThermostatFanModes", "supportedThermostatModes", "temperature", "coolingSetpoint", "thermostatFanMode", "heatingSetpoint", "thermostatMode", "thermostatOperatingState", "schedule", "thermostatSetpoint"] as Set
+    }
+}
+

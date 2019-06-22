@@ -63,7 +63,7 @@ abstract class HubitatAppScript extends Script
         api = this.subscriptionReader
         validateAfterRun.add(this.subscriptionReader.&initializationComplete)
 
-        this.preferencesReader = new AppPreferencesReader(this, api, validator, userSettingValues, data.preferences)
+        this.preferencesReader = new AppPreferencesReader(this, api, validator, userSettingValues, data.preferences, data)
         api = this.preferencesReader
         validateAfterRun.add(this.preferencesReader.&validateAfterRun)
 

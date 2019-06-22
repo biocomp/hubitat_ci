@@ -2,6 +2,7 @@ package biocomp.hubitatCi.app
 
 import biocomp.hubitatCi.api.appApi.AppExecutor
 import biocomp.hubitatCi.app.preferences.Input
+import biocomp.hubitatCi.capabilities.Capabilities
 import biocomp.hubitatCi.capabilities.CapabilityAttributeInfo
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
@@ -66,10 +67,10 @@ class AppSubscriptionReader implements AppExecutor  {
         def capability = Input.findCapabilityFromTypeString(input.readType())
         assert capability != null: "Input ${input}'s type ${input.readType()} points to unknown capability."
 
-        def attributes = (Map<String, CapabilityAttributeInfo>)(capability.getField("_internalAttributes").get(null))
+        def attributes = Capabilities.readAttributes(capability)
         assert attributes != null: "Capability ${capability} does not define any attributes to subscribe to"
 
-        assert attributes.get(attributeNameOrNameAndValueOrEventName) : "Capability ${capability} does not have attribute ${attributeNameOrNameAndValueOrEventName}, it has these attributes: ${attributes.collect{it.key}}"
+        assert attributes.get(attributeNameOrNameAndValueOrEventName) : "Capability '${capability.simpleName}' does not contain attribute '${attributeNameOrNameAndValueOrEventName}'. Valid attributes are: ${attributes.collect{it.key}}"
 
 
         // Then check that it's a capability

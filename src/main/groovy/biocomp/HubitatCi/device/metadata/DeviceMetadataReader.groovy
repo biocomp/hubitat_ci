@@ -1,9 +1,11 @@
 package biocomp.hubitatCi.device.metadata
 
 import biocomp.hubitatCi.api.deviceApi.*
+import biocomp.hubitatCi.device.DeviceData
 import biocomp.hubitatCi.device.DeviceValidator
 import biocomp.hubitatCi.util.ReaderState
 import biocomp.hubitatCi.validation.SettingsContainer
+import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
 @TypeChecked
@@ -12,7 +14,8 @@ class DeviceMetadataReader implements DeviceMetadataSource
     DeviceMetadataReader(
             DeviceExecutor delegate,
             DeviceValidator validator,
-            MetaClass scriptMetaClass)
+            MetaClass scriptMetaClass,
+            DeviceData deviceData)
     {
         this.delegate = delegate
         this.validator = validator
@@ -21,8 +24,9 @@ class DeviceMetadataReader implements DeviceMetadataSource
                 new SettingsContainer(
                 { null },
                 validator,
-                [:]);
-
+                [:],
+                deviceData);
+        this.deviceData = deviceData
     }
 
     @Override
@@ -66,25 +70,24 @@ class DeviceMetadataReader implements DeviceMetadataSource
         def preferences = states.getOneOfCurrentStates('preferences()', 'section()') as List<DeviceInput>
         def input = new DeviceInput([name: name, type: type], options)
         validator.validateInput(input)
-        settingsContainer.userInputFound(input.readName())
         preferences.add(input)
     }
 
     @Override
+    @CompileStatic
     def input(String name, String type) {
         def preferences = states.getOneOfCurrentStates('preferences()', 'section()') as List<DeviceInput>
         def input = new DeviceInput([name: name, type: type], [:])
         validator.validateInput(input)
-        settingsContainer.userInputFound(input.readName())
         preferences.add(input)
     }
 
     @Override
+    @CompileStatic
     def input(Map options) {
         def preferences = states.getOneOfCurrentStates('preferences()', 'section()') as List<DeviceInput>
         def input = new DeviceInput([:], options)
         validator.validateInput(input)
-        settingsContainer.userInputFound(input.readName())
         preferences.add(input)
     }
 
@@ -166,7 +169,7 @@ class DeviceMetadataReader implements DeviceMetadataSource
 
     @Override
     void preferences(@DelegatesTo(DevicePreferences) Closure makeContents) {
-        producedPreferences = states.withState('preferences()', new ArrayList<DeviceInput>(), makeContents)
+        states.withState('preferences()', deviceData.producedPreferences, makeContents)
 
         settingsContainer.preferencesReadingDone()
         settingsContainer.validateAfterPreferences()
@@ -195,18 +198,12 @@ class DeviceMetadataReader implements DeviceMetadataSource
     private final DeviceValidator validator
 
     private Definition producedDefinition
-    private List<DeviceInput> producedPreferences = []
-
+    private final DeviceData deviceData
     private final SettingsContainer settingsContainer
     private final MetaClass scriptMetaClass
 
     Definition getProducedDefinition() {
         return producedDefinition
-    }
-
-    List<DeviceInput> getProducedPreferences()
-    {
-        return producedPreferences
     }
 
     SettingsContainer getSettings()

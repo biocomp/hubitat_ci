@@ -1,12 +1,26 @@
 package biocomp.hubitatCi.capabilities
 
+import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-
 import java.lang.annotation.Annotation
 
 @TypeChecked
 class Capabilities
 {
+    @CompileStatic
+    static HashMap<String, CapabilityAttributeInfo> readAttributes(Class capability)
+    {
+        HashMap<String, CapabilityAttributeInfo> result = [:]
+
+        capability.interfaces.each{
+            ((Map<String, CapabilityAttributeInfo>)it.getField("_internalAttributes").get(null)).each{result.put(it.key, it.value)}
+        }
+
+        ((Map<String, CapabilityAttributeInfo>)capability.getField("_internalAttributes").get(null)).each{result.put(it.key, it.value)}
+
+        return result
+    }
+
     static String toDeviceSelector(String capabilityClassName)
     {
         return getCapabilityDeviceSelector(Class.forName(capabilityClassName))

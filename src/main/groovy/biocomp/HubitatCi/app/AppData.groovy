@@ -1,17 +1,38 @@
 package biocomp.hubitatCi.app
 
 import biocomp.hubitatCi.app.preferences.Preferences
+import biocomp.hubitatCi.validation.IInputSource
+import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
 /**
  * All the information collected about the app.
   */
 @TypeChecked
-class AppData {
+class AppData implements IInputSource {
     /**
      * Results of definition() call.
      */
     final Map<String, Object> definitions = [:]
 
     final Preferences preferences = new Preferences()
+
+    @Override
+    @CompileStatic
+    def findInput(String name) {
+        // Linear search + reconstruction of list of inputs too.
+        def input = preferences.getAllInputs().find{ it.readName() == name }
+        if (input)
+        {
+            return new InputWrapper(input)
+        }
+
+        return null
+    }
+
+    @Override
+    @CompileStatic
+    Set<String> getAllInputNames() {
+        return preferences.getAllInputs().collect{ it.readName() } as Set<String>
+    }
 }

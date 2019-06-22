@@ -1,9 +1,18 @@
 package biocomp.hubitatCi.capabilities
 
-class CapabilityAttributeInfo {
-    private static Map supportedOptions = ["min", "max"]
+import groovy.transform.CompileStatic
+import groovy.transform.TypeChecked
 
-    CapabilityAttributeInfo(String name, Class type, Map options)
+@CompileStatic
+class CapabilityAttributeInfo {
+    private static HashSet<String> supportedOptions = ["min", "max"] as HashSet<String>
+
+    static Map<String, CapabilityAttributeInfo> makeList(List<CapabilityAttributeInfo> attributes)
+    {
+        return attributes.collectEntries { it -> [it.name, it]}
+    }
+
+    CapabilityAttributeInfo(String name, Class type, Map options = [:])
     {
         assert name
         assert type
@@ -11,9 +20,9 @@ class CapabilityAttributeInfo {
         this.name = name
         this.type = type
 
-        def supportedOptionsClone = (Map)supportedOptions.clone()
+        def supportedOptionsClone = (HashSet<String>)supportedOptions.clone()
         def readOption = { String o ->
-            assert(supportedOptionsClone.containsKey(o))
+            assert(supportedOptionsClone.contains(o))
 
             if (options.containsKey(o))
             {

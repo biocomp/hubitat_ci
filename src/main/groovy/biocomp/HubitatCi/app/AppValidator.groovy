@@ -86,6 +86,7 @@ class AppValidator extends ValidatorBase{
     /**
      * Run validations after all pages and sections were added
      * */
+    // @CompileStatic (compiler crashes with: def allNames = preferences.pages.collect { it.readName() } + preferences.dynamicPages.collect { it.readName() })
     void validatePreferences(Preferences preferences, boolean okEmptyIfRegisteredDynamicPages, boolean oauthEnabled) {
         if (preferences.hasSpecialSinglePage()) {
             preferences.specialSinglePage.validate(this)
@@ -99,7 +100,7 @@ class AppValidator extends ValidatorBase{
 
             // Page names must be unique
             def allNames = preferences.pages.collect { it.readName() } + preferences.dynamicPages.collect { it.readName() }
-            def uniqueNames = [] as HashSet
+            def uniqueNames = new HashSet<String>()
             allNames.each {
                 assert !uniqueNames.contains(
                         it): "Page '${it}' is not a unique page name. Page names must be unique. Please fix that. All page names: ${allNames}"
@@ -121,6 +122,7 @@ class AppValidator extends ValidatorBase{
         }
     }
 
+    @CompileStatic
     private void validateOauth(boolean oauthEnabled, Preferences preferences, HashSet<String> uniqueNames)
     {
         if (oauthEnabled && !preferences.hasSpecialSinglePage())
@@ -140,7 +142,7 @@ class AppValidator extends ValidatorBase{
         }
     }
 
-
+    @CompileStatic
     private static Page getPageOrAssert(Page currentPage, String referredPage, HashMap<String, Page> allPages)
     {
         def foundPage = allPages[referredPage]
@@ -148,6 +150,7 @@ class AppValidator extends ValidatorBase{
         return foundPage
     }
 
+    // @CompileStatic (compiler crashes)
     private static void addReachablePages(Page p, HashMap<String, Page> allPages, HashSet<String> reachablePages)
     {
         if (!reachablePages.contains(p.readName())) {
@@ -170,12 +173,13 @@ class AppValidator extends ValidatorBase{
         }
     }
 
+    // @CompileStatic (compiler crashes on def pagesCombined = preferences.pages + preferences.dynamicPages)
     private void validatePagesAreReachable(Preferences preferences)
     {
         if (!hasFlag(Flags.AllowUnreachablePages)) {
             def reachablePages = [] as HashSet<String>
 
-            def pagesCombined = (preferences.pages + preferences.dynamicPages)
+            List<Page> pagesCombined = preferences.pages + preferences.dynamicPages
 
             if (!pagesCombined.isEmpty()) {
                 def allPages = [] as HashMap<String, Page>;

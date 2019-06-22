@@ -6,6 +6,7 @@ import biocomp.hubitatCi.api.appApi.Preferences as PreferencesInterface
 import biocomp.hubitatCi.app.AppValidator
 import biocomp.hubitatCi.app.HubitatAppScript
 import biocomp.hubitatCi.validation.Flags
+import biocomp.hubitatCi.validation.IInputSource
 import biocomp.hubitatCi.validation.SettingsContainer
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
@@ -19,7 +20,8 @@ class AppPreferencesReader implements
             AppExecutor delegate,
             AppValidator validator,
             Map userSettingsValue,
-            Preferences preferncesToFill)
+            Preferences preferncesToFill,
+            IInputSource inputSource)
     {
         this.parentScript = parentScript
         this.delegate = delegate
@@ -31,7 +33,8 @@ class AppPreferencesReader implements
         this.settingsContainer = new SettingsContainer(
                 { prefState.hasCurrentPage() ? prefState.currentPage.readName() : null },
                 validator,
-                userSettingsValue);
+                userSettingsValue,
+                inputSource);
     }
 
     @CompileStatic
@@ -199,7 +202,6 @@ class AppPreferencesReader implements
     Object input(Map options, String name, String type) {
         def input = new Input([name: name, type: type], options, validator)
         prefState.currentSection.children << input
-        settingsContainer.userInputFound(input)
         validator.validateInput(prefState.currentSection.children.last() as Input)
     }
 
@@ -207,7 +209,6 @@ class AppPreferencesReader implements
     Object input(String name, String type) {
         def input = new Input([name: name, type: type], null, validator)
         prefState.currentSection.children << input
-        settingsContainer.userInputFound(input)
         validator.validateInput(prefState.currentSection.children.last() as Input)
     }
 
@@ -215,7 +216,6 @@ class AppPreferencesReader implements
     Object input(Map options) {
         def input = new Input([:], options, validator)
         prefState.currentSection.children << input
-        settingsContainer.userInputFound(input)
         validator.validateInput(prefState.currentSection.children.last() as Input)
     }
 

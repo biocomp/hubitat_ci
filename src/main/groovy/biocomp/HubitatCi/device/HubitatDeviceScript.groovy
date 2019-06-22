@@ -16,6 +16,7 @@ abstract class HubitatDeviceScript extends Script
     private Map settingsMap
     private DeviceMetadataReader metadataReader = null
     private DeviceValidator validator = null
+    private DeviceData data = null
 
     @Delegate
     private DeviceExecutor api = null
@@ -44,7 +45,9 @@ abstract class HubitatDeviceScript extends Script
     {
 //        customizeScriptBeforeRun?.call(this)
 //
-        this.metadataReader = new DeviceMetadataReader(api/*this, api*/, validator, this.getMetaClass()/*, userSettingValues*/)
+        this.data = new DeviceData()
+
+        this.metadataReader = new DeviceMetadataReader(api/*this, api*/, validator, this.getMetaClass()/*, userSettingValues*/, data)
         api = this.metadataReader
 
         this.api = api
@@ -59,20 +62,23 @@ abstract class HubitatDeviceScript extends Script
 //        metadataReader.getProducedPreferences()
 //    }
 
+    @CompileStatic
     Definition getProducedDefinition()
     {
         metadataReader.getProducedDefinition()
     }
 
+    @CompileStatic
     List<DeviceInput> getProducedPreferences()
     {
-        return metadataReader.producedPreferences
+        return data.producedPreferences
     }
 
     /**
      * Call to this method is injected into every user's method.
      * This allows additional validations while calling separate methods on script object.
      */
+    @CompileStatic
     void hubitatciValidateAfterMethodCall(String methodName)
     {
         //println "hubitatciValidateAfterMethodCall(${methodName} called!)"
@@ -173,6 +179,7 @@ abstract class HubitatDeviceScript extends Script
     }
 
     @Override
+    @CompileStatic
     def run()
     {
         scriptBody()
