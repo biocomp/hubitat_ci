@@ -22,36 +22,6 @@ class AppValidator extends ValidatorBase{
     private static final NamedParametersValidator preferencesValidatorNoOauth = NamedParametersValidator.make {
     }
 
-    private static final NamedParametersValidator inputOptionsValidator = NamedParametersValidator.make {
-        boolParameter("capitalization", notRequired())
-        objParameter("defaultValue", notRequired(), canBeNull())
-        stringParameter("name", required(), mustNotBeEmpty())
-        stringParameter("title", notRequired(), mustNotBeEmpty())
-        stringParameter("description", notRequired(), mustNotBeEmpty())
-        boolParameter("multiple", notRequired())
-        numericRangeParameter("range", notRequired())
-        boolParameter("required", notRequired())
-        boolParameter("submitOnChange", notRequired())
-        listOfStringsParameter("options", notRequired())
-        stringParameter("type", required(), mustNotBeEmpty())
-        boolParameter("hideWhenEmpty", notRequired())
-    }
-
-    private static final HashSet<String> validStaticInputTypes = [
-        "bool",
-        //"bolean",
-        "decimal",
-        "email",
-        "enum",
-        "hub",
-        "icon",
-        "number",
-        "password",
-        "phone",
-        "time",
-        "text"
-    ] as HashSet
-
     AppValidator(
             EnumSet<Flags> setOfFlags = EnumSet.noneOf(Flags), List<Class> extraAllowedClasses = [],
             List<String> extraAllowedExpressions = [])
@@ -89,7 +59,7 @@ class AppValidator extends ValidatorBase{
     // @CompileStatic (compiler crashes with: def allNames = preferences.pages.collect { it.readName() } + preferences.dynamicPages.collect { it.readName() })
     void validatePreferences(Preferences preferences, boolean okEmptyIfRegisteredDynamicPages, boolean oauthEnabled) {
         if (preferences.hasSpecialSinglePage()) {
-            preferences.specialSinglePage.validate(this)
+            preferences.specialSinglePage.validate(flags)
         }
 
         if (!hasFlag(Flags.DontValidatePreferences)) {
@@ -129,7 +99,7 @@ class AppValidator extends ValidatorBase{
         {
             if (!hasFlag(Flags.AllowMissingOAuthPage)) {
                 def oauthPageName = preferences.options.oauthPage as String
-                preferencesValidatorWithOauth.validate("preferences()", preferences.options, this)
+                preferencesValidatorWithOauth.validate("preferences()", preferences.options, flags)
                 assert uniqueNames.contains(oauthPageName): "preferences(): oauthPage = '${oauthPageName}' does not point to a valid page"
 
                 assert preferences.allPages[0].readName() == oauthPageName: "Page '${oauthPageName}' pointed by 'oauthPage' must be a first page, but first page is ${preferences.allPages[0]}"
@@ -138,7 +108,7 @@ class AppValidator extends ValidatorBase{
         }
         else
         {
-            preferencesValidatorNoOauth.validate("preferences()", preferences.options, this)
+            preferencesValidatorNoOauth.validate("preferences()", preferences.options, flags)
         }
     }
 
@@ -194,49 +164,6 @@ class AppValidator extends ValidatorBase{
                 assert !unreachablePages: "${this}: pages ${unreachablePages} are not reachable via 'href' or 'nextPage', and thus don't make sense to have";
             }
         }
-    }
-
-    void validateInput(Input input)
-    {
-        if (!hasFlag(Flags.DontValidatePreferences)) {
-            inputOptionsValidator.validate(
-                    input.toString(),
-                    input.unnamedOptions,
-                    input.options,
-                    this)
-
-            validateInputType(input)
-        }
-    }
-
-
-
-    private void validateInputType(Input input)
-    {
-        final def inputType = input.readType()
-        if (validStaticInputTypes.contains(inputType))
-        {
-            return
-        }
-
-        if (Input.isCapabilityType(inputType))
-        {
-            if (Input.findCapabilityFromTypeString(inputType))
-            {
-                return
-            }
-            else
-            {
-                assert false : "Input ${input}'s capability '${inputType}' is not supported. Supported capabilities: ${Capabilities.capabilitiesByDeviceSelector.keySet()}"
-            }
-        }
-
-        if (inputType =~ /device\.[a-zA-Z0-9._]+/)
-        {
-            return
-        }
-
-        assert false : "Input ${input}'s type ${inputType} is not supported. Valid types are: ${validStaticInputTypes} + 'device.yourDeviceName'"
     }
 
     void validateSingleDynamicPageFor(Preferences preferences, String methodName) {

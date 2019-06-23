@@ -13,7 +13,7 @@ interface IInputSource {
      * @param name
      * @return
      */
-    def findInput(String name)
+    def generateInputWrapper(String name, def userProvidedObject)
 
     Set<String> getAllInputNames()
 }

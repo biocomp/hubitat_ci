@@ -1,5 +1,6 @@
 package biocomp.hubitatCi.app
 
+import biocomp.hubitatCi.app.preferences.Input
 import biocomp.hubitatCi.app.preferences.Preferences
 import biocomp.hubitatCi.validation.IInputSource
 import groovy.transform.CompileStatic
@@ -19,15 +20,15 @@ class AppData implements IInputSource {
 
     @Override
     @CompileStatic
-    def findInput(String name) {
+    def generateInputWrapper(String name, def userProvidedObject) {
         // Linear search + reconstruction of list of inputs too.
         def input = preferences.getAllInputs().find{ it.readName() == name }
         if (input)
         {
-            return new InputWrapper(input)
+            return input.makeInputObject(userProvidedObject)
         }
 
-        return null
+        return userProvidedObject
     }
 
     @Override

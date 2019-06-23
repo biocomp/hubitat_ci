@@ -264,7 +264,7 @@ class DeviceValidator extends
     }
 
     void validateDefinition(Definition definition, MetaClass scriptMetaClass) {
-        definitionOptionsValidator.validate("definition(${definition.options})", definition.options, this);
+        definitionOptionsValidator.validate("definition(${definition.options})", definition.options, flags)
 
         if (!hasFlag(Flags.DontRequireCapabilityImplementationMethods)) {
             def scriptActualMethods = scriptMetaClass.theClass.methods.findAll {
@@ -403,7 +403,7 @@ class DeviceValidator extends
 
     void validateFingerprint(Map fingerprint)
     {
-        fingerprintOptionsValidator.validate("fingerprint(${fingerprint})", fingerprint, this)
+        fingerprintOptionsValidator.validate("fingerprint(${fingerprint})", fingerprint, flags)
     }
 
     private static final NamedParametersValidator inputOptionsValidator = NamedParametersValidator.make {
@@ -435,7 +435,7 @@ class DeviceValidator extends
                 input as String,
                 input.unnamedOptions,
                 input.options,
-                this,
+                flags,
                 hasFlag(Flags.AllowMissingDeviceInputNameOrType)
                     ? EnumSet.of(NamedParametersValidator.ValidatorOption.IgnoreMissingMandatoryInputs)
                     : EnumSet.noneOf(NamedParametersValidator.ValidatorOption))

@@ -64,7 +64,7 @@ class PreferencesReaderState {
             makeContents()
 
             if (validate) {
-                currentPage.validate(validator)
+                currentPage.validate(validator.flags)
             }
         } finally {
             currentPage = null
@@ -94,7 +94,7 @@ class PreferencesReaderState {
             currentSection = newSection
             makeContents()
 
-            currentSection.validate(validator)
+            currentSection.validate(validator.flags)
         } finally {
             currentSection = null
         }

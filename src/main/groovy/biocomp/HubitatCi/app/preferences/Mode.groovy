@@ -16,13 +16,13 @@ class Mode {
         stringParameter("image", notRequired(), mustNotBeEmpty())
     }
 
-    Mode(Map options, AppValidator validator)
+    Mode(Map options, EnumSet<Flags> validationFlags)
     {
         this.options = options
 
-        if (!validator.hasFlag(Flags.DontValidatePreferences))
+        if (!validationFlags.contains(Flags.DontValidatePreferences))
         {
-            paramValidator.validate(this.toString(), options, validator)
+            paramValidator.validate(this.toString(), options, validationFlags)
         }
     }
 

@@ -22,10 +22,10 @@ class Section {
         boolParameter("hideWhenEmpty", notRequired())
     }
 
-    void validate(AppValidator validator)
+    void validate(EnumSet<Flags> validationFlags)
     {
-        if (!validator.hasFlag(Flags.DontValidatePreferences)) {
-            paramValidator.validate(this.toString(), options, validator)
+        if (!validationFlags.contains(Flags.DontValidatePreferences)) {
+            paramValidator.validate(this.toString(), options, validationFlags)
             assert children.size() != 0: "Section ${this} must have at least some content"
         }
     }

@@ -14,11 +14,11 @@ class Label {
         boolParameter("required", notRequired())
     }
 
-    Label(Map options, AppValidator validator) {
+    Label(Map options, EnumSet<Flags> validationFlags) {
         this.options = options
 
-        if (!validator.hasFlag(Flags.DontValidatePreferences)) {
-            paramValidator.validate(this.toString(), options, validator)
+        if (!validationFlags.contains(Flags.DontValidatePreferences)) {
+            paramValidator.validate(this.toString(), options, validationFlags)
         }
     }
 

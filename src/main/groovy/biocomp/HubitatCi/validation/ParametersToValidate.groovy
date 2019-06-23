@@ -4,7 +4,6 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import biocomp.hubitatCi.util.SimpleRange
 
-
 @TypeChecked
 class ParametersToValidate
 {
@@ -24,10 +23,10 @@ class ParametersToValidate
             }
 
             this.validator = {
-                ValidatorBase validatorObject, context, value ->
-                    if (!validatorObject.hasAnyOfFlags(dontValidateWithTheseFlags))
+                EnumSet<Flags> validationFlags, context, value ->
+                    if (!dontValidateWithTheseFlags.findAll{validationFlags.contains(it)})
                     {
-                        validator(validatorObject, context, value)
+                        validator(validationFlags, context, value)
                     }
             }
         }
@@ -69,7 +68,7 @@ class ParametersToValidate
     void boolParameter(String name, IsRequired required)
     {
         addParameter(new Parameter(name, required, [],
-                { def validator, String context, def value ->
+                { def flags, String context, def value ->
                     assert value != null: "${context}: '${name}' value can't be null"
                     String valuePrinted = value.toString()
                     assert valuePrinted == "false" || valuePrinted == "true" : "${context}: ${name}'s value is not boolean, it's ${value}"
@@ -140,8 +139,8 @@ class ParametersToValidate
     @CompileStatic
     void listOfStringsParameter(String name, IsRequired required)
     {
-        addParameter(new Parameter(name, required, [], { ValidatorBase validator, String context, def value ->
-                if (!validator.hasFlag(Flags.AllowNullListOptions)) {
+        addParameter(new Parameter(name, required, [], { EnumSet<Flags> validationFlags, String context, def value ->
+                if (!validationFlags.contains(Flags.AllowNullListOptions)) {
                     assert value != null: "${context}: '${name}' value can't be null"
                 }
 
@@ -153,7 +152,7 @@ class ParametersToValidate
 
     @CompileStatic
     private static String validateStringValue(
-            ValidatorBase validator,
+            EnumSet<Flags> validationFlags,
             String context,
             String name,
             def value,
@@ -176,7 +175,7 @@ class ParametersToValidate
             assert false: "${context}: '${name}''s value must be String/GString, not ${value.class}"
         }
 
-        if (canBeEmpty != CanBeEmpty.Yes && !validator.hasFlag(Flags.AllowEmptyOptionValueStrings)) {
+        if (canBeEmpty != CanBeEmpty.Yes && !validationFlags.contains(Flags.AllowEmptyOptionValueStrings)) {
             assert val != "": "${context}: '${name}''s value can't be empty"
         }
 
@@ -204,8 +203,8 @@ class ParametersToValidate
     {
         addParameter(new Parameter(
                 name, required, dontValidateIfFlags,
-                { ValidatorBase validator,  String context, def value ->
-                    validateStringValue(validator, context, name, value, canBeEmpty)
+                { EnumSet<Flags> validationFlags,  String context, def value ->
+                    validateStringValue(validationFlags, context, name, value, canBeEmpty)
                 }))
     }
 
@@ -217,8 +216,8 @@ class ParametersToValidate
         def validValues = new HashSet<String>(values)
 
         addParameter(new Parameter(name, required, [],
-                { ValidatorBase validator, String context, def value ->
-                    def val = validateStringValue(validator, context, name, value, CanBeEmpty.No)
+                { EnumSet<Flags> validationFlags, String context, def value ->
+                    def val = validateStringValue(validationFlags, context, name, value, CanBeEmpty.No)
                     assert validValues.contains(val) : "${context}: '${name}''s value ('${val}') is not supported. Valid values: ${validValues}"
                 }))
     }

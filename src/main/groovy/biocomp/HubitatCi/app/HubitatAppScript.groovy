@@ -67,7 +67,7 @@ abstract class HubitatAppScript extends Script
         api = this.preferencesReader
         validateAfterRun.add(this.preferencesReader.&validateAfterRun)
 
-        this.definitionReader = new AppDefinitionReader(api, validator, data.definitions)
+        this.definitionReader = new AppDefinitionReader(api, validator.flags, data.definitions)
         api = this.definitionReader
         validateAfterRun.add(this.definitionReader.&validateAfterRun)
 

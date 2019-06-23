@@ -112,12 +112,12 @@ class AppPreferencesReader implements
     def page(Map options) {
         if (validator.hasFlag(Flags.AllowTitleInPageCallingMethods)) {
             Page.dynamicPageInitialParamValidatorWithTitle.validate("page(${options}) - special case of reference to method",
-                    options, validator)
+                    options, validator.flags)
         }
         else
         {
             Page.dynamicPageInitialParamValidator.validate("page(${options}) - special case of reference to method",
-                    options, validator)
+                    options, validator.flags)
         }
 
         // Now need to run named closure that is adding dynamic pages
@@ -200,23 +200,20 @@ class AppPreferencesReader implements
 
     @Override
     Object input(Map options, String name, String type) {
-        def input = new Input([name: name, type: type], options, validator)
+        def input = new Input([name: name, type: type], options, validator.flags)
         prefState.currentSection.children << input
-        validator.validateInput(prefState.currentSection.children.last() as Input)
     }
 
     @Override
     Object input(String name, String type) {
-        def input = new Input([name: name, type: type], null, validator)
+        def input = new Input([name: name, type: type], null, validator.flags)
         prefState.currentSection.children << input
-        validator.validateInput(prefState.currentSection.children.last() as Input)
     }
 
     @Override
     Object input(Map options) {
-        def input = new Input([:], options, validator)
+        def input = new Input([:], options, validator.flags)
         prefState.currentSection.children << input
-        validator.validateInput(prefState.currentSection.children.last() as Input)
     }
 
     /*
@@ -234,13 +231,13 @@ class AppPreferencesReader implements
     @Override
     def href(Map options)
     {
-        prefState.currentSection.children << new HRef(options, validator)
+        prefState.currentSection.children << new HRef(options, validator.flags)
     }
 
     @Override
     def href(Map options, String nextPageName)
     {
-        prefState.currentSection.children << new HRef(options, nextPageName, validator)
+        prefState.currentSection.children << new HRef(options, nextPageName, validator.flags)
     }
 
     /*
@@ -251,7 +248,7 @@ class AppPreferencesReader implements
 
     @Override
     def label(Map options) {
-        prefState.currentSection.children << new Label(options, validator)
+        prefState.currentSection.children << new Label(options, validator.flags)
     }
 
 
@@ -265,7 +262,7 @@ class AppPreferencesReader implements
     @Override
     def mode(Map options)
     {
-        prefState.currentSection.children << new Mode(options, validator)
+        prefState.currentSection.children << new Mode(options, validator.flags)
     }
 
     /*
@@ -276,12 +273,12 @@ class AppPreferencesReader implements
 
     @Override
     def paragraph(Map options, String text) {
-        prefState.currentSection.children << new Paragraph(text, options, validator)
+        prefState.currentSection.children << new Paragraph(text, options, validator.flags)
     }
 
     @Override
     def paragraph(String text) {
-        prefState.currentSection.children << new Paragraph(text, null, validator)
+        prefState.currentSection.children << new Paragraph(text, null, validator.flags)
     }
 
     /*
@@ -292,17 +289,17 @@ class AppPreferencesReader implements
 
     @Override
     def app(Map options) {
-        prefState.currentSection.children << new App(options, null, null, null, validator)
+        prefState.currentSection.children << new App(options, null, null, null, validator.flags)
     }
 
     @Override
     def app(String name, String namespace, String title) {
-        prefState.currentSection.children << new App(null, name, namespace, title, validator)
+        prefState.currentSection.children << new App(null, name, namespace, title, validator.flags)
     }
 
     @Override
     def app(Map options, String name, String namespace, String title) {
-        prefState.currentSection.children << new App(options, name, namespace, title, validator)
+        prefState.currentSection.children << new App(options, name, namespace, title, validator.flags)
     }
 
     /*

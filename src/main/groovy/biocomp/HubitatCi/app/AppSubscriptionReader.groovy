@@ -59,9 +59,9 @@ class AppSubscriptionReader implements AppExecutor  {
         println "Got ${toWhat}"
 
         // Need to be able to get input object.
-        assert toWhat instanceof InputWrapper : "Object ${toWhat} is not a valid input to subscribe to."
+        assert IInputTag.isInstance(toWhat) : "Object ${toWhat} is not a valid input to subscribe to."
 
-        def input = ((InputWrapper)toWhat).inputDescription_Internal
+        def input = ((IInputTag)toWhat)._hubitat_ci_internal_getInput()
         assert Input.isCapabilityType(input.readType()) : "Input ${input}'s type is not a capability."
 
         def capability = Input.findCapabilityFromTypeString(input.readType())

@@ -54,7 +54,7 @@ class HubitatDeviceSandbox {
     }
 
     private static void validateAndUpdateSandboxOptions(Map options) {
-        optionsValidator.validate("Validating sandbox options", options, new DeviceValidator())
+        optionsValidator.validate("Validating sandbox options", options, EnumSet.noneOf(Flags))
     }
 
     final private File file = null

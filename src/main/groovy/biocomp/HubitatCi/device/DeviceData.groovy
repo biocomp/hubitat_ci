@@ -12,7 +12,7 @@ class DeviceData implements IInputSource {
     final List<DeviceInput> producedPreferences = []
 
     @Override
-    def findInput(String name) {
+    def generateInputWrapper(String name, def userProvidedObject) {
         def input = producedPreferences.find{it->it.readName() == name}
         return input ? new InputWrapper(input) : null
     }

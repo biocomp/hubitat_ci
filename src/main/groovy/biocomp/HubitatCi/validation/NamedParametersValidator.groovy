@@ -65,16 +65,16 @@ class NamedParametersValidator {
     void validate(
             String context,
             Map options,
-            ValidatorBase validator,
+            EnumSet<Flags> validationFlags,
             EnumSet<ValidatorOption> validatorOptions = EnumSet.noneOf(ValidatorOption))
     {
-        validate(context, [:], options, validator, validatorOptions)
+        validate(context, [:], options, validationFlags, validatorOptions)
     }
 
 
     /**
      * Validate map of options with unnamed parameters.
-     * Same as {@link #validate(String, Map, ValidatorBase, EnumSet<ValidationOption>)},
+     * Same as {@link #validate(String, Map, EnumSet<Flags>, EnumSet<ValidationOption>)},
      *  but also takes unnamedOptions. This is used when method takes some arguments, and map of options.
      *  Map may also have same parameters that were passed separately.
      *  This method ensures this is not the case, and also applies validator logic to those extra parameters.
@@ -95,7 +95,7 @@ class NamedParametersValidator {
             String context,
             Map unnamedOptions,
             Map options,
-            ValidatorBase validator,
+            EnumSet<Flags> validationFlags,
             EnumSet<ValidatorOption> validatorOptions = EnumSet.noneOf(ValidatorOption))
     {
         def mandatoryParameters = mandatoryParameters.clone() as HashSet<String>
@@ -104,7 +104,7 @@ class NamedParametersValidator {
             assert it.key instanceof String: "${context}: Option's name '${it.key}' must be a String"
             def paramValidator = supportedParameters[it.key as String]?.validator
             assert paramValidator: "${context}: Option '${it.key}' is not supported. Valid options are: ${supportedParameters.keySet()}."
-            paramValidator(validator, context, it.value)
+            paramValidator(validationFlags, context, it.value)
             mandatoryParameters.remove(it.key)
         }
 

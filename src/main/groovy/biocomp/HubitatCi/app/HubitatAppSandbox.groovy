@@ -109,7 +109,7 @@ class HubitatAppSandbox {
 
     @CompileStatic
     private static void validateAndUpdateSandboxOptions(Map options) {
-        optionsValidator.validate("Validating sandbox options", options, new AppValidator())
+        optionsValidator.validate("Validating sandbox options", options, EnumSet.noneOf(Flags))
 
         if (options.noValidation) {
             addFlags(options, [Flags.DontValidateDefinition, Flags.DontValidatePreferences])

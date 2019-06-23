@@ -81,12 +81,12 @@ class Page
         return generationMethodName != null
     }
 
-    void validate(AppValidator validator) {
-        if (!validator.hasFlag(Flags.DontValidatePreferences)) {
+    void validate(EnumSet<Flags> validationFlags) {
+        if (!validationFlags.contains(Flags.DontValidatePreferences)) {
             if (!isDynamicPage()) {
-                paramValidator.validate(this.toString(), options, validator)
+                paramValidator.validate(this.toString(), options, validationFlags)
             } else {
-                dynamicPageParamValidator.validate(this.toString(), options, validator)
+                dynamicPageParamValidator.validate(this.toString(), options, validationFlags)
 
                 assert generationMethodName == readName() : "Page ${this}'s name does not match the method it was triggered with: ${generationMethodName}"
             }

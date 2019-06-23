@@ -2,6 +2,7 @@ package biocomp.hubitatCi.util
 
 
 import biocomp.hubitatCi.app.AppValidator
+import biocomp.hubitatCi.validation.Flags
 import biocomp.hubitatCi.validation.NamedParametersValidator
 import groovy.transform.TypeChecked
 import spock.lang.Specification
@@ -31,8 +32,8 @@ class NamedParametersValidatorTest extends
             def answer = 42
 
         expect:
-            makeStringValidator("val1").validate("ctx", [val1: "someTextVal"], new AppValidator())
-            makeStringValidator("val1").validate("ctx", [val1: "answer is ${answer}"], new AppValidator())
+            makeStringValidator("val1").validate("ctx", [val1: "someTextVal"], EnumSet.noneOf(Flags))
+            makeStringValidator("val1").validate("ctx", [val1: "answer is ${answer}"], EnumSet.noneOf(Flags))
     }
 
     def "String enum validator works with both String and GString"()
@@ -41,7 +42,7 @@ class NamedParametersValidatorTest extends
             def answer = 42
 
         expect:
-            makeEnumStringValidator("val1", ["someTextVal"]).validate("ctx", [val1: "someTextVal"], new AppValidator())
-            makeEnumStringValidator("val1", ["answer42"]).validate("ctx", [val1: "answer${answer}"], new AppValidator())
+            makeEnumStringValidator("val1", ["someTextVal"]).validate("ctx", [val1: "someTextVal"], EnumSet.noneOf(Flags))
+            makeEnumStringValidator("val1", ["answer42"]).validate("ctx", [val1: "answer${answer}"], EnumSet.noneOf(Flags))
     }
 }

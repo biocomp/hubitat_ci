@@ -25,9 +25,9 @@ class AppDefinitionReader implements
         boolParameter("oauth", notRequired())
     }
 
-    AppDefinitionReader(AppExecutor delegate, AppValidator validator, Map<String, Object> definitions) {
+    AppDefinitionReader(AppExecutor delegate, EnumSet<Flags> validationFlags, Map<String, Object> definitions) {
         this.delegate = delegate
-        this.validator = validator
+        this.validationFlags = validationFlags
 
         this.definitions = definitions
 
@@ -57,11 +57,11 @@ class AppDefinitionReader implements
 
     @CompileStatic
     private void verifyDefinitionMap(Map definitionsMap) {
-        if (!validator.hasFlag(Flags.DontValidateDefinition)) {
+        if (!validationFlags.contains(Flags.DontValidateDefinition)) {
             assert definitions.isEmpty(): "definition() called more than once"
         }
 
-        if (!validator.hasFlag(Flags.DontValidateDefinition)) {
+        if (!validationFlags.contains(Flags.DontValidateDefinition)) {
             assert definitionsMap: "Map passed into definition() can't be null"
 
             def assertPropertyIsSet = { String name, boolean notEvenEmpty ->
@@ -72,21 +72,21 @@ class AppDefinitionReader implements
             }
 
             // Checking mandatory properties
-            definitionOptionsValidator.validate("definition(): ", definitionsMap, validator)
+            definitionOptionsValidator.validate("definition(): ", definitionsMap, validationFlags)
         }
     }
 
     @CompileStatic
     void validateAfterRun()
     {
-        if (!validator.hasFlag(Flags.DontValidateDefinition)) {
+        if (!validationFlags.contains(Flags.DontValidateDefinition)) {
             assert definitions.size() != 0: "definition() method was never called or failed. Either way, definition list is empty."
         }
     }
 
     @Delegate
     final private AppExecutor delegate
-    final private AppValidator validator
+    final private EnumSet<Flags> validationFlags
 
     private Map<String, Object> definitions
 }

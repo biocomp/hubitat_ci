@@ -169,6 +169,11 @@ class ValidatorBase {
         return flags.contains(flag)
     }
 
+    EnumSet<Flags> getFlags()
+    {
+        return flags
+    }
+
     private final EnumSet<Flags> flags
 
     protected void restrictScript(CompilerConfiguration options) {

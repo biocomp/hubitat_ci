@@ -1,6 +1,6 @@
 package biocomp.hubitatCi.validation
 
-import groovy.transform.CompileStatic
+
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
 
@@ -73,7 +73,7 @@ class SettingsContainer implements Map<String, Object>
             return userSettingValue
         }
 
-        return registeredInputs.findInput(name)
+        return registeredInputs.generateInputWrapper(name, userSettingValue)
     }
 
     @Override

@@ -32,28 +32,28 @@ class HRef {
         stringParameter("image", notRequired(), mustNotBeEmpty())
     }
 
-    HRef(Map options, String nextPageName, AppValidator validator)
+    HRef(Map options, String nextPageName, EnumSet<Flags> validationFlags)
     {
         this.options = options
         this.nextPageName = nextPageName
 
-        validate(validator)
+        validate(validationFlags)
     }
 
     HRef(String nextPageName) {
         this.nextPageName = nextPageName
     }
 
-    HRef(Map options, AppValidator validator) {
+    HRef(Map options, EnumSet<Flags> validationFlags) {
         this.options = options
 
-        validate(validator)
+        validate(validationFlags)
     }
 
-    private void validate(AppValidator validator)
+    private void validate(EnumSet<Flags> validationFlags)
     {
-        if (!validator.hasFlag(Flags.DontValidatePreferences)) {
-            paramValidator.validate(this.toString(), options, validator)
+        if (!validationFlags.contains(Flags.DontValidatePreferences)) {
+            paramValidator.validate(this.toString(), options, validationFlags)
 
             // Extra validations ('page' is not compatible with 'style: external'):
             if (options?.containsKey('page'))
