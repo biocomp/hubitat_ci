@@ -86,7 +86,7 @@ class Input {
             number: new NumberInputType(),
             password: new TextInputType(),
             phone: new NumberInputType(),
-            time: new NumberInputType(),
+            time: new TextInputType(),
             text: new TextInputType()
     ] as HashMap<String, IInputType>
 
@@ -119,7 +119,7 @@ class Input {
             final def foundCapability = Input.findCapabilityFromTypeString(inputType)
             if (foundCapability)
             {
-                return new CapabilityInputType(foundCapability)
+                return new DeviceInputType(foundCapability)
             }
             else
             {
@@ -129,7 +129,7 @@ class Input {
 
         if (inputType =~ /device\.[a-zA-Z0-9._]+/)
         {
-            return new DeviceInputType()
+            return new DeviceInputType(null) // Unknown capabilities
         }
 
         assert false : "Input ${this}'s type ${inputType} is not supported. Valid types are: ${validStaticInputTypes} + 'capability.yourCapabilityName' + 'device.yourDeviceName'"

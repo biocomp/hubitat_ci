@@ -27,6 +27,17 @@ package biocomp.hubitatCi.api
  * public void com.hubitat.hub.domain.Attribute.setVersion(java.lang.Long),
  */
 
+/**
+ * @see https://docs.smartthings.com/en/latest/ref-docs/attribute-ref.html
+ *
+ * You will typically interact with Attributes values directly, for example,
+ * using the current<Uppercase attribute name> method on a Device instance.
+ * That will get the value of the Attribute, which is typically what
+ * SmartApps are most interested in.
+ *
+ * You can get the supported Attributes of a Device through the
+ * Device’s getSupportedAttributes() method.
+ */
 trait Attribute
 {
     /**

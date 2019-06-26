@@ -2,23 +2,48 @@ package biocomp.hubitatCi.capabilities
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+
 import java.lang.annotation.Annotation
+import java.lang.reflect.Method
 
 @TypeChecked
 class Capabilities
 {
+    @CompileStatic
+    private static HashMap<String, CapabilityAttributeInfo> readAttributesFromInterface(Class interface_)
+    {
+        HashMap<String, CapabilityAttributeInfo> result = [:]
+
+        try {
+            ((Map<String, CapabilityAttributeInfo>) interface_.getField("_internalAttributes").get(null)).each {
+                result.put(it.key, it.value)
+            }
+        }
+        catch (NoSuchFieldException e)
+        {
+            // This is fine, not all capabilities have attributes
+        }
+
+        return result
+    }
+
     @CompileStatic
     static HashMap<String, CapabilityAttributeInfo> readAttributes(Class capability)
     {
         HashMap<String, CapabilityAttributeInfo> result = [:]
 
         capability.interfaces.each{
-            ((Map<String, CapabilityAttributeInfo>)it.getField("_internalAttributes").get(null)).each{result.put(it.key, it.value)}
+            result.putAll(readAttributesFromInterface(it))
         }
-
-        ((Map<String, CapabilityAttributeInfo>)capability.getField("_internalAttributes").get(null)).each{result.put(it.key, it.value)}
+        result.putAll(readAttributesFromInterface(capability))
 
         return result
+    }
+
+    @CompileStatic
+    static List<Method> readMethods(Class capability)
+    {
+        return capability.methods as List
     }
 
     static String toDeviceSelector(String capabilityClassName)

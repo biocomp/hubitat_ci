@@ -1320,24 +1320,25 @@ interface Thermostat extends
         ThermostatSetpoint
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("supportedThermostatFanModes", new ArrayList<ThermostatFanMode.ThermostatFanModeValue>().class),
-            new CapabilityAttributeInfo("supportedThermostatModes", new ArrayList<ThermostatMode.ThermostatModeValue>().class),
+            new CapabilityAttributeInfo("supportedThermostatFanModes", "STRING", new ArrayList<ThermostatFanMode.ThermostatFanModeValue>().class),
+            new CapabilityAttributeInfo("supportedThermostatModes", "STRING", new ArrayList<ThermostatMode.ThermostatModeValue>().class),
             new CapabilityAttributeInfo("temperature", Double)
     ])
 }
 
+@CompileStatic
 interface ThermostatCoolingSetpoint extends Capability
 {
-    static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("coolingSetpoint", double),
-    ])
+    static def _internalAttributes = CapabilityAttributeInfo.makeList {
+        attribute("coolingSetpoint", Number)
+    }
 
     /**
      *
      * @param temperature required (NUMBER) - Cooling setpoint in degrees
      */
     @CompileStatic
-    abstract void setCoolingSetpoint(double temperature)
+    abstract void setCoolingSetpoint(Number temperature)
 }
 
 interface ThermostatFanMode extends Capability
@@ -1368,7 +1369,7 @@ interface ThermostatFanMode extends Capability
 interface ThermostatHeatingSetpoint extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("heatingSetpoint", double) // temperature in degrees
+            new CapabilityAttributeInfo("heatingSetpoint", Number) // temperature in degrees
     ])
 
     /**
@@ -1376,7 +1377,7 @@ interface ThermostatHeatingSetpoint extends Capability
      * @param temperature required (NUMBER) - Heating setpoint in degrees
      */
     @CompileStatic
-    abstract void setHeatingSetpoint(double temperature)
+    abstract void setHeatingSetpoint(Number temperature)
 }
 
 interface ThermostatMode extends Capability
@@ -1468,7 +1469,7 @@ interface ThermostatSchedule extends Capability
 interface ThermostatSetpoint extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("thermostatSetpoint", double),
+            new CapabilityAttributeInfo("thermostatSetpoint", Number),
     ])
 }
 
@@ -1489,7 +1490,7 @@ interface TimedSession extends Capability
 
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
             new CapabilityAttributeInfo("sessionStatus", SessionStatusValue),
-            new CapabilityAttributeInfo("timeRemaining", double)
+            new CapabilityAttributeInfo("timeRemaining", Number)
     ])
 
     @CompileStatic
@@ -1499,7 +1500,7 @@ interface TimedSession extends Capability
     abstract void pause()
 
     @CompileStatic
-    abstract void setTimeRemaining(double time) // Is it NUMBER though?
+    abstract void setTimeRemaining(Number time) // Is it NUMBER though?
 
     @CompileStatic
     abstract void start()
@@ -1532,7 +1533,7 @@ interface TouchSensor extends Capability
 interface UltravioletIndex extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("ultravioletIndex", double, min: 0, max: 255)
+            new CapabilityAttributeInfo("ultravioletIndex", Number, min: 0, max: 255)
     ])
 }
 
@@ -1608,7 +1609,7 @@ interface VideoCapture extends Capability
 interface VoltageMeasurement extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("voltage", double), // In Volts
+            new CapabilityAttributeInfo("voltage", Number), // In Volts
     ])
 }
 
@@ -1653,7 +1654,7 @@ interface WindowShade extends Capability
     }
 
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("position", double, min: 0, max: 100),
+            new CapabilityAttributeInfo("position", Number, min: 0, max: 100),
             new CapabilityAttributeInfo("windowShade", WindowShadeValue)
     ])
 
@@ -1664,7 +1665,7 @@ interface WindowShade extends Capability
     abstract void open()
 
     @CompileStatic
-    abstract void setPosition(double position)
+    abstract void setPosition(Number position)
 }
 
 interface ZwMultichannel extends Capability
@@ -1678,7 +1679,7 @@ interface ZwMultichannel extends Capability
     abstract void enableEpEvents(String a)
 
     @CompileStatic
-    abstract void epCmd(double a, String b)
+    abstract void epCmd(Number a, String b)
 }
 
 @CustomDeviceSelector(deviceSelector = 'pHMeasurement')
@@ -1687,6 +1688,6 @@ interface ZwMultichannel extends Capability
 interface PhMeasurement extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("PH", double)
+            new CapabilityAttributeInfo("PH", Number)
     ])
 }
