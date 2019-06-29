@@ -43,7 +43,7 @@ class InputValidationTests extends
             e.message.contains("input()")
     }
 
-    def "input() with all valid options reads them successfully"() {
+    def "input() with most (compatible) valid options reads them successfully"() {
         when:
             def input = parseOneChild("""input(
 capitalization: true,
@@ -55,7 +55,6 @@ multiple: true,
 range: "3..200",
 required: true,
 submitOnChange: true,
-options: ["choice 1", "choice 2", "choice 3"],
 type: "number",
 hideWhenEmpty: true)
 """) as Input
@@ -70,7 +69,6 @@ hideWhenEmpty: true)
             input.options.range == "3..200"
             input.options.required == true
             input.options.submitOnChange == true
-            input.options.options == ["choice 1", "choice 2", "choice 3"]
             input.options.type == "number"
             input.options.hideWhenEmpty == true
     }
@@ -181,7 +179,7 @@ hideWhenEmpty: true)
                      //"boolean",
                      "decimal",
                      "email",
-                     "enum",
+                     //"enum", // Enum is tested separately - it needs 'options'
                      "hub",
                      "icon",
                      "number",
@@ -195,9 +193,8 @@ hideWhenEmpty: true)
     def "Invalid input(name, type) types fail #typeAndInputType"() {
         when:
             def type = typeAndInputType[0]
-            def input = typeAndInputType[1] ?
-                    parseOneChild("""input("nam1", '${type}')""") as Input :
-                    parseOneChild("""input(name: "nam1", type: '${type}')""") as Input
+            def input = typeAndInputType[1] ? parseOneChild("""input("nam1", '${type}')""") as Input : parseOneChild(
+                    """input(name: "nam1", type: '${type}')""") as Input
 
         then:
             AssertionError e = thrown()
@@ -213,8 +210,7 @@ hideWhenEmpty: true)
                                                "booll"], [true, false]])
     }
 
-    def "Script can only read inputs that were defined, and fails for undefined"()
-    {
+    def "Script can only read inputs that were defined, and fails for undefined"() {
         setup:
             def script = new HubitatAppSandbox("""
 preferences{
@@ -239,5 +235,108 @@ def methodThatUsesInputs()
             AssertionError e = thrown()
             e.message.contains("not registered inputs: [missingInput]")
             e.message.contains("registered inputs: [existingInput]")
+    }
+
+    def "Enum input type must have 'options'"() {
+        when:
+            parseOneChild("input 'nam', 'enum'")
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("of type 'enum' must have 'options' parameter with enum values")
+    }
+
+    @Unroll
+    def "Non-enum input(type: '#type') types must not have options"(String type) {
+        when:
+            parseOneChild("""input(name: "nam1", type: '${type}', options: ["A", "B"])""")
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("only 'enum' input type needs 'options' parameter")
+            e.message.contains("nam1")
+
+        where:
+            type << ["capability.thermostat",
+                     "device.someDeviceName",
+                     "bool",
+                     //"boolean",
+                     "decimal",
+                     "email",
+                     //"enum", // Enum is tested separately - it needs 'options'
+                     "hub",
+                     "icon",
+                     "number",
+                     "password",
+                     "phone",
+                     "time",
+                     "text"]
+    }
+
+    def "Enum input type can take list of strings as options"() {
+        when:
+            def input = parseOneChild("input 'nam', 'enum', options: ['Val1', 'Val2']")
+
+        then:
+            input.readType() == 'enum'
+            input.options.options == ['Val1', 'Val2']
+    }
+
+    def "Enum input type can't take string as 'options'"() {
+        when:
+            def input = parseOneChild("input 'nam', 'enum', options: 'Val1'")
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("must be a list of values or map int->value")
+            e.message.contains("Val1")
+    }
+
+    def "Enum input type can take list of ints as options"() {
+        when:
+            def input = parseOneChild("input 'nam', 'enum', options: [11, 22]")
+
+        then:
+            input.readType() == 'enum'
+            input.options.options == [11, 22]
+    }
+
+
+    def "Enum input type can take map of int->string as options"() {
+        when:
+            def input = parseOneChild("input 'nam', 'enum', options: [42:'Val1', 33:'Val2']")
+
+        then:
+            input.readType() == 'enum'
+            input.options.options == [42: 'Val1', 33: 'Val2']
+    }
+
+    @Unroll
+    def "Enum default value must be one of options (#options)"(String options) {
+        when:
+            parseOneChild("input 'nam', 'enum', defaultValue: 'ValUnknown', options: ${options}")
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("defaultValue 'ValUnknown' is not one of valid values: [Val1, Val2]")
+
+        where:
+            options << ["['Val1', 'Val2']",
+                        "[42:'Val1', 33:'Val2']"]
+    }
+
+    @Unroll
+    def "Enum options (#options) can't repeat each other"(String options, String whatWasDuplicated) {
+        when:
+            parseOneChild("input 'nam', 'enum', options: ${options}")
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("enum ${whatWasDuplicated} was duplicated")
+
+        where:
+            options                             | whatWasDuplicated
+            "['Val2', 'Val1', 'Val2']"          | "value 'Val2'"
+            "[11:'Val2', 22:'Val1', 33:'Val2']" | "value 'Val2'"
     }
 }

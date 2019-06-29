@@ -52,8 +52,8 @@ def updated() {
 
 def initialize() {
     log.debug "Initializing"
-    subscribe(thermostat, "thermostatCoolingSetpoint", realCoolingSetpointHandler)
-    subscribe(thermostat, "thermostatHeatingSetpoint", realHeatingSetpointHandler)
+    subscribe(thermostat, "coolingSetpoint", realCoolingSetpointHandler)
+    subscribe(thermostat, "heatingSetpoint", realHeatingSetpointHandler)
 
     subscribe(coolingDimmer, "level", virtualCoolongSetpointHandler)
     subscribe(heatingDimmer, "level", virtualHeatingSetpointHandler)

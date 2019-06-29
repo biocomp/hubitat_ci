@@ -5,6 +5,8 @@ import biocomp.hubitatCi.api.commonApi.InstalledAppWrapper
 import biocomp.hubitatCi.api.commonApi.Log
 import biocomp.hubitatCi.app.AppValidator
 import biocomp.hubitatCi.app.HubitatAppSandbox
+import biocomp.hubitatCi.capabilities.SwitchLevel
+import biocomp.hubitatCi.capabilities.Thermostat
 import biocomp.hubitatCi.validation.Flags
 import spock.lang.Specification
 
@@ -104,10 +106,10 @@ class ThermostatDimerSyncHelperTest extends
 
         then:
             1* log.debug("Initializing")
-            1* api.subscribe(thermostat, "thermostatCoolingSetpoint", _)
-            1* api.subscribe(thermostat, "thermostatHeatingSetpoint", _)
-            1* api.subscribe(coolingDimmer, "level", _)
-            1* api.subscribe(heatingDimmer, "level", _)
+            1* api.subscribe({it.capability == Thermostat && it.userProvidedObject == thermostat}, "coolingSetpoint", _)
+            1* api.subscribe({it.capability == Thermostat && it.userProvidedObject == thermostat}, "heatingSetpoint", _)
+            1* api.subscribe({it.capability == SwitchLevel && it.userProvidedObject == coolingDimmer}, "level", _)
+            1* api.subscribe({it.capability == SwitchLevel && it.userProvidedObject == heatingDimmer}, "level", _)
     }
 }
 

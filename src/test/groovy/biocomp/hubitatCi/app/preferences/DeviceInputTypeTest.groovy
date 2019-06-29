@@ -1,17 +1,18 @@
 package biocomp.hubitatCi.app.preferences
 
-import biocomp.hubitatCi.capabilities.ThermostatCoolingSetpoint
 import biocomp.hubitatCi.capabilities.Thermostat
+import biocomp.hubitatCi.capabilities.ThermostatCoolingSetpoint
 import spock.lang.Specification
 
 class DeviceInputTypeTest extends Specification{
     def "Simple capability 'ThermostatCoolingSetpoint' input generates object with all proper fields and methods"()
     {
         setup:
-            def device = new DeviceInputType(ThermostatCoolingSetpoint).makeInputObject('n', 't')
+            def device = new DeviceInputType(ThermostatCoolingSetpoint, "ThermostatCoolingSetpoint").makeInputObject('n', 't')
             def attributes = device.getSupportedAttributes()
 
         expect:
+            assert device.capability == ThermostatCoolingSetpoint
             assert attributes.size() == 1
 
             assert attributes[0].getDataType() == "NUMBER"
@@ -32,10 +33,13 @@ class DeviceInputTypeTest extends Specification{
     def "Complex capability 'Thermostat' input generates object with all proper fields and methods"()
     {
         setup:
-            def device = new DeviceInputType(Thermostat).makeInputObject('n', 't')
+            def device = new DeviceInputType(Thermostat, "Thermostat").makeInputObject('n', 't')
             def attributes = device.getSupportedAttributes()
 
         expect:
+            device.userProvidedObject == null
+
+            assert device.capability == Thermostat.class
             assert attributes.collect{it.name} as Set == ["supportedThermostatFanModes", "supportedThermostatModes", "temperature", "coolingSetpoint", "thermostatFanMode", "heatingSetpoint", "thermostatMode", "thermostatOperatingState", "schedule", "thermostatSetpoint"] as Set
 
             assert((Double)device.currentCoolingSetpoint == 0)
@@ -75,17 +79,28 @@ class DeviceInputTypeTest extends Specification{
     {
         when:
             def userThermostat = new MockThermostat()
-            def device = new DeviceInputType(Thermostat).makeInputObject('n', 't', userThermostat)
+            def device = new DeviceInputType(Thermostat, "Thermostat").makeInputObject('n', 't', userThermostat)
 
             device.setCoolingSetpoint(42.42)
             device.setHeatingSetpoint(12.12)
 
         then:
+            device.userProvidedObject == userThermostat
             userThermostat.coolingSetpoints == [42.42]
             userThermostat.heatingSetpoints == [12.12]
 
             assert(device.currentCoolingSetpoint == 123)
             assert(device.currentHeatingSetpoint == 42)
             assert(device.currentTemperature == 22)
+    }
+
+    def "Device without capability has null capability and no attributes"()
+    {
+        when:
+            def device = new DeviceInputType(null, "SomeDevice").makeInputObject('n', 't')
+
+        then:
+            device.supportedAttributes == []
+            device.capability == null
     }
 }
