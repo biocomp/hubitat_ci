@@ -113,17 +113,6 @@ class ThermostatDimerSyncHelperTest extends
     }
 }
 
-//class WeatherForecastScriptTest extends
-//        Specification
-//{
-//    def sandbox = new HubitatAppSandbox(new File("Scripts/Weather-Display With External Forecast.groovy"))
-//
-//    def "Basic validation"() {
-//        expect:
-//            sandbox.run()
-//    }
-//}
-
 class IComfortAppScriptTest extends
         Specification
 {
