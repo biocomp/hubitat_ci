@@ -8,7 +8,7 @@ class DeviceInputTypeTest extends Specification{
     def "Simple capability 'ThermostatCoolingSetpoint' input generates object with all proper fields and methods"()
     {
         setup:
-            def device = new DeviceInputType(ThermostatCoolingSetpoint, "ThermostatCoolingSetpoint").makeInputObject('n', 't', [:])
+            def device = new DeviceInputObjectGenerator(ThermostatCoolingSetpoint, "ThermostatCoolingSetpoint").makeInputObject('n', 't', [:])
             def attributes = device.getSupportedAttributes()
 
         expect:
@@ -33,7 +33,7 @@ class DeviceInputTypeTest extends Specification{
     def "Complex capability 'Thermostat' input generates object with all proper fields and methods"()
     {
         setup:
-            def device = new DeviceInputType(Thermostat, "Thermostat").makeInputObject('n', 't', [:])
+            def device = new DeviceInputObjectGenerator(Thermostat, "Thermostat").makeInputObject('n', 't', [:])
             def attributes = device.getSupportedAttributes()
 
         expect:
@@ -79,7 +79,7 @@ class DeviceInputTypeTest extends Specification{
     {
         when:
             def userThermostat = new MockThermostat()
-            def device = new DeviceInputType(Thermostat, "Thermostat").makeInputObject('n', 't', [userProvidedValue: userThermostat])
+            def device = new DeviceInputObjectGenerator(Thermostat, "Thermostat").makeInputObject('n', 't', [userProvidedValue: userThermostat])
 
             device.setCoolingSetpoint(42.42)
             device.setHeatingSetpoint(12.12)
@@ -97,7 +97,7 @@ class DeviceInputTypeTest extends Specification{
     def "Device without capability has null capability and no attributes"()
     {
         when:
-            def device = new DeviceInputType(null, "SomeDevice").makeInputObject('n', 't', [:])
+            def device = new DeviceInputObjectGenerator(null, "SomeDevice").makeInputObject('n', 't', [:])
 
         then:
             device.supportedAttributes == []

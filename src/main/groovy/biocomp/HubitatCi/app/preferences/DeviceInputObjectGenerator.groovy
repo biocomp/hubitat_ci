@@ -9,12 +9,12 @@ import groovy.transform.CompileStatic
 
 import java.lang.reflect.Method
 
-class DeviceInputType implements IInputType
+class DeviceInputObjectGenerator implements IInputObjectGenerator
 {
     final Class capability
     final Class generatedDevice
 
-    DeviceInputType(Class capability, String deviceOrCapabilityName)
+    DeviceInputObjectGenerator(Class capability, String deviceOrCapabilityName)
     {
         this.capability = capability
         this.generatedDevice = generateDeviceClass(capability, deviceOrCapabilityName)

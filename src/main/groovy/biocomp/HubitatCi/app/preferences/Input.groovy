@@ -10,7 +10,7 @@ class Input {
     final Map unnamedOptions
     final Map options
     final EnumSet<Flags> validationFlags
-    final IInputType typeWrapper
+    final IInputObjectGenerator typeWrapper
     final Map<String, Object> defaultValue // Map of one 'defaultValue' or 0 elements, meaning that there's no default value.
     final ArrayList<String> enumValues = new ArrayList<String>() // If type is enum, will contain enum values (and if values is map, then keys of the map)
     final ArrayList<String> enumDisplayValues = new ArrayList<String>() // If type is enum, will contain enum values (and if values is map, then values of the map)
@@ -117,23 +117,23 @@ class Input {
         boolParameter("hideWhenEmpty", notRequired())
     }
 
-    private static final HashMap<String, IInputType> validStaticInputTypes = [
-            bool: new BooleanInputType(),
+    private static final HashMap<String, IInputObjectGenerator> validStaticInputTypes = [
+            bool: new BooleanInputObjectGenerator(),
             //"boolean",
-            decimal: new NumberInputType(),
-            email: new TextInputType(),
-            enum: new TextInputType(), // Todo: make enum input type?
-            hub: new TextInputType(),
-            icon: new TextInputType(),
-            number: new NumberInputType(),
-            password: new TextInputType(),
-            phone: new NumberInputType(),
-            time: new TextInputType(),
-            text: new TextInputType()
-    ] as HashMap<String, IInputType>
+            decimal: new NumberInputObjectGenerator(),
+            email: new TextInputObjectGenerator(),
+            enum: new TextInputObjectGenerator(), // Todo: make enum input type?
+            hub: new TextInputObjectGenerator(),
+            icon: new TextInputObjectGenerator(),
+            number: new NumberInputObjectGenerator(),
+            password: new TextInputObjectGenerator(),
+            phone: new NumberInputObjectGenerator(),
+            time: new TextInputObjectGenerator(),
+            text: new TextInputObjectGenerator()
+    ] as HashMap<String, IInputObjectGenerator>
 
 
-    private IInputType validateAndInitType(ArrayList<String> enumValues, ArrayList<String> enumDisplayValues)
+    private IInputObjectGenerator validateAndInitType(ArrayList<String> enumValues, ArrayList<String> enumDisplayValues)
     {
         if (!validationFlags.contains(Flags.DontValidatePreferences)) {
             inputOptionsValidator.validate(
@@ -145,7 +145,7 @@ class Input {
             return validateInputType(enumValues, enumDisplayValues)
         }
 
-        return new UnvalidatedInputType();
+        return new UnvalidatedInputObjectGenerator();
     }
 
     private static void ensureAndInsertUniqueValue(String keyOrValue, List source, ArrayList<String> uniqueValues)
@@ -185,7 +185,7 @@ class Input {
         }
     }
 
-    private IInputType validateInputType(ArrayList<String> enumValues, ArrayList<String> enumDisplayValues)
+    private IInputObjectGenerator validateInputType(ArrayList<String> enumValues, ArrayList<String> enumDisplayValues)
     {
         final def inputType = readType()
         final def foundStaticType = validStaticInputTypes.get(inputType)
@@ -208,7 +208,7 @@ class Input {
             final def foundCapability = Input.findCapabilityFromTypeString(inputType)
             if (foundCapability)
             {
-                return new DeviceInputType(foundCapability, foundCapability.simpleName)
+                return new DeviceInputObjectGenerator(foundCapability, foundCapability.simpleName)
             }
             else
             {
@@ -218,7 +218,7 @@ class Input {
 
         if (inputType =~ /device\.[a-zA-Z0-9._]+/)
         {
-            return new DeviceInputType(null, inputType.substring('device.'.length())) // Unknown capabilities, just using dummy device
+            return new DeviceInputObjectGenerator(null, inputType.substring('device.'.length())) // Unknown capabilities, just using dummy device
         }
 
         assert false : "Input ${this}'s type ${inputType} is not supported. Valid types are: ${validStaticInputTypes} + 'capability.yourCapabilityName' + 'device.yourDeviceName'"
