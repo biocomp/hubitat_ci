@@ -5,4 +5,5 @@ package biocomp.hubitatCi.api
  */
 trait Device {
     abstract List<Attribute> getSupportedAttributes()
+    abstract Class getCapability()
 }

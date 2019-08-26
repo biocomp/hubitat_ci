@@ -83,7 +83,13 @@ enum Flags
     /**
      * Do not require that capability's methods be implemented.
      */
-    DontRequireCapabilityImplementationMethods
+    DontRequireCapabilityImplementationMethods,
+
+    /**
+     * 'enum' input type requires 'options' property with values.
+     * This setting allows it to be null.
+     */
+    AllowNullEnumInputOptions
 
     /**
      * Helper to generate EnumSet<Flags> from variadic list of flags.

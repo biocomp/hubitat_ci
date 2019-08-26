@@ -70,37 +70,37 @@ interface AudioNotification extends Capability
      * @param text required (STRING) - Text to play
      * @param volumeLevel optional (NUMBER) - Volume level (0 to 100)
      */
-    abstract void playText(String text, double volumeLevel)
+    abstract void playText(String text, Double volumeLevel)
 
     /**
     * @param text required (STRING) - Text to play
     * @param volumeLevel optional (NUMBER) - Volume level (0 to 100)
      */
-    abstract playTextAndRestore(String text, double volumeLevel)
+    abstract playTextAndRestore(String text, Double volumeLevel)
 
     /**
     * @param text required (STRING) - Text to play
     * @param volumeLevel optional (NUMBER) - Volume level (0 to 100)
     * */
-    abstract playTextAndResume(String text, double volumeLevel)
+    abstract playTextAndResume(String text, Double volumeLevel)
 
     /**
     * @param trackUri required (STRING) - URI/URL of track to play
     * @param volumeLevel optional (NUMBER) - Volume level (0 to 100)
     * */
-    abstract playTrack(String trackUri, double volumeLevel)
+    abstract playTrack(String trackUri, Double volumeLevel)
 
     /**
     * @param trackUri required (STRING) - URI/URL of track to play
     * @param volumeLevel optional (NUMBER) - Volume level (0 to 100)
     * */
-    abstract playTrackAndRestore(String trackUri, double volumeLevel)
+    abstract playTrackAndRestore(String trackUri, Double volumeLevel)
 
     /**
     * @param trackUri required (STRING) - URI/URL of track to play
     * @param volumeLevel optional (NUMBER) - Volume level (0 to 100)
     * */
-    abstract playTrackAndResume(String trackUri, double volumeLevel)
+    abstract playTrackAndResume(String trackUri, Double volumeLevel)
 }
 
 // SmartThings only: Audio Track Data
@@ -116,7 +116,7 @@ interface AudioVolume extends Capability
 
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
             new CapabilityAttributeInfo("mute", MuteValue),
-            new CapabilityAttributeInfo("volume", double)
+            new CapabilityAttributeInfo("volume", Double)
     ])
 
     @CompileStatic
@@ -126,7 +126,7 @@ interface AudioVolume extends Capability
     * @param volumeLevel required (NUMBER) - Volume level (0 to 100)
     */
     @CompileStatic
-    abstract void setVolume(double volumeLevel)
+    abstract void setVolume(Double volumeLevel)
 
     @CompileStatic
     abstract void unmute()
@@ -141,7 +141,7 @@ interface AudioVolume extends Capability
 interface Battery extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("battery", double, min: 0, max: 100) // 0-100% battery charge
+            new CapabilityAttributeInfo("battery", Double, min: 0, max: 100) // 0-100% battery charge
     ])
 }
 
@@ -225,7 +225,7 @@ interface Button extends Capability
 interface CarbonDioxideMeasurement extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("carbonDioxide", double)
+            new CapabilityAttributeInfo("carbonDioxide", Double)
     ])
 }
 
@@ -282,8 +282,8 @@ interface ColorControl extends Capability
         new CapabilityAttributeInfo("rGB", String),
         new CapabilityAttributeInfo("color", String),
         new CapabilityAttributeInfo("colorName", String),
-        new CapabilityAttributeInfo("hue", double),
-        new CapabilityAttributeInfo("saturation", double),
+        new CapabilityAttributeInfo("hue", Double),
+        new CapabilityAttributeInfo("saturation", Double),
     ])
 
 
@@ -299,13 +299,13 @@ interface ColorControl extends Capability
      * @param hue required (NUMBER) - Color Hue (0 to 100)
      */
     @CompileStatic
-    abstract void setHue(double hue)
+    abstract void setHue(Double hue)
 
     /**
      * @param saturation required (NUMBER) - Color Saturation (0 to 100)
      */
     @CompileStatic
-    abstract void setSaturation(double saturation)
+    abstract void setSaturation(Double saturation)
 }
 
 interface ColorMode extends Capability
@@ -324,7 +324,7 @@ interface ColorTemperature extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
             new CapabilityAttributeInfo("colorName", String),
-            new CapabilityAttributeInfo("colorTemperature", double)
+            new CapabilityAttributeInfo("colorTemperature", Double)
     ])
 }
 
@@ -403,7 +403,7 @@ interface DoubleTapableButton extends Capability
 interface EnergyMeter extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("energy", double), // in kWh
+            new CapabilityAttributeInfo("energy", Double), // in kWh
     ])
 }
 
@@ -506,7 +506,7 @@ interface HoldableButton extends Capability
 interface IlluminanceMeasurement extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("illuminance", double),
+            new CapabilityAttributeInfo("illuminance", Double),
     ])
 }
 
@@ -724,7 +724,7 @@ interface MusicPlayer extends Capability
     }
 
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("level", double),
+            new CapabilityAttributeInfo("level", Double),
             new CapabilityAttributeInfo("mute", MuteValue),
             new CapabilityAttributeInfo("status", String),
             new CapabilityAttributeInfo("trackData", Object), // JSON object
@@ -780,7 +780,7 @@ interface MusicPlayer extends Capability
      * @return
      */
     @CompileStatic
-    abstract void setLevel(double volumeLevel)
+    abstract void setLevel(Double volumeLevel)
 
 
     /**
@@ -842,7 +842,7 @@ interface Polling extends Capability
 interface PowerMeter extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("power", double), // In Watts
+            new CapabilityAttributeInfo("power", Double), // In Watts
     ])
 }
 
@@ -893,7 +893,7 @@ interface PresenceSensor extends Capability
 interface PressureMeasurement extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("pressure", double),
+            new CapabilityAttributeInfo("pressure", Double),
     ])
 }
 
@@ -914,7 +914,7 @@ interface Refresh extends Capability
 interface RelativeHumidityMeasurement extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("humidity", double),
+            new CapabilityAttributeInfo("humidity", Double),
     ])
 }
 
@@ -982,7 +982,7 @@ interface SamsungTV extends Capability
             new CapabilityAttributeInfo("pictureMode", PictureModeValue),
             new CapabilityAttributeInfo("soundMode", SoundModeValue),
             new CapabilityAttributeInfo("switch", SwitchValue),
-            new CapabilityAttributeInfo("volume", double)
+            new CapabilityAttributeInfo("volume", Double)
     ])
 
     @CompileStatic
@@ -1001,7 +1001,7 @@ interface SamsungTV extends Capability
     abstract void setSoundMode(SoundModeValue mode)
 
     @CompileStatic
-    abstract void setVolume(double volume)
+    abstract void setVolume(Double volume)
 
     @CompileStatic
     abstract void showMessage(String a, String b, String c, String d)
@@ -1126,12 +1126,12 @@ interface SignalStrength extends Capability
      *
      * @return 0 - 255 value
      */
-    abstract double lqi()
+    abstract Double lqi()
 
     /**
      * @return -200 - 0 value
      */
-    abstract double rssi()
+    abstract Double rssi()
 }
 
 interface SleepSensor extends Capability
@@ -1175,7 +1175,7 @@ interface SmokeDetector extends Capability
 interface SoundPressureLevel extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("soundPressureLevel", double),
+            new CapabilityAttributeInfo("soundPressureLevel", Double),
     ])
 }
 
@@ -1220,8 +1220,8 @@ interface SpeechSynthesis extends Capability
 interface StepSensor extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("goal", double),
-            new CapabilityAttributeInfo("steps", double)
+            new CapabilityAttributeInfo("goal", Double),
+            new CapabilityAttributeInfo("steps", Double)
     ])
 }
 
@@ -1244,7 +1244,7 @@ interface Switch extends Capability
 interface SwitchLevel extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("level", double, min: 0, max: 100)
+            new CapabilityAttributeInfo("level", Double, min: 0, max: 100)
     ])
 
     /**
@@ -1252,7 +1252,7 @@ interface SwitchLevel extends Capability
     * @param duration optional (NUMBER) - Transition duration in seconds
     */
     @CompileStatic
-    abstract void setLevel(double level, int duration)
+    abstract void setLevel(Double level, int duration)
 }
 
 @CustomDeviceSelector(deviceSelector = 'tv')
@@ -1265,7 +1265,7 @@ interface TV extends Capability
         new CapabilityAttributeInfo("picture",  String),
         new CapabilityAttributeInfo("power",  String),
         new CapabilityAttributeInfo("sound",  String),
-        new CapabilityAttributeInfo("volume",  double)
+        new CapabilityAttributeInfo("volume",  Double)
     ])
 
     @CompileStatic
@@ -1302,7 +1302,7 @@ interface Telnet extends Capability
 interface TemperatureMeasurement extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            //        new CapabilityAttributeInfo("temperature", double),
+            //        new CapabilityAttributeInfo("temperature", Double),
     ])
 }
 

@@ -1,6 +1,6 @@
 package biocomp.hubitatCi.app.preferences
 
-import groovy.transform.TupleConstructor
+import groovy.transform.PackageScope
 
 /**
  * Information and helper methods around input type
@@ -10,13 +10,32 @@ interface IInputType
     /**
         Makes an instance of input object that can be used in the script.
         In this case, user has provided a value, and it will be somehow incorporated in that object (or completely replaces it).
-     */
-    def makeInputObject(String inputName, String inputType, def userProvidedValue)
 
-    /**
-     * Makes an instance of input object that can be used in the script.
+        @param userProvidedAndDefaultValues - map of 0-2 elements with possible values:
+         <br/> userProvidedValue - value that user provided as mock (possibly null)
+         <br/> defaultValue - value that was specified as default in input() (possibly null)
      */
-    def makeInputObject(String inputName, String inputType)
+    def makeInputObject(String inputName, String inputType, Map<String, Object> userProvidedAndDefaultValues)
+}
+
+@PackageScope
+class InputImplCommon
+{
+    static def returnUserOrDefaultOrCustomValue(Map<String, Object> userProvidedAndDefaultValues, Object customValue)
+    {
+        if (userProvidedAndDefaultValues.containsKey('userProvidedValue'))
+        {
+            return userProvidedAndDefaultValues.userProvidedValue
+        }
+        else if (userProvidedAndDefaultValues.containsKey('defaultValue'))
+        {
+            return userProvidedAndDefaultValues.defaultValue
+        }
+        else
+        {
+            return customValue
+        }
+    }
 }
 
 /**
@@ -27,13 +46,10 @@ class TextInputType implements IInputType
     final String inputName
 
     @Override
-    def makeInputObject(String inputName, String inputType, Object userProvidedValue) {
-        return userProvidedValue
-    }
-
-    @Override
-    def makeInputObject(String inputName, String inputType) {
-        return "Input '${inputName}' of type '${inputType}'"
+    def makeInputObject(String inputName, String inputType, Map<String, Object> userProvidedAndDefaultValues) {
+        return InputImplCommon.returnUserOrDefaultOrCustomValue(
+                userProvidedAndDefaultValues,
+                "Input '${inputName}' of type '${inputType}'")
     }
 }
 
@@ -45,13 +61,8 @@ class BooleanInputType implements IInputType
     final String inputName
 
     @Override
-    def makeInputObject(String inputName, String inputType, Object userProvidedValue) {
-        return userProvidedValue
-    }
-
-    @Override
-    def makeInputObject(String inputName, String inputType) {
-        return true
+    def makeInputObject(String inputName, String inputType, Map<String, Object> userProvidedAndDefaultValues) {
+        return InputImplCommon.returnUserOrDefaultOrCustomValue(userProvidedAndDefaultValues, new Boolean(true))
     }
 }
 
@@ -61,13 +72,8 @@ class BooleanInputType implements IInputType
 class NumberInputType implements IInputType
 {
     @Override
-    def makeInputObject(String inputName, String inputType, Object userProvidedValue) {
-        return userProvidedValue
-    }
-
-    @Override
-    def makeInputObject(String inputName, String inputType) {
-        return 42
+    def makeInputObject(String inputName, String inputType, Map<String, Object> userProvidedAndDefaultValues) {
+        return InputImplCommon.returnUserOrDefaultOrCustomValue(userProvidedAndDefaultValues, new Integer(0))
     }
 }
 
@@ -77,13 +83,10 @@ class NumberInputType implements IInputType
 class UnvalidatedInputType implements IInputType
 {
     @Override
-    def makeInputObject(String inputName, String inputType, Object userProvidedValue) {
-        return userProvidedValue
-    }
-
-    @Override
-    def makeInputObject(String inputName, String inputType) {
-        return "Input '${inputName}' type '${inputType}' was not validated, so this generic string is used as mock value"
+    def makeInputObject(String inputName, String inputType, Map<String, Object> userProvidedAndDefaultValues) {
+        return InputImplCommon.returnUserOrDefaultOrCustomValue(
+                userProvidedAndDefaultValues,
+                "Input '${inputName}' type '${inputType}' was not validated, so this generic string is used as mock value")
     }
 }
 

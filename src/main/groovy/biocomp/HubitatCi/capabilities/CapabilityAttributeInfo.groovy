@@ -1,24 +1,22 @@
 package biocomp.hubitatCi.capabilities
 
 import groovy.transform.CompileStatic
-import groovy.transform.TypeChecked
 
 @CompileStatic
 class CapabilityAttributeList
 {
     HashMap<String, CapabilityAttributeInfo> result = new HashMap<String, CapabilityAttributeInfo>()
 
-    void attribute(String name, Class type, Map options = [:])
+    void attribute(Map options = [:], String name, Class type)
     {
-        result.put(name, new CapabilityAttributeInfo(name, type, options))
+        result.put(name, new CapabilityAttributeInfo(options, name, type))
     }
 
-    void attribute(String name, String typeString, Class type, Map options = [:])
+    void attribute(Map options = [:], String name, String typeString, Class type)
     {
-        result.put(name, new CapabilityAttributeInfo(name, typeString, type, options))
+        result.put(name, new CapabilityAttributeInfo(options, name, typeString, type))
     }
 }
-
 
 @CompileStatic
 class CapabilityAttributeInfo {
@@ -48,7 +46,7 @@ class CapabilityAttributeInfo {
     ] as HashMap
 
     @CompileStatic
-    CapabilityAttributeInfo(String name, String typeString, Class type, Map options = [:])
+    CapabilityAttributeInfo(Map options = [:], String name, String typeString, Class type)
     {
         assert name
         assert type
@@ -82,9 +80,9 @@ class CapabilityAttributeInfo {
      * @param options
      */
     @CompileStatic
-    CapabilityAttributeInfo(String name, Class type, Map options = [:])
+    CapabilityAttributeInfo(Map options = [:], String name, Class type)
     {
-        this(name, inferTypeString(type), type, options)
+        this(options, name, inferTypeString(type), type)
     }
 
     static String inferTypeString(Class from)

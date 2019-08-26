@@ -44,7 +44,10 @@ interface Section {
      *        <li><code>boolean</code> 	A "true" or "false" value (value returned as a string). It’s recommended that you use the "bool" input instead, since the simulator and mobile support for this type may not be consistent, and using "bool" will return you a boolean (instead of a string). The "boolean" input type may be removed in the near future.</li>
      *        <li><code>decimal</code> 	A floating point number, i.e. one that can contain a decimal point</li>
      *        <li><code>email</code> 	An email address</li>
-     *        <li><code>enum</code> 	One of a set of possible values. Use the options element to define the possible values.</li>
+     *        <li><code>enum</code> 	One of a set of possible values. Type of variable is "String". Use the options element to define the possible values.
+     *          <br/>Enum can be a list of strings: ["val1", "val2"], then input values will be those strings.
+     *          <br/>Enum can be a map of int->strings: [10:"val1", 42:"val2"], then input values will still be <b>String</b>, but values: "10" and "42".
+     *        </li>
      *        <li><code>hub</code> 	Prompts for the selection of a hub</li>
      *        <li><code>icon</code> 	Prompts for the selection of an icon image</li>
      *        <li><code>number</code> 	An integer number, i.e. one without decimal point</li>

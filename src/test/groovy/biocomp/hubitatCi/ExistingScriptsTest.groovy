@@ -106,10 +106,10 @@ class ThermostatDimerSyncHelperTest extends
 
         then:
             1* log.debug("Initializing")
-            1* api.subscribe({it.capability == Thermostat && it.userProvidedObject == thermostat}, "coolingSetpoint", _)
-            1* api.subscribe({it.capability == Thermostat && it.userProvidedObject == thermostat}, "heatingSetpoint", _)
-            1* api.subscribe({it.capability == SwitchLevel && it.userProvidedObject == coolingDimmer}, "level", _)
-            1* api.subscribe({it.capability == SwitchLevel && it.userProvidedObject == heatingDimmer}, "level", _)
+            1* api.subscribe({it.capability == Thermostat && it.userProvidedValue == thermostat}, "coolingSetpoint", _)
+            1* api.subscribe({it.capability == Thermostat && it.userProvidedValue == thermostat}, "heatingSetpoint", _)
+            1* api.subscribe({it.capability == SwitchLevel && it.userProvidedValue == coolingDimmer}, "level", _)
+            1* api.subscribe({it.capability == SwitchLevel && it.userProvidedValue == heatingDimmer}, "level", _)
     }
 }
 
@@ -294,7 +294,8 @@ class Tonesto7HomebridgeScriptTest extends Specification
                     validator: new AppValidator([
                             Flags.AllowEmptyOptionValueStrings,
                             Flags.AllowNullListOptions,
-                            Flags.AllowMissingOAuthPage],
+                            Flags.AllowMissingOAuthPage,
+                            Flags.AllowNullEnumInputOptions],
                             [],
                             ["execute"]))
     }

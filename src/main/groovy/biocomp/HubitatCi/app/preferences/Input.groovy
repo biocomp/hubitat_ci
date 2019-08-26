@@ -11,13 +11,17 @@ class Input {
     final Map options
     final EnumSet<Flags> validationFlags
     final IInputType typeWrapper
+    final Map<String, Object> defaultValue // Map of one 'defaultValue' or 0 elements, meaning that there's no default value.
+    final ArrayList<String> enumValues = new ArrayList<String>() // If type is enum, will contain enum values (and if values is map, then keys of the map)
+    final ArrayList<String> enumDisplayValues = new ArrayList<String>() // If type is enum, will contain enum values (and if values is map, then values of the map)
 
     Input(Map unnamedOptions, Map options, EnumSet<Flags> validationFlags) {
         this.unnamedOptions = unnamedOptions
         this.options = options
         this.validationFlags = validationFlags
 
-        this.typeWrapper = validateAndInitType()
+        this.defaultValue = readDefaultValue()
+        this.typeWrapper = validateAndInitType(enumValues, enumDisplayValues)
     }
 
     String readName()
@@ -30,12 +34,10 @@ class Input {
         return unnamedOptions.type ? unnamedOptions.type : options?.type
     }
 
-    @CompileStatic
     static boolean isCapabilityType(String type) {
         return type =~ /capability\.[a-zA-Z0-9._]+/
     }
 
-    @CompileStatic
     static Class findCapabilityFromTypeString(String type)
     {
         assert isCapabilityType(type), "Call this method only if input type points to capability. Current value: '${type}'"
@@ -48,16 +50,56 @@ class Input {
         return "input(options: ${options}, unnamedOptions: ${unnamedOptions})"
     }
 
-    @CompileStatic
     def makeInputObject(def userProvidedValue)
     {
-        return typeWrapper.makeInputObject(readName(), readType(), userProvidedValue)
+        return typeWrapper.makeInputObject(readName(), readType(), makeDefaultAndUserValuesMap(userProvidedValue))
     }
 
-    @CompileStatic
     def makeInputObject()
     {
-        return typeWrapper.makeInputObject(readName(), readType())
+        return typeWrapper.makeInputObject(readName(), readType(), readDefaultValueOrEnumFirstValue())
+    }
+
+    Map<String, Object> readDefaultValue()
+    {
+        if (options?.containsKey('defaultValue'))
+        {
+            return [defaultValue: options.defaultValue]
+        }
+
+        return [:]
+    }
+
+    private Map<String, Object> readDefaultValueOrEnumFirstValue()
+    {
+        if (defaultValue.containsKey('defaultValue'))
+        {
+            if (readType() == 'enum') {
+                return [defaultValue: (Object) enumValues[
+                        enumDisplayValues.findIndexOf { it == defaultValue.defaultValue as String }]]
+            }
+            else
+            {
+                return defaultValue
+            }
+        }
+        else if (readType() == 'enum')
+        {
+            return [defaultValue: (Object)enumValues[0]]
+        }
+
+        return [:]
+    }
+
+    private Map<String, Object> makeDefaultAndUserValuesMap(def userProvidedValue)
+    {
+        def extendedDefaultValue = readDefaultValueOrEnumFirstValue()
+        if (extendedDefaultValue.containsKey('defaultValue'))
+        {
+            return [defaultValue: extendedDefaultValue.defaultValue, userProvidedValue: userProvidedValue]
+        }
+
+        return [userProvidedValue: userProvidedValue]
     }
 
     private static final NamedParametersValidator inputOptionsValidator = NamedParametersValidator.make {
@@ -90,7 +132,8 @@ class Input {
             text: new TextInputType()
     ] as HashMap<String, IInputType>
 
-    private IInputType validateAndInitType()
+
+    private IInputType validateAndInitType(ArrayList<String> enumValues, ArrayList<String> enumDisplayValues)
     {
         if (!validationFlags.contains(Flags.DontValidatePreferences)) {
             inputOptionsValidator.validate(
@@ -99,18 +142,64 @@ class Input {
                     options,
                     validationFlags)
 
-            return validateInputType()
+            return validateInputType(enumValues, enumDisplayValues)
         }
 
         return new UnvalidatedInputType();
     }
 
-    private IInputType validateInputType()
+    private static void ensureAndInsertUniqueValue(String keyOrValue, List source, ArrayList<String> uniqueValues)
+    {
+        def unique = new HashSet<String>()
+        source.each{
+            def stringVal = it.toString()
+
+            assert !unique.contains(stringVal) : "${this}: enum ${keyOrValue} '${it}' was duplicated"
+
+            unique.add(stringVal)
+            uniqueValues.add(stringVal)
+        }
+    }
+
+    private void validateEnumInput(ArrayList<String> enumValues, ArrayList<String> enumDisplayValues)
+    {
+        assert options != null && options.containsKey('options'): "${this}: input of type 'enum' must have 'options' parameter with enum values"
+
+        if (Map.isInstance(options.options)) {
+            final def optionsMap = options.options as Map<Integer, String>
+            ensureAndInsertUniqueValue("value", optionsMap.values().collect{it.toString()}, enumDisplayValues)
+            ensureAndInsertUniqueValue("key", optionsMap.keySet().collect{it.toString()}, enumValues)
+        }
+        else if (List.isInstance(options.options)) {
+            ensureAndInsertUniqueValue("value", options.options.collect{it.toString()}, enumDisplayValues)
+            enumValues.addAll(enumDisplayValues)
+        }
+        else if (!validationFlags.contains(Flags.AllowNullEnumInputOptions))
+        {
+            assert false, "${this}: enum input's 'options' must be a list of values or map int->value, but it is: ${options.options?.class}. To allow null options, use ${Flags.AllowNullEnumInputOptions}."
+        }
+
+        if (defaultValue.containsKey('defaultValue'))
+        {
+            assert enumDisplayValues.contains(defaultValue.defaultValue): "${this}: defaultValue '${defaultValue.defaultValue}' is not one of valid values: ${enumDisplayValues}"
+        }
+    }
+
+    private IInputType validateInputType(ArrayList<String> enumValues, ArrayList<String> enumDisplayValues)
     {
         final def inputType = readType()
         final def foundStaticType = validStaticInputTypes.get(inputType)
+
+        if (inputType != 'enum') {
+            assert !options || !options.containsKey('options'): "${this}: only 'enum' input type needs 'options' parameter."
+        }
+
         if (foundStaticType)
         {
+            if (inputType == 'enum') {
+                validateEnumInput(enumValues, enumDisplayValues)
+            }
+
             return foundStaticType
         }
 
@@ -119,7 +208,7 @@ class Input {
             final def foundCapability = Input.findCapabilityFromTypeString(inputType)
             if (foundCapability)
             {
-                return new DeviceInputType(foundCapability)
+                return new DeviceInputType(foundCapability, foundCapability.simpleName)
             }
             else
             {
@@ -129,7 +218,7 @@ class Input {
 
         if (inputType =~ /device\.[a-zA-Z0-9._]+/)
         {
-            return new DeviceInputType(null) // Unknown capabilities
+            return new DeviceInputType(null, inputType.substring('device.'.length())) // Unknown capabilities, just using dummy device
         }
 
         assert false : "Input ${this}'s type ${inputType} is not supported. Valid types are: ${validStaticInputTypes} + 'capability.yourCapabilityName' + 'device.yourDeviceName'"

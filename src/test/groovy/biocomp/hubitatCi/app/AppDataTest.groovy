@@ -1,6 +1,6 @@
 package biocomp.hubitatCi.app
 
-import biocomp.hubitatCi.api.preferences.Page
+
 import biocomp.hubitatCi.app.preferences.Input
 import biocomp.hubitatCi.app.preferences.Page
 import biocomp.hubitatCi.app.preferences.Section
@@ -15,14 +15,14 @@ class AppDataTest extends Specification{
             new AppData().generateInputWrapper(null, null) == null
     }
 
-    def "generateInputObject() returns userProvidedObject if input is null"()
+    def "generateInputObject() returns userProvidedValue if input is null"()
     {
         expect:
             new AppData().generateInputWrapper(null, "whatever") == "whatever"
     }
 
     @Unroll
-    def "generateInputObject() returns userProvidedObject if input doesn't have capability (type == #inputType)"(String inputType)
+    def "generateInputObject() returns userProvidedValue if input doesn't have capability (type == #inputType)"(String inputType)
     {
         setup:
             def data = new AppData()

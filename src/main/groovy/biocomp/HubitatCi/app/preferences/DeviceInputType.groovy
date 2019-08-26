@@ -1,7 +1,7 @@
 package biocomp.hubitatCi.app.preferences
 
-import biocomp.hubitatCi.api.Device
 import biocomp.hubitatCi.api.Attribute
+import biocomp.hubitatCi.api.Device
 import biocomp.hubitatCi.capabilities.AttributeImpl
 import biocomp.hubitatCi.capabilities.Capabilities
 import biocomp.hubitatCi.capabilities.CapabilityAttributeInfo
@@ -14,11 +14,10 @@ class DeviceInputType implements IInputType
     final Class capability
     final Class generatedDevice
 
-    DeviceInputType(Class capability)
+    DeviceInputType(Class capability, String deviceOrCapabilityName)
     {
         this.capability = capability
-
-        this.generatedDevice = generateDeviceClass(capability)
+        this.generatedDevice = generateDeviceClass(capability, deviceOrCapabilityName)
     }
 
     @CompileStatic
@@ -30,9 +29,9 @@ class DeviceInputType implements IInputType
     private static void printAttributeValue(StringBuilder builder, CapabilityAttributeInfo attribute) {
         builder.append("""def getCurrent${attribute.name.capitalize()}() 
         { 
-            if (userProvidedObject != null)
+            if (hasUserProvidedValue())
             {
-                userProvidedObject.getCurrent${attribute.name.capitalize()}()
+                getUserProvidedValue().getCurrent${attribute.name.capitalize()}()
             }
             else
             {
@@ -48,9 +47,9 @@ class DeviceInputType implements IInputType
         ${method.parameters.collect{it.type.canonicalName + " " + it.name}.join(", ")}
     )
     { 
-        if (userProvidedObject != null)
+        if (hasUserProvidedValue())
         {
-            userProvidedObject.${method.name}(${method.parameters.collect{it.name}.join(", ")})
+            getUserProvidedValue().${method.name}(${method.parameters.collect{it.name}.join(", ")})
         }
         else
         {
@@ -62,19 +61,40 @@ class DeviceInputType implements IInputType
 
 
     @CompileStatic
-    private static Class generateDeviceClass(Class capability)
+    private static Class generateDeviceClass(Class capability, String deviceOrCapabilityName)
     {
         def builder = new StringBuilder()
-        def attributes = Capabilities.readAttributes(capability).values()
+        def attributes = capability ? Capabilities.readAttributes(capability).values() : new ArrayList<CapabilityAttributeInfo>()
+        def methods = capability ? Capabilities.readMethods(capability) : new ArrayList<Method>()
 
         builder.append(
                 """
-class Device_WithCapability_${capability.simpleName}_Impl implements ${Device.canonicalName}
+import groovy.transform.CompileStatic
+
+class Device_WithCapability_${deviceOrCapabilityName}_Impl implements ${Device.canonicalName}
 {
-    Device_WithCapability_${capability.simpleName}_Impl(def userProvidedObject) { this.userProvidedObject = userProvidedObject }
+    Device_WithCapability_${deviceOrCapabilityName}_Impl(Map<String, Object> userProvidedValueMap) { this.userProvidedValueMap = userProvidedValueMap }
 
-    private final def userProvidedObject
+    private final Map<String, Object> userProvidedValueMap
 
+    @CompileStatic
+    private boolean hasUserProvidedValue()
+    {
+        return userProvidedValueMap.containsKey('userProvidedValue')
+    }
+    
+    @CompileStatic
+    private def getUserProvidedValue()
+    {
+        return userProvidedValueMap.userProvidedValue
+    }
+
+    @CompileStatic
+    @Override
+    Class getCapability() { return ${capability ? capability.canonicalName : "null"} }
+
+    @CompileStatic
+    @Override
     List<${Attribute.canonicalName}> getSupportedAttributes(){
         def results = new ArrayList<${Attribute.canonicalName}>()
 """)
@@ -88,7 +108,7 @@ class Device_WithCapability_${capability.simpleName}_Impl implements ${Device.ca
         attributes.each{printAttributeValue(builder, it)}
 
         // Methods
-        Capabilities.readMethods(capability).each{printMethod(builder, it)}
+        methods.each{printMethod(builder, it)}
 
         // End of the class:
         builder.append("}")
@@ -97,13 +117,8 @@ class Device_WithCapability_${capability.simpleName}_Impl implements ${Device.ca
     }
 
     @Override
-    def makeInputObject(String inputName, String inputType, Object userProvidedValue)
+    def makeInputObject(String inputName, String inputType, Map<String, Object> userProvidedAndDefaultValues)
     {
-        return generatedDevice.newInstance(userProvidedValue)
-    }
-
-    @Override
-    def makeInputObject(String inputName, String inputType) {
-        return generatedDevice.newInstance(null)
+        return generatedDevice.newInstance(userProvidedAndDefaultValues)
     }
 }

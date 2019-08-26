@@ -25,4 +25,9 @@ class DeviceInput {
     {
         return "input(unnamed options: ${unnamedOptions}, options = ${options})"
     }
+
+    def makeInputObject(def userProvidedValue)
+    {
+        return userProvidedValue
+    }
 }

@@ -1,19 +1,13 @@
 package biocomp.hubitatCi.util
 
-import groovy.inspect.swingui.AstNodeToScriptVisitor
+
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import org.codehaus.groovy.ast.ClassHelper
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.MethodNode
 import org.codehaus.groovy.ast.Parameter
-import org.codehaus.groovy.ast.VariableScope
-import org.codehaus.groovy.ast.expr.ArgumentListExpression
-import org.codehaus.groovy.ast.expr.ConstantExpression
-import org.codehaus.groovy.ast.expr.DeclarationExpression
-import org.codehaus.groovy.ast.expr.Expression
-import org.codehaus.groovy.ast.expr.MethodCallExpression
-import org.codehaus.groovy.ast.expr.VariableExpression
+import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.ast.stmt.BlockStatement
 import org.codehaus.groovy.ast.stmt.ExpressionStatement
 import org.codehaus.groovy.ast.stmt.ReturnStatement
@@ -25,7 +19,6 @@ import org.codehaus.groovy.control.SourceUnit
 import org.codehaus.groovy.control.customizers.CompilationCustomizer
 import org.codehaus.groovy.syntax.Token
 import org.codehaus.groovy.syntax.Types
-
 
 @TypeChecked
 class AddValidationAfterEachMethodCompilationCustomizer extends CompilationCustomizer{
@@ -70,8 +63,6 @@ class AddValidationAfterEachMethodCompilationCustomizer extends CompilationCusto
     void call(SourceUnit source, GeneratorContext context, ClassNode classNode) throws CompilationFailedException {
         if (classNode.isScript())
         {
-            println "Updating ${classNode.name} with hubitatciValidateAfterMethodCall..."
-            
             List<MethodNode> originalMethods = []
             classNode.methods.each {
                 // Not modifying validating method, and not touching static methods.

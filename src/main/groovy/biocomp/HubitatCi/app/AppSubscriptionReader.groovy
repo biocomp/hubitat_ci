@@ -1,9 +1,7 @@
 package biocomp.hubitatCi.app
 
+import biocomp.hubitatCi.api.Device
 import biocomp.hubitatCi.api.appApi.AppExecutor
-import biocomp.hubitatCi.app.preferences.Input
-import biocomp.hubitatCi.capabilities.Capabilities
-import biocomp.hubitatCi.capabilities.CapabilityAttributeInfo
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import groovy.transform.TypeChecked
@@ -56,22 +54,19 @@ class AppSubscriptionReader implements AppExecutor  {
     @CompileStatic
     private void validateSubscribeMethod(Object toWhat, String attributeNameOrNameAndValueOrEventName, Object handlerMethod)
     {
-        println "Got ${toWhat}"
-
         // Need to be able to get input object.
-        assert IInputTag.isInstance(toWhat) : "Object ${toWhat} is not a valid input to subscribe to."
+        assert Device.isInstance(toWhat) : "Object ${toWhat} is not a valid input (not a device) to subscribe to."
 
-        def input = ((IInputTag)toWhat)._hubitat_ci_internal_getInput()
-        assert Input.isCapabilityType(input.readType()) : "Input ${input}'s type is not a capability."
+        def device = (Device)toWhat
+        def capability = device.capability
 
-        def capability = Input.findCapabilityFromTypeString(input.readType())
-        assert capability != null: "Input ${input}'s type ${input.readType()} points to unknown capability."
-
-        def attributes = Capabilities.readAttributes(capability)
-        assert attributes != null: "Capability ${capability} does not define any attributes to subscribe to"
-
-        assert attributes.get(attributeNameOrNameAndValueOrEventName) : "Capability '${capability.simpleName}' does not contain attribute '${attributeNameOrNameAndValueOrEventName}'. Valid attributes are: ${attributes.collect{it.key}}"
-
+        // Only validate capability attributes if capability is known
+        if (capability != null) {
+            def attributes = device.supportedAttributes
+            assert attributes.find {
+                it.name == attributeNameOrNameAndValueOrEventName
+            }: "Device '${capability.simpleName}' does not contain attribute '${attributeNameOrNameAndValueOrEventName}'. Valid attributes are: ${attributes.collect { it.name }}"
+        }
 
         // Then check that it's a capability
         // Then parse attributeNameOrNameAndValueOrEventName and get an attribute or event name.

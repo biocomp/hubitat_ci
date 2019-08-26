@@ -69,10 +69,6 @@ class SettingsContainer implements Map<String, Object>
             return userSettingValue."_"
         }
 
-        if (userSettingValue != null) {
-            return userSettingValue
-        }
-
         return registeredInputs.generateInputWrapper(name, userSettingValue)
     }
 

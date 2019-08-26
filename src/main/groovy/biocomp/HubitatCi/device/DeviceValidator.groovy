@@ -270,8 +270,6 @@ class DeviceValidator extends
             def scriptActualMethods = scriptMetaClass.theClass.methods.findAll {
                 it.declaringClass == scriptMetaClass.theClass
             }.collectEntries {
-                println "### Actual method ${it.name}."
-
                 [it.name, it]
             }
 
