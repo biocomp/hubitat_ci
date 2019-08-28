@@ -1,6 +1,6 @@
 package me.biocomp.hubitat_ci.app
 
-import biocomp.hubitatCi.validation.Flags
+import me.biocomp.hubitat_ci.validation.Flags
 import groovy.transform.PackageScope
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode

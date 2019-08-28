@@ -1,7 +1,7 @@
 package me.biocomp.hubitat_ci.device
 
-import biocomp.hubitatCi.device.metadata.DeviceInput
-import biocomp.hubitatCi.validation.IInputSource
+import me.biocomp.hubitat_ci.device.metadata.DeviceInput
+import me.biocomp.hubitat_ci.validation.IInputSource
 import groovy.transform.CompileStatic
 
 /**

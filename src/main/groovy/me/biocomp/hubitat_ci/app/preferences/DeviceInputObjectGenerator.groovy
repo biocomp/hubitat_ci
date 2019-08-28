@@ -1,10 +1,10 @@
 package me.biocomp.hubitat_ci.app.preferences
 
-import biocomp.hubitatCi.api.Attribute
-import biocomp.hubitatCi.api.Device
-import biocomp.hubitatCi.capabilities.AttributeImpl
-import biocomp.hubitatCi.capabilities.Capabilities
-import biocomp.hubitatCi.capabilities.CapabilityAttributeInfo
+import me.biocomp.hubitat_ci.api.Attribute
+import me.biocomp.hubitat_ci.api.Device
+import me.biocomp.hubitat_ci.capabilities.AttributeImpl
+import me.biocomp.hubitat_ci.capabilities.Capabilities
+import me.biocomp.hubitat_ci.capabilities.CapabilityAttributeInfo
 import groovy.transform.CompileStatic
 
 import java.lang.reflect.Method

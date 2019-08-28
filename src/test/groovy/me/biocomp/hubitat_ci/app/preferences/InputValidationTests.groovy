@@ -1,7 +1,7 @@
 package me.biocomp.hubitat_ci.app.preferences
 
-import biocomp.hubitatCi.app.HubitatAppSandbox
-import biocomp.hubitatCi.validation.Flags
+import me.biocomp.hubitat_ci.app.HubitatAppSandbox
+import me.biocomp.hubitat_ci.validation.Flags
 import org.codehaus.groovy.runtime.metaclass.MethodSelectionException
 import spock.lang.Specification
 import spock.lang.Unroll

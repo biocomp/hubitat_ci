@@ -1,9 +1,9 @@
 package me.biocomp.hubitat_ci.validation
 
-import biocomp.hubitatCi.util.AddValidationAfterEachMethodCompilationCustomizer
-import biocomp.hubitatCi.util.DoNotCallMeBinding
-import biocomp.hubitatCi.util.RemovePrivateFromScriptCompilationCustomizer
-import biocomp.hubitatCi.util.SandboxClassLoader
+import me.biocomp.hubitat_ci.util.AddValidationAfterEachMethodCompilationCustomizer
+import me.biocomp.hubitat_ci.util.DoNotCallMeBinding
+import me.biocomp.hubitat_ci.util.RemovePrivateFromScriptCompilationCustomizer
+import me.biocomp.hubitat_ci.util.SandboxClassLoader
 import groovy.json.JsonBuilder
 import groovy.time.TimeCategory
 import groovy.transform.CompileStatic
@@ -127,10 +127,10 @@ class ValidatorBase {
                                                             //org.json.JSONException,
                                                             //org.json.JSONObject,
                                                             //org.json.JSONObject.Null,
-                                                            biocomp.hubitatCi.api.Protocol,
-                                                            biocomp.hubitatCi.api.common_api.HubAction,
-                                                            biocomp.hubitatCi.api.common_api.HubResponse,
-                                                            biocomp.hubitatCi.api.common_api.Location
+                                                            me.biocomp.hubitat_ci.api.Protocol,
+                                                            me.biocomp.hubitat_ci.api.common_api.HubAction,
+                                                            me.biocomp.hubitat_ci.api.common_api.HubResponse,
+                                                            me.biocomp.hubitat_ci.api.common_api.Location
 
     ] as HashSet<Class>
 
@@ -241,7 +241,7 @@ class ValidatorBase {
             return true
         }
 
-        if (classNode.name.startsWith('biocomp.hubitatCi.api.device_api.zwave'))
+        if (classNode.name.startsWith('me.biocomp.hubitat_ci.api.device_api.zwave'))
         {
             return true
         }

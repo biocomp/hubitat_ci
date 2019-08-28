@@ -1,10 +1,10 @@
 package me.biocomp.hubitat_ci.app
 
 
-import biocomp.hubitatCi.app.preferences.Input
-import biocomp.hubitatCi.app.preferences.Page
-import biocomp.hubitatCi.app.preferences.Section
-import biocomp.hubitatCi.validation.Flags
+import me.biocomp.hubitat_ci.app.preferences.Input
+import me.biocomp.hubitat_ci.app.preferences.Page
+import me.biocomp.hubitat_ci.app.preferences.Section
+import me.biocomp.hubitat_ci.validation.Flags
 import spock.lang.Specification
 import spock.lang.Unroll
 

@@ -1,7 +1,7 @@
 package me.biocomp.hubitat_ci.api.common_api;
 
-//import biocomp.hubitatCi.api.Hub
-//import biocomp.hubitatCi.api.Mode
+//import me.biocomp.hubitat_ci.api.Hub
+//import me.biocomp.hubitat_ci.api.Mode
 
 /*
 Meta/Common:

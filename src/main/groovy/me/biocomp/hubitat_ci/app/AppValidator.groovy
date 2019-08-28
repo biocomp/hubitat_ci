@@ -1,14 +1,14 @@
 package me.biocomp.hubitat_ci.app
 
 
-import biocomp.hubitatCi.app.preferences.HRef
-import biocomp.hubitatCi.app.preferences.Input
-import biocomp.hubitatCi.app.preferences.Page
-import biocomp.hubitatCi.app.preferences.Preferences
-import biocomp.hubitatCi.capabilities.Capabilities
-import biocomp.hubitatCi.validation.Flags
-import biocomp.hubitatCi.validation.NamedParametersValidator
-import biocomp.hubitatCi.validation.ValidatorBase
+import me.biocomp.hubitat_ci.app.preferences.HRef
+import me.biocomp.hubitat_ci.app.preferences.Input
+import me.biocomp.hubitat_ci.app.preferences.Page
+import me.biocomp.hubitat_ci.app.preferences.Preferences
+import me.biocomp.hubitat_ci.capabilities.Capabilities
+import me.biocomp.hubitat_ci.validation.Flags
+import me.biocomp.hubitat_ci.validation.NamedParametersValidator
+import me.biocomp.hubitat_ci.validation.ValidatorBase
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 

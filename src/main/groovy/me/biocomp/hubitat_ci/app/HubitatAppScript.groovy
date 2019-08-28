@@ -1,8 +1,8 @@
 package me.biocomp.hubitat_ci.app
 
-import biocomp.hubitatCi.api.app_api.AppExecutor
-import biocomp.hubitatCi.app.preferences.AppPreferencesReader
-import biocomp.hubitatCi.app.preferences.Preferences
+import me.biocomp.hubitat_ci.api.app_api.AppExecutor
+import me.biocomp.hubitat_ci.app.preferences.AppPreferencesReader
+import me.biocomp.hubitat_ci.app.preferences.Preferences
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 

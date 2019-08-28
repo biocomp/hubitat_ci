@@ -1,9 +1,9 @@
 package me.biocomp.hubitat_ci.app
 
-import biocomp.hubitatCi.api.app_api.AppExecutor
-import biocomp.hubitatCi.api.common_api.Log
-import biocomp.hubitatCi.app.HubitatAppSandbox
-import biocomp.hubitatCi.validation.Flags
+import me.biocomp.hubitat_ci.api.app_api.AppExecutor
+import me.biocomp.hubitat_ci.api.common_api.Log
+import me.biocomp.hubitat_ci.app.HubitatAppSandbox
+import me.biocomp.hubitat_ci.validation.Flags
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import spock.lang.Specification
 import spock.lang.Unroll

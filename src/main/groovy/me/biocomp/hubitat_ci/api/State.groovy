@@ -1,6 +1,6 @@
 package me.biocomp.hubitat_ci.api
 
-import biocomp.hubitatCi.api.common_api.Location
+import me.biocomp.hubitat_ci.api.common_api.Location
 
 /*
 Real methods:

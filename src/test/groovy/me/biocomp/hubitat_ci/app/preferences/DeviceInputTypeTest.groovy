@@ -1,7 +1,7 @@
 package me.biocomp.hubitat_ci.app.preferences
 
-import biocomp.hubitatCi.capabilities.Thermostat
-import biocomp.hubitatCi.capabilities.ThermostatCoolingSetpoint
+import me.biocomp.hubitat_ci.capabilities.Thermostat
+import me.biocomp.hubitat_ci.capabilities.ThermostatCoolingSetpoint
 import spock.lang.Specification
 
 class DeviceInputTypeTest extends Specification{

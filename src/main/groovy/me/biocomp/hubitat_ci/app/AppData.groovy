@@ -1,8 +1,8 @@
 package me.biocomp.hubitat_ci.app
 
 
-import biocomp.hubitatCi.app.preferences.Preferences
-import biocomp.hubitatCi.validation.IInputSource
+import me.biocomp.hubitat_ci.app.preferences.Preferences
+import me.biocomp.hubitat_ci.validation.IInputSource
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 

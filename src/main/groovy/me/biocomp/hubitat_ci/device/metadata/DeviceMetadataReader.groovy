@@ -1,10 +1,10 @@
 package me.biocomp.hubitat_ci.device.metadata
 
-import biocomp.hubitatCi.api.device_api.*
-import biocomp.hubitatCi.device.DeviceData
-import biocomp.hubitatCi.device.DeviceValidator
-import biocomp.hubitatCi.util.ReaderState
-import biocomp.hubitatCi.validation.SettingsContainer
+import me.biocomp.hubitat_ci.api.device_api.*
+import me.biocomp.hubitat_ci.device.DeviceData
+import me.biocomp.hubitat_ci.device.DeviceValidator
+import me.biocomp.hubitat_ci.util.ReaderState
+import me.biocomp.hubitat_ci.validation.SettingsContainer
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 

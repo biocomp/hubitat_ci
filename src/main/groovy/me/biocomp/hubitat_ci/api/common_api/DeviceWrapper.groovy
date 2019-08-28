@@ -1,9 +1,9 @@
 package me.biocomp.hubitat_ci.api.common_api
 
-import biocomp.hubitatCi.api.Attribute
-import biocomp.hubitatCi.api.Capability
-import biocomp.hubitatCi.api.Command
-import biocomp.hubitatCi.api.State
+import me.biocomp.hubitat_ci.api.Attribute
+import me.biocomp.hubitat_ci.api.Capability
+import me.biocomp.hubitat_ci.api.Command
+import me.biocomp.hubitat_ci.api.State
 
 /**
  * Real class methods:

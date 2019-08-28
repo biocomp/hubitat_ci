@@ -1,6 +1,6 @@
 package me.biocomp.hubitat_ci.api.app_api;
 
-import biocomp.hubitatCi.api.common_api.DeviceWrapper
+import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
 
 interface Subscription {
     /**

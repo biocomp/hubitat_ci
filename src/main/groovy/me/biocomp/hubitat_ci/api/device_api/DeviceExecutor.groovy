@@ -1,8 +1,8 @@
 package me.biocomp.hubitat_ci.api.device_api
 
-import biocomp.hubitatCi.api.common_api.*
-import biocomp.hubitatCi.api.device_api.zigbee.Zigbee
-import biocomp.hubitatCi.api.device_api.zwave.Zwave
+import me.biocomp.hubitat_ci.api.common_api.*
+import me.biocomp.hubitat_ci.api.device_api.zigbee.Zigbee
+import me.biocomp.hubitat_ci.api.device_api.zwave.Zwave
 
 /**
  * Real methods:
@@ -462,7 +462,7 @@ interface DeviceMetadataSource extends
 }
 
 trait DeviceExecutor implements
-        biocomp.hubitatCi.api.common_api.BaseExecutor,
+        me.biocomp.hubitat_ci.api.common_api.BaseExecutor,
         DeviceMetadataSource
 {
     // Command can be invoked by name

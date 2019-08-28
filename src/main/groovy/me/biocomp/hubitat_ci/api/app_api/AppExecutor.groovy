@@ -149,10 +149,10 @@ public void com.hubitat.hub.executor.AppExecutor.setState(java.util.Map),
 public void com.hubitat.hub.executor.AppExecutor.setThirdPartyHubIPList(java.util.List),
 */
 
-import biocomp.hubitatCi.api.common_api.BaseExecutor
-import biocomp.hubitatCi.api.common_api.ChildDeviceWrapper
-import biocomp.hubitatCi.api.common_api.DeviceWrapper
-import biocomp.hubitatCi.api.common_api.InstalledAppWrapper
+import me.biocomp.hubitat_ci.api.common_api.BaseExecutor
+import me.biocomp.hubitat_ci.api.common_api.ChildDeviceWrapper
+import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
+import me.biocomp.hubitat_ci.api.common_api.InstalledAppWrapper
 ;
 
 

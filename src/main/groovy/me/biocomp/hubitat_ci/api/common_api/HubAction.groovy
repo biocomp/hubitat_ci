@@ -1,6 +1,6 @@
 package me.biocomp.hubitat_ci.api.common_api
 
-import biocomp.hubitatCi.api.Protocol
+import me.biocomp.hubitat_ci.api.Protocol
 
 /**
  * Real methods:

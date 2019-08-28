@@ -1,7 +1,7 @@
 package me.biocomp.hubitat_ci
 
 
-import biocomp.hubitatCi.util.SimpleRange
+import me.biocomp.hubitat_ci.util.SimpleRange
 import groovy.transform.TypeChecked
 import spock.lang.Specification
 import spock.lang.Unroll

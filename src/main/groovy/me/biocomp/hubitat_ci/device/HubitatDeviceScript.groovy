@@ -1,9 +1,9 @@
 package me.biocomp.hubitat_ci.device
 
-import biocomp.hubitatCi.api.device_api.DeviceExecutor
-import biocomp.hubitatCi.device.metadata.Definition
-import biocomp.hubitatCi.device.metadata.DeviceInput
-import biocomp.hubitatCi.device.metadata.DeviceMetadataReader
+import me.biocomp.hubitat_ci.api.device_api.DeviceExecutor
+import me.biocomp.hubitat_ci.device.metadata.Definition
+import me.biocomp.hubitat_ci.device.metadata.DeviceInput
+import me.biocomp.hubitat_ci.device.metadata.DeviceMetadataReader
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 

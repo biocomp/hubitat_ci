@@ -1,6 +1,6 @@
 package me.biocomp.hubitat_ci.app
 
-import biocomp.hubitatCi.app.preferences.Input
+import me.biocomp.hubitat_ci.app.preferences.Input
 
 /**
  * Is added to the generated input objects that are injected in user's script.

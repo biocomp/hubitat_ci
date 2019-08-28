@@ -1,9 +1,9 @@
 package me.biocomp.hubitat_ci
 
-import biocomp.hubitatCi.api.common_api.Log
-import biocomp.hubitatCi.api.device_api.DeviceExecutor
-import biocomp.hubitatCi.device.HubitatDeviceSandbox
-import biocomp.hubitatCi.validation.Flags
+import me.biocomp.hubitat_ci.api.common_api.Log
+import me.biocomp.hubitat_ci.api.device_api.DeviceExecutor
+import me.biocomp.hubitat_ci.device.HubitatDeviceSandbox
+import me.biocomp.hubitat_ci.validation.Flags
 import spock.lang.Specification
 
 class WeatherDisplayScriptTest extends

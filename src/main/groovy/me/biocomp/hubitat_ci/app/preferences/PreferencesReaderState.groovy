@@ -1,7 +1,7 @@
 package me.biocomp.hubitat_ci.app.preferences
 
 
-import biocomp.hubitatCi.app.AppValidator
+import me.biocomp.hubitat_ci.app.AppValidator
 import groovy.transform.TypeChecked
 
 @TypeChecked

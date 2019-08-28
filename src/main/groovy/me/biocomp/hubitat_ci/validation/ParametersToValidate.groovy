@@ -2,7 +2,7 @@ package me.biocomp.hubitat_ci.validation
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import biocomp.hubitatCi.util.SimpleRange
+import me.biocomp.hubitat_ci.util.SimpleRange
 
 @TypeChecked
 class ParametersToValidate

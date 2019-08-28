@@ -1,9 +1,9 @@
 package me.biocomp.hubitat_ci.app
 
-import biocomp.hubitatCi.api.app_api.AppExecutor
-import biocomp.hubitatCi.app.preferences.Preferences
-import biocomp.hubitatCi.validation.Flags
-import biocomp.hubitatCi.validation.NamedParametersValidator
+import me.biocomp.hubitat_ci.api.app_api.AppExecutor
+import me.biocomp.hubitat_ci.app.preferences.Preferences
+import me.biocomp.hubitat_ci.validation.Flags
+import me.biocomp.hubitat_ci.validation.NamedParametersValidator
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode

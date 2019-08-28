@@ -1,6 +1,6 @@
 package me.biocomp.hubitat_ci.app.preferences
 
-import biocomp.hubitatCi.validation.Flags
+import me.biocomp.hubitat_ci.validation.Flags
 import spock.lang.Specification
 
 class InputTypeTest extends Specification{

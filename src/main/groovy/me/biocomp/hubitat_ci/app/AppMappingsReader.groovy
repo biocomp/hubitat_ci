@@ -1,8 +1,8 @@
 package me.biocomp.hubitat_ci.app
 
-import biocomp.hubitatCi.api.app_api.AppExecutor
-import biocomp.hubitatCi.api.app_api.Mappings
-import biocomp.hubitatCi.validation.Flags
+import me.biocomp.hubitat_ci.api.app_api.AppExecutor
+import me.biocomp.hubitat_ci.api.app_api.Mappings
+import me.biocomp.hubitat_ci.validation.Flags
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import groovy.transform.TypeChecked

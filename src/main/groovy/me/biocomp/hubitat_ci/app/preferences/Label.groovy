@@ -1,8 +1,8 @@
 package me.biocomp.hubitat_ci.app.preferences
 
-import biocomp.hubitatCi.app.AppValidator
-import biocomp.hubitatCi.validation.Flags
-import biocomp.hubitatCi.validation.NamedParametersValidator
+import me.biocomp.hubitat_ci.app.AppValidator
+import me.biocomp.hubitat_ci.validation.Flags
+import me.biocomp.hubitat_ci.validation.NamedParametersValidator
 import groovy.transform.TypeChecked
 
 @TypeChecked

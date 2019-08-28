@@ -1,7 +1,7 @@
 package me.biocomp.hubitat_ci.app
 
-import biocomp.hubitatCi.app.HubitatAppSandbox
-import biocomp.hubitatCi.validation.Flags
+import me.biocomp.hubitat_ci.app.HubitatAppSandbox
+import me.biocomp.hubitat_ci.validation.Flags
 import groovy.transform.TypeChecked
 import spock.lang.Specification
 import spock.lang.Unroll

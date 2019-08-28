@@ -1,9 +1,9 @@
 package me.biocomp.hubitat_ci.device
 
 
-import biocomp.hubitatCi.api.device_api.DeviceExecutor
-import biocomp.hubitatCi.validation.Flags
-import biocomp.hubitatCi.validation.NamedParametersValidator
+import me.biocomp.hubitat_ci.api.device_api.DeviceExecutor
+import me.biocomp.hubitat_ci.validation.Flags
+import me.biocomp.hubitat_ci.validation.NamedParametersValidator
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
 

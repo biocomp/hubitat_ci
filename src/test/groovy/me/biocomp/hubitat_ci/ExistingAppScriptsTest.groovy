@@ -1,13 +1,13 @@
 package me.biocomp.hubitat_ci
 
-import biocomp.hubitatCi.api.app_api.AppExecutor
-import biocomp.hubitatCi.api.common_api.InstalledAppWrapper
-import biocomp.hubitatCi.api.common_api.Log
-import biocomp.hubitatCi.app.AppValidator
-import biocomp.hubitatCi.app.HubitatAppSandbox
-import biocomp.hubitatCi.capabilities.SwitchLevel
-import biocomp.hubitatCi.capabilities.Thermostat
-import biocomp.hubitatCi.validation.Flags
+import me.biocomp.hubitat_ci.api.app_api.AppExecutor
+import me.biocomp.hubitat_ci.api.common_api.InstalledAppWrapper
+import me.biocomp.hubitat_ci.api.common_api.Log
+import me.biocomp.hubitat_ci.app.AppValidator
+import me.biocomp.hubitat_ci.app.HubitatAppSandbox
+import me.biocomp.hubitat_ci.capabilities.SwitchLevel
+import me.biocomp.hubitat_ci.capabilities.Thermostat
+import me.biocomp.hubitat_ci.validation.Flags
 import spock.lang.Specification
 
 class AppTemplateScriptTest extends

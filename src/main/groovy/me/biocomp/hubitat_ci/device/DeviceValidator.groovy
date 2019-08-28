@@ -1,11 +1,11 @@
 package me.biocomp.hubitat_ci.device
 
-import biocomp.hubitatCi.capabilities.Capabilities
-import biocomp.hubitatCi.device.metadata.*
-import biocomp.hubitatCi.util.RequreParseCompilationCusomizer
-import biocomp.hubitatCi.validation.Flags
-import biocomp.hubitatCi.validation.NamedParametersValidator
-import biocomp.hubitatCi.validation.ValidatorBase
+import me.biocomp.hubitat_ci.capabilities.Capabilities
+import me.biocomp.hubitat_ci.device.metadata.*
+import me.biocomp.hubitat_ci.util.RequreParseCompilationCusomizer
+import me.biocomp.hubitat_ci.validation.Flags
+import me.biocomp.hubitat_ci.validation.NamedParametersValidator
+import me.biocomp.hubitat_ci.validation.ValidatorBase
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode

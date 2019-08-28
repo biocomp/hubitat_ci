@@ -1,6 +1,6 @@
 package me.biocomp.hubitat_ci.capabilities
 
-import biocomp.hubitatCi.api.Attribute
+import me.biocomp.hubitat_ci.api.Attribute
 import groovy.transform.CompileStatic
 
 /**
