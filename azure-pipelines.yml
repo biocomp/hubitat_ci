@@ -16,6 +16,9 @@ pool:
   vmImage: "vs2017-win2016"
   demands: java
 
+trigger:
+    [master]
+
 steps:
 - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
   submodules: true
