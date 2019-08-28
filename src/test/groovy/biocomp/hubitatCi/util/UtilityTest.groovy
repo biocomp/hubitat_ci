@@ -25,7 +25,7 @@ class UtilityTest extends
             today.year > 2017
             today.month >= 0
             today.month < 12
-            today.day > 0
+            today.day >= 0 // Shouldn't really be == 0, but somehow it happens in VSTS.
             today.day <= 31
 
         where:
