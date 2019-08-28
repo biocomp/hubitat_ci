@@ -1,8 +1,25 @@
+# strategy:
+#   matrix:
+#     linux:
+#       imageName: "ubuntu-16.04"
+#     mac:
+#       imageName: "macos-10.13"
+#     windows:
+#       imageName: "vs2017-win2016"
+#   maxParallel: 3
+
+# pool:
+#   vmImage: $(imageName)
+#   demands: java
+
 pool:
-  name: Hosted VS2017
+  vmImage: "vs2017-win2016"
   demands: java
 
 steps:
+- checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+  submodules: true
+
 - task: Gradle@2
   displayName: 'gradlew build groovydoc'
   inputs:
