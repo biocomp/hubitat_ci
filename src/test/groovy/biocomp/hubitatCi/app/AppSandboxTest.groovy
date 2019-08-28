@@ -1,7 +1,7 @@
 package me.biocomp.hubitat_ci.app
 
-import biocomp.hubitatCi.api.appApi.AppExecutor
-import biocomp.hubitatCi.api.commonApi.Log
+import biocomp.hubitatCi.api.app_api.AppExecutor
+import biocomp.hubitatCi.api.common_api.Log
 import biocomp.hubitatCi.app.HubitatAppSandbox
 import biocomp.hubitatCi.validation.Flags
 import org.codehaus.groovy.control.MultipleCompilationErrorsException

@@ -128,9 +128,9 @@ class ValidatorBase {
                                                             //org.json.JSONObject,
                                                             //org.json.JSONObject.Null,
                                                             biocomp.hubitatCi.api.Protocol,
-                                                            biocomp.hubitatCi.api.commonApi.HubAction,
-                                                            biocomp.hubitatCi.api.commonApi.HubResponse,
-                                                            biocomp.hubitatCi.api.commonApi.Location
+                                                            biocomp.hubitatCi.api.common_api.HubAction,
+                                                            biocomp.hubitatCi.api.common_api.HubResponse,
+                                                            biocomp.hubitatCi.api.common_api.Location
 
     ] as HashSet<Class>
 
@@ -241,7 +241,7 @@ class ValidatorBase {
             return true
         }
 
-        if (classNode.name.startsWith('biocomp.hubitatCi.api.deviceApi.zwave'))
+        if (classNode.name.startsWith('biocomp.hubitatCi.api.device_api.zwave'))
         {
             return true
         }

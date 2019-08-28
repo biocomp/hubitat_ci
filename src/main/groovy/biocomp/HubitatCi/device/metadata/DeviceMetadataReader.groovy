@@ -1,6 +1,6 @@
 package me.biocomp.hubitat_ci.device.metadata
 
-import biocomp.hubitatCi.api.deviceApi.*
+import biocomp.hubitatCi.api.device_api.*
 import biocomp.hubitatCi.device.DeviceData
 import biocomp.hubitatCi.device.DeviceValidator
 import biocomp.hubitatCi.util.ReaderState

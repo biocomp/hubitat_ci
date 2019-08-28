@@ -1,6 +1,6 @@
 package me.biocomp.hubitat_ci.device
 
-import biocomp.hubitatCi.api.deviceApi.DeviceExecutor
+import biocomp.hubitatCi.api.device_api.DeviceExecutor
 import biocomp.hubitatCi.device.metadata.Definition
 import biocomp.hubitatCi.device.metadata.DeviceInput
 import biocomp.hubitatCi.device.metadata.DeviceMetadataReader

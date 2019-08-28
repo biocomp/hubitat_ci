@@ -1,4 +1,4 @@
-package me.biocomp.hubitat_ci.api.commonApi;
+package me.biocomp.hubitat_ci.api.common_api;
 
 //import biocomp.hubitatCi.api.Hub
 //import biocomp.hubitatCi.api.Mode

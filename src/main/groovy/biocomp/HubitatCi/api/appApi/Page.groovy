@@ -1,4 +1,4 @@
-package me.biocomp.hubitat_ci.api.appApi
+package me.biocomp.hubitat_ci.api.app_api
 
 interface Page {
     /**

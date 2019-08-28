@@ -2,7 +2,7 @@ definition(
 		name: "New App Template",
 		namespace: "GvnCampbell",
 		author: "Gavin Campbell",
-		description: "Just some bare bones appApi template",
+		description: "Just some bare bones app_api template",
 		iconUrl: "",
 		iconX2Url: "",
 		iconX3Url: "")

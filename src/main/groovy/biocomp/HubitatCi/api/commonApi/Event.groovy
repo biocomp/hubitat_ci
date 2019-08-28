@@ -1,4 +1,4 @@
-package me.biocomp.hubitat_ci.api.commonApi
+package me.biocomp.hubitat_ci.api.common_api
 
 /**
  * Real methods:
@@ -18,7 +18,7 @@ package me.biocomp.hubitat_ci.api.commonApi
  * ++ public java.util.Date com.hubitat.hub.domain.Event.getDateValue(),
  * ++ public java.lang.String com.hubitat.hub.domain.Event.getDescription(),
  * ++ public java.lang.String com.hubitat.hub.domain.Event.getDescriptionText(),
- * ++ public com.hubitat.appApi.DeviceWrapper com.hubitat.hub.domain.Event.getDevice(),
+ * ++ public com.hubitat.app_api.DeviceWrapper com.hubitat.hub.domain.Event.getDevice(),
  * ++ public java.lang.Long com.hubitat.hub.domain.Event.getDeviceId(),
  * ++ public java.lang.String com.hubitat.hub.domain.Event.getDisplayName(),
  * public boolean com.hubitat.hub.domain.Event.getDisplayed(),
@@ -56,7 +56,7 @@ package me.biocomp.hubitat_ci.api.commonApi
  * public void com.hubitat.hub.domain.Event.setDate(java.util.Date),
  * public void com.hubitat.hub.domain.Event.setDescription(java.lang.String),
  * public void com.hubitat.hub.domain.Event.setDescriptionText(java.lang.String),
- * public void com.hubitat.hub.domain.Event.setDevice(com.hubitat.appApi.DeviceWrapper),
+ * public void com.hubitat.hub.domain.Event.setDevice(com.hubitat.app_api.DeviceWrapper),
  * public void com.hubitat.hub.domain.Event.setDeviceId(java.lang.Long),
  * public void com.hubitat.hub.domain.Event.setDisplayName(java.lang.String),
  * public void com.hubitat.hub.domain.Event.setDisplayed(boolean),
@@ -167,7 +167,7 @@ trait Event {
      *
      * @return event source.
      * Supported values:
-     * "APP” 	Event originated by an appApi touch Event in the mobile application.
+     * "APP” 	Event originated by an app_api touch Event in the mobile application.
      * “APP_COMMAND” 	Event originated by using the mobile application (for example, using the mobile application to turn a light off)
      * “COMMAND” 	Event originated by a SmartApp or Device Handler calling a command on a device.
      * “DEVICE“ 	Event originated by the physical actuation of a device.

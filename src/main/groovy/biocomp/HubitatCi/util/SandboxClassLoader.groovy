@@ -17,16 +17,16 @@ class SandboxClassLoader extends ClassLoader {
         switch (name)
         {
             case 'hubitat.device.HubAction':
-                return 'biocomp.hubitatCi.api.commonApi.HubAction'
+                return 'biocomp.hubitatCi.api.common_api.HubAction'
 
             case 'hubitat.device.HubResponse':
-                return 'biocomp.hubitatCi.api.commonApi.HubResponse'
+                return 'biocomp.hubitatCi.api.common_api.HubResponse'
 
             case 'hubitat.device.Protocol':
                 return 'biocomp.hubitatCi.api.Protocol'
 
             case ~/hubitat\.zwave\..*/:
-                return name.replace('hubitat.zwave', 'biocomp.hubitatCi.api.deviceApi.zwave')
+                return name.replace('hubitat.zwave', 'biocomp.hubitatCi.api.device_api.zwave')
 
             default:
                 return name

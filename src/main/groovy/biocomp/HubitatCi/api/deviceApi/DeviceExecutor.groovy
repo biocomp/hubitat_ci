@@ -1,8 +1,8 @@
-package me.biocomp.hubitat_ci.api.deviceApi
+package me.biocomp.hubitat_ci.api.device_api
 
-import biocomp.hubitatCi.api.commonApi.*
-import biocomp.hubitatCi.api.deviceApi.zigbee.Zigbee
-import biocomp.hubitatCi.api.deviceApi.zwave.Zwave
+import biocomp.hubitatCi.api.common_api.*
+import biocomp.hubitatCi.api.device_api.zigbee.Zigbee
+import biocomp.hubitatCi.api.device_api.zwave.Zwave
 
 /**
  * Real methods:
@@ -12,11 +12,11 @@ import biocomp.hubitatCi.api.deviceApi.zwave.Zwave
  * public java.lang.String com.hubitat.hub.executor.DeviceExecutor.toString(),
  *
  * Main methods:
- * ++ public com.hubitat.appApi.ChildDeviceWrapper com.hubitat.hub.executor.DeviceExecutor.addChildDevice(java.lang.String,
+ * ++ public com.hubitat.app_api.ChildDeviceWrapper com.hubitat.hub.executor.DeviceExecutor.addChildDevice(java.lang.String,
  * java.lang.String),
- * ++ public com.hubitat.appApi.ChildDeviceWrapper com.hubitat.hub.executor.DeviceExecutor.addChildDevice(java.lang.String,java.lang.String,java.lang.String),
- * ++ public com.hubitat.appApi.ChildDeviceWrapper com.hubitat.hub.executor.DeviceExecutor.addChildDevice(java.lang.String,java.lang.String,java.util.Map),
- * ++ public com.hubitat.appApi.ChildDeviceWrapper com.hubitat.hub.executor.DeviceExecutor.addChildDevice(java.lang.String,java.lang.String,java.lang.String,java.util.Map),
+ * ++ public com.hubitat.app_api.ChildDeviceWrapper com.hubitat.hub.executor.DeviceExecutor.addChildDevice(java.lang.String,java.lang.String,java.lang.String),
+ * ++ public com.hubitat.app_api.ChildDeviceWrapper com.hubitat.hub.executor.DeviceExecutor.addChildDevice(java.lang.String,java.lang.String,java.util.Map),
+ * ++ public com.hubitat.app_api.ChildDeviceWrapper com.hubitat.hub.executor.DeviceExecutor.addChildDevice(java.lang.String,java.lang.String,java.lang.String,java.util.Map),
  *
  * ++ public static java.util.Map com.hubitat.hub.executor.DeviceExecutor.createEvent(java.util.Map),
  * ++ public java.util.List com.hubitat.hub.executor.DeviceExecutor.delayBetween(java.util.List),
@@ -29,19 +29,19 @@ import biocomp.hubitatCi.api.deviceApi.zwave.Zwave
  * ++ public java.util.List com.hubitat.hub.executor.DeviceExecutor.eventsSince(java.util.Date,java.util.Map),
  * public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.getAttributes(),
  * public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.getCapabilities(),
- * ++ public com.hubitat.appApi.ChildDeviceWrapper com.hubitat.hub.executor.DeviceExecutor.getChildDevice(java.lang
+ * ++ public com.hubitat.app_api.ChildDeviceWrapper com.hubitat.hub.executor.DeviceExecutor.getChildDevice(java.lang
  * .String),
  * ++ public java.util.List com.hubitat.hub.executor.DeviceExecutor.getChildDevices(),
  * public com.hubitat.hub.controller.ChromeCast com.hubitat.hub.executor.DeviceExecutor.getChromeCast(),
  * public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.getCommands(),
  * ++ public java.lang.String com.hubitat.hub.executor.DeviceExecutor.getDataValue(java.lang.String),
  * public java.util.Map com.hubitat.hub.executor.DeviceExecutor.getDefinitionData(),
- * ++ public com.hubitat.appApi.DeviceWrapper com.hubitat.hub.executor.DeviceExecutor.getDevice(),
- * public com.hubitat.appApi.DeviceWrapper com.hubitat.hub.executor.DeviceExecutor.getDeviceById(java.lang.Long),
+ * ++ public com.hubitat.app_api.DeviceWrapper com.hubitat.hub.executor.DeviceExecutor.getDevice(),
+ * public com.hubitat.app_api.DeviceWrapper com.hubitat.hub.executor.DeviceExecutor.getDeviceById(java.lang.Long),
  * ++ public java.lang.String com.hubitat.hub.executor.DeviceExecutor.getDeviceDataByName(java.lang.String),
  * public static java.lang.String com.hubitat.hub.executor.DeviceExecutor.getEXECUTOR_TYPE(),
  * public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.getFingerprints(),
- * public static java.lang.String com.hubitat.hub.executor.DeviceExecutor.getLinkText(com.hubitat.appApi.DeviceWrapper),
+ * public static java.lang.String com.hubitat.hub.executor.DeviceExecutor.getLinkText(com.hubitat.app_api.DeviceWrapper),
  * ++ public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.getParent(),
  * public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.getPreferences(),
  * ++ public java.util.Map com.hubitat.hub.executor.DeviceExecutor.getCurrentState(),
@@ -55,7 +55,7 @@ import biocomp.hubitatCi.api.deviceApi.zwave.Zwave
  * public void com.hubitat.hub.executor.DeviceExecutor.image(java.util.Map),
  * public java.lang.String com.hubitat.hub.executor.DeviceExecutor.intToHexStr(java.lang.Long),
  * public java.lang.String com.hubitat.hub.executor.DeviceExecutor.intToHexStr(java.lang.Long,java.lang.Integer),
- * public boolean com.hubitat.hub.executor.DeviceExecutor.isStateChange(com.hubitat.appApi.DeviceWrapper,java.lang.String,java.lang.String),
+ * public boolean com.hubitat.hub.executor.DeviceExecutor.isStateChange(com.hubitat.app_api.DeviceWrapper,java.lang.String,java.lang.String),
  * public boolean com.hubitat.hub.executor.DeviceExecutor.isSystemTypeOrHubDeveloper(),
  * ++ public static hubitat.device.HubAction com.hubitat.hub.executor.DeviceExecutor.response(hubitat.zwave.Command),
  * ++ public static hubitat.device.HubAction com.hubitat.hub.executor.DeviceExecutor.response(java.lang.String),
@@ -141,7 +141,7 @@ import biocomp.hubitatCi.api.deviceApi.zwave.Zwave
  * public void com.hubitat.hub.executor.DeviceExecutor.setChromeCast(com.hubitat.hub.controller.ChromeCast),
  * public void com.hubitat.hub.executor.DeviceExecutor.setCommands(java.lang.Object),
  * public void com.hubitat.hub.executor.DeviceExecutor.setDefinitionData(java.util.Map),
- * public void com.hubitat.hub.executor.DeviceExecutor.setDevice(com.hubitat.appApi.DeviceWrapper),
+ * public void com.hubitat.hub.executor.DeviceExecutor.setDevice(com.hubitat.app_api.DeviceWrapper),
  * public void com.hubitat.hub.executor.DeviceExecutor.setFingerprints(java.lang.Object),
  * public void com.hubitat.hub.executor.DeviceExecutor.setPreferences(java.lang.Object),
  * public void com.hubitat.hub.executor.DeviceExecutor.setTiles(java.lang.Object),
@@ -462,7 +462,7 @@ interface DeviceMetadataSource extends
 }
 
 trait DeviceExecutor implements
-        biocomp.hubitatCi.api.commonApi.BaseExecutor,
+        biocomp.hubitatCi.api.common_api.BaseExecutor,
         DeviceMetadataSource
 {
     // Command can be invoked by name

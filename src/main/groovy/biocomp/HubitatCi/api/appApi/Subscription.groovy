@@ -1,12 +1,12 @@
-package me.biocomp.hubitat_ci.api.appApi;
+package me.biocomp.hubitat_ci.api.app_api;
 
-import biocomp.hubitatCi.api.commonApi.DeviceWrapper
+import biocomp.hubitatCi.api.common_api.DeviceWrapper
 
 interface Subscription {
     /**
      * Subscribe to event, or attribute value changes.
      *
-     * @param toWhat                                 - could be Device, Location (or appApi)?
+     * @param toWhat                                 - could be Device, Location (or app_api)?
      * @param attributeNameOrNameAndValueOrEventName Could be:
      *                                               1. name of event,
      *                                               2. name of attribute that changed

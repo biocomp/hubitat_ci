@@ -1,7 +1,7 @@
 package me.biocomp.hubitat_ci.app
 
 import biocomp.hubitatCi.api.Device
-import biocomp.hubitatCi.api.appApi.AppExecutor
+import biocomp.hubitatCi.api.app_api.AppExecutor
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import groovy.transform.TypeChecked

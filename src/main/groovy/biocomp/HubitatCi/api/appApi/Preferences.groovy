@@ -1,4 +1,4 @@
-package me.biocomp.hubitat_ci.api.appApi
+package me.biocomp.hubitat_ci.api.app_api
 
 interface Preferences extends Page {
     /**
@@ -20,7 +20,7 @@ interface Preferences extends Page {
      *    <li><code>name</code> (required) (String) - Identifier for this page.</li>
      *   <li><code>title</code> (String) - The display title of this page.</li>
      *   <li><code>nextPage</code> (String) - Used on multi-page preferences only. Should be the name of the page to navigate to next.</li>
-     *   <li><code>install</code> (Boolean) - Set to true to allow the user to install this appApi from this page. Defaults to false. Not necessary for single-page preferences.</li>
+     *   <li><code>install</code> (Boolean) - Set to true to allow the user to install this app_api from this page. Defaults to false. Not necessary for single-page preferences.</li>
      *   <li><code>uninstall</code> (Boolean) - Set to true to allow the user to uninstall from this page. Defaults to false. Not necessary
      *   for single-page preferences.</li>
      *  </ul>

@@ -1,4 +1,4 @@
-package me.biocomp.hubitat_ci.api.deviceApi.zigbee
+package me.biocomp.hubitat_ci.api.device_api.zigbee
 
 trait Zigbee
 {

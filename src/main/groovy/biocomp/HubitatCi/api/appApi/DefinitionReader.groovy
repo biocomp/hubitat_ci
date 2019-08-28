@@ -1,8 +1,8 @@
-package me.biocomp.hubitat_ci.api.appApi
+package me.biocomp.hubitat_ci.api.app_api
 
 interface DefinitionReader {
     /**
-     * Metainformation about the appApi
+     * Metainformation about the app_api
      *
      * @param definitionsMap
      * @param makeContents
@@ -11,7 +11,7 @@ interface DefinitionReader {
     abstract Object definition(Map definitionsMap, Closure makeContents)
 
     /**
-     * Metainformation about the appApi
+     * Metainformation about the app_api
      *
      * @param definitionsMap
      * @return not sure

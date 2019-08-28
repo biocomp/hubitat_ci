@@ -1,6 +1,6 @@
 package me.biocomp.hubitat_ci.app
 
-import biocomp.hubitatCi.api.appApi.AppExecutor
+import biocomp.hubitatCi.api.app_api.AppExecutor
 import biocomp.hubitatCi.validation.Flags
 import biocomp.hubitatCi.validation.NamedParametersValidator
 import groovy.transform.CompileStatic

@@ -1,7 +1,7 @@
 package me.biocomp.hubitat_ci
 
-import biocomp.hubitatCi.api.commonApi.Log
-import biocomp.hubitatCi.api.deviceApi.DeviceExecutor
+import biocomp.hubitatCi.api.common_api.Log
+import biocomp.hubitatCi.api.device_api.DeviceExecutor
 import biocomp.hubitatCi.device.HubitatDeviceSandbox
 import biocomp.hubitatCi.validation.Flags
 import spock.lang.Specification

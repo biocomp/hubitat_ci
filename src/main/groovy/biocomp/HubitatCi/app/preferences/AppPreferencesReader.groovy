@@ -1,8 +1,8 @@
 package me.biocomp.hubitat_ci.app.preferences
 
-import biocomp.hubitatCi.api.appApi.AppExecutor
-import biocomp.hubitatCi.api.appApi.DynamicPage
-import biocomp.hubitatCi.api.appApi.Preferences as PreferencesInterface
+import biocomp.hubitatCi.api.app_api.AppExecutor
+import biocomp.hubitatCi.api.app_api.DynamicPage
+import biocomp.hubitatCi.api.app_api.Preferences as PreferencesInterface
 import biocomp.hubitatCi.app.AppValidator
 import biocomp.hubitatCi.app.HubitatAppScript
 import biocomp.hubitatCi.validation.Flags
@@ -83,20 +83,20 @@ class AppPreferencesReader implements
     @Override
     def page(
             String name, String title,
-            @DelegatesTo(biocomp.hubitatCi.api.appApi.Page) Closure makeContents)
+            @DelegatesTo(biocomp.hubitatCi.api.app_api.Page) Closure makeContents)
     {
         prefState.currentPreferences.pages << prefState.initWithPage(
                 new Page(prefState.currentPreferences.pages.size(), name, title, null), makeContents)
     }
 
     @Override
-    def page(Map options, @DelegatesTo(biocomp.hubitatCi.api.appApi.Page) Closure makeContents) {
+    def page(Map options, @DelegatesTo(biocomp.hubitatCi.api.app_api.Page) Closure makeContents) {
         prefState.currentPreferences.pages << prefState.initWithPage(
                 new Page(prefState.currentPreferences.pages.size(), null, null, options), makeContents)
     }
 
     @Override
-    def page(Map options, String name, String title, @DelegatesTo(biocomp.hubitatCi.api.appApi.Page.class) Closure makeContents)
+    def page(Map options, String name, String title, @DelegatesTo(biocomp.hubitatCi.api.app_api.Page.class) Closure makeContents)
     {
         prefState.currentPreferences.pages << prefState.initWithPage(
                 new Page(prefState.currentPreferences.pages.size(), name, title, options), makeContents)
@@ -144,7 +144,7 @@ class AppPreferencesReader implements
     @Override
     def section(
             Map options,
-            @DelegatesTo(biocomp.hubitatCi.api.appApi.Section.class) Closure makeContents)
+            @DelegatesTo(biocomp.hubitatCi.api.app_api.Section.class) Closure makeContents)
     {
         addSectionImpl(null, options, makeContents)
     }
@@ -152,7 +152,7 @@ class AppPreferencesReader implements
     @Override
     def section(
             String sectionTitle,
-            @DelegatesTo(biocomp.hubitatCi.api.appApi.Section) Closure makeContents)
+            @DelegatesTo(biocomp.hubitatCi.api.app_api.Section) Closure makeContents)
     {
         addSectionImpl(sectionTitle, null, makeContents)
     }
@@ -180,14 +180,14 @@ class AppPreferencesReader implements
     @Override
     def section(
             Map options, String sectionTitle,
-            @DelegatesTo(biocomp.hubitatCi.api.appApi.Section) Closure makeContents)
+            @DelegatesTo(biocomp.hubitatCi.api.app_api.Section) Closure makeContents)
     {
         addSectionImpl(sectionTitle, options, makeContents)
     }
 
     @Override
     def section(
-            @DelegatesTo(biocomp.hubitatCi.api.appApi.Section) Closure makeContents)
+            @DelegatesTo(biocomp.hubitatCi.api.app_api.Section) Closure makeContents)
     {
         addSectionImpl(null, null, makeContents)
     }

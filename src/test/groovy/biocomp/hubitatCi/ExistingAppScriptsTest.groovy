@@ -1,8 +1,8 @@
 package me.biocomp.hubitat_ci
 
-import biocomp.hubitatCi.api.appApi.AppExecutor
-import biocomp.hubitatCi.api.commonApi.InstalledAppWrapper
-import biocomp.hubitatCi.api.commonApi.Log
+import biocomp.hubitatCi.api.app_api.AppExecutor
+import biocomp.hubitatCi.api.common_api.InstalledAppWrapper
+import biocomp.hubitatCi.api.common_api.Log
 import biocomp.hubitatCi.app.AppValidator
 import biocomp.hubitatCi.app.HubitatAppSandbox
 import biocomp.hubitatCi.capabilities.SwitchLevel

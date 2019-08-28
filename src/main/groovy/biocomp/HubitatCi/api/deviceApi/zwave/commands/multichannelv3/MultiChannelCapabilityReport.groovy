@@ -1,4 +1,4 @@
-package me.biocomp.hubitat_ci.api.deviceApi.zwave.commands.multichannelv3
+package me.biocomp.hubitat_ci.api.device_api.zwave.commands.multichannelv3
 
 class MultiChannelCapabilityReport {
 }

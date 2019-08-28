@@ -1,4 +1,4 @@
-package me.biocomp.hubitat_ci.api.appApi
+package me.biocomp.hubitat_ci.api.app_api
 
 /**
  * Entry point for all preferences() related calls.
@@ -14,12 +14,12 @@ interface PreferencesSource extends Preferences, Page, Section {
     abstract def dynamicPage(Map options, Closure makeContents)
 
     /**
-     * Preferences for the appApi
+     * Preferences for the app_api
      */
     abstract def preferences(Closure makeContents)
 
     /**
-     * Preferences for the appApi
+     * Preferences for the app_api
      *
      * @param options. Not clear which ones are supported.
      *      oauthPage (String) - name of a page that's needed for OAuth: "deviceAuthorization"
