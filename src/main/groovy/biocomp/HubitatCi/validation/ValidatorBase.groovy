@@ -6,11 +6,14 @@ import biocomp.hubitatCi.util.RemovePrivateFromScriptCompilationCustomizer
 import biocomp.hubitatCi.util.SandboxClassLoader
 import groovy.json.JsonBuilder
 import groovy.time.TimeCategory
+import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import groovy.transform.TypeCheckingMode
 import groovy.xml.MarkupBuilder
 import org.codehaus.groovy.ast.ClassNode
 import org.codehaus.groovy.ast.expr.*
 import org.codehaus.groovy.control.CompilerConfiguration
+import org.codehaus.groovy.control.customizers.CompilationCustomizer
 import org.codehaus.groovy.control.customizers.SecureASTCustomizer
 import org.codehaus.groovy.control.customizers.SourceAwareCustomizer
 import sun.util.calendar.ZoneInfo
@@ -176,13 +179,12 @@ class ValidatorBase {
 
     private final EnumSet<Flags> flags
 
-    protected void restrictScript(CompilerConfiguration options) {
+    private void restrictScript(CompilerConfiguration options) {
         def scz = new SecureASTCustomizer()
 
         def privateForbiddenExpressions = this.forbiddenExpressions
         def privateClassNameWhiteList = this.classNameWhiteList
 
-        //def privateIsClassAllowed = this.isClassAllowed()
         def checkerCapture = { expr ->
             if (expr instanceof MethodCallExpression) {
                 return !privateForbiddenExpressions.contains(expr.methodAsString) && isClassAllowed(privateClassNameWhiteList,
@@ -256,15 +258,26 @@ class ValidatorBase {
         // debug - print out resulting script: options.addCompilationCustomizers(new LoggingCompilationCustomizer())
     }
 
-    protected GroovyShell constructParser(Class c) {
+    @TypeChecked(TypeCheckingMode.SKIP)
+    private static void addExtraCustomizers(CompilerConfiguration cc, List<CompilationCustomizer> extraCompilationCustomizers)
+    {
+        if (extraCompilationCustomizers) {
+            cc.addCompilationCustomizers(*extraCompilationCustomizers);
+        }
+    }
+
+    @CompileStatic
+    protected GroovyShell constructParser(Class c, List<CompilationCustomizer> extraCompilationCustomizers = []) {
         def compilerConfiguration = new CompilerConfiguration()
         compilerConfiguration.scriptBaseClass = c.name
 
         restrictScript(compilerConfiguration)
         makePrivatePublic(compilerConfiguration)
         validateAfterEachMethod(compilerConfiguration)
+        addExtraCustomizers(compilerConfiguration, extraCompilationCustomizers)
 
-        return new GroovyShell(new SandboxClassLoader(c.classLoader),
+        return new GroovyShell(
+                new SandboxClassLoader(c.classLoader),
                 new DoNotCallMeBinding(),
                 compilerConfiguration);
     }

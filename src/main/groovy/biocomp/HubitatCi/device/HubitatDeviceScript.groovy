@@ -7,9 +7,9 @@ import biocomp.hubitatCi.device.metadata.DeviceMetadataReader
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
-/* Custom Script that redirects most unknown calls to app_, and does not use Binding.
-* */
-
+/**
+ * Custom Script that redirects most unknown calls to app_, and does not use Binding.
+ */
 @TypeChecked
 abstract class HubitatDeviceScript extends Script
 {

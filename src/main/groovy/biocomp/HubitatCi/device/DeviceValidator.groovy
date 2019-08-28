@@ -2,12 +2,14 @@ package biocomp.hubitatCi.device
 
 import biocomp.hubitatCi.capabilities.Capabilities
 import biocomp.hubitatCi.device.metadata.*
+import biocomp.hubitatCi.util.RequreParseCompilationCusomizer
 import biocomp.hubitatCi.validation.Flags
 import biocomp.hubitatCi.validation.NamedParametersValidator
 import biocomp.hubitatCi.validation.ValidatorBase
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
+import org.codehaus.groovy.control.customizers.CompilationCustomizer
 
 import java.lang.reflect.Method
 
@@ -67,12 +69,26 @@ class DeviceValidator extends
     }
 
     HubitatDeviceScript parseScript(File scriptFile) {
-        return constructParser(HubitatDeviceScript).parse(scriptFile) as HubitatDeviceScript
+        return constructParser(HubitatDeviceScript, makeCustomizers()).parse(scriptFile) as HubitatDeviceScript
     }
 
     HubitatDeviceScript parseScript(String scriptText) {
-        return constructParser(HubitatDeviceScript).parse(scriptText) as HubitatDeviceScript
+        return constructParser(HubitatDeviceScript, makeCustomizers()).parse(scriptText) as HubitatDeviceScript
     }
+
+    /**
+     * Add device-specific compilation cusomizers
+     */
+    private List<CompilationCustomizer> makeCustomizers()
+    {
+        if (!flags.contains(Flags.DontRequireParseMethodInDevice)) {
+            return [new RequreParseCompilationCusomizer() as CompilationCustomizer]
+        }
+        else {
+            return []
+        }
+    }
+
 
     //
     //    void validateAfterRun(AppDefinitionReader definitionReader, AppPreferencesReader preferencesReader, AppMappingsReader mappingsReader)

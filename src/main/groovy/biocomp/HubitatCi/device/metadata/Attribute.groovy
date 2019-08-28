@@ -3,6 +3,9 @@ package biocomp.hubitatCi.device.metadata
 import groovy.transform.TupleConstructor
 import groovy.transform.TypeChecked
 
+/**
+ * Information about 'attribute' in device.
+ */
 @TypeChecked
 @TupleConstructor
 class Attribute {

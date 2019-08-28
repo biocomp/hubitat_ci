@@ -10,6 +10,10 @@ class DeviceDefinitionsReaderTest extends
         Specification
 {
     private static Definition readDefinition(Map options = [:], String definitionCall) {
+        options.validationFlags = options.validationFlags
+                ? options.validationFlags + [Flags.DontRequireParseMethodInDevice]
+                : [Flags.DontRequireParseMethodInDevice]
+
         return new HubitatDeviceSandbox("""
 metadata{
         ${definitionCall}
@@ -20,7 +24,7 @@ metadata{
     private static Attribute readSingleAttribute(String attributeCall) {
         def attributes = readDefinition("""definition(name: "n", namespace: "nm", author: "a"){
     ${attributeCall}
-}""", validationFlags: [Flags.DontValidateCapabilities]).attributes
+}""", validationFlags: [Flags.DontValidateCapabilities, Flags.DontRequireParseMethodInDevice]).attributes
 
         assert attributes.size() == 1
         return attributes[0]
@@ -30,7 +34,7 @@ metadata{
         setup:
             def definition = readDefinition("""
     definition(name: "test device", namespace: "yournamespace", author: "your name"){
-    }""", validationFlags: [Flags.DontValidateCapabilities])
+    }""", validationFlags: [Flags.DontValidateCapabilities, Flags.DontRequireParseMethodInDevice])
 
         expect:
             definition.options.name == 'test device'
@@ -43,7 +47,7 @@ metadata{
         when:
             def definition = readDefinition("""
     definition(${params}){
-    }""", validationFlags: [Flags.DontValidateCapabilities])
+    }""", validationFlags: [Flags.DontValidateCapabilities, Flags.DontRequireParseMethodInDevice])
 
         then:
             AssertionError e = thrown()
@@ -73,7 +77,7 @@ metadata{
     def "Valid capability '#capability' in definition() can be read"(String capability) {
         when:
             def capabilitiesResult = readDefinition(
-                    [validationFlags: [Flags.DontRequireCapabilityImplementationMethods]], """
+                    [validationFlags: [Flags.DontRequireCapabilityImplementationMethods, Flags.DontRequireParseMethodInDevice]], """
     definition(name: "nam", namespace: "n", author: "a"){
         capability '${capability}'
     }""").capabilities
@@ -99,7 +103,7 @@ metadata{
 def on()
 {
 }
-""").run()
+""").run(validationFlags: [Flags.DontRequireParseMethodInDevice])
 
         then:
             AssertionError e = thrown()
@@ -272,7 +276,7 @@ def cmd() {}
 def cmd(String s) {}
 def cmd(String s, Integer i) {}
 def cmd(int a) {}
-""").run(validationFlags: [Flags.DontValidateCapabilities])
+""").run(validationFlags: [Flags.DontValidateCapabilities, Flags.DontRequireParseMethodInDevice])
             def producedCommands = script.producedDefinition.commands
 
         then:
@@ -332,7 +336,7 @@ metadata
 def cmd1(String s) {}
 def cmd2(int i) {}
 def cmd3(int a, int b) {}
-""").run(validationFlags: [Flags.DontValidateCapabilities])
+""").run(validationFlags: [Flags.DontValidateCapabilities, Flags.DontRequireParseMethodInDevice])
 
         then:
             AssertionError e = thrown()
@@ -366,7 +370,7 @@ def cmd() { return 'just cmd' }
 def cmd(String s) { return "cmd with String = \${s}" }
 def cmd(int i) { return "cmd with int = \${i}" }
 def cmd(int a, int b) { return "cmd with 2 ints = \${a}, \${b}" }
-""").run(validationFlags: [Flags.DontValidateCapabilities])
+""").run(validationFlags: [Flags.DontValidateCapabilities, Flags.DontRequireParseMethodInDevice])
             def foundCommand = script.producedDefinition.commands[0]
 
         expect:
@@ -390,7 +394,7 @@ metadata
         fingerprint(${fingerprintText})
     }
 }
-""").run(validationFlags: [Flags.DontValidateCapabilities]).producedDefinition.fingerprints
+""").run(validationFlags: [Flags.DontValidateCapabilities, Flags.DontRequireParseMethodInDevice]).producedDefinition.fingerprints
 
         expect:
             fingerprints.size() == 1
@@ -416,7 +420,7 @@ metadata
         fingerprint(${fingerprintText})
     }
 }
-""").run(validationFlags: [Flags.DontValidateCapabilities]).producedDefinition.fingerprints
+""").run(validationFlags: [Flags.DontValidateCapabilities, Flags.DontRequireParseMethodInDevice]).producedDefinition.fingerprints
 
         then:
             AssertionError e = thrown()
@@ -444,8 +448,7 @@ metadata
         simulator{ }
     }
 }
-""").run(validationFlags: [Flags.DontValidateCapabilities])
+""").run(validationFlags: [Flags.DontValidateCapabilities, Flags.DontRequireParseMethodInDevice])
 
     }
-
 }

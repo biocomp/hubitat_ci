@@ -86,6 +86,11 @@ enum Flags
     DontRequireCapabilityImplementationMethods,
 
     /**
+     * Do not require parse() method
+     */
+    DontRequireParseMethodInDevice,
+
+    /**
      * 'enum' input type requires 'options' property with values.
      * This setting allows it to be null.
      */

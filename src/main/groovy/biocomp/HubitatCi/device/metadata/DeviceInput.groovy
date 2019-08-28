@@ -4,6 +4,9 @@ package biocomp.hubitatCi.device.metadata
 import groovy.transform.TupleConstructor
 import groovy.transform.TypeChecked
 
+/**
+ * Information about 'input' in Device.
+ */
 @TypeChecked
 @TupleConstructor
 class DeviceInput {

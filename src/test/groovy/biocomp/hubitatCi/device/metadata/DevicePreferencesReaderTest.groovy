@@ -11,7 +11,7 @@ class DevicePreferencesReaderTest extends
 {
     private static List<DeviceInput> readPreferences(String script, List<Flags> extraFlags = []) {
         return new HubitatDeviceSandbox(script).run(
-                validationFlags: extraFlags + [Flags.DontValidateDefinition]).producedPreferences
+                validationFlags: extraFlags + [Flags.DontValidateDefinition, Flags.DontRequireParseMethodInDevice]).producedPreferences
     }
 
     private static DeviceInput readInput(String inputParameters, List<Flags> extraFlags = []) {
@@ -84,7 +84,7 @@ def LOGINFO(txt){
 
         expect:
             sandbox.run(api: api,
-                    validationFlags: [Flags.DontValidateDefinition, Flags.AllowSectionsInDevicePreferences, Flags.AllowWritingToSettings])
+                    validationFlags: [Flags.DontValidateDefinition, Flags.AllowSectionsInDevicePreferences, Flags.AllowWritingToSettings, Flags.DontRequireParseMethodInDevice])
     }
 
     def "preferences() with no inputs work"() {
@@ -208,7 +208,7 @@ def foo()
     def good = goodInput
     def bad = missingInput
 }
-""").run(validationFlags: [Flags.DontValidateDefinition])
+""").run(validationFlags: [Flags.DontValidateDefinition, Flags.DontRequireParseMethodInDevice])
 
         when:
             script.foo()

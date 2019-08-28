@@ -20,40 +20,13 @@ import org.codehaus.groovy.control.customizers.CompilationCustomizer
 import org.codehaus.groovy.syntax.Token
 import org.codehaus.groovy.syntax.Types
 
+/**
+ * This customizer adds a call to hubitatciValidateAfterMethodCall()
+ * at the end of each user's method.
+ * This is to validate access to properties and settings that that method had performed.
+ */
 @TypeChecked
 class AddValidationAfterEachMethodCompilationCustomizer extends CompilationCustomizer{
-    /*
-    def addMethods = myClass.getMethods("add")
-        for(m in addMethods){
-            def code = m.getCode().statements
-
-            //statement
-            //AstBuilder abc = new AstBuilder()
-            Statement s1 = new ExpressionStatement(
-                    new BinaryExpression(
-                            new VariableExpression('timeOfInstantiation'),
-                            Token.newSymbol(org.codehaus.groovy.syntax.Types.EQUAL,0,0),
-                            new MethodCallExpression(
-                                    new ClassExpression(new ClassNode(java.lang.System)),
-                                    'currentTimeMillis',
-                                    ArgumentListExpression.EMPTY_ARGUMENTS
-                            )
-                    )
-
-            )
-//            List<ASTNode> statement1 = abc.buildFromString('timeOfInstantiation = System.currentTimeMillis()')
-//            List<ASTNode> statement1 = abc.buildFromCode {
-//                timeOfInstantiation = System.currentTimeMillis()
-//                for(c in code){
-//                    c.expression
-//                }
-//            }
-
-            code.add(0,s1)
-            //m.setCode(statement1[0])
-        }
-     */
-
     AddValidationAfterEachMethodCompilationCustomizer() {
         super(CompilePhase.CANONICALIZATION);
     }
