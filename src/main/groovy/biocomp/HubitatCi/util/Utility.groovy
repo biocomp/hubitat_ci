@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.util
+package me.biocomp.hubitat_ci.util
 
 import com.sun.istack.internal.NotNull
 import groovy.transform.TypeChecked

@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.app.preferences
+package me.biocomp.hubitat_ci.app.preferences
 
 
 import biocomp.hubitatCi.app.AppValidator

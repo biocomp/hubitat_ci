@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.validation
+package me.biocomp.hubitat_ci.validation
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked

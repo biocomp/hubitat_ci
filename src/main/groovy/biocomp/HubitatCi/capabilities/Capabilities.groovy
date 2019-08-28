@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.capabilities
+package me.biocomp.hubitat_ci.capabilities
 
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked

@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.api.deviceApi
+package me.biocomp.hubitat_ci.api.deviceApi
 
 import biocomp.hubitatCi.api.commonApi.*
 import biocomp.hubitatCi.api.deviceApi.zigbee.Zigbee

@@ -1,4 +1,4 @@
-package biocomp.hubitatCi
+package me.biocomp.hubitat_ci
 
 import biocomp.hubitatCi.api.commonApi.Log
 import biocomp.hubitatCi.api.deviceApi.DeviceExecutor

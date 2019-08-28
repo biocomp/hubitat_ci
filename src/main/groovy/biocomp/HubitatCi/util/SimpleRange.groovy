@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.util
+package me.biocomp.hubitat_ci.util
 import groovy.transform.TupleConstructor
 
 @TupleConstructor

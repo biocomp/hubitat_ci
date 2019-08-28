@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.util
+package me.biocomp.hubitat_ci.util
 
 import groovy.inspect.swingui.AstNodeToScriptVisitor
 import org.codehaus.groovy.ast.ClassNode

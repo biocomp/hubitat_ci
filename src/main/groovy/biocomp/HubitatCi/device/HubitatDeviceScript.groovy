@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.device
+package me.biocomp.hubitat_ci.device
 
 import biocomp.hubitatCi.api.deviceApi.DeviceExecutor
 import biocomp.hubitatCi.device.metadata.Definition

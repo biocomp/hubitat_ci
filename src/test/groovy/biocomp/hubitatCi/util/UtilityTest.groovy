@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.util
+package me.biocomp.hubitat_ci.util
 
 import spock.lang.Shared
 import spock.lang.Specification

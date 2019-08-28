@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.api
+package me.biocomp.hubitat_ci.api
 
 import biocomp.hubitatCi.api.commonApi.Location
 

@@ -1,4 +1,4 @@
-package biocomp.hubitatCi
+package me.biocomp.hubitat_ci
 
 
 import biocomp.hubitatCi.util.SimpleRange

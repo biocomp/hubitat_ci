@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.app
+package me.biocomp.hubitat_ci.app
 
 import biocomp.hubitatCi.validation.Flags
 import groovy.transform.PackageScope

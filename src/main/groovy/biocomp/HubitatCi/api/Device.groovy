@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.api
+package me.biocomp.hubitat_ci.api
 
 /**
  * Interface for an object returned from input of type 'capability' or 'device'

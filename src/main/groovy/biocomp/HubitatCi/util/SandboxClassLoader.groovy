@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.util
+package me.biocomp.hubitat_ci.util
 
 /* Will replace framework classes with test implementations,
     * and validate for allowed classes and methods*/

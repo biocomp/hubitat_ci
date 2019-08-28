@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.device.metadata
+package me.biocomp.hubitat_ci.device.metadata
 
 import groovy.transform.TupleConstructor
 import groovy.transform.TypeChecked

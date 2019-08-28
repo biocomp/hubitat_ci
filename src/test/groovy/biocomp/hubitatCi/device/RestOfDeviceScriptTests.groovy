@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.device
+package me.biocomp.hubitat_ci.device
 
 import biocomp.hubitatCi.validation.Flags
 import spock.lang.Specification

@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.validation
+package me.biocomp.hubitat_ci.validation
 
 import biocomp.hubitatCi.util.AddValidationAfterEachMethodCompilationCustomizer
 import biocomp.hubitatCi.util.DoNotCallMeBinding

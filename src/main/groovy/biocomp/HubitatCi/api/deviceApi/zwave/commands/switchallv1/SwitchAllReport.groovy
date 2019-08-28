@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.api.deviceApi.zwave.commands.switchallv1
+package me.biocomp.hubitat_ci.api.deviceApi.zwave.commands.switchallv1
 
 class SwitchAllReport {
 }

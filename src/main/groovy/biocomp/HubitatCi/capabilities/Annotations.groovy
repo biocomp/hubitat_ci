@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.capabilities
+package me.biocomp.hubitat_ci.capabilities
 
 import java.lang.annotation.Retention
 import java.lang.annotation.RetentionPolicy

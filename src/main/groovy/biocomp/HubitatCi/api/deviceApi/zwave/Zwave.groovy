@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.api.deviceApi.zwave
+package me.biocomp.hubitat_ci.api.deviceApi.zwave
 
 trait Zwave
 {

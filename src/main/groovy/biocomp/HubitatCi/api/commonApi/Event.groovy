@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.api.commonApi
+package me.biocomp.hubitat_ci.api.commonApi
 
 /**
  * Real methods:

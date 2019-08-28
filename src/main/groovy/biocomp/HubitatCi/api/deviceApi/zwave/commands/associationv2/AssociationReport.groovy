@@ -1,4 +1,4 @@
-package biocomp.hubitatCi.api.deviceApi.zwave.commands.associationv2
+package me.biocomp.hubitat_ci.api.deviceApi.zwave.commands.associationv2
 
 class AssociationReport {
 }
