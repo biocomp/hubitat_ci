@@ -33,7 +33,7 @@ publishing {
 
     repositories{
         maven {
-            url 'https://biocomp.pkgs.visualstudio.com/_packaging/HubitatCiPackages@Local/maven/v1'
+            url 'https://biocomp.pkgs.visualstudio.com/HubitatCiRelease/_packaging/hubitat_ci_feed/maven/v1'
             credentials {
                 username "AZURE_ARTIFACTS"
                 password System.getenv("AZURE_ARTIFACTS_ENV_ACCESS_TOKEN") ?: "${azureArtifactsGradleAccessToken}"
