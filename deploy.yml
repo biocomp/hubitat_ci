@@ -1,0 +1,47 @@
+name: $(Build.DefinitionName)_$(SourceBranchName)_$(Date:yyyy_MM_dd)$(Rev:.r)
+trigger: none # For manual publishing
+
+jobs:
+- deployment: DeployMavenPackage
+  displayName: "Deploy Maven package"
+  pool:
+    name: "default"
+    demands: java
+
+  environment: 'hubitat_ci-dev'
+
+  strategy:
+    runOnce:
+      deploy:
+        steps:
+        - checkout: self
+          path: src
+        - task: DownloadPipelineArtifact@2
+          inputs:
+            source: 'specific'
+            project: '1f7b4c0c-d9b4-4079-9fab-022e7cbe27d4' # You can get project GUID via this call: https://dev.azure.com/{Your org name}/_apis/projects?api-version=5.0
+            pipeline: 5
+            targetPath: 'BuildResults'
+            runVersion: 'latest'
+
+        - task: CopyFiles@2
+          displayName: 'Assemble build results'
+          inputs:
+            SourceFolder: BuildResults/drop
+            TargetFolder: .
+
+        - task: CopyFiles@2
+          displayName: 'Copy gradlew'
+          inputs:
+            SourceFolder: src
+            Contents: |
+              gradle/**
+              gradle*
+              build.gradle
+            TargetFolder: .
+
+        - task: Gradle@2
+          displayName: 'gradlew publish'
+          inputs:
+            tasks: publish
+

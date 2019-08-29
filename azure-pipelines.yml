@@ -7,7 +7,7 @@ trigger:
 
 steps:
 - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
-  submodules: true
+  submodules: true # need submodules for scripts
 
 - task: Gradle@2
   displayName: 'gradlew build groovydoc'

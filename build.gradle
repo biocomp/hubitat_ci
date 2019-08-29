@@ -20,9 +20,9 @@ task javadocJar(type: Jar) {
 publishing {
     publications {
         maven(MavenPublication){
-            groupId = 'biocomp.HubitatCi'
-            artifactId = 'hubitatCi'
-            version = 0.8
+            groupId = 'me.biocomp.hubitat_ci'
+            artifactId = 'hubitat_ci'
+            version = 0.9
 
             from components.java
 
