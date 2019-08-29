@@ -15,11 +15,12 @@ jobs:
       deploy:
         steps:
         - checkout: self
-          path: '$(Pipeline.Workspace)\src'
+          path: 'src'
+          submodules: true
         
         - task: Gradle@2
           displayName: '"gradlew build groovydoc publish" from src'
           inputs:
             tasks: gradlew build groovydoc publish
-            workingDirectory: '$(Pipeline.Workspace)\src'
+            workingDirectory: 'src'
 
