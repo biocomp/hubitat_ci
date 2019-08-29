@@ -33,12 +33,14 @@ jobs:
               gradle*
               build.gradle
             TargetFolder: '$(Pipeline.Workspace)'
+            overWrite: true
 
         - task: CopyFiles@2
           displayName: 'Place build results to root'
           inputs:
             SourceFolder: '$(Pipeline.Workspace)/BuildResults/drop'
             TargetFolder: '$(Pipeline.Workspace)'
+            overWrite: true
         
         - task: Gradle@2
           displayName: '"gradlew publish" from root'
