@@ -21,11 +21,11 @@ jobs:
             source: 'specific'
             project: 'a3585777-7a80-4913-a4a1-c5184356a4b3' # You can get project GUID via this call: https://dev.azure.com/{Your org name}/_apis/projects?api-version=5.0
             pipeline: 10 # You can see this in URL of your pipeline
-            targetPath: 'BuildResults'
+            path: '$(Pipeline.Workspace)/BuildResults'
             runVersion: 'latest'
 
         - task: CopyFiles@2
-          displayName: 'Place build results to root'
+          displayName: 'Copy relevant gradle files to root'
           inputs:
             SourceFolder: '$(Pipeline.Workspace)/src'
             Contents: |
@@ -35,7 +35,7 @@ jobs:
             TargetFolder: '$(Pipeline.Workspace)'
 
         - task: CopyFiles@2
-          displayName: 'Copy relevant gradle files to root'
+          displayName: 'Place build results to root'
           inputs:
             SourceFolder: '$(Pipeline.Workspace)/BuildResults/drop'
             TargetFolder: '$(Pipeline.Workspace)'
