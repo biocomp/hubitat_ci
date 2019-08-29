@@ -5,3 +5,6 @@ build/
 .settings/
 out/
 *.iml
+bin/
+.project
+.classpath
