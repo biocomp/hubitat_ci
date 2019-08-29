@@ -19,8 +19,8 @@ jobs:
         - task: DownloadPipelineArtifact@2
           inputs:
             source: 'specific'
-            project: '1f7b4c0c-d9b4-4079-9fab-022e7cbe27d4' # You can get project GUID via this call: https://dev.azure.com/{Your org name}/_apis/projects?api-version=5.0
-            pipeline: 5
+            project: 'a3585777-7a80-4913-a4a1-c5184356a4b3' # You can get project GUID via this call: https://dev.azure.com/{Your org name}/_apis/projects?api-version=5.0
+            pipeline: 10 # You can see this in URL of your pipeline
             targetPath: 'BuildResults'
             runVersion: 'latest'
 
