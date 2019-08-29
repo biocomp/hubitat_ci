@@ -15,7 +15,7 @@ jobs:
       deploy:
         steps:
         - checkout: self
-          path: src
+          path: '$(Pipeline.Workspace)\src'
         
         - task: Gradle@2
           displayName: '"gradlew build groovydoc publish" from src'
