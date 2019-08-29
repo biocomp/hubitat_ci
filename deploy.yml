@@ -25,23 +25,24 @@ jobs:
             runVersion: 'latest'
 
         - task: CopyFiles@2
-          displayName: 'Assemble build results'
+          displayName: 'Place build results to root'
           inputs:
-            SourceFolder: BuildResults/drop
-            TargetFolder: .
-
-        - task: CopyFiles@2
-          displayName: 'Copy gradlew'
-          inputs:
-            SourceFolder: src
+            SourceFolder: '$(Pipeline.Workspace)/src'
             Contents: |
               gradle/**
               gradle*
               build.gradle
-            TargetFolder: .
+            TargetFolder: '$(Pipeline.Workspace)'
 
+        - task: CopyFiles@2
+          displayName: 'Copy relevant gradle files to root'
+          inputs:
+            SourceFolder: '$(Pipeline.Workspace)/BuildResults/drop'
+            TargetFolder: '$(Pipeline.Workspace)'
+        
         - task: Gradle@2
-          displayName: 'gradlew publish'
+          displayName: '"gradlew publish" from root'
           inputs:
             tasks: publish
+            workingDirectory: '$(Pipeline.Workspace)'
 
