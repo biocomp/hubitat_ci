@@ -22,5 +22,4 @@ jobs:
           displayName: '"gradlew build groovydoc publish" from src'
           inputs:
             tasks: build groovydoc publish
-            workingDirectory: 'src'
 
