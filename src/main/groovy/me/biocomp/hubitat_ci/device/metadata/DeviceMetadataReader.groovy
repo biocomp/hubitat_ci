@@ -182,6 +182,7 @@ class DeviceMetadataReader implements DeviceMetadataSource
 
     @Override
     void metadata(@DelegatesTo(DeviceMetadata) Closure makeContents) {
+        this.@hasMetadataCall = true
         states.withState('metadata()', this, makeContents)
     }
 
@@ -201,6 +202,12 @@ class DeviceMetadataReader implements DeviceMetadataSource
     private final DeviceData deviceData
     private final SettingsContainer settingsContainer
     private final MetaClass scriptMetaClass
+    private boolean hasMetadataCall = false
+
+    boolean getHasMetadataCall()
+    {
+        return hasMetadataCall
+    }
 
     Definition getProducedDefinition() {
         return producedDefinition

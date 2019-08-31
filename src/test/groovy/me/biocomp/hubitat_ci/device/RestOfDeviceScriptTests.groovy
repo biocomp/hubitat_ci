@@ -19,5 +19,16 @@ metadata
             AssertionError e = thrown()
             e.message.contains("Script does not have parse() method required for devices")
     }
+
+    def "missing metadata() has clear error message"()
+    {
+        when:
+            new HubitatDeviceSandbox("""
+""").run(validationFlags: [Flags.DontRequireParseMethodInDevice])
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("Device does not have 'metadata' call")
+    }
 }
 

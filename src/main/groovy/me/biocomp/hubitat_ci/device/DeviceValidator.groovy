@@ -338,29 +338,37 @@ class DeviceValidator extends
 
     @TypeChecked(TypeCheckingMode.SKIP)
     void validateAfterRun(DeviceMetadataReader deviceMetadataReader) {
-        if (!hasFlag(Flags.DontValidateDefinition)) {
-            assert deviceMetadataReader.producedDefinition != null: "Device must have definition()"
-
-            if (!hasFlag(Flags.DontValidateAttributes)) {
-                def duplicateAttributes = findDuplicates(
-                        deviceMetadataReader.producedDefinition.attributes.collect { it.name })
-                assert duplicateAttributes.size() == 0: "Attributes ${duplicateAttributes} are duplicate, this is not useful."
-            }
-
-            if (!hasFlag(Flags.DontValidateCapabilities)) {
-                assert deviceMetadataReader.producedDefinition.capabilities.size() != 0: "Device must have at least one capability"
-
-                def duplicateCapabilities = findDuplicates(deviceMetadataReader.producedDefinition.capabilities.collect {
-                    Capabilities.findCapabilityByName(it)
-                })
-
-                assert duplicateCapabilities.size() == 0: "Capabilities ${duplicateCapabilities} are duplicate, this is not useful."
-            }
-
-            //{
-            def duplicateCommands = findDuplicates(deviceMetadataReader.producedDefinition.commands.collect { it.toString() })
-            assert duplicateCommands.size() == 0 : "Commands ${duplicateCommands} are duplicate, this is not useful."
+        if (hasFlag(Flags.DontValidateMetadata)) {
+            return
         }
+
+        assert deviceMetadataReader.hasMetadataCall: "Device does not have 'metadata' call"
+
+        if (hasFlag(Flags.DontValidateDefinition)) {
+            return
+        }
+
+        assert deviceMetadataReader.producedDefinition != null: "Device must have definition()"
+
+        if (!hasFlag(Flags.DontValidateAttributes)) {
+            def duplicateAttributes = findDuplicates(
+                    deviceMetadataReader.producedDefinition.attributes.collect { it.name })
+            assert duplicateAttributes.size() == 0: "Attributes ${duplicateAttributes} are duplicate, this is not useful."
+        }
+
+        if (!hasFlag(Flags.DontValidateCapabilities)) {
+            assert deviceMetadataReader.producedDefinition.capabilities.size() != 0: "Device must have at least one capability"
+
+            def duplicateCapabilities = findDuplicates(deviceMetadataReader.producedDefinition.capabilities.collect {
+                Capabilities.findCapabilityByName(it)
+            })
+
+            assert duplicateCapabilities.size() == 0: "Capabilities ${duplicateCapabilities} are duplicate, this is not useful."
+        }
+
+        //{
+        def duplicateCommands = findDuplicates(deviceMetadataReader.producedDefinition.commands.collect { it.toString() })
+        assert duplicateCommands.size() == 0 : "Commands ${duplicateCommands} are duplicate, this is not useful."
     }
 
     private static final HashMap<String, Class> supportedCommandArgumentTypes = ['number': Integer, 'string': String] as HashMap

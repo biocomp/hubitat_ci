@@ -23,6 +23,7 @@ enum Flags
     AllowEmptyOptionValueStrings,
 
     // ## App ##:
+    DontValidateMetadata,
     DontValidatePreferences,
     DontValidateDefinition,
     DontValidateMappings,
