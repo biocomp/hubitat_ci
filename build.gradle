@@ -9,7 +9,7 @@ repositories {
 
 task sourcesJar(type: Jar) {
     classifier = 'sources'
-    from sourceSets.main.allJava
+    from sourceSets.main.allSource
 }
 
 task javadocJar(type: Jar) {
@@ -22,7 +22,7 @@ publishing {
         maven(MavenPublication){
             groupId = 'me.biocomp.hubitat_ci'
             artifactId = 'hubitat_ci'
-            version = 0.3
+            version = 0.4
 
             from components.java
 

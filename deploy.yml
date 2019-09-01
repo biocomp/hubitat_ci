@@ -15,11 +15,10 @@ jobs:
       deploy:
         steps:
         - checkout: self
-          path: 'src'
           submodules: true
         
         - task: Gradle@2
-          displayName: '"gradlew build groovydoc publish" from src'
+          displayName: 'gradlew build groovydoc publish'
           inputs:
             tasks: build groovydoc publish
 
