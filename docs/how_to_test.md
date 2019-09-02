@@ -95,20 +95,55 @@ def methodThatCallsPrivateMethod()
 
 You can test it this way:
 ```groovy
-    def "Mocking calls to internal scripts methods "()
-    {
-        setup:
-            def script = new HubitatAppSandbox(new File("app_script.groovy"))
-                    .run(customizeScriptBeforeRun: {
-                        script->
-                            script.getMetaClass().scriptPrivateInternalMethod = 
-                                { return "Mocked data!" } // Method mocked here
-                    })
+def "Mocking calls to internal scripts methods "()
+{
+    setup:
+        def script = new HubitatAppSandbox(new File("app_script.groovy"))
+                .run(customizeScriptBeforeRun: {
+                    script->
+                        script.getMetaClass().scriptPrivateInternalMethod = 
+                            { return "Mocked data!" } // Method mocked here
+                })
 
-        expect:
-            script.methodThatCallsPrivateMethod() == "Mocked data!"
-    }
+    expect:
+        script.methodThatCallsPrivateMethod() == "Mocked data!"
+}
 ```
+
+Of course, this can also be used to mock API methods instead of the way mentioned above.
+## Mocking app/device state
+You can mock access to `state`.
+
+Given an app or device method (example is for device here):
+```groovy
+def readSomeState(def name)
+{
+    return state."${name}"
+}
+```
+
+You can mock the state:
+```groovy
+def "Mocking app/device state"()
+{
+    setup:
+        def state = [val1:42, val2:"Some value2"] // Defining state map
+
+        // This is example for device
+        DeviceExecutor executorApi = Mock{
+            _*getState() >> state // State mocked here
+        }
+
+        def script = new HubitatDeviceSandbox(new File("device_script.groovy"))
+                .run(api: executorApi)
+
+    expect:
+        script.readSomeState("val1") == 42
+        script.readSomeState("val2") == "Some value2"
+        script.readSomeState("invalid") == null
+}
+```
+
 ## You can disable most built-in validations
 Yet another parameter to `run()` method is `validationFlags` that takes list of `me.biocomp.hubitat_ci.validation.Flags`.
 
