@@ -19,6 +19,12 @@ class RequreParseCompilationCusomizer extends CompilationCustomizer{
         super(CompilePhase.CANONICALIZATION);
     }
 
+    @CompileStatic
+    private static String printSignature(MethodNode m)
+    {
+        return "${m.returnType.nameWithoutPackage} parse(${m.parameters.collect{"${it.type.nameWithoutPackage} ${it.name}"}.join(", ")})"
+    }
+
     @Override
     @CompileStatic
     void call(SourceUnit source, GeneratorContext context, ClassNode classNode) throws CompilationFailedException
@@ -26,34 +32,28 @@ class RequreParseCompilationCusomizer extends CompilationCustomizer{
         if (classNode.isScript())
         {
             def parseFound = false;
-            List<MethodNode> originalMethods = []
+            def goodParseFound = false;
+            List<String> signatures = []
+
             classNode.methods.each {
                 // Not modifying validating method, and not touching static methods.
                 // Static methods can't call non-static hubitatciValidateAfterMethodCall,
                 // and can't touch anything that needs to be validated.
                 if (it.name == "parse") {
                     parseFound = true;
-//                    def original = it
-//
-//                    def methodArgsExpression = new ArgumentListExpression();
-//                    original.parameters.each {
-//                        methodArgsExpression.addExpression(new VariableExpression(((Parameter)it).name))
-//                    }
-//
-//                    originalMethods.add(new MethodNode(
-//                            original.name + "_original",
-//                            original.modifiers,
-//                            original.returnType,
-//                            original.parameters,
-//                            original.exceptions,
-//                            original.code))
-//
-//                    // Add validating wrapper method
-//                    it.code = generateWrapper(original, methodArgsExpression)
+
+                    signatures.add(printSignature(it))
+
+                    if (it.parameters.size() == 1
+                        && (it.parameters[0].type.name == Object.class.name || it.parameters[0].type.name == String.class.name))
+                    {
+                        goodParseFound = true
+                    }
                 }
             }
 
             assert parseFound, "Script does not have parse() method required for devices"
+            assert goodParseFound, "None of parse() method signatures (${signatures}) matches any of expected ones: [Map parse(String), List<Map> parse(String), HubAction parse(String), List<HubAction> parse(String)"
         }
     }
 }

@@ -2,7 +2,7 @@
 
 [![Build Status](https://biocomp.visualstudio.com/HubitatCiRelease/_apis/build/status/hubitat_ci%20build?branchName=master)](https://biocomp.visualstudio.com/HubitatCiRelease/_build/latest?definitionId=10&branchName=master)
 
-This is a library for unit testing Hubitat scripts locally (and via **C**ontinuous **I**ntegration, thus Hubitat CI).
+This is a library for testing Hubitat scripts locally on your machine (and via **C**ontinuous **I**ntegration, thus Hubitat CI).
 
 In short, it uses [GroovyShell](http://docs.groovy-lang.org/latest/html/api/groovy/lang/GroovyShell.html) to load the scripts, make objects out of them and let user test them.
 
@@ -11,6 +11,14 @@ In short, it uses [GroovyShell](http://docs.groovy-lang.org/latest/html/api/groo
 With proper IDE (I'm using [IntellijIDEA](https://www.jetbrains.com/idea/)), you can step through your tests **and your script**, view variables and have rich debugging experience in general.
 
 ![Image of debug session](docs/debugging.png)
+
+### Run your tests in the cloud after (or before) every push
+Just something obvious, really. 
+If you can run it on your machine, you can also run it in the cloud.
+
+This library, and [hubitat_ci_example](https://github.com/biocomp/hubitat_ci_example), for example, 
+have automatic builds set up in Azure Devops (former VSTS).
+Here's a build script file: [azure-pipelines.yml](azure-pipelines.yml).
 
 ### Have basics validated automatically for you
 By default, the library will initialize script object, and perform its validation.
@@ -29,3 +37,6 @@ These validations can catch errors like these:
 
 ## How to test
 Library usage and common mocking techniques discussed [here](docs/how_to_test.md).
+
+## Changelog
+Changlog is [here](docs/changelog.md).
