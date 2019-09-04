@@ -311,18 +311,45 @@ def methodThatUsesInputs()
             input.options.options == [42: 'Val1', 33: 'Val2']
     }
 
+    def "Enum input type can take map of string->string as options"() {
+        when:
+            def input = parseOneChild("input 'nam', 'enum', options: ['42':'Val1', '33':'Val2']")
+
+        then:
+            input.readType() == 'enum'
+            input.options.options == ["42": 'Val1', "33": 'Val2']
+    }
+
     @Unroll
-    def "Enum default value must be one of options (#options)"(String options) {
+    def "Failing cases: enum default value must be one of its options (#options)"(String options, String expectedValidValues) {
         when:
             parseOneChild("input 'nam', 'enum', defaultValue: 'ValUnknown', options: ${options}")
 
         then:
             AssertionError e = thrown()
-            e.message.contains("defaultValue 'ValUnknown' is not one of valid values: [Val1, Val2]")
+            e.message.contains("defaultValue 'ValUnknown' is not one of valid values: ${expectedValidValues}")
 
         where:
-            options << ["['Val1', 'Val2']",
-                        "[42:'Val1', 33:'Val2']"]
+            options                      | expectedValidValues
+            "['Val1', 'Val2']"           | "[Val1, Val2]"
+            "[42:'Val1', 33:'Val2']"     | "[Val1, Val2] or [42, 33]"
+            "['42':'Val1', '33':'Val2']" | "[Val1, Val2] or [42, 33]"
+    }
+
+    @Unroll
+    def "Successful cases: enum default value must be one of its options (#options)"(String options, String defaultValue) {
+        expect:
+            parseOneChild("input 'nam', 'enum', defaultValue: ${defaultValue}, options: ${options}")
+
+        where:
+            options                      | defaultValue
+            "['Val1', 'Val2']"           | "'Val1'"
+            "['Val1', 'Val2']"           | "'Val2'"
+            "[42:'Val1', 33:'Val2']"     | "'Val1'"
+            "[42:'Val1', 33:'Val2']"     | "'42'"
+            "[42:'Val1', 33:'Val2']"     | "'33'"
+            "['42':'Val1', '33':'Val2']" | "'Val2'"
+            "['42':'Val1', '33':'Val2']" | "'42'"
     }
 
     @Unroll
@@ -335,8 +362,9 @@ def methodThatUsesInputs()
             e.message.contains("enum ${whatWasDuplicated} was duplicated")
 
         where:
-            options                             | whatWasDuplicated
-            "['Val2', 'Val1', 'Val2']"          | "value 'Val2'"
-            "[11:'Val2', 22:'Val1', 33:'Val2']" | "value 'Val2'"
+            options                                   | whatWasDuplicated
+            "['Val2', 'Val1', 'Val2']"                | "value 'Val2'"
+            "[11:'Val2', 22:'Val1', 33:'Val2']"       | "value 'Val2'"
+            "['11':'Val2', '22':'Val1', '33':'Val2']" | "value 'Val2'"
     }
 }

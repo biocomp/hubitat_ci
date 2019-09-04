@@ -172,6 +172,9 @@ def "Don't run init at all"()
                 .run(validationFlags: [Flags.DontRunScript])
 }
 ```
+## What happens when script uses things like `hubitat.device.HubResponse`
+These classes are replaced at script compile time with mock ones like `me.biocomp.hubitat_ci.api.common_api.HubResponse`.
+
 ## You can also test inline script (not loaded from a file)
 Although this is probably not useful for most script writers.
 ```groovy

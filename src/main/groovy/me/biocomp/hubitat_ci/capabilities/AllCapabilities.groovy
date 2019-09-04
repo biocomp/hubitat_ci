@@ -216,9 +216,9 @@ interface Button extends Capability
     }
 
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("button", int),
+            new CapabilityAttributeInfo("button", Number),
             new CapabilityAttributeInfo("holdableButton", HoldableButtonValue),
-            new CapabilityAttributeInfo("numberOfButtons", int),
+            new CapabilityAttributeInfo("numberOfButtons", Number),
     ])
 }
 
@@ -270,7 +270,7 @@ interface Chime extends Capability
     ])
 
     @CompileStatic
-    abstract void playSound(int soundNumber)
+    abstract void playSound(Number soundNumber)
 
     @CompileStatic
     abstract void stop()
@@ -396,7 +396,7 @@ interface DoorControl extends Capability
 interface DoubleTapableButton extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("doubleTapped", int),
+            new CapabilityAttributeInfo("doubleTapped", Number),
     ])
 }
 
@@ -489,7 +489,7 @@ interface GarageDoorControl extends Capability
 interface HealthCheck extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("checkInterval", int),
+            new CapabilityAttributeInfo("checkInterval", Number),
     ])
 
     @CompileStatic
@@ -499,7 +499,7 @@ interface HealthCheck extends Capability
 interface HoldableButton extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("held", int),
+            new CapabilityAttributeInfo("held", Number),
     ])
 }
 
@@ -590,7 +590,7 @@ interface LightEffects extends Capability
      * @param effectNumber required (NUMBER) - Effect number to enable
      */
     @CompileStatic
-    abstract void setEffect(int effectNumber)
+    abstract void setEffect(Number effectNumber)
 
     @CompileStatic
     abstract void setNextEffect()
@@ -651,9 +651,9 @@ interface LockCodes extends Capability
 
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
             new CapabilityAttributeInfo("codeChanged", CodeChangedValue),
-            new CapabilityAttributeInfo("codeLength", int),
+            new CapabilityAttributeInfo("codeLength", Number),
             new CapabilityAttributeInfo("lockCodes", Object), // JSON object
-            new CapabilityAttributeInfo("maxCodes", int)
+            new CapabilityAttributeInfo("maxCodes", Number)
     ])
 
     /**
@@ -672,13 +672,13 @@ interface LockCodes extends Capability
      * @param name - optional (STRING) - Name for this lock code
      */
     @CompileStatic
-    abstract void setCode(int codePosition, String pinCode, String name)
+    abstract void setCode(Number codePosition, String pinCode, String name)
 
     /**
      * @param pinCodeLength required (NUMBER) - Maximum pin code lentgh for this lock
      */
     @CompileStatic
-    abstract void setCodeLength(int pinCodeLength)
+    abstract void setCodeLength(Number pinCodeLength)
 }
 
 interface MediaController extends Capability
@@ -900,8 +900,8 @@ interface PressureMeasurement extends Capability
 interface PushableButton extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("numberOfButtons", int),
-            new CapabilityAttributeInfo("pushed", int)
+            new CapabilityAttributeInfo("numberOfButtons", Number),
+            new CapabilityAttributeInfo("pushed", Number)
     ])
 }
 
@@ -944,7 +944,7 @@ interface RelaySwitch extends Capability
 interface ReleasableButton extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("released", int),
+            new CapabilityAttributeInfo("released", Number),
     ])
 }
 
@@ -1048,9 +1048,9 @@ interface SecurityKeypad extends Capability
 
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
             new CapabilityAttributeInfo("codeChanged", CodeChangedValue),
-            new CapabilityAttributeInfo("codeLength", int),
+            new CapabilityAttributeInfo("codeLength", Number),
             new CapabilityAttributeInfo("lockCodes", Object), // JSON object
-            new CapabilityAttributeInfo("maxCodes", int),
+            new CapabilityAttributeInfo("maxCodes", Number),
             new CapabilityAttributeInfo("securityKeypad", SecurityKeypadValue),
     ])
 
@@ -1066,7 +1066,7 @@ interface SecurityKeypad extends Capability
      * @return
      */
     @CompileStatic
-    abstract void deleteCode(int codePosition)
+    abstract void deleteCode(Number codePosition)
 
     @CompileStatic
     abstract void disarm()
@@ -1091,7 +1091,7 @@ interface SecurityKeypad extends Capability
 
 
     @CompileStatic
-    abstract void setEntryDelay(int entranceDelayInSeconds)
+    abstract void setEntryDelay(Number entranceDelayInSeconds)
 
     /**
      * @param exitDelay required (NUMBER) - Exit delay in seconds
@@ -1115,7 +1115,7 @@ interface ShockSensor extends Capability
     }
 
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("shock", ShockSensor),
+            new CapabilityAttributeInfo("shock", ShockValue),
     ])
 }
 
@@ -1252,7 +1252,7 @@ interface SwitchLevel extends Capability
     * @param duration optional (NUMBER) - Transition duration in seconds
     */
     @CompileStatic
-    abstract void setLevel(Double level, int duration)
+    abstract void setLevel(Double level, Number duration)
 }
 
 @CustomDeviceSelector(deviceSelector = 'tv')
@@ -1260,7 +1260,7 @@ interface SwitchLevel extends Capability
 interface TV extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-        new CapabilityAttributeInfo("channel",  int),
+        new CapabilityAttributeInfo("channel",  Number),
         new CapabilityAttributeInfo("movieMode",  String),
         new CapabilityAttributeInfo("picture",  String),
         new CapabilityAttributeInfo("power",  String),
@@ -1290,7 +1290,7 @@ interface TamperAlert extends Capability
     }
 
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("tamper", TamperAlert),
+            new CapabilityAttributeInfo("tamper", TamperValue),
     ])
 }
 
@@ -1476,7 +1476,7 @@ interface ThermostatSetpoint extends Capability
 interface ThreeAxis extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
-            new CapabilityAttributeInfo("threeAxis", new Tuple3<Integer, Integer, Integer>().class),
+            new CapabilityAttributeInfo("threeAxis", String.class), // Seems like string in "x,y,z" format
     ])
 }
 

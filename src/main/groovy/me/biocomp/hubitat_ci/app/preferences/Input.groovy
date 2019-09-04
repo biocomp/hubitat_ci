@@ -75,8 +75,14 @@ class Input {
         if (defaultValue.containsKey('defaultValue'))
         {
             if (readType() == 'enum') {
-                return [defaultValue: (Object) enumValues[
-                        enumDisplayValues.findIndexOf { it == defaultValue.defaultValue as String }]]
+                final def defaultValueStr = defaultValue.defaultValue.toString()
+                final def indexOfDisplayValue = enumDisplayValues.findIndexOf { it == defaultValueStr }
+                if (indexOfDisplayValue == -1) // Looks like enum value (not display value) was used
+                {
+                    return [defaultValue: (Object)defaultValueStr]
+                }
+
+                return [defaultValue: (Object) enumValues[indexOfDisplayValue]]
             }
             else
             {
@@ -148,6 +154,12 @@ class Input {
         return new UnvalidatedInputObjectGenerator();
     }
 
+    /**
+     * Insert unique values from source into uniqueValues, assert if there are duplicates.
+     * @param keyOrValue - word 'key' or 'value' for better error message.
+     * @param source - gets list from here
+     * @param uniqueValues - receives list of unique enum values
+     */
     private static void ensureAndInsertUniqueValue(String keyOrValue, List source, ArrayList<String> uniqueValues)
     {
         def unique = new HashSet<String>()
@@ -166,7 +178,7 @@ class Input {
         assert options != null && options.containsKey('options'): "${this}: input of type 'enum' must have 'options' parameter with enum values"
 
         if (Map.isInstance(options.options)) {
-            final def optionsMap = options.options as Map<Integer, String>
+            final def optionsMap = (Map)options.options
             ensureAndInsertUniqueValue("value", optionsMap.values().collect{it.toString()}, enumDisplayValues)
             ensureAndInsertUniqueValue("key", optionsMap.keySet().collect{it.toString()}, enumValues)
         }
@@ -181,7 +193,8 @@ class Input {
 
         if (defaultValue.containsKey('defaultValue'))
         {
-            assert enumDisplayValues.contains(defaultValue.defaultValue): "${this}: defaultValue '${defaultValue.defaultValue}' is not one of valid values: ${enumDisplayValues}"
+            final def addedEnumValues = enumValues ? " or ${enumValues}" : ""
+            assert enumDisplayValues.contains(defaultValue.defaultValue.toString()) || enumValues.contains(defaultValue.defaultValue.toString()) : "${this}: defaultValue '${defaultValue.defaultValue}' is not one of valid values: ${enumDisplayValues}${addedEnumValues}"
         }
     }
 
