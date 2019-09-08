@@ -73,7 +73,7 @@ abstract class HubitatAppScript extends
                 userSettingValues,
                 data.preferences,
                 data,
-                new DebuggerDetector(this.class.name, DebuggerDetector.appScriptToSettingsGetFrames))
+                new DebuggerDetector())
         api = this.preferencesReader
         validateAfterRun.add(this.preferencesReader.&validateAfterRun)
 
@@ -134,7 +134,6 @@ abstract class HubitatAppScript extends
     @Override
     @CompileStatic
     Object getProperty(String property) {
-        System.out.println "getProperty('${property}')..."
         switch (property) {
             case "metaClass":
                 return getMetaClass();
@@ -161,7 +160,6 @@ abstract class HubitatAppScript extends
             // Simple implementation of redirecting getter back to script class (if present)
             // Don't need to support MOP here, everything can be mocked via AppExecutorBase interface.
             def getter = this.getClass().getMethod(getterMethodName, new Class[0])
-            //System.out.System.out.println "FOUND getter ${methodName}!"
             return getter.invoke(this);
         } catch (NoSuchMethodException) {
             // It's OK, let's hope it'll be found in metaclass
@@ -169,18 +167,15 @@ abstract class HubitatAppScript extends
 
         // There's a property, return it.
         if (getMetaClass().hasProperty(this, property)) {
-            System.out.println "Gonna get property '${property}' as getMetaClass().getProperty(this as GroovyObjectSupport, property)"
             return getMetaClass().getProperty(this as GroovyObjectSupport, property)
         }
         // There's a method handler taking one arg (Event), return that.
         else if (getMetaClass().pickMethod(property, Object.class) != null) {
-            System.out.println "Gonna get property '${property}' as 'return this.&'${property}'..."
             return this.&"${property}"
         }
 
         // If no such property, try taking it from userSettingsMap
         if (!getMetaClass().hasProperty(this, property)) {
-            System.out.println "Gonna get property '${property}'..."
             return this.@userSettingsMap.get(property)
         }
     }

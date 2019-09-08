@@ -4,15 +4,18 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
 /**
- * Helps ensure that scripts accesses only defined inputs.
- */
+ * Helps ensure that scripts accesses only defined inputs.*/
 @TypeChecked
-class SettingsContainer implements Map<String, Object>
+class SettingsContainer implements
+        Map<String, Object>
 {
     /**
      * @param userSettingsValue - user can define settings in UTs, and rest of the settings will be added to it too.
      */
-    SettingsContainer(Closure<String> getCurrentPageName, ValidatorBase validator, Map<String, Object> userSettingsValue, IInputSource registeredInputs, DebuggerDetector debuggerDetector) {
+    SettingsContainer(
+            Closure<String> getCurrentPageName, ValidatorBase validator, Map<String, Object> userSettingsValue,
+            IInputSource registeredInputs, DebuggerDetector debuggerDetector)
+    {
         this.getCurrentPageName = getCurrentPageName
         this.validator = validator
         this.userSettingValues = userSettingsValue
@@ -22,10 +25,8 @@ class SettingsContainer implements Map<String, Object>
 
     /**
      * After reading preferences, this method is called.
-     * Any call to validateAfterPreferences() should happen after this method, or is ignored.
-     */
-    void preferencesReadingDone()
-    {
+     * Any call to validateAfterPreferences() should happen after this method, or is ignored.*/
+    void preferencesReadingDone() {
         this.@preferencesReadingIsDone = true
     }
 
@@ -39,7 +40,7 @@ class SettingsContainer implements Map<String, Object>
         if (!validator.hasFlag(Flags.AllowReadingNonInputSettings) && this.@preferencesReadingIsDone) {
             def allValidInputNames = registeredInputs.getAllInputNames()
             def readSettingsThatAreNotInputs = settingsRead.keySet() - allValidInputNames
-            assert !readSettingsThatAreNotInputs : "In '${methodName}' settings were read that are not registered inputs: ${readSettingsThatAreNotInputs}. These are registered inputs: ${allValidInputNames}. This is not allowed in strict mode (add Flags.AllowReadingNonInputSettings to allow this)"
+            assert !readSettingsThatAreNotInputs: "In '${methodName}' settings were read that are not registered inputs: ${readSettingsThatAreNotInputs}. These are registered inputs: ${allValidInputNames}. This is not allowed in strict mode (add Flags.AllowReadingNonInputSettings to allow this)"
         }
     }
 
@@ -66,28 +67,23 @@ class SettingsContainer implements Map<String, Object>
             }
 
             stacks.add(trace)
-
-            println "Determined that '${name}' was read by user"
-        }
-        else
-        {
-            println "Determined that '${name}' was read by DEBUGGER"
         }
 
         // We have per page mapping of values
-        def currentPageName = getCurrentPageName()
-        def userSettingValue = this.@userSettingValues.get(name)
-        if (currentPageName && userSettingValue instanceof Map && ((Map)userSettingValue).containsKey(
-                '_') && ((Map)userSettingValue).containsKey(currentPageName))
-        {
-            println "returning 1"
-            return ((Map)userSettingValue).get(currentPageName)
-        } else if (currentPageName && userSettingValue instanceof Map && ((Map)userSettingValue).containsKey('_')) {
-            println "returning 2"
-            return ((Map)userSettingValue).get("_")
+        final def currentPageName = getCurrentPageName()
+        Object userSettingValue = this.@userSettingValues.get(name)
+
+        // If these are per-page values
+        if (userSettingValue instanceof Map) {
+            final def userSettingMap = ((Map) userSettingValue)
+
+            if (currentPageName && userSettingMap.containsKey(currentPageName)) {
+                return userSettingValue = userSettingMap.get(currentPageName)
+            } else if (currentPageName && userSettingMap.containsKey('_')) {
+                return userSettingValue = userSettingMap.get("_")
+            }
         }
 
-        println "returning 3"
         return registeredInputs.generateInputWrapper(name, userSettingValue)
     }
 

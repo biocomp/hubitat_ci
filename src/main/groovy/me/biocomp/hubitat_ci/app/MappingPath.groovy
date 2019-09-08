@@ -58,8 +58,6 @@ class MappingPath {
         return {
             def params, def request ->
                 def scriptWithInjectedProps = derivedScriptFactory(script, params, request)
-                println "Calling scriptWithInjectedProps.\"${functionName}\"()"
-                println "scriptWithInjectedProps.methods = ${scriptWithInjectedProps.metaClass.methods.collect{it.name}}"
                 scriptWithInjectedProps."${functionName}"()
         }
     }
