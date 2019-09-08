@@ -1,7 +1,8 @@
 package me.biocomp.hubitat_ci.device
 
-
+import groovy.transform.PackageScope
 import me.biocomp.hubitat_ci.api.device_api.DeviceExecutor
+import me.biocomp.hubitat_ci.validation.DebuggerDetector
 import me.biocomp.hubitat_ci.validation.Flags
 import me.biocomp.hubitat_ci.validation.NamedParametersValidator
 import groovy.transform.TypeChecked
@@ -29,7 +30,10 @@ class HubitatDeviceSandbox {
 
         HubitatDeviceScript script = file ? validator.parseScript(file) : validator.parseScript(text);
 
-        script.initialize(options.api as DeviceExecutor, validator/*, readUserSettingValues(options), options.customizeScriptBeforeRun as Closure*/)
+        script.initialize(
+                options.api as DeviceExecutor,
+                validator/*, readUserSettingValues(options)*/,
+                options.customizeScriptBeforeRun as Closure)
 
         if (!validator.hasFlag(Flags.DontRunScript)) {
             script.run()

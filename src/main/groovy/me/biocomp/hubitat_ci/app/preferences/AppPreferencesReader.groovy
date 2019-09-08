@@ -5,6 +5,7 @@ import me.biocomp.hubitat_ci.api.app_api.DynamicPage
 import me.biocomp.hubitat_ci.api.app_api.Preferences as PreferencesInterface
 import me.biocomp.hubitat_ci.app.AppValidator
 import me.biocomp.hubitat_ci.app.HubitatAppScript
+import me.biocomp.hubitat_ci.validation.DebuggerDetector
 import me.biocomp.hubitat_ci.validation.Flags
 import me.biocomp.hubitat_ci.validation.IInputSource
 import me.biocomp.hubitat_ci.validation.SettingsContainer
@@ -21,7 +22,8 @@ class AppPreferencesReader implements
             AppValidator validator,
             Map userSettingsValue,
             Preferences preferncesToFill,
-            IInputSource inputSource)
+            IInputSource inputSource,
+            DebuggerDetector debuggerDetector)
     {
         this.parentScript = parentScript
         this.delegate = delegate
@@ -34,7 +36,8 @@ class AppPreferencesReader implements
                 { prefState.hasCurrentPage() ? prefState.currentPage.readName() : null },
                 validator,
                 userSettingsValue,
-                inputSource);
+                inputSource,
+                debuggerDetector);
     }
 
     @CompileStatic
@@ -338,17 +341,19 @@ class AppPreferencesReader implements
                 })
 
         settingsContainer.preferencesReadingDone()
-        settingsContainer.validateAfterPreferences()
+        settingsContainer.validateAfterPreferences("preferences")
     }
 
-    void validateAfterMethodCall()
+    @CompileStatic
+    void validateAfterMethodCall(String methodCall)
     {
-        settingsContainer.validateAfterPreferences()
+        settingsContainer.validateAfterPreferences(methodCall)
     }
 
     /**
-     * Calls methods that create dymaic pages that were discovered previously*/
-    void registerDynamicPages(Preferences preferences) {
+     * Calls methods that create dynamic pages that were discovered previously
+     */
+    static void registerDynamicPages(Preferences preferences) {
         preferences.dynamicRegistrations.each { it() }
     }
 

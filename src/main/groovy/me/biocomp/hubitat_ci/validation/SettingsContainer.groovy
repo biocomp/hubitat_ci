@@ -1,8 +1,7 @@
 package me.biocomp.hubitat_ci.validation
 
-
+import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
-import groovy.transform.TypeCheckingMode
 
 /**
  * Helps ensure that scripts accesses only defined inputs.
@@ -12,13 +11,13 @@ class SettingsContainer implements Map<String, Object>
 {
     /**
      * @param userSettingsValue - user can define settings in UTs, and rest of the settings will be added to it too.
-     * @param mode - how to validate user actions with settings.
      */
-    SettingsContainer(Closure<String> getCurrentPageName, ValidatorBase validator, Map<String, Object> userSettingsValue, IInputSource registeredInputs) {
+    SettingsContainer(Closure<String> getCurrentPageName, ValidatorBase validator, Map<String, Object> userSettingsValue, IInputSource registeredInputs, DebuggerDetector debuggerDetector) {
         this.getCurrentPageName = getCurrentPageName
         this.validator = validator
         this.userSettingValues = userSettingsValue
         this.registeredInputs = registeredInputs
+        this.debuggerDetector = debuggerDetector
     }
 
     /**
@@ -36,11 +35,11 @@ class SettingsContainer implements Map<String, Object>
      * 1. Verify that settings were only read, and not set.
      * 2. Verify that only settings from 'inputs' param were read.*/
     // @CompileStatic (compiler crashes)
-    void validateAfterPreferences(String methodName = "[initialization]") {
+    void validateAfterPreferences(String methodName) {
         if (!validator.hasFlag(Flags.AllowReadingNonInputSettings) && this.@preferencesReadingIsDone) {
             def allValidInputNames = registeredInputs.getAllInputNames()
-            def readSettingsThatAreNotInputs = settingsRead - allValidInputNames
-            assert !readSettingsThatAreNotInputs : "In ${methodName} settings were read that are not registered inputs: ${readSettingsThatAreNotInputs}. These are registered inputs: ${allValidInputNames}. This is not allowed in strict mode (add Flags.AllowReadingNonInputSettings to allow this)"
+            def readSettingsThatAreNotInputs = settingsRead.keySet() - allValidInputNames
+            assert !readSettingsThatAreNotInputs : "In '${methodName}' settings were read that are not registered inputs: ${readSettingsThatAreNotInputs}. These are registered inputs: ${allValidInputNames}. This is not allowed in strict mode (add Flags.AllowReadingNonInputSettings to allow this)"
         }
     }
 
@@ -51,28 +50,49 @@ class SettingsContainer implements Map<String, Object>
      * @param name
      * @return
      */
-    @TypeChecked(TypeCheckingMode.SKIP) // Skip for easier working with maps
+    @CompileStatic
     @Override
     Object get(Object name) {
         name = name as String
-        settingsRead << name
+
+        final def trace = Thread.currentThread().stackTrace
+        if (!this.@debuggerDetector.isTraceFromDebugger(trace)) {
+            List<StackTraceElement[]> stacks = null
+            if (this.@settingsRead.containsKey(name)) {
+                stacks = this.@settingsRead.get(name)
+            } else {
+                stacks = new ArrayList<StackTraceElement[]>()
+                this.@settingsRead.put(name, stacks)
+            }
+
+            stacks.add(trace)
+
+            println "Determined that '${name}' was read by user"
+        }
+        else
+        {
+            println "Determined that '${name}' was read by DEBUGGER"
+        }
 
         // We have per page mapping of values
         def currentPageName = getCurrentPageName()
-        def userSettingValue = userSettingValues.get(name)
-        if (currentPageName && userSettingValue instanceof Map && userSettingValue.containsKey('_') && userSettingValue.containsKey(currentPageName))
+        def userSettingValue = this.@userSettingValues.get(name)
+        if (currentPageName && userSettingValue instanceof Map && ((Map)userSettingValue).containsKey(
+                '_') && ((Map)userSettingValue).containsKey(currentPageName))
         {
-            return userSettingValue."${currentPageName}"
-        }
-        else if (currentPageName && userSettingValue instanceof Map && userSettingValue.containsKey('_'))
-        {
-            return userSettingValue."_"
+            println "returning 1"
+            return ((Map)userSettingValue).get(currentPageName)
+        } else if (currentPageName && userSettingValue instanceof Map && ((Map)userSettingValue).containsKey('_')) {
+            println "returning 2"
+            return ((Map)userSettingValue).get("_")
         }
 
+        println "returning 3"
         return registeredInputs.generateInputWrapper(name, userSettingValue)
     }
 
     @Override
+    @CompileStatic
     Object put(String name, Object value) {
         if (!validator.hasFlag(Flags.AllowWritingToSettings)) {
             assert false: "You tried assigning '${value}' to '${name}', but writing to settings is not allowed in strict mode (add Flags.AllowWritingToSettings to allow this)."
@@ -81,14 +101,16 @@ class SettingsContainer implements Map<String, Object>
         return userSettingValues.put(name, value)
     }
 
-    private final Closure<String> getCurrentPageName
-    private final ValidatorBase validator
+    private final Closure<String> getCurrentPageName = null
+    private final ValidatorBase validator = null
 
-    private final Set<String> settingsRead = []
-    private final IInputSource registeredInputs
+    private final HashMap<String, List<StackTraceElement[]>> settingsRead = [:]
+    private final IInputSource registeredInputs = null
 
     @Delegate
-    private final Map<String, Object> userSettingValues
+    private final Map<String, Object> userSettingValues = null
 
     private boolean preferencesReadingIsDone = false
+
+    private final DebuggerDetector debuggerDetector = null
 }
