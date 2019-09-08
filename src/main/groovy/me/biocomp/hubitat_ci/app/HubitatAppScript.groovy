@@ -5,12 +5,15 @@ import me.biocomp.hubitat_ci.app.preferences.AppPreferencesReader
 import me.biocomp.hubitat_ci.app.preferences.Preferences
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import me.biocomp.hubitat_ci.validation.DebuggerDetector
 
-/* Custom Script that redirects most unknown calls to app_, and does not use Binding.
-* */
+/*
+    Custom Script that redirects most unknown calls to app_, and does not use Binding.
+*/
 
 @TypeChecked
-abstract class HubitatAppScript extends Script
+abstract class HubitatAppScript extends
+        Script
 {
     private Map userSettingsMap
     private AppPreferencesReader preferencesReader = null
@@ -27,16 +30,13 @@ abstract class HubitatAppScript extends Script
     private AppExecutor api = null
 
     @CompileStatic
-    private static HashSet<String> InitExistingMethods()
-    {
-        return getMetaClass().methods.collect{m -> m.name} as HashSet<String>;
+    private static HashSet<String> InitExistingMethods() {
+        return getMetaClass().methods.collect { m -> m.name } as HashSet<String>;
     }
-
 
     @TypeChecked
     @CompileStatic
-    void initialize(HubitatAppScript parent)
-    {
+    void initialize(HubitatAppScript parent) {
         this.api = parent.@api
         this.preferencesReader = parent.@preferencesReader
         this.definitionReader = parent.@definitionReader
@@ -45,15 +45,19 @@ abstract class HubitatAppScript extends Script
     }
 
     private Map<String, Object> injectedMappingHandlerData = [:]
+
     @CompileStatic
-    void installMappingInjectedProps(def params, def request)
-    {
+    void installMappingInjectedProps(def params, def request) {
         injectedMappingHandlerData['params'] = params
         injectedMappingHandlerData['request'] = request
     }
 
     @CompileStatic
-    void initialize(AppExecutor api, AppValidator validator, Map userSettingValues, Closure customizeScriptBeforeRun)
+    void initialize(
+            AppExecutor api,
+            AppValidator validator,
+            Map userSettingValues,
+            Closure customizeScriptBeforeRun)
     {
         customizeScriptBeforeRun?.call(this)
 
@@ -63,7 +67,13 @@ abstract class HubitatAppScript extends Script
         api = this.subscriptionReader
         validateAfterRun.add(this.subscriptionReader.&initializationComplete)
 
-        this.preferencesReader = new AppPreferencesReader(this, api, validator, userSettingValues, data.preferences, data)
+        this.preferencesReader = new AppPreferencesReader(this,
+                api,
+                validator,
+                userSettingValues,
+                data.preferences,
+                data,
+                new DebuggerDetector())
         api = this.preferencesReader
         validateAfterRun.add(this.preferencesReader.&validateAfterRun)
 
@@ -83,32 +93,33 @@ abstract class HubitatAppScript extends Script
         this.validator = validator
     }
 
-    /**
-     * Call to this method is injected into every user's method.
-     * This allows additional validations while calling separate methods on script object.
-     */
-    void hubitatciValidateAfterMethodCall(String methodName)
-    {
-        this.preferencesReader.validateAfterMethodCall()
+    /**Initialize with just SettingsContainer for stack trace detection*/
+    @CompileStatic
+    void initializeForStackDetection(Map settingsContainer) {
+        this.userSettingsMap = settingsContainer
     }
 
-    Preferences getProducedPreferences()
-    {
+    /**
+     * Call to this method is injected into every user's method.
+     * This allows additional validations while calling separate methods on script object.*/
+    @CompileStatic
+    void hubitatciValidateAfterMethodCall(String methodName) {
+        this.preferencesReader.validateAfterMethodCall(methodName)
+    }
+
+    Preferences getProducedPreferences() {
         data.preferences
     }
 
-    Map<String, Object> getProducedDefinition()
-    {
+    Map<String, Object> getProducedDefinition() {
         data.definitions
     }
 
-    Map<String, MappingPath> getProducedMappings()
-    {
+    Map<String, MappingPath> getProducedMappings() {
         mappingsReader.getMappings()
     }
 
-    AppMappingsReader getMappingsReader()
-    {
+    AppMappingsReader getMappingsReader() {
         return mappingsReader
     }
 
@@ -119,6 +130,7 @@ abstract class HubitatAppScript extends Script
         Also, getProperty() is still going to be called for valid get*() methods added by @Delegate.
         So we need to intercept those separately.
      */
+
     @Override
     @CompileStatic
     Object getProperty(String property) {
@@ -140,7 +152,7 @@ abstract class HubitatAppScript extends Script
 
                 break;
 
-            // default: - continue processing below
+        // default: - continue processing below
         }
 
         def getterMethodName = "get${property.capitalize()}"
@@ -148,22 +160,17 @@ abstract class HubitatAppScript extends Script
             // Simple implementation of redirecting getter back to script class (if present)
             // Don't need to support MOP here, everything can be mocked via AppExecutorBase interface.
             def getter = this.getClass().getMethod(getterMethodName, new Class[0])
-            //System.out.println "FOUND getter ${methodName}!"
             return getter.invoke(this);
-        }
-        catch (NoSuchMethodException)
-        {
+        } catch (NoSuchMethodException) {
             // It's OK, let's hope it'll be found in metaclass
         }
 
         // There's a property, return it.
-        if (getMetaClass().hasProperty(this, property))
-        {
+        if (getMetaClass().hasProperty(this, property)) {
             return getMetaClass().getProperty(this as GroovyObjectSupport, property)
         }
         // There's a method handler taking one arg (Event), return that.
-        else if (getMetaClass().pickMethod(property, Object.class) != null)
-        {
+        else if (getMetaClass().pickMethod(property, Object.class) != null) {
             return this.&"${property}"
         }
 
@@ -177,18 +184,19 @@ abstract class HubitatAppScript extends Script
         Don't let Script base class to redirect properties to binding
         + handle special cases of 'params' and 'props'
     */
+
     @Override
     @CompileStatic
     void setProperty(String property, Object newValue) {
-        switch (property)
-        {
+        switch (property) {
             case "metaClass":
-                setMetaClass((MetaClass)newValue);
+                setMetaClass((MetaClass) newValue);
                 return;
 
             case "params":
                 if (this.@injectedMappingHandlerData != null) {
-                    throw new ReadOnlyPropertyException("'params' injected value in mapping handler is for reading only", this.class)
+                    throw new ReadOnlyPropertyException(
+                            "'params' injected value in mapping handler is for reading only", this.class)
                 }
 
                 break;
@@ -206,10 +214,9 @@ abstract class HubitatAppScript extends Script
     }
 
     @Override
-    def run()
-    {
+    def run() {
         scriptBody()
-        validateAfterRun.each{ it() }
+        validateAfterRun.each { it() }
     }
 
     abstract void scriptBody()

@@ -4,6 +4,7 @@ import me.biocomp.hubitat_ci.api.device_api.*
 import me.biocomp.hubitat_ci.device.DeviceData
 import me.biocomp.hubitat_ci.device.DeviceValidator
 import me.biocomp.hubitat_ci.util.ReaderState
+import me.biocomp.hubitat_ci.validation.DebuggerDetector
 import me.biocomp.hubitat_ci.validation.SettingsContainer
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
@@ -15,7 +16,8 @@ class DeviceMetadataReader implements DeviceMetadataSource
             DeviceExecutor delegate,
             DeviceValidator validator,
             MetaClass scriptMetaClass,
-            DeviceData deviceData)
+            DeviceData deviceData,
+            DebuggerDetector debuggerDetector)
     {
         this.delegate = delegate
         this.validator = validator
@@ -25,7 +27,8 @@ class DeviceMetadataReader implements DeviceMetadataSource
                 { null },
                 validator,
                 [:],
-                deviceData);
+                deviceData,
+                debuggerDetector);
         this.deviceData = deviceData
     }
 
@@ -172,7 +175,7 @@ class DeviceMetadataReader implements DeviceMetadataSource
         states.withState('preferences()', deviceData.producedPreferences, makeContents)
 
         settingsContainer.preferencesReadingDone()
-        settingsContainer.validateAfterPreferences()
+        settingsContainer.validateAfterPreferences("preferences")
     }
 
     @Override

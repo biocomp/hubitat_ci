@@ -1,7 +1,9 @@
 package me.biocomp.hubitat_ci.app
 
+import groovy.transform.PackageScope
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
 import me.biocomp.hubitat_ci.app.preferences.Preferences
+import me.biocomp.hubitat_ci.validation.DebuggerDetector
 import me.biocomp.hubitat_ci.validation.Flags
 import me.biocomp.hubitat_ci.validation.NamedParametersValidator
 import groovy.transform.CompileStatic
@@ -9,7 +11,7 @@ import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
 
 /**
- * This sanbox can load script from file or string,
+ * This sandbox can load script from file or string,
  * parse it, while wrapping into a sandbox.
  *
  * Then it can run initialization methods and
@@ -70,7 +72,11 @@ class HubitatAppSandbox {
 
         HubitatAppScript script = file ? validator.parseScript(file) : validator.parseScript(text);
 
-        script.initialize(options.api as AppExecutor, validator, readUserSettingValues(options), options.customizeScriptBeforeRun as Closure)
+        script.initialize(
+                options.api as AppExecutor,
+                validator,
+                readUserSettingValues(options),
+                options.customizeScriptBeforeRun as Closure)
 
         if (!validator.hasFlag(Flags.DontRunScript)) {
             script.run()

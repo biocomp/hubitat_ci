@@ -210,33 +210,6 @@ hideWhenEmpty: true)
                                                "booll"], [true, false]])
     }
 
-    def "Script can only read inputs that were defined, and fails for undefined"() {
-        setup:
-            def script = new HubitatAppSandbox("""
-preferences{
-    page("p", "t"){
-        section(){
-            input "existingInput", "bool", title: "fromPage0"
-        }
-    }
-}
-
-def methodThatUsesInputs()
-{
-    def good = existingInput
-    def bad = missingInput
-}
-""").run(validationFlags: [Flags.DontValidateDefinition, Flags.AllowMissingInstall])
-
-        when:
-            script.methodThatUsesInputs()
-
-        then:
-            AssertionError e = thrown()
-            e.message.contains("not registered inputs: [missingInput]")
-            e.message.contains("registered inputs: [existingInput]")
-    }
-
     def "Enum input type must have 'options'"() {
         when:
             parseOneChild("input 'nam', 'enum'")

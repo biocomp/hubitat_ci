@@ -199,24 +199,29 @@ metadata{
             def script = new HubitatDeviceSandbox("""
 metadata {
     preferences() {
-         input "goodInput", "text"
+         input "existingInput", "text"
     }
 }
 
-def foo()
+private def someInternalMethod()
 {
-    def good = goodInput
+    def good = existingInput
     def bad = missingInput
+}
+
+def methodThatUsesInputs()
+{
+    someInternalMethod()
 }
 """).run(validationFlags: [Flags.DontValidateDefinition, Flags.DontRequireParseMethodInDevice])
 
         when:
-            script.foo()
+            script.methodThatUsesInputs()
 
         then:
             AssertionError e = thrown()
-            e.message.contains("are registered inputs: [goodInput]")
-            e.message.contains("not registered inputs: [missingInput]")
+            e.message.contains("In 'someInternalMethod' settings were read that are not registered inputs: [missingInput]. These are registered inputs: [existingInput]. This is not allowed in strict mode (add Flags.AllowReadingNonInputSettings to allow this).")
+            !e.message.contains("'methodThatUsesInputs'")
     }
 }
 
