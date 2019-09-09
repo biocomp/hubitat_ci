@@ -15,6 +15,6 @@ class DebuggerDetector {
      */
     boolean isTraceFromDebugger(StackTraceElement[] trace)
     {
-        return trace.findIndexOf {it.className == 'DUMMY' } != -1
+        return trace.findIndexOf { it.className.startsWith('DUMMY') } != -1
     }
 }
