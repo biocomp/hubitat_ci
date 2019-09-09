@@ -1122,16 +1122,10 @@ interface ShockSensor extends Capability
 @CompileStatic
 interface SignalStrength extends Capability
 {
-    /**
-     *
-     * @return 0 - 255 value
-     */
-    abstract Double lqi()
-
-    /**
-     * @return -200 - 0 value
-     */
-    abstract Double rssi()
+    static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList([
+            new CapabilityAttributeInfo([min: 0, max: 255], "lqi", Double),
+            new CapabilityAttributeInfo([min: -200, max: 0], "rssi", Double),
+    ])
 }
 
 interface SleepSensor extends Capability
