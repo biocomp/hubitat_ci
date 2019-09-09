@@ -8,6 +8,7 @@ class CapturingLog implements Log
     {
         debug,
         info,
+        warn,
         error
     }
 
@@ -19,6 +20,11 @@ class CapturingLog implements Log
     @Override
     void debug(String record) {
         records << new Tuple(Level.debug, record)
+    }
+
+    @Override
+    void warn(String record) {
+        records << new Tuple(Level.warn, record)
     }
 
     @Override

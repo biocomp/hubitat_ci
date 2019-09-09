@@ -9,6 +9,7 @@ interface Log
 {
     void info(String record)
     void debug(String record)
+    void warn(String record)
     void error(String record)
 }
 
