@@ -268,6 +268,7 @@ class DeviceValidator extends
         stringParameter("name", required(), mustNotBeEmpty())
         stringParameter("namespace", required(), mustNotBeEmpty())
         stringParameter("author", required(), mustNotBeEmpty())
+        stringParameter("importUrl", notRequired(), mustNotBeEmpty())
     }
 
     private static String printMethod(Method m)

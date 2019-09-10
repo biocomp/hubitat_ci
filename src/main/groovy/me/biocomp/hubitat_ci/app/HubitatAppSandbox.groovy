@@ -66,7 +66,8 @@ class HubitatAppSandbox {
         setupImpl(options).getProducedPreferences()
     }
 
-    private HubitatAppScript setupImpl(Map options) {validateAndUpdateSandboxOptions(options)
+    private HubitatAppScript setupImpl(Map options) {
+        validateAndUpdateSandboxOptions(options)
 
         def validator = readValidator(options)
 

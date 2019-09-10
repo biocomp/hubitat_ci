@@ -33,13 +33,14 @@ metadata{
     def "Reading all valid definition() options"() {
         setup:
             def definition = readDefinition("""
-    definition(name: "test device", namespace: "yournamespace", author: "your name"){
+    definition(name: "test device", namespace: "yournamespace", author: "your name", importUrl: "http://example.com/myscript.groovy"){
     }""", validationFlags: [Flags.DontValidateCapabilities, Flags.DontRequireParseMethodInDevice])
 
         expect:
             definition.options.name == 'test device'
             definition.options.namespace == 'yournamespace'
             definition.options.author == 'your name'
+            definition.options.importUrl == 'http://example.com/myscript.groovy'
     }
 
     @Unroll
