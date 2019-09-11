@@ -56,7 +56,8 @@ class HubitatDeviceSandbox {
 
         script.initialize(
                 options.api as DeviceExecutor,
-                validator, readUserSettingValues(options),
+                validator,
+                readUserSettingValues(options),
                 options.customizeScriptBeforeRun as Closure)
 
         if (!validator.hasFlag(Flags.DontRunScript)) {
@@ -83,7 +84,7 @@ class HubitatDeviceSandbox {
     private static final NamedParametersValidator optionsValidator = NamedParametersValidator.make {
         objParameter("api", notRequired(), canBeNull(), { v -> new Tuple2("DeviceExecutor", v instanceof DeviceExecutor)} )
         objParameter("userSettingValues", notRequired(), mustNotBeNull(), { v -> new Tuple2("Map<String, Object>", v as Map<String, Object>) })
-        objParameter("customizeScriptBeforeRun", notRequired(), mustNotBeNull(), { v -> new Tuple2("Closure taking HubitatAppScript", v as Closure) })
+        objParameter("customizeScriptBeforeRun", notRequired(), mustNotBeNull(), { v -> new Tuple2("Closure taking HubitatDeviceScript", v as Closure) })
         objParameter("validationFlags", notRequired(), mustNotBeNull(), { v -> new Tuple2("List<Flags>", v as List<Flags>) })
     }
 

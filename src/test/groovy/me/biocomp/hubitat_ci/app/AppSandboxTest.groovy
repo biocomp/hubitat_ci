@@ -158,10 +158,11 @@ def foo() {
                     new Tuple("getProducedDefinition()", "getProducedDefinition"),
                     new Tuple("void foo() { def prefs = producedDefinition }", "producedDefinition"),
                     new Tuple("printf", "printf"),
-                    new Tuple("sleep 10", "sleep"),
+                    new Tuple("sleep 10", "sleep")
             ])
     }
-             
+
+    @Unroll
     def "#description not allowed and should fail to compile"() {
         when:
             new HubitatAppSandbox(script).compile()
@@ -193,7 +194,8 @@ def foo() {
     if (LoginCheck) { log.debug '1' }
     else { log.debug '2' }
 } 
-""").run(noValidation: true)
+""").run(validationFlags: [Flags.DontValidateMetadata, Flags.DontValidatePreferences, Flags.DontValidateDefinition,
+                           Flags.DontRequireParseMethodInDevice])
 
         then:
             _*api.getLog() >> log
@@ -201,7 +203,7 @@ def foo() {
 
     private def makeScriptForPrivateCheck(def fileOrText) {
         return new HubitatAppSandbox(fileOrText).compile(
-                noValidation: true,
+                validationFlags: [Flags.DontValidateMetadata, Flags.DontRequireParseMethodInDevice],
                 customizeScriptBeforeRun: { script ->
                     script.getMetaClass().myPrivateMethod1 = { -> "was overridden1!" }
                     script.getMetaClass().myPrivateMethod2 = { def arg1, def arg2 -> "was overridden2(${arg1}, ${arg2})!"

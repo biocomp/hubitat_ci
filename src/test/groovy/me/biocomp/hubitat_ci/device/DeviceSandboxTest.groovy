@@ -3,6 +3,7 @@ package me.biocomp.hubitat_ci.device
 import me.biocomp.hubitat_ci.api.device_api.DeviceExecutor
 import me.biocomp.hubitat_ci.api.common_api.Log
 import me.biocomp.hubitat_ci.device.HubitatDeviceSandbox
+import me.biocomp.hubitat_ci.validation.Flags
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -161,6 +162,7 @@ def foo()
             ])
     }
 
+    @Unroll
     def "#description not allowed and should fail to compile"() {
         when:
             new HubitatDeviceSandbox(script).compile()
@@ -192,7 +194,7 @@ def foo() {
     if (LoginCheck) { log.debug '1' }
     else { log.debug '2' }
 } 
-""").run(noValidation: true)
+""").run(validationFlags: [Flags.DontValidateMetadata, Flags.DontRequireParseMethodInDevice])
 
         then:
             _*api.getLog() >> log
@@ -200,7 +202,7 @@ def foo() {
 
     private def makeScriptForPrivateCheck(def fileOrText) {
         return new HubitatDeviceSandbox(fileOrText).compile(
-                noValidation: true,
+                validationFlags: [Flags.DontValidateMetadata, Flags.DontRequireParseMethodInDevice],
                 customizeScriptBeforeRun: { script ->
                     script.getMetaClass().myPrivateMethod1 = { -> "was overridden1!" }
                     script.getMetaClass().myPrivateMethod2 = { def arg1, def arg2 -> "was overridden2(${arg1}, ${arg2})!"
