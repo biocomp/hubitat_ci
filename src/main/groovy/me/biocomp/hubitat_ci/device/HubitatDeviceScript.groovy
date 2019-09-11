@@ -14,7 +14,7 @@ import me.biocomp.hubitat_ci.validation.DebuggerDetector
 @TypeChecked
 abstract class HubitatDeviceScript extends Script
 {
-    private Map settingsMap
+    private Map userSettingsMap
     private DeviceMetadataReader metadataReader = null
     private DeviceValidator validator = null
     private DeviceData data = null
@@ -23,18 +23,18 @@ abstract class HubitatDeviceScript extends Script
     private DeviceExecutor api = null
 
     @CompileStatic
-    void initialize(DeviceExecutor api, DeviceValidator validator,/*, Map userSettingValues, */Closure customizeScriptBeforeRun)
+    void initialize(DeviceExecutor api, DeviceValidator validator, Map userSettingValues, Closure customizeScriptBeforeRun)
     {
         customizeScriptBeforeRun?.call(this)
 
         this.data = new DeviceData()
 
-        this.metadataReader = new DeviceMetadataReader(api/*this, api*/, validator, this.getMetaClass()/*, userSettingValues*/, data, new DebuggerDetector())
+        this.metadataReader = new DeviceMetadataReader(api/*this, api*/, validator, userSettingValues, this.getMetaClass(), data, new DebuggerDetector())
         api = this.metadataReader
 
         this.api = api
 
-        this.settingsMap = this.metadataReader.settings
+        this.userSettingsMap = this.metadataReader.settings
 
         this.validator = validator
     }
@@ -44,7 +44,7 @@ abstract class HubitatDeviceScript extends Script
     */
     @CompileStatic
     void initializeForStackDetection(Map settingsContainer) {
-        this.settingsMap = settingsContainer
+        this.userSettingsMap = settingsContainer
     }
 
     @CompileStatic
@@ -98,8 +98,9 @@ abstract class HubitatDeviceScript extends Script
             // It's OK, let's hope it'll be found in metaclass
         }
 
+         // If no such property, try taking it from userSettingsMap
         if (!getMetaClass().hasProperty(this, property)) {
-            return this.@settingsMap.get(property)
+            return this.@userSettingsMap.get(property)
         }
 
         return getMetaClass().getProperty(this as GroovyObjectSupport, property)
@@ -119,7 +120,7 @@ abstract class HubitatDeviceScript extends Script
                 return;
         }
 
-        this.@settingsMap.put(property, newValue)
+        this.@userSettingsMap.put(property, newValue)
     }
 
     @Override

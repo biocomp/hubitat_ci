@@ -15,6 +15,7 @@ class DeviceMetadataReader implements DeviceMetadataSource
     DeviceMetadataReader(
             DeviceExecutor delegate,
             DeviceValidator validator,
+            Map userSettingsValue,
             MetaClass scriptMetaClass,
             DeviceData deviceData,
             DebuggerDetector debuggerDetector)
@@ -26,7 +27,7 @@ class DeviceMetadataReader implements DeviceMetadataSource
                 new SettingsContainer(
                 { null },
                 validator,
-                [:],
+                userSettingsValue,
                 deviceData,
                 debuggerDetector);
         this.deviceData = deviceData
