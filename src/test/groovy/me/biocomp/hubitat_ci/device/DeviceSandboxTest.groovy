@@ -1,9 +1,8 @@
-package me.biocomp.hubitat_ci.app
+package me.biocomp.hubitat_ci.device
 
-import me.biocomp.hubitat_ci.api.app_api.AppExecutor
+import me.biocomp.hubitat_ci.api.device_api.DeviceExecutor
 import me.biocomp.hubitat_ci.api.common_api.Log
-import me.biocomp.hubitat_ci.app.HubitatAppSandbox
-import me.biocomp.hubitat_ci.validation.Flags
+import me.biocomp.hubitat_ci.device.HubitatDeviceSandbox
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -116,14 +115,14 @@ import spock.lang.Unroll
     org.json.JSONObject.Null
  */
 
-class AppSandboxTest extends Specification {
-    List<Tuple2<String, String>> makeScriptVariations(List<Tuple2<String, String>> expressionsAndResults)
-    {
+class DeviceSandboxTest extends Specification {
+    List<Tuple2<String, String>> makeScriptVariations(List<Tuple2<String, String>> expressionsAndResults) {
         def result = []
         expressionsAndResults.each({
             result << new Tuple(it.get(0), it.get(1))
             result << new Tuple("""
-def foo() {
+def foo()
+{
     ${it.get(0)}
 }
 """, it.get(1))
@@ -133,7 +132,7 @@ def foo() {
     @Unroll
     def "Expression \"#script\" is not allowed and should fail to compile"(String script, String expectedErrorPart) {
         when:
-            def sandbox = new HubitatAppSandbox(script)
+            def sandbox = new HubitatDeviceSandbox(script)
 
             // Not running the script, compilation should still fail.
             sandbox.compile()
@@ -161,10 +160,10 @@ def foo() {
                     new Tuple("sleep 10", "sleep"),
             ])
     }
-             
+
     def "#description not allowed and should fail to compile"() {
         when:
-            new HubitatAppSandbox(script).compile()
+            new HubitatDeviceSandbox(script).compile()
 
         then:
             MultipleCompilationErrorsException ex = thrown()
@@ -180,10 +179,10 @@ def foo() {
     def "Local variable with no 'def' or type is not confused with property"() {
         given:
             def log = Mock(Log)
-            def api = Mock(AppExecutor)
+            def api = Mock(DeviceExecutor)
 
         when:
-            def script = new HubitatAppSandbox("""
+            def script = new HubitatDeviceSandbox("""
 int loginCheck() {
     return 42
 }
@@ -200,7 +199,7 @@ def foo() {
     }
 
     private def makeScriptForPrivateCheck(def fileOrText) {
-        return new HubitatAppSandbox(fileOrText).compile(
+        return new HubitatDeviceSandbox(fileOrText).compile(
                 noValidation: true,
                 customizeScriptBeforeRun: { script ->
                     script.getMetaClass().myPrivateMethod1 = { -> "was overridden1!" }
@@ -230,34 +229,5 @@ def foo() {
 
         expect:
             verifyMethodsWereOverridden(script)
-    }
-
-    def "subscribe() will fail validation for non-existing attribute"() {
-        setup:
-            final def script = """
-preferences {
-    page(name:"mainPage", title:"Settings", install: true, uninstall: true) {
-        section() {
-            input (name:"thermostat", type: "capability.thermostat", title: "Thermostat", required: true, multiple: false)
-        }
-    }
-}
-
-def installed() {
-    initialize()
-}
-
-def initialize() {
-    subscribe(thermostat, "badAttributeName", realCoolingSetpointHandler)
-}
-
-def realCoolingSetpointHandler(evt) {}
-"""
-        when:
-            new HubitatAppSandbox(script).run(validationFlags: [Flags.DontValidateDefinition]).installed()
-
-        then:
-            AssertionError e = thrown()
-            e.message.contains("'Thermostat' does not contain attribute 'badAttributeName'. Valid attributes are: [")
     }
 }
