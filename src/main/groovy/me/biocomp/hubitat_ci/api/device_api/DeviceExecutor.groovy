@@ -4,151 +4,6 @@ import me.biocomp.hubitat_ci.api.common_api.*
 import me.biocomp.hubitat_ci.api.device_api.zigbee.Zigbee
 import me.biocomp.hubitat_ci.api.device_api.zwave.Zwave
 
-/**
- * Real methods:
- * # All derived from BaseExecutor skipped #
- *
- * Meta/Common:
- * public java.lang.String com.hubitat.hub.executor.DeviceExecutor.toString(),
- *
- * Main methods:
- * ++ public com.hubitat.app_api.ChildDeviceWrapper com.hubitat.hub.executor.DeviceExecutor.addChildDevice(java.lang.String,
- * java.lang.String),
- * ++ public com.hubitat.app_api.ChildDeviceWrapper com.hubitat.hub.executor.DeviceExecutor.addChildDevice(java.lang.String,java.lang.String,java.lang.String),
- * ++ public com.hubitat.app_api.ChildDeviceWrapper com.hubitat.hub.executor.DeviceExecutor.addChildDevice(java.lang.String,java.lang.String,java.util.Map),
- * ++ public com.hubitat.app_api.ChildDeviceWrapper com.hubitat.hub.executor.DeviceExecutor.addChildDevice(java.lang.String,java.lang.String,java.lang.String,java.util.Map),
- *
- * ++ public static java.util.Map com.hubitat.hub.executor.DeviceExecutor.createEvent(java.util.Map),
- * ++ public java.util.List com.hubitat.hub.executor.DeviceExecutor.delayBetween(java.util.List),
- * ++ public java.util.List com.hubitat.hub.executor.DeviceExecutor.delayBetween(java.util.List,java.lang.Long),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.deleteChildDevice(java.lang.String),
- * public static boolean com.hubitat.hub.executor.DeviceExecutor.displayed(java.lang.String,boolean),
- * public void com.hubitat.hub.executor.DeviceExecutor.eventStreamClose(),
- * public void com.hubitat.hub.executor.DeviceExecutor.eventStreamConnect(java.lang.String,java.lang.String),
- * ++ public java.util.List com.hubitat.hub.executor.DeviceExecutor.eventsSince(java.util.Date),
- * ++ public java.util.List com.hubitat.hub.executor.DeviceExecutor.eventsSince(java.util.Date,java.util.Map),
- * public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.getAttributes(),
- * public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.getCapabilities(),
- * ++ public com.hubitat.app_api.ChildDeviceWrapper com.hubitat.hub.executor.DeviceExecutor.getChildDevice(java.lang
- * .String),
- * ++ public java.util.List com.hubitat.hub.executor.DeviceExecutor.getChildDevices(),
- * public com.hubitat.hub.controller.ChromeCast com.hubitat.hub.executor.DeviceExecutor.getChromeCast(),
- * public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.getCommands(),
- * ++ public java.lang.String com.hubitat.hub.executor.DeviceExecutor.getDataValue(java.lang.String),
- * public java.util.Map com.hubitat.hub.executor.DeviceExecutor.getDefinitionData(),
- * ++ public com.hubitat.app_api.DeviceWrapper com.hubitat.hub.executor.DeviceExecutor.getDevice(),
- * public com.hubitat.app_api.DeviceWrapper com.hubitat.hub.executor.DeviceExecutor.getDeviceById(java.lang.Long),
- * ++ public java.lang.String com.hubitat.hub.executor.DeviceExecutor.getDeviceDataByName(java.lang.String),
- * public static java.lang.String com.hubitat.hub.executor.DeviceExecutor.getEXECUTOR_TYPE(),
- * public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.getFingerprints(),
- * public static java.lang.String com.hubitat.hub.executor.DeviceExecutor.getLinkText(com.hubitat.app_api.DeviceWrapper),
- * ++ public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.getParent(),
- * public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.getPreferences(),
- * ++ public java.util.Map com.hubitat.hub.executor.DeviceExecutor.getCurrentState(),
- * public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.getTiles(),
- * ++ public com.hubitat.zigbee.Zigbee com.hubitat.hub.executor.DeviceExecutor.getZigbee(),
- * ++ public hubitat.zwave.Zwave com.hubitat.hub.executor.DeviceExecutor.getZwave(),
- * public static java.lang.Short com.hubitat.hub.executor.DeviceExecutor.getZwaveHubNodeId(),
- * public void com.hubitat.hub.executor.DeviceExecutor.graphTile(java.util.Map),
- * public java.lang.Long com.hubitat.hub.executor.DeviceExecutor.hexStrToSignedInt(java.lang.String),
- * public java.lang.Long com.hubitat.hub.executor.DeviceExecutor.hexStrToUnsignedInt(java.lang.String),
- * public void com.hubitat.hub.executor.DeviceExecutor.image(java.util.Map),
- * public java.lang.String com.hubitat.hub.executor.DeviceExecutor.intToHexStr(java.lang.Long),
- * public java.lang.String com.hubitat.hub.executor.DeviceExecutor.intToHexStr(java.lang.Long,java.lang.Integer),
- * public boolean com.hubitat.hub.executor.DeviceExecutor.isStateChange(com.hubitat.app_api.DeviceWrapper,java.lang.String,java.lang.String),
- * public boolean com.hubitat.hub.executor.DeviceExecutor.isSystemTypeOrHubDeveloper(),
- * ++ public static hubitat.device.HubAction com.hubitat.hub.executor.DeviceExecutor.response(hubitat.zwave.Command),
- * ++ public static hubitat.device.HubAction com.hubitat.hub.executor.DeviceExecutor.response(java.lang.String),
- * ++ public static hubitat.device.HubMultiAction com.hubitat.hub.executor.DeviceExecutor.response(java.util.List),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.sendEvent(java.util.Map),
- * public void com.hubitat.hub.executor.DeviceExecutor.simulator(groovy.lang.Closure),
- * ++ public java.util.Map com.hubitat.hub.executor.DeviceExecutor.stringToMap(java.lang.String),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.telnetClose(),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.telnetConnect(java.lang.String,int,java.lang.String,java.lang.String),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.telnetConnect(java.util.Map,java.lang.String,int,java.lang.String,java.lang.String),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.updateDataValue(java.lang.String,java.lang.String),
- *
- *
- * Methods for metadata definition:
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.metadata(groovy.lang.Closure),
- *
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.tiles(groovy.lang.Closure),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.tiles(java.util.Map,groovy.lang.Closure),
- *
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.main(java.lang.String),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.main(java.util.List),
- *
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.standardTile(java.lang.String,java.lang.String),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.standardTile(java.lang.String,java.lang.String,groovy.lang
- * .Closure),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.standardTile(java.util.Map,java.lang.String,java.lang.String),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.standardTile(java.util.Map,java.lang.String,java.lang.String,
- * groovy.lang.Closure),
- *
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.valueTile(java.lang.String,java.lang.String),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.valueTile(java.lang.String,java.lang.String,groovy.lang
- * .Closure),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.valueTile(java.util.Map,java.lang.String,java.lang.String),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.valueTile(java.util.Map,java.lang.String,java.lang.String,
- * groovy.lang.Closure)
- *
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.controlTile(java.util.Map,java.lang.String,java.lang.String,
- * java.lang.String,groovy.lang.Closure),
- *
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.multiAttributeTile(java.util.Map,groovy.lang.Closure),
- *
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.tileAttribute(java.lang.String),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.tileAttribute(java.lang.String,groovy.lang.Closure),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.tileAttribute(java.util.Map,java.lang.String),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.tileAttribute(java.util.Map,java.lang.String,groovy.lang.Closure),
- *
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.state(java.util.Map),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.state(java.util.Map,java.lang.String),
- *
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.attributeState(java.util.Map),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.attributeState(java.util.Map,java.lang.String),
- *
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.preferences(groovy.lang.Closure),
- *
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.capability(java.lang.String),
- *
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.command(java.lang.String),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.command(java.lang.String,java.util.List),
- *
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.attribute(java.lang.String,java.lang.String),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.attribute(java.lang.String,java.lang.String,java.util.List),
- *
- *
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.definition(java.util.Map,groovy.lang.Closure),
- *
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.fingerprint(java.util.Map),
- *
- * ++ public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.input(java.util.Map),
- * ++ public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.input(java.lang.String,java.lang.String),
- * ++ public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.input(java.util.Map,java.lang.String,java.lang
- * .String),
- *
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.details(java.lang.String[]),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.details(java.lang.String),
- * ++ public void com.hubitat.hub.executor.DeviceExecutor.details(java.util.List),
- *
- * ++ public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.section(groovy.lang.Closure),
- * ++ public java.lang.Object com.hubitat.hub.executor.DeviceExecutor.section(java.lang.String,groovy.lang.Closure),
- *
- * Setters:
- * public void com.hubitat.hub.executor.DeviceExecutor.setAttributes(java.lang.Object),
- * public void com.hubitat.hub.executor.DeviceExecutor.setCapabilities(java.lang.Object),
- * public void com.hubitat.hub.executor.DeviceExecutor.setChromeCast(com.hubitat.hub.controller.ChromeCast),
- * public void com.hubitat.hub.executor.DeviceExecutor.setCommands(java.lang.Object),
- * public void com.hubitat.hub.executor.DeviceExecutor.setDefinitionData(java.util.Map),
- * public void com.hubitat.hub.executor.DeviceExecutor.setDevice(com.hubitat.app_api.DeviceWrapper),
- * public void com.hubitat.hub.executor.DeviceExecutor.setFingerprints(java.lang.Object),
- * public void com.hubitat.hub.executor.DeviceExecutor.setPreferences(java.lang.Object),
- * public void com.hubitat.hub.executor.DeviceExecutor.setTiles(java.lang.Object),
- * public void com.hubitat.hub.executor.DeviceExecutor.setZigbee(com.hubitat.zigbee.Zigbee),
- * public void com.hubitat.hub.executor.DeviceExecutor.setZwave(hubitat.zwave.Zwave),
- * */
-
 interface DeviceTileAttribute {
     /**
      * Same as state() above for multi-attribute tiles.
@@ -505,6 +360,10 @@ trait DeviceExecutor implements
 
     abstract String getDeviceDataByName(String name)
 
+    abstract DeviceWrapper getDeviceByDNI(String dni)
+
+    abstract DeviceWrapper getDeviceByZigbeeId(String zigbeeId)
+
     abstract HubAction response(String cmd)
 
     abstract HubAction response(zwave.Command cmd)
@@ -542,5 +401,10 @@ trait DeviceExecutor implements
     abstract ChildDeviceWrapper getChildDevice(String deviceNetworkId)
 
     abstract List<ChildDeviceWrapper> getChildDevices()
+
+    abstract InterfaceHelper getInterfaces()
+    abstract def getLanFingerprints()
+    abstract void lanFingerprint(Map options)
+    abstract void setLanFingerprints(def fingerprints)
 }
 

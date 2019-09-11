@@ -180,6 +180,10 @@ class ValidatorBase {
     private final EnumSet<Flags> flags
 
     private void restrictScript(CompilerConfiguration options) {
+        if(hasFlag(Flags.DontRestrictGroovy)) {
+            return
+        }
+
         def scz = new SecureASTCustomizer()
 
         def privateForbiddenExpressions = this.forbiddenExpressions
