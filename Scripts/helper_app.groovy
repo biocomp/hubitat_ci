@@ -15,7 +15,7 @@ preferences() {
 
 private def update()
 {
-    dumpClass(this.class)
+    dumpClass(this.class) // Your class here
 }
 
 def installed()

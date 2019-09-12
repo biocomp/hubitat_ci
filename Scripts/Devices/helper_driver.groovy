@@ -6,7 +6,7 @@ metadata {
 }
 
 void on() {
-    dumpClass()
+    dumpClass(this.class) // Your class here
 }
 
 void off() {}

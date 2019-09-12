@@ -1,5 +1,4 @@
 Platform version: 2.1.4.130
-Platform version: 2.1.4.130
 
 class com.hubitat.app.ChildDeviceWrapper:
 Methods:[
