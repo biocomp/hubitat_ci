@@ -1,160 +1,10 @@
-package me.biocomp.hubitat_ci.api.app_api;
-
-/*
-Methods from reflected real code:
-Methods:
- * # All derived from BaseExecutor skipped #
-
-Meta/Common:
-
-Main methods/getters:
-++ public com.hubitat.app_api.InstalledAppWrapper com.hubitat.hub.executor.AppExecutor.addChildApp(java.lang.String,java
-.lang.String,java.lang.String),
-++ public com.hubitat.app_api.InstalledAppWrapper com.hubitat.hub.executor.AppExecutor.addChildApp(java.lang.String,java
-.lang.String,java.lang.String,java.util.Map),
-++ public com.hubitat.app_api.ChildDeviceWrapper com.hubitat.hub.executor.AppExecutor.addChildDevice(java.lang.String,java
-.lang.String,java.lang.String),
-++ public com.hubitat.app_api.ChildDeviceWrapper com.hubitat.hub.executor.AppExecutor.addChildDevice(java.lang.String,java
-.lang.String,java.lang.String,java.lang.Long),
-++ public com.hubitat.app_api.ChildDeviceWrapper com.hubitat.hub.executor.AppExecutor.addChildDevice(java.lang.String,java
-.lang.String,java.lang.String,java.lang.Long,java.util.Map),
-++ public static java.lang.String com.hubitat.hub.executor.AppExecutor.apiServerUrl(java.lang.String),
-public java.lang.Object com.hubitat.hub.executor.AppExecutor.app_api(java.util.Map),
-public java.lang.Object com.hubitat.hub.executor.AppExecutor.app_api(java.lang.String,java.lang.String,java.lang.String),
-public java.lang.Object com.hubitat.hub.executor.AppExecutor.app_api(java.util.Map,java.lang.String,java.lang.String,java.lang.String),
-public java.lang.Object com.hubitat.hub.executor.AppExecutor.appSetting(java.lang.String),
-++ public java.lang.String com.hubitat.hub.executor.AppExecutor.createAccessToken(),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.definition(java.util.Map),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.definition(java.util.Map,groovy.lang.Closure),
-++ public void com.hubitat.hub.executor.AppExecutor.deleteChildApp(java.lang.Long),
-++ public void com.hubitat.hub.executor.AppExecutor.deleteChildDevice(java.lang.String),
-++ public java.util.Map com.hubitat.hub.executor.AppExecutor.dynamicPage(java.util.Map,groovy.lang.Closure),
-++ public java.lang.String com.hubitat.hub.executor.AppExecutor.fullApiServerUrl(java.lang.String),
-++ public java.lang.String com.hubitat.hub.executor.AppExecutor.fullLocalApiServerUrl(java.lang.String),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.getAllChildApps(),
-++ public java.util.List com.hubitat.hub.executor.AppExecutor.getAllChildDevices(),
-public java.util.List com.hubitat.hub.executor.AppExecutor.getAllDeviceIds(),
-public com.hubitat.app_api.DeviceWrapperList com.hubitat.hub.executor.AppExecutor.getAllDevicesByCapability(java.lang.String),
-++ public static java.lang.String com.hubitat.hub.executor.AppExecutor.getApiServerUrl(),
-++public com.hubitat.app_api.InstalledAppWrapper com.hubitat.hub.executor.AppExecutor.getApp(),
-public java.lang.Object com.hubitat.hub.executor.AppExecutor.getAppMappings(),
-public com.hubitat.hub.domain.AppType com.hubitat.hub.executor.AppExecutor.getAppType(),
-public java.lang.String com.hubitat.hub.executor.AppExecutor.getAppTypeType(),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.getChildAppById(java.lang.Long),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.getChildAppByLabel(java.lang.String),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.getChildApps(),
-++ public com.hubitat.app_api.ChildDeviceWrapper com.hubitat.hub.executor.AppExecutor.getChildDevice(java.lang.String),
-public java.util.List com.hubitat.hub.executor.AppExecutor.getChildDevices(),
-public java.util.Map com.hubitat.hub.executor.AppExecutor.getCurrentPage(),
-public java.util.Map com.hubitat.hub.executor.AppExecutor.getCurrentSection(),
-public java.util.Map com.hubitat.hub.executor.AppExecutor.getDashboard(),
-public java.util.List com.hubitat.hub.executor.AppExecutor.getDashboardEventsMap(java.util.List,java.lang.Integer),
-public com.hubitat.app_api.DeviceWrapper com.hubitat.hub.executor.AppExecutor.getDeviceById(java.lang.Long),
-public static java.lang.String com.hubitat.hub.executor.AppExecutor.getEXECUTOR_TYPE(),
-++ public java.lang.String com.hubitat.hub.executor.AppExecutor.getFullApiServerUrl(),
-++ public java.lang.String com.hubitat.hub.executor.AppExecutor.getFullLocalApiServerUrl(),
-++ public static java.lang.String com.hubitat.hub.executor.AppExecutor.getHubUID(),
-public java.util.List com.hubitat.hub.executor.AppExecutor.getInstalledCapabilities(),
-++ public static java.lang.String com.hubitat.hub.executor.AppExecutor.getLocalApiServerUrl(),
-++ public java.util.List com.hubitat.hub.executor.AppExecutor.getLocationEventsSince(java.lang.String,java.util.Date),
-++ public java.util.List com.hubitat.hub.executor.AppExecutor.getLocationEventsSince(java.lang.String,java.util.Date,
-java.util.Map),
-public java.util.List com.hubitat.hub.executor.AppExecutor.getPages(),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.getParent(),
-public java.util.Map com.hubitat.hub.executor.AppExecutor.getPreferences(),
-++ public java.util.Map com.hubitat.hub.executor.AppExecutor.getCurrentState(),
-++ public com.hubitat.app_api.DeviceWrapper com.hubitat.hub.executor.AppExecutor.getSubscribedDeviceById(java.lang.Long),
-++ public java.util.Map com.hubitat.hub.executor.AppExecutor.getSunriseAndSunset(),
-++ public java.util.Map com.hubitat.hub.executor.AppExecutor.getSunriseAndSunset(java.util.Map),
-public java.util.List com.hubitat.hub.executor.AppExecutor.getThirdPartyHubIPList(),
-
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.href(java.lang.String),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.href(java.util.Map),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.href(java.util.Map,java.lang.String),
-
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.input(java.util.Map),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.input(java.lang.String,java.lang.String),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.input(java.util.Map,java.lang.String,java.lang.String),
-
-public boolean com.hubitat.hub.executor.AppExecutor.isAppInstalled(java.lang.String,java.lang.String),
-public boolean com.hubitat.hub.executor.AppExecutor.isAppInstalled(java.lang.String,java.lang.String,java.lang.String),
-public boolean com.hubitat.hub.executor.AppExecutor.isSystemTypeOrHubDeveloper(),
-
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.label(java.util.Map),
-
-++ public static java.lang.String com.hubitat.hub.executor.AppExecutor.localApiServerUrl(java.lang.String),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.mappings(groovy.lang.Closure),
-public void com.hubitat.hub.executor.AppExecutor.metadata(groovy.lang.Closure),
-
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.mode(java.util.Map),
-
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.page(java.util.Map),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.page(java.util.Map,groovy.lang.Closure),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.page(java.lang.String,java.lang.String,groovy.lang.Closure),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.page(java.util.Map,java.lang.String,java.lang.String,groovy.lang.Closure),
-
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.paragraph(java.lang.String),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.paragraph(java.util.Map,java.lang.String),
-
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.path(java.lang.String,groovy.lang.Closure),
-
-++ public void com.hubitat.hub.executor.AppExecutor.pause(java.lang.Long),
-
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.preferences(groovy.lang.Closure),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.preferences(java.util.Map,groovy.lang.Closure),
-
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.render(),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.render(java.util.Map),
-public void com.hubitat.hub.executor.AppExecutor.saveState(),
-
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.section(groovy.lang.Closure),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.section(java.lang.String,groovy.lang.Closure),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.section(java.util.Map,groovy.lang.Closure),
-++ public java.lang.Object com.hubitat.hub.executor.AppExecutor.section(java.util.Map,java.lang.String,groovy.lang.Closure),
-
-++ public void com.hubitat.hub.executor.AppExecutor.sendEvent(java.util.Map),
-++ public static void com.hubitat.hub.executor.AppExecutor.sendEvent(com.hubitat.app_api.DeviceWrapper,java.util.Map),
-++ public static void com.hubitat.hub.executor.AppExecutor.sendEvent(java.lang.String,java.util.Map),
-++ public void com.hubitat.hub.executor.AppExecutor.sendSms(java.lang.String,java.lang.String),
-++ public void com.hubitat.hub.executor.AppExecutor.sendSmsMessage(java.lang.String,java.lang.String),
-
-++ public void com.hubitat.hub.executor.AppExecutor.subscribe(java.lang.Object,java.lang.Object),
-++ public void com.hubitat.hub.executor.AppExecutor.subscribe(java.lang.Object,java.lang.String,java.lang.Object),
-++ public void com.hubitat.hub.executor.AppExecutor.subscribe(java.lang.Object,java.lang.String,java.lang.Object,java
-.util.Map),
-
-++ public static java.lang.Long com.hubitat.hub.executor.AppExecutor.timeOffset(java.lang.Number),
-++ public static java.lang.Long com.hubitat.hub.executor.AppExecutor.timeOffset(java.lang.String),
-++ public static java.util.Date com.hubitat.hub.executor.AppExecutor.timeTodayAfter(java.lang.String,java.lang.String),
-++ public static java.util.Date com.hubitat.hub.executor.AppExecutor.timeTodayAfter(java.lang.String,java.lang.String,
-java.util.TimeZone),
-
-++ public void com.hubitat.hub.executor.AppExecutor.unsubscribe(),
-++ public void com.hubitat.hub.executor.AppExecutor.unsubscribe(com.hubitat.app_api.DeviceWrapper),
-++ public void com.hubitat.hub.executor.AppExecutor.unsubscribe(java.util.List)
-
-
-Setters:
-public void com.hubitat.hub.executor.AppExecutor.setApp(com.hubitat.app_api.InstalledAppWrapper),
-public void com.hubitat.hub.executor.AppExecutor.setAppMappings(java.lang.Object),
-public void com.hubitat.hub.executor.AppExecutor.setAppType(com.hubitat.hub.domain.AppType),
-public void com.hubitat.hub.executor.AppExecutor.setAppTypeType(java.lang.String),
-public void com.hubitat.hub.executor.AppExecutor.setChildApps(java.util.List),
-public void com.hubitat.hub.executor.AppExecutor.setCurrentPage(java.util.Map),
-public void com.hubitat.hub.executor.AppExecutor.setCurrentSection(java.util.Map),
-public void com.hubitat.hub.executor.AppExecutor.setLocationMode(java.lang.String),
-public void com.hubitat.hub.executor.AppExecutor.setPages(java.util.List),
-public void com.hubitat.hub.executor.AppExecutor.setPreferences(java.util.Map),
-public void com.hubitat.hub.executor.AppExecutor.setState(java.util.Map),
-public void com.hubitat.hub.executor.AppExecutor.setThirdPartyHubIPList(java.util.List),
-*/
+package me.biocomp.hubitat_ci.api.app_api
 
 import me.biocomp.hubitat_ci.api.common_api.BaseExecutor
 import me.biocomp.hubitat_ci.api.common_api.ChildDeviceWrapper
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
 import me.biocomp.hubitat_ci.api.common_api.InstalledAppWrapper
-;
-
+import me.biocomp.hubitat_ci.api.common_api.Location
 
 /**
  * Most of operations available inside an App.
@@ -263,27 +113,6 @@ interface AppExecutor extends
     abstract List getAllChildDevices()
 
     abstract String getApiServerUrl()
-//
-//    ColorUtilities getColorUtil() {
-//        return null;
-//    }
-
-
-    /**
-     * @param supported options:
-     *                  (not supported in Hubitat?) zipCode (String) - the zip code to use for determining the times.
-     *                  If not specified then the coordinates of the Hub location are used.
-     *                  (not supported in Hubitat?) locationString (Srtring) - any location string supported by the Weather Underground APIs.
-     *                  If not specified then the coordinates of the Hub Location are used
-     *                  sunriseOffset (String) - adjust the sunrise time by this amount.
-     *                  See timeOffset() for supported formats
-     *                  sunsetOffset (String) - adjust the sunset time by this amount.
-     *                  See timeOffset() for supported formats
-     * @return Map with String keys and Date values: [sunrise: Date, sunset: Date]
-     */
-    abstract Map getSunriseAndSunset(Map options)
-
-    abstract Map getSunriseAndSunset()
 
     abstract void pauseExecution(Long millisecs)
     /**
@@ -362,21 +191,6 @@ interface AppExecutor extends
      * @return configuration settings for the app_api.
      */
     abstract Map getSettings()
-
-
-    /**
-     * @param minutes
-     * @return milliseconds in given minutes
-     */
-    abstract Long timeOffset(Number minutes)
-
-    /**
-     * @param hoursAndMinutesString - A string in the format of "hh:mm" to get the offset in milliseconds for.
-     *                              Negative offsets are specified by prefixing the string with a minus sign ("-02:30").
-     * @return milliseconds in given hours + minutes
-     */
-    abstract Long timeOffset(String hoursAndMinutesString)
-
 
     abstract String fullApiServerUrl(String base)
 
@@ -460,20 +274,19 @@ interface AppExecutor extends
 
     abstract void pause(Long milliseconds)
 
-    /**
-     * Returns a Date of the next occurrence of the time specified in the input, relative to a reference time.
-     *
-     * @param referenceTime. Can be an ISO-8601 date string as returned from time input preferences,
-     *                       or a simple time string in "hh:mm" format ("21:34").
-     * @param timeString     - The time string whose next occurrence is queried.
-     *                       Can be an ISO-8601 date string as returned from time input preferences
-     *                       , or a simple time string in "hh:mm" format ("21:34").
-     * @param timeZone       for date calculations. Please provide it.
-     * @return
-     */
-    abstract Date timeTodayAfter(String referenceTime, String timeString, TimeZone timeZone)
-
-    abstract Date timeTodayAfter(String referenceTime, String timeString)
-
     abstract InstalledAppWrapper getApp()
+
+    abstract void unsubscribe(InstalledAppWrapper appWrapper)
+    abstract void unsubscribe(Location location)
+    abstract void unsubscribe(String handlerMethod)
+    abstract void unsubscribe(List<DeviceWrapper> listOfDevices)
+    abstract void unsubscribe(DeviceWrapper device, String attributeName)
+    abstract void unsubscribe(Location location, String attributeName)
+    abstract void unsubscribe(List<DeviceWrapper> devices, String attributeName)
+    abstract void unsubscribe(DeviceWrapper decice, String attributeName, String handlerMethod)
+    abstract void unsubscribe(List<DeviceWrapper> devices, String attributeName, String handlerMethod)
+
+    abstract Long cloneChildApp(Long a, String unknown);
+    abstract Long cloneChildApp(Long a, String unknown, Map options)
+    abstract def component(Map options)
 };

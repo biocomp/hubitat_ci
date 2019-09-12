@@ -15,6 +15,12 @@ enum Flags
      */
     DontRunScript,
 
+    /**
+     * Allow calls and expressions like pritln, class and so on.
+     * See list of forbidden expressions here: https://docs.smartthings.com/en/latest/getting-started/groovy-for-smartthings.html.
+     */
+    DontRestrictGroovy,
+
     AllowNullListOptions,
     /**
      * Allow required properties (such as page(title: "")) to be empty strings.

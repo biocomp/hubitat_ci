@@ -3,179 +3,6 @@ package me.biocomp.hubitat_ci.api.common_api
 
 import groovy.util.slurpersupport.GPathResult
 
-/*
- Methods from real class:
- Meta/Common methods:
- * -- public void com.hubitat.hub.executor.BaseExecutor.setMetaClass(groovy.lang.MetaClass),
- * -- public void com.hubitat.hub.executor.BaseExecutor.setProperty(java.lang.String,java.lang.Object),
- * public groovy.lang.MetaClass com.hubitat.hub.executor.BaseExecutor.getMetaClass(),
- * public java.lang.Object com.hubitat.hub.executor.BaseExecutor.getProperty(java.lang.String),
- * public java.lang.Object com.hubitat.hub.executor.BaseExecutor.invokeMethod(java.lang.String,java.lang.Object),
-
- Main/Getter methods:
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpDelete(groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpDelete(java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpDelete(groovy.lang.MetaMethod,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpDelete(java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpDelete(groovy.lang.MetaMethod,java.util.Map,java.util
- * .Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpDelete(java.lang.String,java.util.Map,java.util.Map),
- *
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpGet(groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpGet(java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpGet(groovy.lang.MetaMethod,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpGet(java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpGet(groovy.lang.MetaMethod,java.util.Map,java.util
- * .Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpGet(java.lang.String,java.util.Map,java.util.Map),
- *
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpHead(java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpHead(java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpHead(java.lang.String,java.util.Map,java.util.Map),
- *
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPatch(groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPatch(java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPatch(groovy.lang.MetaMethod,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPatch(java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPatch(groovy.lang.MetaMethod,java.util.Map,java.util
- * .Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPatch(java.lang.String,java.util.Map,java.util.Map),
- *
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPost(groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPost(java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPost(groovy.lang.MetaMethod,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPost(java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPost(groovy.lang.MetaMethod,java.util.Map,java.util
- * .Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPost(java.lang.String,java.util.Map,java.util.Map),
- *
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPut(groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPut(java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPut(groovy.lang.MetaMethod,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPut(java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPut(groovy.lang.MetaMethod,java.util.Map,java.util
- * .Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.asynchttpPut(java.lang.String,java.util.Map,java.util.Map),
- *
- * ++ public static java.math.BigDecimal com.hubitat.hub.executor.BaseExecutor.celsiusToFahrenheit(java.math
- * .BigDecimal),
- * ++ public java.lang.String com.hubitat.hub.executor.BaseExecutor.convertTemperatureIfNeeded(java.math.BigDecimal,
- * java.lang.String,java.lang.Integer),
- * ++ public static java.lang.String com.hubitat.hub.executor.BaseExecutor.decrypt(java.lang.String),
- * ++ public static java.lang.String com.hubitat.hub.executor.BaseExecutor.encrypt(java.lang.String),
- * ++ public static java.math.BigDecimal com.hubitat.hub.executor.BaseExecutor.fahrenheitToCelsius(java.math
- * .BigDecimal),
- * public static java.lang.String com.hubitat.hub.executor.BaseExecutor.getJWTtoken(java.lang.String,java.lang.String),
- * public static java.lang.String com.hubitat.hub.executor.BaseExecutor.getJWTtoken(java.lang.String,java.lang.String,java.lang.String),
- * ++ public com.hubitat.hub.domain.Location com.hubitat.hub.executor.BaseExecutor.getLocation(),
- *
- * public void com.hubitat.hub.executor.BaseExecutor.createLocationVariable(java.lang.String),
- * public void com.hubitat.hub.executor.BaseExecutor.createLocationVariable(java.lang.String,java.util.List),
- * public void com.hubitat.hub.executor.BaseExecutor.createLocationVariable(java.lang.String,java.util.List,boolean),
- * public java.util.List com.hubitat.hub.executor.BaseExecutor.getLocationVariableNames(),
- * public java.util.List com.hubitat.hub.executor.BaseExecutor.getLocationVariableValues(java.lang.String),
- * public void com.hubitat.hub.executor.BaseExecutor.removeLocationVariable(java.lang.String),
- *
- * public com.hubitat.hub.executor.BaseExecutor$Log com.hubitat.hub.executor.BaseExecutor.getLog(),
- * ++ public static java.lang.String com.hubitat.hub.executor.BaseExecutor.getMACFromIP(java.lang.String),
- * public static java.lang.Object com.hubitat.hub.executor.BaseExecutor.getTTSVoices(),
- * ++ public java.lang.String com.hubitat.hub.executor.BaseExecutor.getTemperatureScale(),
- * ++ public static void com.hubitat.hub.executor.BaseExecutor.httpDelete(java.util.Map,groovy.lang.Closure),
- * ++ public static java.lang.Object com.hubitat.hub.executor.BaseExecutor.httpGet(java.lang.String,groovy.lang
- * .Closure),
- * ++ public static java.lang.Object com.hubitat.hub.executor.BaseExecutor.httpGet(java.util.Map,groovy.lang.Closure),
- * ++ public static void com.hubitat.hub.executor.BaseExecutor.httpPost(java.util.Map,groovy.lang.Closure),
- * ++ public static void com.hubitat.hub.executor.BaseExecutor.httpPost(java.lang.String,java.lang.String,groovy.lang.Closure),
- * ++ public static void com.hubitat.hub.executor.BaseExecutor.httpPostJson(java.util.Map,groovy.lang.Closure),
- * ++ public static void com.hubitat.hub.executor.BaseExecutor.httpPostJson(java.lang.String,java.lang.String,groovy.lang.Closure),
- * ++ public static void com.hubitat.hub.executor.BaseExecutor.httpPostJson(java.lang.String,java.util.Map,groovy.lang.Closure),
- * ++ public static void com.hubitat.hub.executor.BaseExecutor.httpPut(java.util.Map,groovy.lang.Closure),
- * ++ public static void com.hubitat.hub.executor.BaseExecutor.httpPut(java.lang.String,java.lang.String,groovy.lang.Closure),
- * ++ public static void com.hubitat.hub.executor.BaseExecutor.httpPutJson(java.util.Map,groovy.lang.Closure),
- * ++ public static void com.hubitat.hub.executor.BaseExecutor.httpPutJson(java.lang.String,java.lang.String,groovy.lang.Closure),
- * ++ public static void com.hubitat.hub.executor.BaseExecutor.httpPutJson(java.lang.String,java.util.Map,groovy.lang.Closure),
- * ++ public static long com.hubitat.hub.executor.BaseExecutor.now(),
- * ++ public static java.lang.Object com.hubitat.hub.executor.BaseExecutor.parseJson(java.lang.String),
- * ++ public static java.util.Map com.hubitat.hub.executor.BaseExecutor.parseLanMessage(java.lang.String),
- * ++ public static groovy.util.slurpersupport.GPathResult com.hubitat.hub.executor.BaseExecutor.parseXML(java.lang
- * .String),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.pauseExecution(java.lang.Long),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery10Minutes(groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery10Minutes(java.lang.String),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery10Minutes(groovy.lang.MetaMethod,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery10Minutes(java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery15Minutes(groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery15Minutes(java.lang.String),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery15Minutes(groovy.lang.MetaMethod,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery15Minutes(java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery1Hour(groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery1Hour(java.lang.String),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery1Hour(groovy.lang.MetaMethod,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery1Hour(java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery1Minute(groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery1Minute(java.lang.String),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery1Minute(groovy.lang.MetaMethod,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery1Minute(java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery30Minutes(groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery30Minutes(java.lang.String),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery30Minutes(groovy.lang.MetaMethod,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery30Minutes(java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery3Hours(groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery3Hours(java.lang.String),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery3Hours(groovy.lang.MetaMethod,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery3Hours(java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery5Minutes(groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery5Minutes(java.lang.String),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery5Minutes(groovy.lang.MetaMethod,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runEvery5Minutes(java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runIn(java.lang.Long,groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runIn(java.lang.Long,java.lang.String),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runIn(java.lang.Long,groovy.lang.MetaMethod,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runIn(java.lang.Long,java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runInMillis(java.lang.Long,groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runInMillis(java.lang.Long,java.lang.String),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runInMillis(java.lang.Long,groovy.lang.MetaMethod,java.util
- * .Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runInMillis(java.lang.Long,java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runOnce(java.lang.String,groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runOnce(java.lang.String,java.lang.String),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runOnce(java.util.Date,groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runOnce(java.util.Date,java.lang.String),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runOnce(java.lang.String,groovy.lang.MetaMethod,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runOnce(java.lang.String,java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runOnce(java.util.Date,groovy.lang.MetaMethod,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.runOnce(java.util.Date,java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.schedule(java.lang.String,groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.schedule(java.lang.String,java.lang.String),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.schedule(java.util.Date,groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.schedule(java.util.Date,java.lang.String),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.schedule(java.lang.String,groovy.lang.MetaMethod,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.schedule(java.lang.String,java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.schedule(java.util.Date,groovy.lang.MetaMethod,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.schedule(java.util.Date,java.lang.String,java.util.Map),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.sendLocationEvent(java.util.Map),
- * public void com.hubitat.hub.executor.BaseExecutor.sendPush(java.lang.String),
- * public void com.hubitat.hub.executor.BaseExecutor.sendPush(java.lang.String,java.lang.String),
- * public void com.hubitat.hub.executor.BaseExecutor.sendPushMessage(java.lang.String),
- * public void com.hubitat.hub.executor.BaseExecutor.sendPushMessage(java.lang.String,java.lang.String),
- * public java.lang.Object com.hubitat.hub.executor.BaseExecutor.setValuesInAsyncResponseAndInvokeCallback(groovyx.net.http.HttpResponseDecorator,java.util.Map,java.lang.String),
- * public java.lang.Object com.hubitat.hub.executor.BaseExecutor.setValuesInAsyncResponseAndInvokeCallback(java.lang.String,java.util.Map,java.lang.String),
- * ++ public static java.lang.Object com.hubitat.hub.executor.BaseExecutor.textToSpeech(java.lang.String),
- * ++ public static java.lang.Object com.hubitat.hub.executor.BaseExecutor.textToSpeech(java.lang.String,java.lang
- * .String),
- * ++ public static boolean com.hubitat.hub.executor.BaseExecutor.timeOfDayIsBetween(java.util.Date,java.util.Date,
- * java.util.Date),
- * ++ public static boolean com.hubitat.hub.executor.BaseExecutor.timeOfDayIsBetween(java.util.Date,java.util.Date,
- * java.util.Date,java.util.TimeZone),
- * ++ public static java.util.Date com.hubitat.hub.executor.BaseExecutor.timeToday(java.lang.String),
- * ++ public static java.util.Date com.hubitat.hub.executor.BaseExecutor.timeToday(java.lang.String,java.util.TimeZone),
- * ++ public static java.util.Date com.hubitat.hub.executor.BaseExecutor.toDateTime(java.lang.String),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.unschedule(),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.unschedule(groovy.lang.MetaMethod),
- * ++ public void com.hubitat.hub.executor.BaseExecutor.unschedule(java.lang.String),
- */
-
-
 /**
  * Methods that can be used inside both App or Driver.
  * */
@@ -197,6 +24,34 @@ interface BaseExecutor extends BaseAsyncHttp, BaseHttp, BaseScheduler
      * @return current Unix time in milliseconds.
      */
     abstract long now()
+    
+    /**
+     * @param minutes
+     * @return milliseconds in given minutes
+     */
+    abstract Long timeOffset(Number minutes)
+
+    /**
+     * @param hoursAndMinutesString - A string in the format of "hh:mm" to get the offset in milliseconds for.
+     *                              Negative offsets are specified by prefixing the string with a minus sign ("-02:30").
+     * @return milliseconds in given hours + minutes
+     */
+    abstract Long timeOffset(String hoursAndMinutesString)
+
+    /**
+     * Returns a Date of the next occurrence of the time specified in the input, relative to a reference time.
+     *
+     * @param referenceTime. Can be an ISO-8601 date string as returned from time input preferences,
+     *                       or a simple time string in "hh:mm" format ("21:34").
+     * @param timeString     - The time string whose next occurrence is queried.
+     *                       Can be an ISO-8601 date string as returned from time input preferences
+     *                       , or a simple time string in "hh:mm" format ("21:34").
+     * @param timeZone       for date calculations. Please provide it.
+     * @return
+     */
+    abstract Date timeTodayAfter(String referenceTime, String timeString, TimeZone timeZone)
+
+    abstract Date timeTodayAfter(String referenceTime, String timeString)
 
     /**
      * return true if value is between start and end
@@ -209,7 +64,22 @@ interface BaseExecutor extends BaseAsyncHttp, BaseHttp, BaseScheduler
 
     abstract BigDecimal fahrenheitToCelsius(BigDecimal val)
 
+        /**
+     * @param supported options:
+     *                  (not supported in Hubitat?) zipCode (String) - the zip code to use for determining the times.
+     *                  If not specified then the coordinates of the Hub location are used.
+     *                  (not supported in Hubitat?) locationString (Srtring) - any location string supported by the Weather Underground APIs.
+     *                  If not specified then the coordinates of the Hub Location are used
+     *                  sunriseOffset (String) - adjust the sunrise time by this amount.
+     *                  See timeOffset() for supported formats
+     *                  sunsetOffset (String) - adjust the sunset time by this amount.
+     *                  See timeOffset() for supported formats
+     * @return Map with String keys and Date values: [sunrise: Date, sunset: Date]
+     */
+    abstract Map getSunriseAndSunset(Map options)
 
+    abstract Map getSunriseAndSunset()
+    
     abstract String getMACFromIP(String ipAddr)
 
     abstract String convertTemperatureIfNeeded(BigDecimal value, String scale, Integer precision)
@@ -268,15 +138,6 @@ interface BaseExecutor extends BaseAsyncHttp, BaseHttp, BaseScheduler
     abstract Date timeToday(String timeString, TimeZone timeZone)
 
     abstract Date timeToday(String timeString)
-
-    // ST has this, but HE does not?
-    // TimeZone timeZone(String timePreferenceString)
-    //abstract List getChildDevices(boolean includeVirtualDevices = false)
-
-    /**
-     * @param map - string of format "key1: value1, key2: value2"
-     */
-    //abstract Map stringToMap(String map)
 }
 
 
