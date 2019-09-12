@@ -34,7 +34,8 @@ class SettingsContainer implements
      * After all the relevant script methods were run, execute this method to (if in strict mode):
 
      * 1. Verify that settings were only read, and not set.
-     * 2. Verify that only settings from 'inputs' param were read.*/
+     * 2. Verify that only settings from 'inputs' param were read.
+     */
     // @CompileStatic (compiler crashes)
     void validateAfterPreferences(String methodName) {
         if (!validator.hasFlag(Flags.AllowReadingNonInputSettings) && this.@preferencesReadingIsDone) {

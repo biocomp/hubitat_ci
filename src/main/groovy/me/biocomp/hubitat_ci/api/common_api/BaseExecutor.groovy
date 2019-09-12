@@ -67,7 +67,7 @@ trait BaseExecutor implements BaseAsyncHttp, BaseScheduler, BaseHttp
 
     abstract BigDecimal fahrenheitToCelsius(BigDecimal val)
 
-        /**
+    /**
      * @param supported options:
      *                  (not supported in Hubitat?) zipCode (String) - the zip code to use for determining the times.
      *                  If not specified then the coordinates of the Hub location are used.

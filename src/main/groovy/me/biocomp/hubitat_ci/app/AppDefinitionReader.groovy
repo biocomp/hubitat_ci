@@ -67,7 +67,7 @@ class AppDefinitionReader implements
             def assertPropertyIsSet = { String name, boolean notEvenEmpty ->
                 assert definitionsMap["${name}"] != null: "definition() call did not provide mandatory property '${name}'. "
                 if (notEvenEmpty) {
-                    assert definitionsMap["${name}"]: "mandatory property '${name}' can't empty in definition() call"
+                    assert definitionsMap["${name}"]: "mandatory property '${name}' can't be empty in definition() call"
                 }
             }
 

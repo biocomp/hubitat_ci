@@ -47,11 +47,9 @@ trait DeviceWrapper {
     /**Get a list of Events between since date.
      @param options. Supported options: max (Number) - events to return (default = 10)
      */
-
     abstract List<Event> eventsSince(Date startDate, Map options = null)
 
     /**Device capabilties*/
-
     abstract List<Capability> getCapabilities()
 
     abstract String getDeviceNetworkId()
@@ -59,15 +57,12 @@ trait DeviceWrapper {
     abstract String getDisplayName()
 
     /**Hub associated with device*/
-
     abstract Hub getHub()
 
     /**Unique system ID*/
-
     abstract String getId()
 
     /**Label set by user*/
-
     abstract String getLabel()
 
     /**
@@ -79,11 +74,9 @@ trait DeviceWrapper {
     /**
      @return Device's status. 'INACTIVE' in case no status was found.
      */
-
     abstract String getStatus()
 
     /**Internal device name.*/
-
     abstract String getName()
 
     abstract List<Attribute> getSupportedAttributes()
@@ -93,7 +86,6 @@ trait DeviceWrapper {
     /**
      @return device's type.
      */
-
     abstract String getTypeName()
 
     abstract boolean hasAttribute(String attributeName)

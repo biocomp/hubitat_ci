@@ -1,6 +1,5 @@
 package me.biocomp.hubitat_ci.device.metadata
 
-
 import groovy.transform.TypeChecked
 import me.biocomp.hubitat_ci.validation.BooleanInputValueFactory
 import me.biocomp.hubitat_ci.validation.DefaultAndUserValues
