@@ -12,9 +12,9 @@ task sourcesJar(type: Jar) {
     from sourceSets.main.allSource
 }
 
-task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc.destinationDir
+task groovydocJar(type: Jar, dependsOn: groovydoc) {
+    classifier 'groovydoc'
+    from groovydoc.destinationDir
 }
 
 publishing {
@@ -22,12 +22,12 @@ publishing {
         maven(MavenPublication){
             groupId = 'me.biocomp.hubitat_ci'
             artifactId = 'hubitat_ci'
-            version = 0.5
+            version = 0.6
 
             from components.java
 
             artifact sourcesJar
-            artifact javadocJar
+            artifact groovydocJar
         }
     }
 
