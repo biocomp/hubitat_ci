@@ -232,4 +232,30 @@ def foo() {
         expect:
             verifyMethodsWereOverridden(script)
     }
+
+    def "can override settings with userSettingValues"() {
+        setup:
+            final def script = """
+metadata {
+    preferences {
+        input (name:"testText", type: "text", title: "Test text", required: true)
+    }
+}
+"""
+            String value = null
+
+        when: 'Setting isn\'t overridden'
+            value = new HubitatDeviceSandbox(script).run(
+                    userSettingValues: [:],
+                    validationFlags: [Flags.DontValidateDefinition, Flags.DontRequireParseMethodInDevice]).testText
+        then:
+            value == null
+
+        when: 'Setting is set to something'
+            value = new HubitatDeviceSandbox(script).run(
+                    userSettingValues: ['testText': 'My test text'],
+                    validationFlags: [Flags.DontValidateDefinition, Flags.DontRequireParseMethodInDevice]).testText
+        then:
+            value == 'My test text'
+    }
 }
