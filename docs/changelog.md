@@ -1,6 +1,6 @@
 # Changelog
 
-## Version 0.6
+## Version 0.7
 - Refreshed Hubitat APIs
 - userSettingsValues support for HubitatDeviceScript + tests.
 - Added warn log level
