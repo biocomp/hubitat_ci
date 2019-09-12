@@ -32,11 +32,7 @@ These validations can catch errors like these:
 - Validate command and capabilities method signatures and names
 - And many more...
 
-## Getting started
-[Instructions here](docs/getting_started.md)
-
-## How to test
-Library usage and common mocking techniques discussed [here](docs/how_to_test.md).
-
-## Changelog
-Changlog is [here](docs/changelog.md).
+## Documentation
+- [Getting started](docs/getting_started.md)
+- [How to test: library usage and common mocking techniques](docs/how_to_test.md).
+- [Changelog](docs/changelog.md).

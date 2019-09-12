@@ -268,6 +268,9 @@ class DeviceValidator extends
         stringParameter("name", required(), mustNotBeEmpty())
         stringParameter("namespace", required(), mustNotBeEmpty())
         stringParameter("author", required(), mustNotBeEmpty())
+
+        // Undocumented, but mentioned here:
+        // https://community.hubitat.com/t/import-code-from-website-driver-code/10069/4
         stringParameter("importUrl", notRequired(), mustNotBeEmpty())
     }
 

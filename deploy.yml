@@ -1,4 +1,7 @@
 name: $(Build.DefinitionName)_$(SourceBranchName)_$(Date:yyyy_MM_dd)$(Rev:.r)
+
+# This does not seem to be working - PRs on github are still enabling this check.
+# I've had to disable PR validation in VSTS overriding YAML.
 trigger: none # For manual publishing
 
 jobs:
