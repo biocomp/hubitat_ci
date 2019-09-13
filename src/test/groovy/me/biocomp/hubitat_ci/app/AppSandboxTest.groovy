@@ -262,4 +262,32 @@ def realCoolingSetpointHandler(evt) {}
             AssertionError e = thrown()
             e.message.contains("'Thermostat' does not contain attribute 'badAttributeName'. Valid attributes are: [")
     }
+
+    def "can override settings with userSettingValues"() {
+        setup:
+            final def script = """
+preferences {
+    page(name:"mainPage", title:"Settings", install: true, uninstall: true) {
+        section() {
+            input (name:"testText", type: "text", title: "Test text", required: true, multiple: false)
+        }
+    }
+}
+"""
+            String value = null
+
+        when: 'Setting isn\'t overridden'
+            value = new HubitatAppSandbox(script).run(
+                    userSettingValues: [:],
+                    validationFlags: [Flags.DontValidateDefinition]).settings.testText
+        then:
+            value == null
+
+        when: 'Setting is set to something'
+            value = new HubitatAppSandbox(script).run(
+                    userSettingValues: ['testText': 'My test text'],
+                    validationFlags: [Flags.DontValidateDefinition]).settings.testText
+        then:
+            value == 'My test text'
+    }
 }
