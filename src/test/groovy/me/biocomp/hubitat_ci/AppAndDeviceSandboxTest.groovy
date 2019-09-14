@@ -126,13 +126,6 @@ class AppAndDeviceSandboxTest extends
     /**
      * Add HubitatAppSandbox and HubitatDeviceSandbox permutations
      */
-    List<Tuple3<String, String, Class>> makeScriptVariation(String expression, String result) {
-        [
-            new Tuple(expression, result, HubitatDeviceSandbox),
-            new Tuple(expression, result, HubitatAppSandbox)
-        ]
-    }
-
     List<List> combineWithSandboxes(List<List> inputs)
     {
         def results = []
@@ -145,17 +138,16 @@ class AppAndDeviceSandboxTest extends
         results
     }
 
-    List<Tuple3<String, String, Class>> makeScriptVariations(List<Tuple2<String, String>> expressionsAndResults) {
+    List<List<String>> makeScriptVariations(List<List<String>> expressionsAndResults) {
         def result = []
 
-        expressionsAndResults.each{
-            result.addAll(makeScriptVariation(it.get(0), it.get(1)))
-            result.addAll(makeScriptVariation("""
+        combineWithSandboxes(expressionsAndResults).each{
+            result << it
+            result << ["""
 def foo() {
-    ${it.get(0)}
+    ${it[0]}
 }
-""", it.get(1))
-            )
+""", it[1], it[2]]
         }
 
         result
@@ -175,32 +167,22 @@ def foo() {
 
         where:
             [script, expectedErrorPart, sandboxClass] << makeScriptVariations([
-                    new Tuple("println 'a'", "println"),
-                    new Tuple("print 'a'", "print"),
-                    new Tuple("[].execute()", "execute"),
-                    new Tuple("String s\ns.getClass()", "getClass"),
-                 new Tuple("String s\ns.getMetaClass()",
-                         "getMetaClass"),
-                 new Tuple("String s\ns.setMetaClass(null)",
-                         "setMetaClass"),
-                 new Tuple("String s\ns.propertyMissing()",
-                         "propertyMissing"),
-                 new Tuple("String s\ns.methodMissing()",
-                         "methodMissing"),
-                 new Tuple("String s\ns.invokeMethod('a')",
-                         "invokeMethod"),
-                 new Tuple("getProducedPreferences()",
-                         "getProducedPreferences"),
-                 new Tuple(
-                         "void foo() { def prefs = producedPreferences }",
-                         "producedPreferences"),
-                 new Tuple("getProducedDefinition()",
-                         "getProducedDefinition"),
-                 new Tuple(
-                         "void foo() { def prefs = producedDefinition }",
-                         "producedDefinition"),
-                 new Tuple("printf", "printf"),
-                 new Tuple("sleep 10", "sleep")])
+                 ["println 'a'", "println"],
+                 ["print 'a'", "print"],
+                 ["[].execute()", "execute"],
+                 ["String s\ns.getClass()", "getClass"],
+                 ["String s\ns.getMetaClass()", "getMetaClass"],
+                 ["String s\ns.setMetaClass(null)", "setMetaClass"],
+                 ["String s\ns.propertyMissing()", "propertyMissing"],
+                 ["String s\ns.methodMissing()", "methodMissing"],
+                 ["String s\ns.invokeMethod('a')", "invokeMethod"],
+                 ["getProducedPreferences()", "getProducedPreferences"],
+                 ["void foo() { def prefs = producedPreferences }", "producedPreferences"],
+                 ["getProducedDefinition()", "getProducedDefinition"],
+                 ["void foo() { def prefs = producedDefinition }", "producedDefinition"],
+                 ["printf", "printf"],
+                 ["sleep 10", "sleep"]
+            ])
     }
 
     @Unroll
