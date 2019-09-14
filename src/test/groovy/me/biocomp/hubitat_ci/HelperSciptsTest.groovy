@@ -9,50 +9,6 @@ import spock.lang.Specification
 import java.lang.reflect.Method
 
 class HelperSciptsTest extends Specification{
-    private static void dumpMethods(Class cls, List<String> result)
-    {
-        final Set<String> skipTheseMethods = [
-                "getProperty",
-                "setProperty",
-                "setMetaClass",
-                "getMetaClass",
-                "invokeMethod"
-        ] as Set
-
-        def shouldSkipMethod = { Method m ->
-            skipTheseMethods.contains(m.name) || m.declaringClass.name == Object.name || m.name.endsWith("toString")
-        }
-
-        result << "Methods:["
-
-        def makeComparator = { comparators ->
-            {
-                a, b ->
-                    for (def cmp in comparators) {
-                        final int cmpResult = ((Closure)cmp)(a, b)
-                        if (cmpResult != 0) {
-                            return cmpResult
-                        }
-                    }
-
-                    return 0
-            }
-        }
-
-        result.addAll(cls.methods.findAll{
-            return !shouldSkipMethod(it)
-        }.sort(makeComparator([
-                { a, b -> a.name.compareTo(b.name) },
-                { a, b -> (a.parameters.size() <=> b.parameters.size()) },
-                { a, b -> a.toString() <=> b.toString() }])
-        ).collect{ "  ${it}"})
-
-        result << "]"
-    }
-
-
-
-
     def "helper_app.groovy properly dumps classes"()
     {
         when:
