@@ -1,261 +1,100 @@
 package me.biocomp.hubitat_ci.device
 
+import groovy.transform.CompileStatic
+import me.biocomp.hubitat_ci.api.common_api.InterfaceHelper
+import me.biocomp.hubitat_ci.api.common_api.Mqtt
 import me.biocomp.hubitat_ci.api.device_api.DeviceExecutor
-import me.biocomp.hubitat_ci.api.common_api.Log
-import me.biocomp.hubitat_ci.device.HubitatDeviceSandbox
 import me.biocomp.hubitat_ci.validation.Flags
-import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import spock.lang.Specification
 import spock.lang.Unroll
 
-/*
-*  Documented restrictions:
-*
-* Can't use these methods:
-    addShutdownHook()
-    execute()
-    getClass()
-    getMetaClass()
-    setMetaClass()
-    propertyMissing()
-    methodMissing()
-    invokeMethod()
-    mixin()
-    print()
-    printf()
-    println()
-    sleep()
-
-
-    You cannot create your own threads.
-    You cannot use System methods, like System.out()
-    You cannot create or access files.
-    You cannot define closures outside of a method. Something like def squareItClosure = {it * it} is not allowed at the top-level, outside of a method body.
-
-    Classes whitelist:
-
-    ArrayList
-    BigDecimal
-    BigInteger
-    Boolean
-    Byte
-    ByteArrayInputStream
-    ByteArrayOutputStream
-    Calendar
-    Closure
-    Collection
-    Collections
-    Date
-    DecimalFormat
-    Double
-    Float
-    GregorianCalendar
-    HashMap
-    HashMap.Entry
-    HashMap.KeyIterator
-    HashMap.KeySet
-    HashMap.Values
-    HashSet
-    Integer
-    JsonBuilder
-    LinkedHashMap
-    LinkedHashMap.Entry
-    LinkedHashSet
-    LinkedList
-    List
-    Long
-    Map
-    MarkupBuilder
-    Math
-    Random
-    Set
-    Short
-    SimpleDateFormat
-    String
-    StringBuilder
-    StringReader
-    StringWriter
-    SubList
-    TimeCategory
-    TimeZone
-    TreeMap
-    TreeMap.Entry
-    TreeMap.KeySet
-    TreeMap.Values
-    TreeSet
-    URLDecoder
-    URLEncoder
-    UUID
-    XPath
-    XPathConstants
-    XPathExpressionImpl
-    XPathFactory
-    XPathFactoryImpl
-    XPathImpl
-    ZoneInfo
-    com.amazonaws.services.s3.model.S3Object
-    com.amazonaws.services.s3.model.S3ObjectInputStream
-    com.sun.org.apache.xerces.internal.dom.DocumentImpl
-    com.sun.org.apache.xerces.internal.dom.ElementImpl
-    groovy.json.JsonOutput
-    groovy.json.JsonSlurper
-    groovy.util.Node
-    groovy.util.NodeList
-    groovy.util.XmlParser
-    groovy.util.XmlSlurper
-    groovy.xml.XmlUtil
-    java.net.URI
-    java.util.RandomAccessSubList
-    org.apache.commons.codec.binary.Base64
-    org.apache.xerces.dom.DocumentImpl
-    org.apache.xerces.dom.ElementImpl
-    org.codehaus.groovy.runtime.EncodingGroovyMethods
-    org.json.JSONArray
-    org.json.JSONException
-    org.json.JSONObject
-    org.json.JSONObject.Null
- */
-
 class DeviceSandboxTest extends Specification {
-    List<Tuple2<String, String>> makeScriptVariations(List<Tuple2<String, String>> expressionsAndResults) {
-        def result = []
-        expressionsAndResults.each({
-            result << new Tuple(it.get(0), it.get(1))
-            result << new Tuple("""
-def foo()
-{
-    ${it.get(0)}
-}
-""", it.get(1))
-        })
+    @CompileStatic
+    private static String errorForSignature(String signatures) {
+        return "None of parse() method signatures ([${signatures}]) matches any of expected ones: [Map parse(String), List<Map> parse(String), HubAction parse(String), List<HubAction> parse(String)"
     }
 
     @Unroll
-    def "Expression \"#script\" is not allowed and should fail to compile"(String script, String expectedErrorPart) {
+    def "Bad parse() method: '#method' in device: #expectedError"(
+            String method, String expectedError)
+    {
         when:
-            def sandbox = new HubitatDeviceSandbox(script)
-
-            // Not running the script, compilation should still fail.
-            sandbox.compile()
+            new HubitatDeviceSandbox(method).run(validationFlags: [Flags.DontValidateMetadata])
 
         then:
-            MultipleCompilationErrorsException ex = thrown()
-            ex.message.contains(expectedErrorPart)
+            AssertionError e = thrown()
+            e.message.contains(expectedError)
+
+            /*
+                Map parse(String description)
+                List<Map> parse(String description)
+                HubAction parse(String description)
+                List<HubAction> parse(String description)
+             */
 
         where:
-            [script, expectedErrorPart] << makeScriptVariations([
-                    new Tuple("println 'a'", "println"),
-                    new Tuple("print 'a'", "print"),
-                    new Tuple("[].execute()", "execute"),
-                    new Tuple("String s\ns.getClass()", "getClass"),
-                    new Tuple("String s\ns.getMetaClass()", "getMetaClass"),
-                    new Tuple("String s\ns.setMetaClass(null)", "setMetaClass"),
-                    new Tuple("String s\ns.propertyMissing()", "propertyMissing"),
-                    new Tuple("String s\ns.methodMissing()", "methodMissing"),
-                    new Tuple("String s\ns.invokeMethod('a')", "invokeMethod"),
-                    new Tuple("getProducedPreferences()", "getProducedPreferences"),
-                    new Tuple("void foo() { def prefs = producedPreferences }", "producedPreferences"),
-                    new Tuple("getProducedDefinition()", "getProducedDefinition"),
-                    new Tuple("void foo() { def prefs = producedDefinition }", "producedDefinition"),
-                    new Tuple("printf", "printf"),
-                    new Tuple("sleep 10", "sleep"),
-            ])
+            method                 || expectedError
+            ""                     || "Script does not have parse() method required for devices"
+            "parse() {}"           || "Script does not have parse() method required for devices"
+            "def parse() {}"       || errorForSignature("Object parse()")
+            "Map parse() { null }" || errorForSignature("Map parse()")
+            // TODO: maybe validate return type too.
+            // "String parse(String s) { null }"          || errorForSignature("String parse(String s)")
+            // "Map<String> parse(String s) { null }"     || errorForSignature("Map<String> parse(String s)")
+            // "HashMap<String> parse(String s) { null }" || errorForSignature("HashMap<String> parse(String s)")
     }
 
     @Unroll
-    def "#description not allowed and should fail to compile"() {
-        when:
-            new HubitatDeviceSandbox(script).compile()
-
-        then:
-            MultipleCompilationErrorsException ex = thrown()
-            ex.message.contains(expectedErrorPart)
+    def "Good parse() method: '#method' in device, will be accepted"(String method) {
+        expect:
+            new HubitatDeviceSandbox(method).run(validationFlags: [Flags.DontValidateMetadata])
 
         where:
-            script                          | expectedErrorPart || description
-            "class MyShinyNewClass{}"       | "MyShinyNewClass" || "Defining a new class"
-            "System.out.print 'Boom!'"      | "System.out"      || "Calling System.out"
-            "File.createNewFile('foo.txt')" | "File"            || "Creating a File"
+            method << ["Map parse(String s) { null }",
+                       "Map parse(def s) { null }",
+                       "Map parse(def s) { return [:] }",
+                       "def parse(def s) { return [:] }",
+                       "List<Map> parse(def s) { return [] }",
+                       "def parse(def s) { new ArrayList<Map>() }",
+                       "hubitat.device.HubAction parse(def s) { null }",
+                       "def parse(def s) { new hubitat.device.HubAction() }",
+                       "List<hubitat.device.HubAction> parse(def s) { return [] }",
+                       "def parse(def s) { return new ArrayList<hubitat.device.HubAction>() }"]
     }
 
-    def "Local variable with no 'def' or type is not confused with property"() {
+
+    def "missing metadata() has clear error message"() {
+        when:
+            new HubitatDeviceSandbox("""
+""").run(validationFlags: [Flags.DontRequireParseMethodInDevice])
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("Device does not have 'metadata' call")
+    }
+
+    def "Use device helper to get to Mqtt"() {
         given:
-            def log = Mock(Log)
-            def api = Mock(DeviceExecutor)
+            final def mqtt = Mock(Mqtt)
+            final def interfaces = Mock(InterfaceHelper) {
+                _ * getMqtt() >> mqtt
+            }
+
+            final def api = Mock(DeviceExecutor) {
+                _ * getInterfaces() >> interfaces
+            }
+
+            final def script = new HubitatDeviceSandbox("""
+def useMqtt()
+{
+    interfaces.mqtt.publish("a", "b")
+}
+""").run(api: api, validationFlags: [Flags.DontRequireParseMethodInDevice, Flags.DontValidateMetadata])
 
         when:
-            def script = new HubitatDeviceSandbox("""
-int loginCheck() {
-    return 42
-}
-
-def foo() {
-    LoginCheck = loginCheck()
-    if (LoginCheck) { log.debug '1' }
-    else { log.debug '2' }
-} 
-""").run(validationFlags: [Flags.DontValidateMetadata, Flags.DontRequireParseMethodInDevice])
+            script.useMqtt()
 
         then:
-            _*api.getLog() >> log
-    }
-
-    private def makeScriptForPrivateCheck(def fileOrText) {
-        return new HubitatDeviceSandbox(fileOrText).compile(
-                validationFlags: [Flags.DontValidateMetadata, Flags.DontRequireParseMethodInDevice],
-                customizeScriptBeforeRun: { script ->
-                    script.getMetaClass().myPrivateMethod1 = { -> "was overridden1!" }
-                    script.getMetaClass().myPrivateMethod2 = { def arg1, def arg2 -> "was overridden2(${arg1}, ${arg2})!"
-                    }
-                })
-    }
-
-    void verifyMethodsWereOverridden(Script script) {
-        assert script.myPrivateMethod1() == "was overridden1!"
-        assert script.publicMethodThatCallsPrivateMethod1() == "was overridden1!"
-        assert script.myPrivateMethod2(42, "abc") == "was overridden2(42, abc)!"
-        assert script.publicMethodThatCallsPrivateMethod2() == "was overridden2(123, argFromPublicMethod)!"
-    }
-
-    def "private methods in the Script (as text) can be mocked!()"() {
-        setup:
-            def script = makeScriptForPrivateCheck(new File("Scripts/ScriptWithPrivateMethod.groovy"))
-
-        expect:
-            verifyMethodsWereOverridden(script)
-    }
-
-    def "private methods in the Script (as File) can be mocked!()"() {
-        setup:
-            def script = makeScriptForPrivateCheck(new File("Scripts/ScriptWithPrivateMethod.groovy").readLines().join('\n'))
-
-        expect:
-            verifyMethodsWereOverridden(script)
-    }
-
-    def "can override settings with userSettingValues"() {
-        setup:
-            final def script = """
-metadata {
-    preferences {
-        input (name:"testText", type: "text", title: "Test text", required: true)
-    }
-}
-"""
-            String value = null
-
-        when: 'Setting isn\'t overridden'
-            value = new HubitatDeviceSandbox(script).run(
-                    userSettingValues: [:],
-                    validationFlags: [Flags.DontValidateDefinition, Flags.DontRequireParseMethodInDevice]).testText
-        then:
-            value == null
-
-        when: 'Setting is set to something'
-            value = new HubitatDeviceSandbox(script).run(
-                    userSettingValues: ['testText': 'My test text'],
-                    validationFlags: [Flags.DontValidateDefinition, Flags.DontRequireParseMethodInDevice]).testText
-        then:
-            value == 'My test text'
+            1 * mqtt.publish("a", "b")
     }
 }
