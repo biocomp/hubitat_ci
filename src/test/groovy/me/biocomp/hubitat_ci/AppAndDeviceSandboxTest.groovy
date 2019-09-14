@@ -1,6 +1,5 @@
 package me.biocomp.hubitat_ci
 
-import groovy.transform.TypeChecked
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
 import me.biocomp.hubitat_ci.api.common_api.Log
 import me.biocomp.hubitat_ci.api.device_api.DeviceExecutor
