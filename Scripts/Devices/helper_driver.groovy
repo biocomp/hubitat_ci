@@ -21,6 +21,10 @@ private static void dumpMethods(def cls, List<String> result)
             "invokeMethod"
     ] as Set
 
+    def shouldSkipMethod = { m ->
+        skipTheseMethods.contains(m.name) || m.declaringClass.name == Object.name || m.name.endsWith("toString")
+    }
+
     result << "Methods:["
 
     def makeComparator = { comparators ->
@@ -38,7 +42,7 @@ private static void dumpMethods(def cls, List<String> result)
     }
 
     result.addAll(cls.methods.findAll{
-        return !skipTheseMethods.contains(it.name) && it.declaringClass.name != Object.name
+        !shouldSkipMethod(it)
     }.sort(makeComparator([
             { a, b -> a.name.compareTo(b.name) },
             { a, b -> (a.parameters.size() <=> b.parameters.size()) },
