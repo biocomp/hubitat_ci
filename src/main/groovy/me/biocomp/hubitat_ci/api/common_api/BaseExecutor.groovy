@@ -6,7 +6,7 @@ import groovy.util.slurpersupport.GPathResult
 /**
  * Methods that can be used inside both App or Driver.
  * */
-interface BaseExecutor extends BaseAsyncHttp, BaseHttp, BaseScheduler
+trait BaseExecutor implements BaseAsyncHttp, BaseScheduler, BaseHttp
 {
     /**
      * @return log object
@@ -14,6 +14,9 @@ interface BaseExecutor extends BaseAsyncHttp, BaseHttp, BaseScheduler
     abstract Log getLog()
 
     abstract Location getLocation()
+
+    abstract List getLocationVariableNames()
+    abstract List getLocationVariableValues(String variableName)
 
     /**
      * @return "C" or "F"
@@ -102,8 +105,7 @@ interface BaseExecutor extends BaseAsyncHttp, BaseHttp, BaseScheduler
 
     abstract void pauseExecution(Long milliseconds)
 
-    abstract Map textToSpeech(String stringToBeSynthesized, String voice)
-    abstract Map textToSpeech(String stringToBeSynthesized)
+    abstract def textToSpeech(String stringToBeSynthesized, String voice = null)
 
     abstract String encrypt(String value)
     abstract String decrypt(String value)
@@ -138,6 +140,21 @@ interface BaseExecutor extends BaseAsyncHttp, BaseHttp, BaseScheduler
     abstract Date timeToday(String timeString, TimeZone timeZone)
 
     abstract Date timeToday(String timeString)
+
+    abstract def getTTSVoices()
+
+    abstract def setValuesInAsyncResponseAndInvokeCallback(groovyx.net.http.HttpResponseDecorator decorator, Map options, String a)
+    abstract def setValuesInAsyncResponseAndInvokeCallback(String a, Map b, String c)
+    abstract String getJWTtoken(String a, String b)
+    abstract String getJWTtoken(String a, String b,String c)
+    abstract void removeLocationVariable(String name)
+
+    abstract void sendPush(String message)
+    abstract void sendPush(String a,String b)
+    abstract void sendPushMessage(String message)
+    abstract void sendPushMessage(String a, String b)
+
+    abstract void createLocationVariable(String name, List a = null, boolean b = false)
 }
 
 

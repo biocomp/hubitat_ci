@@ -1,5 +1,6 @@
 package me.biocomp.hubitat_ci.api.device_api
 
+import me.biocomp.hubitat_ci.api.Command
 import me.biocomp.hubitat_ci.api.common_api.*
 import me.biocomp.hubitat_ci.api.device_api.zigbee.Zigbee
 import me.biocomp.hubitat_ci.api.device_api.zwave.Zwave
@@ -11,6 +12,7 @@ interface DeviceTileAttribute {
      * @param stateNameOrAttributeNameOrValue
      */
     abstract void attributeState(Map options, String stateNameOrAttributeNameOrValue)
+    abstract void attributeState(Map options)
 
 }
 
@@ -39,10 +41,12 @@ trait DeviceMultiAttributeTile implements
      * @param associatedAttributeName
      * @param makeContents
      */
-    abstract void tileAttribute(Map options = [:], String associatedAttributeName, Closure makeContents = null)
+    abstract void tileAttribute(Map options, String associatedAttributeName, Closure makeContents = null)
+
+    abstract void tileAttribute(String associatedAttributeName, Closure makeContents = null)
 }
 
-interface DeviceTile {
+trait DeviceTile {
     /**
      * Bind tile to device's state (for single-attribute tile).
      * (use inside closure passed into a specific tile creation method())
@@ -73,7 +77,7 @@ interface DeviceTile {
      * @param stateNameOrAttributeNameOrValue - specific value of an attribute or its name. Or virtual state name (to
      * use with nextState option)
      */
-    abstract void state(Map options, String stateNameOrAttributeNameOrValue)
+    abstract void state(Map options, String stateNameOrAttributeNameOrValue = null)
 }
 
 trait DeviceDefinition {
@@ -135,9 +139,15 @@ trait DeviceTiles extends
 
     /**
      * Define which tile is detail tile (use inside closure passed into tiles())
-     * @param tileStuff
+     * @param tileTitle
      */
     abstract void details(String tileTitle)
+
+    /**
+     * Define which tile is detail tile (use inside closure passed into tiles())
+     * @param tileTitles
+     */
+    abstract void details(String[] tileTitles)
 
     /**
      * Define which tiles are detail tiless (and in which order) (use inside closure passed into tiles())
@@ -159,7 +169,11 @@ trait DeviceTiles extends
      *      decoration (String) "ring" is default, "flat" is also supported.
      */
     abstract void standardTile(
-            options = [:], String name, String associatedAttributeName,
+            Map options, String name, String associatedAttributeName,
+            @DelegatesTo(DeviceTile) Closure makeContents = null)
+
+    abstract void standardTile(
+            String name, String associatedAttributeName,
             @DelegatesTo(DeviceTile) Closure makeContents = null)
 
 
@@ -179,7 +193,11 @@ trait DeviceTiles extends
      * @param makeContents
      */
     abstract void valueTile(
-            Map options = [:], String name, String associatedAttributeName,
+            Map options, String name, String associatedAttributeName,
+            @DelegatesTo(DeviceTile) Closure makeContents = null)
+
+    abstract void valueTile(
+            String name, String associatedAttributeName,
             @DelegatesTo(DeviceTile) Closure makeContents = null)
 
     /**
@@ -200,8 +218,8 @@ trait DeviceTiles extends
      * @param makeContents
      */
     abstract void controlTile(
-            Map options, String name, String associatedAttributeName,
-            @DelegatesTo(DeviceTile) Closure makeContents = null)
+            Map options, String name, String associatedAttributeName, String controlType,
+            @DelegatesTo(DeviceTile) Closure makeContents)
 
     /**
      * Define a multi-attribute tile (use inside closure passed into tiles())
@@ -224,7 +242,7 @@ trait DeviceTiles extends
      * @param associatedAttributeName
      * @param makeContents
      */
-    abstract void multiAttributeTile(Map options, @DelegatesTo(DeviceMultiAttributeTile) Closure makeContents = null)
+    abstract void multiAttributeTile(Map options, @DelegatesTo(DeviceMultiAttributeTile) Closure makeContents)
 }
 
 trait DevicePreferences {
@@ -270,7 +288,7 @@ trait DevicePreferences {
 
 /**
  * What can be declared inside metadata's closure.*/
-interface DeviceMetadata extends
+trait DeviceMetadata implements
         DeviceDefinition,
         DeviceTiles,
         DevicePreferences
@@ -302,7 +320,7 @@ interface DeviceMetadata extends
      *              a value of 2 enables the 6 x Unlimited grid:
      * @param makeContents
      */
-    abstract void tiles(Map options, @DelegatesTo(DeviceTiles) Closure makeContents)
+    abstract void tiles(Map options = [:], @DelegatesTo(DeviceTiles) Closure makeContents)
 }
 
 interface DeviceMetadataSource extends
@@ -333,7 +351,6 @@ trait DeviceExecutor implements
     // List<HubAction> parse(String description)
 
 
-    abstract void sendHubCommand(HubAction hubAction)
 
     abstract Map getState()
 
@@ -364,13 +381,7 @@ trait DeviceExecutor implements
 
     abstract DeviceWrapper getDeviceByZigbeeId(String zigbeeId)
 
-    abstract HubAction response(String cmd)
-
-    abstract HubAction response(zwave.Command cmd)
-
-    abstract HubMultiAction response(List cmds)
-
-    abstract Short getZwaveHubNodeId()
+    abstract DeviceWrapper getDeviceById(Long id)
 
     abstract void sendEvent(Map properties)
 
@@ -406,5 +417,51 @@ trait DeviceExecutor implements
     abstract def getLanFingerprints()
     abstract void lanFingerprint(Map options)
     abstract void setLanFingerprints(def fingerprints)
+    abstract Long hexStrToSignedInt(String str)
+    abstract Long hexStrToUnsignedInt(String str)
+    abstract Map getDefinitionData()
+
+    abstract Map stringToMap(String str)
+
+    abstract String intToHexStr(Long val)
+    abstract String intToHexStr(Long val, Integer base)
+    abstract boolean isStateChange(DeviceWrapper device, String a, String b)
+    abstract boolean isSystemTypeOrHubDeveloper()
+
+    abstract ChromeCast getChromeCast()
+
+    abstract def getAttributes()
+    abstract def getCapabilities()
+    abstract def getCommands()
+    abstract def getFingerprints()
+    abstract def getPreferences()
+    abstract def getTiles()
+
+    abstract String getEXECUTOR_TYPE()
+    abstract String getLinkText(DeviceWrapper w)
+    abstract boolean displayed(String a, boolean b)
+    abstract HubAction response(String s)
+    abstract HubAction response(Command c)
+    abstract HubMultiAction response(List l)
+    abstract Short getZwaveHubNodeId()
+
+    abstract void setAttributes(def a)
+    abstract void setCapabilities(def c)
+    abstract void setChromeCast(ChromeCast c)
+    abstract void setCommands(def c)
+    abstract void setDefinitionData(Map d)
+    abstract void setDevice(DeviceWrapper w)
+    abstract void setFingerprints(def f)
+
+    abstract void setPreferences(def p)
+    abstract void setTiles(def t)
+    abstract void setZigbee(Zigbee zb)
+    abstract void setZwave(Zwave zw)
+
+    abstract void eventStreamClose()
+    abstract void eventStreamConnect(String a,String b)
+
+    abstract void graphTile(Map options)
+    abstract void image(Map options)
 }
 

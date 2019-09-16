@@ -1,6 +1,6 @@
 package me.biocomp.hubitat_ci.api.common_api
 
-interface BaseHttp
+trait BaseHttp
 {
     abstract Object httpGet(String address, Closure handler)
     abstract Object httpGet(Map options, Closure handler)

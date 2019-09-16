@@ -3,6 +3,7 @@ package me.biocomp.hubitat_ci.api.app_api
 import me.biocomp.hubitat_ci.api.common_api.BaseExecutor
 import me.biocomp.hubitat_ci.api.common_api.ChildDeviceWrapper
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
+import me.biocomp.hubitat_ci.api.common_api.DeviceWrapperList
 import me.biocomp.hubitat_ci.api.common_api.InstalledAppWrapper
 import me.biocomp.hubitat_ci.api.common_api.Location
 
@@ -258,6 +259,10 @@ interface AppExecutor extends
     abstract Object getParent()
 
     abstract DeviceWrapper getSubscribedDeviceById(Long deviceId)
+
+    abstract DeviceWrapper getDeviceById(Long deviceId)
+
+    abstract DeviceWrapperList getAllDevicesByCapability(String capability)
 
     /**
      * Returns a HTTP response to the calling client with the options specified.

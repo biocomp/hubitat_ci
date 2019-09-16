@@ -10,7 +10,8 @@ import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 
 @TypeChecked
-class DeviceMetadataReader implements DeviceMetadataSource
+class DeviceMetadataReader implements
+        DeviceMetadataSource
 {
     DeviceMetadataReader(
             DeviceExecutor delegate,
@@ -23,9 +24,7 @@ class DeviceMetadataReader implements DeviceMetadataSource
         this.delegate = delegate
         this.validator = validator
         this.scriptMetaClass = scriptMetaClass
-        this.settingsContainer =
-                new SettingsContainer(
-                { null },
+        this.settingsContainer = new SettingsContainer({ null },
                 validator,
                 userSettingsValue,
                 deviceData,
@@ -51,7 +50,8 @@ class DeviceMetadataReader implements DeviceMetadataSource
     @Override
     void command(String commandName, List parameterTypes) {
         def definition = states.getCurrentState('definition()') as Definition
-        def command = new Command(commandName, parameterTypes, validator.findMethodForCommand(scriptMetaClass, commandName, parameterTypes))
+        def command = new Command(commandName, parameterTypes,
+                validator.findMethodForCommand(scriptMetaClass, commandName, parameterTypes))
         validator.validateCommand(command)
         definition.addCommand(command)
     }
@@ -64,8 +64,7 @@ class DeviceMetadataReader implements DeviceMetadataSource
     }
 
     @Override
-    void simulator(Closure closure)
-    {
+    void simulator(Closure closure) {
         // Just do nothing, this is probably not supported, but method is sometimes called.
     }
 
@@ -118,24 +117,34 @@ class DeviceMetadataReader implements DeviceMetadataSource
 
     @Override
     void standardTile(
-            Object options, String name, String associatedAttributeName, @DelegatesTo(DeviceTile) Closure makeContents)
-    {
+            Map options, String name, String associatedAttributeName, @DelegatesTo(DeviceTile) Closure makeContents)
+    {}
 
+    @Override
+    void standardTile(
+            String name, String associatedAttributeName, @DelegatesTo(DeviceTile) Closure makeContents)
+    {
+        standardTile([:], name, associatedAttributeName, makeContents)
     }
 
     @Override
     void valueTile(
             Map options, String name, String associatedAttributeName, @DelegatesTo(DeviceTile) Closure makeContents)
     {
+    }
 
+    @Override
+    void valueTile(String name, String associatedAttributeName, @DelegatesTo(DeviceTile) Closure makeContents) {
+        valueTile([:], name, associatedAttributeName, makeContents)
     }
 
     @Override
     void controlTile(
-            Map options, String name, String associatedAttributeName, @DelegatesTo(DeviceTile) Closure makeContents)
+            Map options, String name, String associatedAttributeName, String controlType,
+            @DelegatesTo(DeviceTile) Closure makeContents)
     {
-
     }
+
 
     @Override
     void multiAttributeTile(Map options, @DelegatesTo(DeviceMultiAttributeTile) Closure makeContents) {
@@ -144,7 +153,11 @@ class DeviceMetadataReader implements DeviceMetadataSource
 
     @Override
     void tileAttribute(Map options, String associatedAttributeName, Closure makeContents) {
+    }
 
+    @Override
+    void tileAttribute(String associatedAttributeName, Closure makeContents) {
+        tileAttribute([:], associatedAttributeName, makeContents)
     }
 
     @Override
@@ -158,8 +171,7 @@ class DeviceMetadataReader implements DeviceMetadataSource
     }
 
     @Override
-    def section(String name, @DelegatesTo(DevicePreferences) Closure makeContents)
-    {
+    def section(String name, @DelegatesTo(DevicePreferences) Closure makeContents) {
         validator.validateSection(name)
         states.withState('section()', states.getOneOfParentStates('preferences()'), makeContents)
     }
@@ -193,12 +205,10 @@ class DeviceMetadataReader implements DeviceMetadataSource
     @Delegate
     private final DeviceExecutor delegate
 
-    private final ReaderState states = new ReaderState([
-            'metadata()' : [],
-            'definition()': ['metadata()'],
-            'preferences()': ['metadata()'],
-            'section()': ['metadata()', 'preferences()']
-    ])
+    private final ReaderState states = new ReaderState(['metadata()'   : [],
+                                                        'definition()' : ['metadata()'],
+                                                        'preferences()': ['metadata()'],
+                                                        'section()'    : ['metadata()', 'preferences()']])
 
     private final DeviceValidator validator
 
@@ -208,8 +218,7 @@ class DeviceMetadataReader implements DeviceMetadataSource
     private final MetaClass scriptMetaClass
     private boolean hasMetadataCall = false
 
-    boolean getHasMetadataCall()
-    {
+    boolean getHasMetadataCall() {
         return hasMetadataCall
     }
 
@@ -217,8 +226,7 @@ class DeviceMetadataReader implements DeviceMetadataSource
         return producedDefinition
     }
 
-    SettingsContainer getSettings()
-    {
+    SettingsContainer getSettings() {
         return settingsContainer
     }
 }
