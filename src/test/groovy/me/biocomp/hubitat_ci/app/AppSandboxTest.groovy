@@ -1,5 +1,6 @@
 package me.biocomp.hubitat_ci.app
 
+import me.biocomp.hubitat_ci.api.app_api.AppExecutor
 import me.biocomp.hubitat_ci.validation.Flags
 import spock.lang.Specification
 
@@ -33,5 +34,23 @@ def realCoolingSetpointHandler(evt) {}
         then:
             AssertionError e = thrown()
             e.message.contains("'Thermostat' does not contain attribute 'badAttributeName'. Valid attributes are: [")
+    }
+
+    def "Can mock getState"() {
+        when:
+            def state = [testField: 'testValue'] // Defining state map
+
+            AppExecutor executorApi = Mock{
+                _*getState() >> state
+            }
+
+            def script = new HubitatAppSandbox("""
+def readState(String field) {
+    return state[field]
+}
+""").run(api: executorApi, validationFlags: [Flags.DontRequireParseMethodInDevice, Flags.DontValidateMetadata])
+
+        then:
+            'testValue' == script.readState("testField")
     }
 }

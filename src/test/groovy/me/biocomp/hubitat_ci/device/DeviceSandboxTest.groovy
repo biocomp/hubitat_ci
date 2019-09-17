@@ -97,4 +97,22 @@ def useMqtt()
         then:
             1 * mqtt.publish("a", "b")
     }
+
+    def "Can mock getState"() {
+        when:
+            def state = [testField: 'testValue'] // Defining state map
+
+            DeviceExecutor executorApi = Mock{
+                _*getState() >> state
+            }
+
+            def script = new HubitatDeviceSandbox("""
+def readState(String field) {
+    return state[field]
+}
+""").run(api: executorApi, validationFlags: [Flags.DontRequireParseMethodInDevice, Flags.DontValidateMetadata])
+
+        then:
+            'testValue' == script.readState("testField")
+    }
 }
