@@ -276,7 +276,9 @@ def foo() {
     @Unroll
     def "can override settings with userSettingValues for #sandboxClass.simpleName"(Class sandboxClass) {
         setup:
-            final def script = """
+            def script = null
+            if(sandboxClass == HubitatAppSandbox) {
+                script = """
 preferences {
     page(name:"mainPage", title:"Settings", install: true, uninstall: true) {
         section() {
@@ -285,21 +287,64 @@ preferences {
     }
 }
 """
+            } else {
+                script = """
+metadata {
+    preferences {
+        input (name:"testText", type: "text", title: "Test text", required: true)
+    }
+}
+"""
+            }
+
+            final List<Flags> flags = [Flags.DontValidateDefinition, Flags.DontValidatePreferences,
+                                       Flags.DontRequireParseMethodInDevice]
+
             String value = null
 
         when: 'Setting isn\'t overridden'
-            value = new HubitatAppSandbox(script).run(userSettingValues: [:],
-                    validationFlags: [Flags.DontValidateDefinition]).settings.testText
+            def sandbox = sandboxClass.newInstance(script).run(userSettingValues: [:], validationFlags: flags)
+            value = sandboxClass == HubitatAppSandbox ? sandbox.settings.testText : sandbox.testText
         then:
             value == null
 
         when: 'Setting is set to something'
-            value = new HubitatAppSandbox(script).run(userSettingValues: ['testText': 'My test text'],
-                    validationFlags: [Flags.DontValidateDefinition]).settings.testText
+            sandbox = sandboxClass.newInstance(script).run(userSettingValues: ['testText': 'My test text'],
+                                                           validationFlags: flags)
+            value = sandboxClass == HubitatAppSandbox ? sandbox.settings.testText : sandbox.testText
         then:
             value == 'My test text'
 
         where:
             sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+    }
+
+    @Unroll
+    def "can mock getState #sandboxClass.simpleName"(Class sandboxClass, Class executorClass) {
+        setup:
+            final def state = [testField: 'testValue']
+
+            final def executorApi = Mock(executorClass) {
+                _*getState() >> state
+            }
+
+            final def script = """
+def readState(String field) {
+    return state[field]
+}
+"""
+            String value = null
+
+        when: 'Setting isn\'t overridden'
+            def flags = [Flags.DontValidateMetadata, Flags.DontValidateDefinition, Flags.DontValidatePreferences,
+                         Flags.DontRequireParseMethodInDevice]
+            value = sandboxClass.newInstance(script).run(api: executorApi, validationFlags: flags).readState("testField")
+        then:
+            'testValue' == value
+
+        where:
+            sandboxClass         | executorClass
+            HubitatAppSandbox    | AppExecutor
+            HubitatDeviceSandbox | DeviceExecutor
     }
 }

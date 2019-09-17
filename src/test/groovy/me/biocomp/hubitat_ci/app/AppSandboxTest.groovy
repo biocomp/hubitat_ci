@@ -3,9 +3,10 @@ package me.biocomp.hubitat_ci.app
 import me.biocomp.hubitat_ci.validation.Flags
 import spock.lang.Specification
 
+/**
+ * @note Tests that are applicable to both Apps and Devices should be done in AppAndDeviceSandboxTest
+ */
 class AppSandboxTest extends Specification {
-    // Other tests are done in AppAndDeviceSandboxTest
-
     def "subscribe() will fail validation for non-existing attribute"() {
         setup:
             final def script = """

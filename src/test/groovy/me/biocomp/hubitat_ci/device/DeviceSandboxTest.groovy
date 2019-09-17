@@ -8,6 +8,9 @@ import me.biocomp.hubitat_ci.validation.Flags
 import spock.lang.Specification
 import spock.lang.Unroll
 
+/**
+ * @note Tests that are applicable to both Apps and Devices should be done in AppAndDeviceSandboxTest
+ */
 class DeviceSandboxTest extends Specification {
     @CompileStatic
     private static String errorForSignature(String signatures) {
