@@ -64,8 +64,8 @@ class AppValidator extends ValidatorBase{
 
         if (!hasFlag(Flags.DontValidatePreferences)) {
             // Needs to have pages
-            if (!okEmptyIfRegisteredDynamicPages || preferences.dynamicRegistrations.size() == 0) {
-                assert (preferences.pages.size() != 0 || preferences.dynamicPages.size() != 0): "preferences() has to have pages (got ${preferences.pages.size()}), dynamic pages (got ${preferences.dynamicPages.size()})"
+            if (!okEmptyIfRegisteredDynamicPages || preferences.dynamicPages.size() == 0) {
+                assert (preferences.allPages.size() != 0): "preferences() has to have at least one page"
             }
 
             // Page names must be unique
@@ -149,14 +149,13 @@ class AppValidator extends ValidatorBase{
         if (!hasFlag(Flags.AllowUnreachablePages)) {
             def reachablePages = [] as HashSet<String>
 
-            List<Page> pagesCombined = preferences.pages + preferences.dynamicPages
+            final def pagesCombined = preferences.allPages
 
             if (!pagesCombined.isEmpty()) {
                 def allPages = [] as HashMap<String, Page>;
                 (pagesCombined).each {
                     allPages[it.readName()] = it
                 }
-
 
                 addReachablePages(pagesCombined[0], allPages, reachablePages);
 

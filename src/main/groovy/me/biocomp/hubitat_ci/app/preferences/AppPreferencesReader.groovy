@@ -55,8 +55,8 @@ class AppPreferencesReader implements
 
     @Override
     Map dynamicPage(Map options, @DelegatesTo(DynamicPage) Closure makeContents) {
-        prefState.currentPreferences.dynamicPages << prefState.initWithPage(
-                new Page(prefState.currentPreferences.dynamicPages.size(), null, null, options, prefState.currentDynamicMethod), makeContents)
+        prefState.currentPreferences.addDynamicPage(prefState.initWithPage(
+                new Page(prefState.currentPreferences.allPages.size(), null, null, options, prefState.currentDynamicMethod), makeContents))
 
         return null
     }
@@ -88,21 +88,21 @@ class AppPreferencesReader implements
             String name, String title,
             @DelegatesTo(me.biocomp.hubitat_ci.api.app_api.Page) Closure makeContents)
     {
-        prefState.currentPreferences.pages << prefState.initWithPage(
-                new Page(prefState.currentPreferences.pages.size(), name, title, null), makeContents)
+        prefState.currentPreferences.addPage(prefState.initWithPage(
+                new Page(prefState.currentPreferences.allPages.size(), name, title, null), makeContents))
     }
 
     @Override
     def page(Map options, @DelegatesTo(me.biocomp.hubitat_ci.api.app_api.Page) Closure makeContents) {
-        prefState.currentPreferences.pages << prefState.initWithPage(
-                new Page(prefState.currentPreferences.pages.size(), null, null, options), makeContents)
+        prefState.currentPreferences.addPage(prefState.initWithPage(
+                new Page(prefState.currentPreferences.allPages.size(), null, null, options), makeContents))
     }
 
     @Override
     def page(Map options, String name, String title, @DelegatesTo(me.biocomp.hubitat_ci.api.app_api.Page.class) Closure makeContents)
     {
-        prefState.currentPreferences.pages << prefState.initWithPage(
-                new Page(prefState.currentPreferences.pages.size(), name, title, options), makeContents)
+        prefState.currentPreferences.addPage(prefState.initWithPage(
+                new Page(prefState.currentPreferences.allPages.size(), name, title, options), makeContents))
     }
 
 
@@ -126,18 +126,12 @@ class AppPreferencesReader implements
         // Now need to run named closure that is adding dynamic pages
         def methodWithNoArgs = parentScript.getMetaClass().pickMethod(options.name as String, [] as Class[])
         if (methodWithNoArgs) {
-            prefState.currentPreferences.dynamicRegistrations << {
-                prefState.withCurrentDynamicMethod(options.name as String, { methodWithNoArgs.invoke(parentScript) })
-            }
-            return null
+            return prefState.withCurrentDynamicMethod(options.name as String, { methodWithNoArgs.invoke(parentScript) })
         } else {
             def methodWithMapArg = parentScript.getMetaClass().pickMethod(options.name as String,
                     [Map.class] as Class[])
             if (methodWithMapArg) {
-                prefState.currentPreferences.dynamicRegistrations << {
-                    prefState.withCurrentDynamicMethod(options.name as String, { methodWithNoArgs.invoke(parentScript, [:]) })
-                }
-                return null
+                return prefState.withCurrentDynamicMethod(options.name as String, { methodWithNoArgs.invoke(parentScript, [:]) })
             }
         }
 
@@ -337,7 +331,6 @@ class AppPreferencesReader implements
         prefState.initWithPreferences(preferences_,
                 {
                     makeContents()
-                    registerDynamicPages(preferences_)
                 })
 
         settingsContainer.preferencesReadingDone()
@@ -349,14 +342,6 @@ class AppPreferencesReader implements
     {
         settingsContainer.validateAfterPreferences(methodCall)
     }
-
-    /**
-     * Calls methods that create dynamic pages that were discovered previously
-     */
-    static void registerDynamicPages(Preferences preferences) {
-        preferences.dynamicRegistrations.each { it() }
-    }
-
 
     /*
 
