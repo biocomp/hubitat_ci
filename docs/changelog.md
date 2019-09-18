@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 0.8
+- Refreshed Hubitat APIs
+- Auto compare APIs with dumped files with methods
+- Fixed issue with page ordering (and reachability detection)
+- More tests added
+
 ## Version 0.7
 - Refreshed Hubitat APIs
 - userSettingsValues support for HubitatDeviceScript + tests.
