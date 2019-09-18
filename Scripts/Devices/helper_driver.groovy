@@ -79,9 +79,12 @@ def dumpClass(def cls)
     log.info(dumpClassImpl(cls))
 }
 
-private static String dumpClassImpl(def cls)
+private String dumpClassImpl(def cls)
 {
     def result = []
+
+    result << "Platform version: ${device.hub.firmwareVersionString}"
+    result << ""
     result << "${cls}:"
 
     if (cls.isEnum())

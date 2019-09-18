@@ -28,7 +28,7 @@ def updated()
     update()
 }
 
-private static void dumpMethods(def cls, List<String> result)
+private void dumpMethods(def cls, List<String> result)
 {
     final def skipTheseMethods = [
             "getProperty",
@@ -42,12 +42,10 @@ private static void dumpMethods(def cls, List<String> result)
             "getStaticMetaClass"
     ]
 
-    def shouldSkipMethod = { m ->
-        skipTheseMethods.any{m.name.endsWith(it)} || m.declaringClass.name == Object.name
-    }
-
     result << "Methods:["
 
+    // TODO: Can be replaced with OrderBy class:
+    // https://mrhaki.blogspot.com/2009/12/groovy-goodness-using-orderby.html
     def makeComparator = { comparators ->
         {
             a, b ->
@@ -62,8 +60,8 @@ private static void dumpMethods(def cls, List<String> result)
         }
     }
 
-    result.addAll(cls.methods.findAll{
-        !shouldSkipMethod(it)
+    result.addAll(cls.methods.findAll{ m ->
+        !skipTheseMethods.any{m.name.endsWith(it)} && m.declaringClass.name != Object.name
     }.sort(makeComparator([
             { a, b -> a.name.compareTo(b.name) },
             { a, b -> (a.parameters.size() <=> b.parameters.size()) },
@@ -96,9 +94,12 @@ def dumpClass(def cls)
     log.info(dumpClassImpl(cls))
 }
 
-private static String dumpClassImpl(def cls)
+private String dumpClassImpl(def cls)
 {
     def result = []
+
+    result << "Platform version: ${location.hubs[0].firmwareVersionString}"
+    result << ""
     result << "${cls}:"
 
     if (cls.isEnum())

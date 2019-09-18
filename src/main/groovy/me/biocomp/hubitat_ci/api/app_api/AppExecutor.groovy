@@ -1,5 +1,6 @@
 package me.biocomp.hubitat_ci.api.app_api
 
+import me.biocomp.hubitat_ci.api.common_api.AppType
 import me.biocomp.hubitat_ci.api.common_api.BaseExecutor
 import me.biocomp.hubitat_ci.api.common_api.ChildDeviceWrapper
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
@@ -63,7 +64,7 @@ interface AppExecutor extends
      * This is similar to getCurrentState(), but will immediately write and read from the backing data store.
      * Prefer using getCurrentState() over getAtomicState() when possible.
      */
-    abstract Map getAtomicState()
+    //abstract Map getAtomicState()
 
     /**
      * @return A map of name/value pairs that App can use to save and retrieve data across App executions.
@@ -190,6 +191,8 @@ interface AppExecutor extends
 
     /**
      * @return configuration settings for the app_api.
+     * Real class handles this particular property at runtime,
+     * but handling it via a method should work in most cases.
      */
     abstract Map getSettings()
 
@@ -294,4 +297,38 @@ interface AppExecutor extends
     abstract Long cloneChildApp(Long a, String unknown);
     abstract Long cloneChildApp(Long a, String unknown, Map options)
     abstract def component(Map options)
+
+    abstract AppType getAppType()
+    abstract List getAllDeviceIds()
+    abstract List getDashboardEventsMap(List a, Integer b)
+    abstract List getInstalledCapabilities()
+    abstract List getPages()
+    abstract List getThirdPartyHubIPList()
+    abstract Map getCurrentPage()
+    abstract Map getCurrentSection()
+    abstract Map getDashboard()
+    abstract Map getPreferences()
+
+    abstract Object appSetting(String setting)
+    abstract Object getAppMappings()
+    abstract String getAppTypeType()
+    abstract String getEXECUTOR_TYPE()
+
+    abstract boolean isAppInstalled(String a, String b)
+    abstract boolean isAppInstalled(String a, String b, String c)
+    abstract boolean isSystemTypeOrHubDeveloper()
+
+    abstract void metadata(Closure makeContents)
+    abstract void saveState()
+    abstract void setApp(InstalledAppWrapper app)
+    abstract void setAppMappings(Object mappings)
+    abstract void setAppType(AppType appType)
+    abstract void setAppTypeType(String appTypeType)
+    abstract void setChildApps(List childApps)
+    abstract void setCurrentPage(Map currentPageData)
+    abstract void setCurrentSection(Map sectionData)
+    abstract void setPages(List pages)
+    abstract void setPreferences(Map preferences)
+    abstract void setState(Map map)
+    abstract void setThirdPartyHubIPList(List ipList)
 };

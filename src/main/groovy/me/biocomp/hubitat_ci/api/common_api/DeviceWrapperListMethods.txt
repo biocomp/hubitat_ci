@@ -1,5 +1,6 @@
 Platform version: 2.1.4.130
 
+class com.hubitat.app.DeviceWrapperList:
 Methods:[
   public boolean java.util.ArrayList.add(java.lang.Object)
   public void java.util.ArrayList.add(int,java.lang.Object)
