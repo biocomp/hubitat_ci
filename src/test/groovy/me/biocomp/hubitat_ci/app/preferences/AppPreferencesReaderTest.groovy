@@ -154,7 +154,7 @@ preferences{
 
         then:
             def ex = thrown(AssertionError)
-            ex.message.contains("has to have pages (got 0), dynamic pages (got 0)")
+            ex.message.contains("has to have at least one page")
     }
 
     def "preferences() can't be missing"() {
@@ -449,8 +449,32 @@ def p4()
 """]
     }
 
+    def "Page reachability works correctly even if first page is dynamic, second is static"()
+    {
+        setup:
+            def script = """
+preferences{
+    page name: "p1"
+    page("p2", "tit") {${PreferencesValidationCommon.validSection}}
+}
+    
+def p1()
+{
+    dynamicPage(name: "p1", title: "tit", nextPage: 'p2') {${PreferencesValidationCommon.validSection}}
+}
+"""
+            final def preferences = new HubitatAppSandbox(script).readPreferences(validationFlags: [Flags.AllowMissingInstall])
+
+        expect:
+            preferences.allPages[0].index == 0
+            preferences.allPages[0].readName() == "p1"
+
+            preferences.allPages[1].index == 1
+            preferences.allPages[1].readName() == "p2"
+    }
+
     @Unroll
-    def "install needs to be specified for mult-ipage settings"(String script) {
+    def "install needs to be specified for multi-page settings"(def script) {
         when:
             new HubitatAppSandbox(script).readPreferences()
 
@@ -486,7 +510,7 @@ def p1() { dynamicPage(name: "p1", title: "t1", install:false) {${PreferencesVal
     }
 
     @Unroll
-    def "dynamicPage() name needs to match method it was created by"(String script) {
+    def "dynamicPage() name needs to match method it was created by"(def script) {
         when:
             new HubitatAppSandbox(script).readPreferences()
 
@@ -513,7 +537,8 @@ def baz() { dynamicPage(name: "makePage2", title: "tit2"){ ${PreferencesValidati
 def makePage2Method() { foo() }"""]
     }
 
-    def "Only one dynamicPage() can be eventually created by page() with reference to method name"(String script) {
+    @Unroll
+    def "Only one dynamicPage() can be eventually created by page() with reference to method name"(def script) {
         when:
             new HubitatAppSandbox(script).readPreferences()
 

@@ -7,6 +7,26 @@ import groovy.transform.TypeChecked
 @TypeChecked
 class Preferences
 {
+    /**
+     * Pages for multiple-page apps.*/
+    private final List<Page> pages = []
+
+    /**
+     * Dynamic pages for multiple-page apps.*/
+    private final List<Page> dynamicPages = []
+
+    /**
+     * Pages + dynamic pages in order of declaration
+     */
+    private final List<Page> allPages = []
+
+    final Map options = [:]
+
+    /**
+     * Used when preferences().section() is used directly.
+     * Not compatible with multiple pages.*/
+    Page specialSinglePage = null
+
     @CompileStatic
     void assignOptions(Map options) {
         if (options != null) {
@@ -14,18 +34,32 @@ class Preferences
         }
     }
 
-    /**
-     * Pages for multiple-page apps.*/
-    final List<Page> pages = []
+    void addPage(Page p)
+    {
+        pages << p
+        allPages << p
+    }
 
-    /**
-     * Dynamic pages for multiple-page apps.*/
-    final List<Page> dynamicPages = []
+    void addDynamicPage(Page p)
+    {
+        dynamicPages << p
+        allPages << p
+    }
 
-    /**
-     * Methods to be called to generate dynamic pages.
-     * Called via registerDynamicPages()*/
-    final List<Closure> dynamicRegistrations = []
+    List<Page> getPages()
+    {
+        return pages
+    }
+
+    List<Page> getDynamicPages()
+    {
+        return dynamicPages
+    }
+
+    List<Page> getAllPages()
+    {
+        return allPages
+    }
 
     @CompileStatic
     List<Input> getAllInputs()
@@ -35,21 +69,9 @@ class Preferences
         }.flatten()
     }
 
-    final Map options = [:]
-
-    /**
-     * Used when preferences().section() is used directly.
-     * Not compatible with multiple pages.*/
-    Page specialSinglePage = null
-
     boolean hasSpecialSinglePage()
     {
         return this.@specialSinglePage != null
-    }
-
-    List<Page> getAllPages()
-    {
-        return pages + dynamicPages
     }
 
     Page getSpecialSinglePage() {
@@ -57,7 +79,7 @@ class Preferences
 
         if (!hasSpecialSinglePage()) {
             this.@specialSinglePage = Page.makeSinglePage()
-            pages << this.@specialSinglePage
+            addPage(this.@specialSinglePage)
         }
 
         return this.@specialSinglePage
