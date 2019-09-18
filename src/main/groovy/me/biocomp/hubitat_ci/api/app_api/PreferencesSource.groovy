@@ -11,7 +11,7 @@ interface PreferencesSource extends Preferences, Page, Section {
      *                 refreshInterval (Integer) - refreshes the specific page of the SmartApp on
      *                 the mobile device for the integer number of seconds
      *                 */
-    abstract def dynamicPage(Map options, Closure makeContents)
+    abstract Map dynamicPage(Map options, Closure makeContents)
 
     /**
      * Preferences for the app_api

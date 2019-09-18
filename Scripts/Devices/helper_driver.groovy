@@ -13,16 +13,20 @@ void off() {}
 
 private static void dumpMethods(def cls, List<String> result)
 {
-    final Set<String> skipTheseMethods = [
+    final def skipTheseMethods = [
             "getProperty",
             "setProperty",
             "setMetaClass",
             "getMetaClass",
-            "invokeMethod"
-    ] as Set
+            "invokeMethod",
+            "toString",
+            "methodMissing",
+            "propertyMissing",
+            "getStaticMetaClass"
+    ]
 
     def shouldSkipMethod = { m ->
-        skipTheseMethods.contains(m.name) || m.declaringClass.name == Object.name || m.name.endsWith("toString")
+        skipTheseMethods.any{m.name.endsWith(it)} || m.declaringClass.name == Object.name
     }
 
     result << "Methods:["
@@ -75,9 +79,12 @@ def dumpClass(def cls)
     log.info(dumpClassImpl(cls))
 }
 
-private static String dumpClassImpl(def cls)
+private String dumpClassImpl(def cls)
 {
     def result = []
+
+    result << "Platform version: ${device.hub.firmwareVersionString}"
+    result << ""
     result << "${cls}:"
 
     if (cls.isEnum())

@@ -1,5 +1,6 @@
 Platform version: 2.1.4.130
 
+class com.hubitat.hub.executor.AppExecutor:
 Methods:[
   public com.hubitat.app.InstalledAppWrapper com.hubitat.hub.executor.AppExecutor.addChildApp(java.lang.String,java.lang.String,java.lang.String)
   public com.hubitat.app.InstalledAppWrapper com.hubitat.hub.executor.AppExecutor.addChildApp(java.lang.String,java.lang.String,java.lang.String,java.util.Map)
@@ -236,7 +237,6 @@ Methods:[
   public void com.hubitat.hub.executor.AppExecutor.subscribe(java.lang.Object,java.lang.Object)
   public void com.hubitat.hub.executor.AppExecutor.subscribe(java.lang.Object,java.lang.String,java.lang.Object)
   public void com.hubitat.hub.executor.AppExecutor.subscribe(java.lang.Object,java.lang.String,java.lang.Object,java.util.Map)
-  public groovy.lang.MetaClass com.hubitat.hub.executor.AppExecutor.super$2$$getStaticMetaClass()
   public static java.lang.Object com.hubitat.hub.executor.BaseExecutor.textToSpeech(java.lang.String)
   public static java.lang.Object com.hubitat.hub.executor.BaseExecutor.textToSpeech(java.lang.String,java.lang.String)
   public java.lang.Object com.hubitat.hub.executor.BaseExecutor.this$dist$get$1(java.lang.String)
@@ -265,4 +265,8 @@ Methods:[
   public void com.hubitat.hub.executor.AppExecutor.unsubscribe(java.util.List,java.lang.String)
   public void com.hubitat.hub.executor.AppExecutor.unsubscribe(com.hubitat.app.DeviceWrapper,java.lang.String,java.lang.String)
   public void com.hubitat.hub.executor.AppExecutor.unsubscribe(java.util.List,java.lang.String,java.lang.String)
+]
+
+CustomMethods:[
+  public Map com.hubitat.hub.executor.AppExecutor.getSettings() # Seems like AppExecutor implements this property via custom 'getProperty' or 'propertyMissing'. It's not visible in properties or declared fields either.
 ]

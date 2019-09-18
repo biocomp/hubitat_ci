@@ -1,5 +1,6 @@
 Platform version: 2.1.4.130
 
+class com.hubitat.hub.executor.DeviceExecutor
 Methods:[
   public com.hubitat.app.ChildDeviceWrapper com.hubitat.hub.executor.DeviceExecutor.addChildDevice(java.lang.String,java.lang.String)
   public com.hubitat.app.ChildDeviceWrapper com.hubitat.hub.executor.DeviceExecutor.addChildDevice(java.lang.String,java.lang.String,java.lang.String)
@@ -225,8 +226,7 @@ Methods:[
   public void com.hubitat.hub.executor.DeviceExecutor.state(java.util.Map)
   public void com.hubitat.hub.executor.DeviceExecutor.state(java.util.Map,java.lang.String)
   public java.util.Map com.hubitat.hub.executor.DeviceExecutor.stringToMap(java.lang.String)
-  public java.lang.String com.hubitat.hub.executor.DeviceExecutor.super$1$toString()
-  public groovy.lang.MetaClass com.hubitat.hub.executor.DeviceExecutor.super$2$$getStaticMetaClass()
+    public groovy.lang.MetaClass com.hubitat.hub.executor.DeviceExecutor.super$2$$getStaticMetaClass()
   public void com.hubitat.hub.executor.DeviceExecutor.telnetClose()
   public void com.hubitat.hub.executor.DeviceExecutor.telnetConnect(java.lang.String,int,java.lang.String,java.lang.String)
   public void com.hubitat.hub.executor.DeviceExecutor.telnetConnect(java.util.Map,java.lang.String,int,java.lang.String,java.lang.String)
@@ -250,8 +250,7 @@ Methods:[
   public static java.util.Date com.hubitat.hub.executor.BaseExecutor.timeTodayAfter(java.lang.String,java.lang.String)
   public static java.util.Date com.hubitat.hub.executor.BaseExecutor.timeTodayAfter(java.lang.String,java.lang.String,java.util.TimeZone)
   public static java.util.Date com.hubitat.hub.executor.BaseExecutor.toDateTime(java.lang.String)
-  public java.lang.String com.hubitat.hub.executor.DeviceExecutor.toString()
-  public void com.hubitat.hub.executor.BaseExecutor.unschedule()
+    public void com.hubitat.hub.executor.BaseExecutor.unschedule()
   public void com.hubitat.hub.executor.BaseExecutor.unschedule(groovy.lang.MetaMethod)
   public void com.hubitat.hub.executor.BaseExecutor.unschedule(java.lang.String)
   public void com.hubitat.hub.executor.DeviceExecutor.updateDataValue(java.lang.String,java.lang.String)

@@ -1,6 +1,6 @@
 package me.biocomp.hubitat_ci.api.common_api
 
-interface BaseScheduler
+trait BaseScheduler
 {
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.

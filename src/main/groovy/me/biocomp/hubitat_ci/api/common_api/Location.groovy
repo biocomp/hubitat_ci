@@ -1,66 +1,5 @@
-package me.biocomp.hubitat_ci.api.common_api;
+package me.biocomp.hubitat_ci.api.common_api
 
-//import me.biocomp.hubitat_ci.api.Hub
-//import me.biocomp.hubitat_ci.api.Mode
-
-/*
-Meta/Common:
-public java.util.Map com.hubitat.hub.domain.Location.toMap(),
-public java.util.Map com.hubitat.hub.domain.Location.toMap(boolean),
-public java.lang.String com.hubitat.hub.domain.Location.toString()
-public groovy.lang.MetaClass com.hubitat.hub.domain.Location.getMetaClass(),
-public void com.hubitat.hub.domain.Location.setMetaClass(groovy.lang.MetaClass),
-public java.lang.Object com.hubitat.hub.domain.Location.getProperty(java.lang.String),
-public java.lang.Object com.hubitat.hub.domain.Location.propertyMissing(java.lang.String),
-public void com.hubitat.hub.domain.Location.setProperty(java.lang.String,java.lang.Object),
-public java.lang.Object com.hubitat.hub.domain.Location.invokeMethod(java.lang.String,java.lang.Object),
-
-Getters/Main methods:
-public void com.hubitat.hub.domain.Location.createVariable(java.lang.String),
-public void com.hubitat.hub.domain.Location.createVariable(java.lang.String,java.util.List),
-public void com.hubitat.hub.domain.Location.removeVariable(java.lang.String),
-
-++ public boolean com.hubitat.hub.domain.Location.getContactBookEnabled(),
-++ public com.hubitat.hub.domain.Mode com.hubitat.hub.domain.Location.getCurrentMode(),
-public java.lang.String com.hubitat.hub.domain.Location.getFormattedLatitude(),
-public java.lang.String com.hubitat.hub.domain.Location.getFormattedLongitude(),
-public java.lang.String com.hubitat.hub.domain.Location.getHelloHome(),
-++ public java.util.List com.hubitat.hub.domain.Location.getHubs(),
-++ public java.lang.Long com.hubitat.hub.domain.Location.getId(),
-++ public java.math.BigDecimal com.hubitat.hub.domain.Location.getLatitude(),
-++ public java.math.BigDecimal com.hubitat.hub.domain.Location.getLongitude(),
-++ public java.lang.String com.hubitat.hub.domain.Location.getMode(),
-++ public java.util.List com.hubitat.hub.domain.Location.getModes(),
-++ public java.lang.String com.hubitat.hub.domain.Location.getName(),
-public java.util.Date com.hubitat.hub.domain.Location.getSunrise(),
-public java.util.Date com.hubitat.hub.domain.Location.getSunset(),
-++ public java.lang.String com.hubitat.hub.domain.Location.getTemperatureScale(),
-public static java.lang.String com.hubitat.hub.domain.Location.getTimeFormat(),
-++ public java.util.TimeZone com.hubitat.hub.domain.Location.getTimeZone(),
-public java.util.List com.hubitat.hub.domain.Location.getTrueModes(),
-public java.util.List com.hubitat.hub.domain.Location.getVariableValues(java.lang.String),
-public java.lang.Long com.hubitat.hub.domain.Location.getVersion(),
-++ public java.lang.String com.hubitat.hub.domain.Location.getZipCode(),
-public boolean com.hubitat.hub.domain.Location.isContactBookEnabled(),
-
-Setters:
-public void com.hubitat.hub.domain.Location.setContactBookEnabled(boolean),
-public void com.hubitat.hub.domain.Location.setCurrentMode(com.hubitat.hub.domain.Mode),
-public void com.hubitat.hub.domain.Location.setHelloHome(java.lang.String),
-public void com.hubitat.hub.domain.Location.setHubs(java.util.List),
-public void com.hubitat.hub.domain.Location.setId(java.lang.Long),
-public void com.hubitat.hub.domain.Location.setLatitude(java.math.BigDecimal),
-public void com.hubitat.hub.domain.Location.setLongitude(java.math.BigDecimal),
-public void com.hubitat.hub.domain.Location.setMode(java.lang.String),
-public void com.hubitat.hub.domain.Location.setName(java.lang.String),
-public void com.hubitat.hub.domain.Location.setSunrise(java.util.Date),
-public void com.hubitat.hub.domain.Location.setSunset(java.util.Date),
-public void com.hubitat.hub.domain.Location.setTemperatureScale(java.lang.String),
-public void com.hubitat.hub.domain.Location.setTimeZone(java.util.TimeZone),
-public void com.hubitat.hub.domain.Location.setTrueModes(java.util.List),
-public void com.hubitat.hub.domain.Location.setVersion(java.lang.Long),
-public void com.hubitat.hub.domain.Location.setZipCode(java.lang.String),
- */
 /**
  * A Location is user’s geo-location, such as "Home" or "office".
  *
@@ -69,32 +8,60 @@ public void com.hubitat.hub.domain.Location.setZipCode(java.lang.String),
  * that is the Location into which the App or Device was installed.
  */
 interface Location {
-    abstract boolean getContactBookEnabled();
+    abstract boolean getContactBookEnabled()
 
-    abstract Mode getMode();
-    abstract Mode getCurrentMode();
-    abstract List<Mode> getModes();
+    abstract String getMode()
+    abstract Mode getCurrentMode()
+    abstract List<Mode> getModes()
 
-    abstract String getName();
+    abstract String getName()
 
-    abstract Long getId();
+    abstract Long getId()
 
     /**
      * @throws Exception if mode is invalid
      */
-    abstract void setMode(String mode);
+    abstract void setMode(String mode)
 
     /**
      * @return "C" or "F"
      */
-    abstract String getTemperatureScale();
+    abstract String getTemperatureScale()
 
-    abstract TimeZone getTimeZone();
+    abstract TimeZone getTimeZone()
 
-    abstract String getZipCode();
+    abstract String getZipCode()
 
-    abstract List<Hub> getHubs();
+    abstract List<Hub> getHubs()
 
-    abstract BigDecimal getLatitude();
-    abstract BigDecimal getLongitude();
+    abstract BigDecimal getLatitude()
+    abstract BigDecimal getLongitude()
+
+    abstract Date getSunrise()
+    abstract Date getSunset()
+    abstract List getTrueModes()
+    abstract List getVariableValues(String name)
+    abstract Long getVersion()
+    abstract Map toMap()
+    abstract Map toMap(boolean a)
+    abstract String getFormattedLatitude()
+    abstract String getFormattedLongitude()
+    abstract String getHelloHome()
+    abstract String getTimeFormat()
+    abstract boolean isContactBookEnabled()
+    abstract void createVariable(String name)
+    abstract void createVariable(String name, List unknown)
+    abstract void removeVariable(String name)
+    abstract void setContactBookEnabled(boolean enable)
+    abstract void setHelloHome(String helloString)
+    abstract void setId(Long id)
+    abstract void setLatitude(BigDecimal latitude)
+    abstract void setLongitude(BigDecimal longitude)
+    abstract void setName(String name)
+    abstract void setSunrise(Date sunrize)
+    abstract void setSunset(Date sunset)
+    abstract void setTemperatureScale(String cOrF)
+    abstract void setTimeZone(TimeZone zone)
+    abstract void setVersion(Long version)
+    abstract void setZipCode(String zip)
 }
