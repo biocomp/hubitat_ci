@@ -61,7 +61,7 @@ One of them is `api`. It should be implementation of `me.biocomp.hubitat_ci.api.
 
 Produced script object will redirect calls to the unknown apis to this `api` object.
 
-Given that [appscript.groovy](https://github.com/biocomp/hubitat_ci_example/blob/master/minimal/appscript.groovy) script has method (and `getHubUID()` is a method provided by Hubitat):
+Given that [app_script.groovy](https://github.com/biocomp/hubitat_ci_example/blob/master/how_to_test/app_script.groovy) script has method (and `getHubUID()` is a method provided by Hubitat):
 ```groovy
 def myHubUIdMethod()
 {
@@ -95,7 +95,7 @@ The script object is returned from `HubitatAppSandbox`/`HubitatAppSandbox`'s `ru
 
 In order to update its metaclass before returning from run(), use another `run()` parameter: `customizeScriptBeforeRun`. It takes a closure that receives a script object to be updated.
 
-Given that [appscript.groovy](https://github.com/biocomp/hubitat_ci_example/blob/master/minimal/appscript.groovy) script has:
+Given that [app_script.groovy](https://github.com/biocomp/hubitat_ci_example/blob/master/how_to_test/app_script.groovy) script has:
 ```groovy
 private def scriptPrivateInternalMethod()
 {
