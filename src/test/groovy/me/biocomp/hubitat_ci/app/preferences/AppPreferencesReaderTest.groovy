@@ -293,7 +293,7 @@ def userProvidedMethodToMakeStaticPages()
 
     def "dynamicPage()'s contents can use input values from previous pages"() {
         given:
-            def preferences = new HubitatAppSandbox($/
+            def script = new HubitatAppSandbox($/
 preferences{
     page("static page", "static title"){
         section(){
@@ -301,42 +301,52 @@ preferences{
         }
     }
 
-    page(name: "makePage2")
-    page(name: "makePage3")
+    page(name: "p2")
+    page(name: "p3")
 }
 
-def makePage2()
+def p2()
 {
-    dynamicPage(name: "makePage2", title: "tit2", install: true){
+    dynamicPage(name: "p2", title: "tit2", install: true){
         section("$${in1} section, unknown: $${blah}"){
             paragraph "$${in1} paragraph1, unknown: $${in2}"
-            input "in2", "bool", title: "in2 = $${in1} input type"
+            input "in2", "text", title: "in2 = $${in1} input type"
+            input "in3", "text", title: "in3 title"
         }
     }
 }
 
-def makePage3()
+def p3()
 {
-    dynamicPage(name: "makePage3", title: "tit3"){
-        section("$${in2} section"){
-            paragraph "$${in1} paragraph2"
+    dynamicPage(name: "p3", title: "tit3"){
+        section("'$${in2}' '$${in3}' section"){
+            paragraph "'$${in1}' '$${in3}' paragraph2"
         }
     }
 }
-/$).readPreferences(userSettingValues: [in1: ["_": "input1 val everywhere"],
-                                        in2: ["makePage2": null,
-                                              "makePage3": "input2 val on page3",
-                                              "_"        : "should not be used"]],
-                    validationFlags: [Flags.AllowReadingNonInputSettings, Flags.AllowUnreachablePages])
+
+String readValuesOutsidePage() 
+{
+    "in1 = '$${in1}', in2 = '$${in2}', in3 = '$${in3}'"
+}
+/$).run(userSettingValues: [in1: ["_": "input1 val everywhere"],
+                                        in2: ["p2": null,
+                                              "p3": "input2 val on page3",
+                                              "_"        : "input2 used by default"],
+                                        in3: "input3 val everywhere"],
+                    validationFlags: [Flags.DontValidateDefinition, Flags.AllowReadingNonInputSettings, Flags.AllowUnreachablePages])
 
         expect:
+            def preferences = script.getProducedPreferences()
             preferences.dynamicPages[0].sections[0].title == 'input1 val everywhere section, unknown: null'
             preferences.dynamicPages[0].sections[0].children[
                     0].text == 'input1 val everywhere paragraph1, unknown: null'
             preferences.dynamicPages[0].sections[0].children[1].options.title == 'in2 = input1 val everywhere input type'
 
-            preferences.dynamicPages[1].sections[0].title == 'input2 val on page3 section'
-            preferences.dynamicPages[1].sections[0].children[0].text == 'input1 val everywhere paragraph2'
+            preferences.dynamicPages[1].sections[0].title == "'input2 val on page3' 'input3 val everywhere' section"
+            preferences.dynamicPages[1].sections[0].children[0].text == "'input1 val everywhere' 'input3 val everywhere' paragraph2"
+
+            script.readValuesOutsidePage() == "in1 = 'input1 val everywhere', in2 = 'input2 used by default', in3 = 'input3 val everywhere'"
     }
 
     def "dynamicPage()'s contents can't use unknown inputs in strict mode"() {
@@ -371,7 +381,7 @@ def makePage2()
     }
 
     @Unroll
-    def "href and page's nextPage fail if referring to invalid pages"(String script) {
+    def "href and page's nextPage fail if referring to invalid pages"(def script) {
         when:
             new HubitatAppSandbox(script).readPreferences(validationFlags: [Flags.AllowMissingInstall])
 
@@ -400,7 +410,7 @@ preferences{
     }
 
     @Unroll
-    def "Page is not reachable (via initial pages or nextPage or href), thus validation fails"(String script) {
+    def "Page is not reachable (via initial pages or nextPage or href), thus validation fails"(def script) {
         when:
             new HubitatAppSandbox(script).readPreferences(validationFlags: [Flags.AllowMissingInstall])
 

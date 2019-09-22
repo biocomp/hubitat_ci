@@ -79,7 +79,7 @@ class SettingsContainer implements
 
             if (currentPageName && userSettingMap.containsKey(currentPageName)) {
                 return userSettingValue = userSettingMap.get(currentPageName)
-            } else if (currentPageName && userSettingMap.containsKey('_')) {
+            } else if (userSettingMap.containsKey('_')) {
                 return userSettingValue = userSettingMap.get("_")
             }
         }
