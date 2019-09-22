@@ -3,7 +3,12 @@ pool:
   demands: java
 
 trigger:
-    [pr] # Should run on every pull request, and not in master branch only.
+    [master] # Run on every commit to master
+
+pr:
+  branches:
+    include:
+    - '*'
 
 steps:
 - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
