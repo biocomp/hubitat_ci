@@ -9,7 +9,8 @@ class CapturingLog implements Log
         debug,
         info,
         warn,
-        error
+        error,
+        trace
     }
 
     @Override
@@ -30,6 +31,11 @@ class CapturingLog implements Log
     @Override
     void error(String record) {
         records << new Tuple(Level.error, record)
+    }
+
+    @Override
+    void trace(String record) {
+        records << new Tuple(Level.trace, record)
     }
 
     ArrayList<Tuple> records = new ArrayList<Tuple>()

@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.9
+- Added trace() method to Log interface
+
 ## Version 0.8
 - Refreshed Hubitat APIs
 - Auto compare APIs with dumped files with methods

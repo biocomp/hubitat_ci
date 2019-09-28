@@ -3,6 +3,7 @@ package me.biocomp.hubitat_ci.device.metadata
 import me.biocomp.hubitat_ci.api.common_api.Log
 import me.biocomp.hubitat_ci.api.device_api.DeviceExecutor
 import me.biocomp.hubitat_ci.device.HubitatDeviceSandbox
+import me.biocomp.hubitat_ci.util.CapturingLog
 import me.biocomp.hubitat_ci.validation.Flags
 import spock.lang.Unroll
 
@@ -27,7 +28,7 @@ metadata {
 
     def "Reading complex configuration with setting additional unrelated state should apparently work"() {
         setup:
-            def log = Mock(Log)
+            def log = new CapturingLog()
             DeviceExecutor api = Mock { _ * getLog() >> log }
 
             HubitatDeviceSandbox sandbox = new HubitatDeviceSandbox("""

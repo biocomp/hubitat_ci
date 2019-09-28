@@ -11,5 +11,6 @@ interface Log
     void debug(String record)
     void warn(String record)
     void error(String record)
+    void trace(String record)
 }
 
