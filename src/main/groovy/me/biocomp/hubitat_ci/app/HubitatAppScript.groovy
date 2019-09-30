@@ -5,6 +5,7 @@ import me.biocomp.hubitat_ci.app.preferences.AppPreferencesReader
 import me.biocomp.hubitat_ci.app.preferences.Preferences
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import me.biocomp.hubitat_ci.util.ScriptUtil
 import me.biocomp.hubitat_ci.validation.DebuggerDetector
 
 /*
@@ -135,9 +136,6 @@ abstract class HubitatAppScript extends
     @CompileStatic
     Object getProperty(String property) {
         switch (property) {
-            case "metaClass":
-                return getMetaClass();
-
             case "params":
                 if (this.@injectedMappingHandlerData != null) {
                     return this.@injectedMappingHandlerData['params']
@@ -155,29 +153,7 @@ abstract class HubitatAppScript extends
         // default: - continue processing below
         }
 
-        def getterMethodName = "get${property.capitalize()}"
-        try {
-            // Simple implementation of redirecting getter back to script class (if present)
-            // Don't need to support MOP here, everything can be mocked via AppExecutorBase interface.
-            def getter = this.getClass().getMethod(getterMethodName, new Class[0])
-            return getter.invoke(this);
-        } catch (NoSuchMethodException) {
-            // It's OK, let's hope it'll be found in metaclass
-        }
-
-        // There's a property, return it.
-        if (getMetaClass().hasProperty(this, property)) {
-            return getMetaClass().getProperty(this as GroovyObjectSupport, property)
-        }
-        // There's a method handler taking one arg (Event), return that.
-        else if (getMetaClass().pickMethod(property, Object.class) != null) {
-            return this.&"${property}"
-        }
-
-        // If no such property, try taking it from userSettingsMap
-        if (!getMetaClass().hasProperty(this, property)) {
-            return this.@userSettingsMap.get(property)
-        }
+        return ScriptUtil.handleGetProperty(property, this, this.@userSettingsMap)
     }
 
     /*
@@ -189,10 +165,6 @@ abstract class HubitatAppScript extends
     @CompileStatic
     void setProperty(String property, Object newValue) {
         switch (property) {
-            case "metaClass":
-                setMetaClass((MetaClass) newValue);
-                return;
-
             case "params":
                 if (this.@injectedMappingHandlerData != null) {
                     throw new ReadOnlyPropertyException(
@@ -210,7 +182,7 @@ abstract class HubitatAppScript extends
                 break;
         }
 
-        this.@userSettingsMap.put(property, newValue)
+        ScriptUtil.handleSetProperty(property, this, newValue, this.@userSettingsMap)
     }
 
     @Override

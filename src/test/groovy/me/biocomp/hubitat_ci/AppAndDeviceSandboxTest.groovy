@@ -123,13 +123,11 @@ class AppAndDeviceSandboxTest extends
         Specification
 {
     /**
-     * Add HubitatAppSandbox and HubitatDeviceSandbox permutations
-     */
-    List<List> combineWithSandboxes(List<List> inputs)
-    {
+     * Add HubitatAppSandbox and HubitatDeviceSandbox permutations*/
+    List<List> combineWithSandboxes(List<List> inputs) {
         def results = []
 
-        inputs.each{
+        inputs.each {
             results << (it.clone() << HubitatAppSandbox)
             results << (it.clone() << HubitatDeviceSandbox)
         }
@@ -140,7 +138,7 @@ class AppAndDeviceSandboxTest extends
     List<List<String>> makeScriptVariations(List<List<String>> expressionsAndResults) {
         def result = []
 
-        combineWithSandboxes(expressionsAndResults).each{
+        combineWithSandboxes(expressionsAndResults).each {
             result << it
             result << ["""
 def foo() {
@@ -153,7 +151,9 @@ def foo() {
     }
 
     @Unroll
-    def "Expression \"#script\" is not allowed and should fail to compile for #sandboxClass.simpleName"(String script, String expectedErrorPart, Class sandboxClass) {
+    def "Expression \"#script\" is not allowed and should fail to compile for #sandboxClass.simpleName"(
+            String script, String expectedErrorPart, Class sandboxClass)
+    {
         when:
             def sandbox = sandboxClass.newInstance(script)
 
@@ -165,27 +165,27 @@ def foo() {
             ex.message.contains(expectedErrorPart)
 
         where:
-            [script, expectedErrorPart, sandboxClass] << makeScriptVariations([
-                 ["println 'a'", "println"],
-                 ["print 'a'", "print"],
-                 ["[].execute()", "execute"],
-                 ["String s\ns.getClass()", "getClass"],
-                 ["String s\ns.getMetaClass()", "getMetaClass"],
-                 ["String s\ns.setMetaClass(null)", "setMetaClass"],
-                 ["String s\ns.propertyMissing()", "propertyMissing"],
-                 ["String s\ns.methodMissing()", "methodMissing"],
-                 ["String s\ns.invokeMethod('a')", "invokeMethod"],
-                 ["getProducedPreferences()", "getProducedPreferences"],
-                 ["void foo() { def prefs = producedPreferences }", "producedPreferences"],
-                 ["getProducedDefinition()", "getProducedDefinition"],
-                 ["void foo() { def prefs = producedDefinition }", "producedDefinition"],
-                 ["printf", "printf"],
-                 ["sleep 10", "sleep"]
-            ])
+            [script, expectedErrorPart, sandboxClass] << makeScriptVariations([["println 'a'", "println"],
+                                                                               ["print 'a'", "print"],
+                                                                               ["[].execute()", "execute"],
+                                                                               ["String s\ns.getClass()", "getClass"],
+                                                                               ["String s\ns.getMetaClass()", "getMetaClass"],
+                                                                               ["String s\ns.setMetaClass(null)", "setMetaClass"],
+                                                                               ["String s\ns.propertyMissing()", "propertyMissing"],
+                                                                               ["String s\ns.methodMissing()", "methodMissing"],
+                                                                               ["String s\ns.invokeMethod('a')", "invokeMethod"],
+                                                                               ["getProducedPreferences()", "getProducedPreferences"],
+                                                                               ["void foo() { def prefs = producedPreferences }", "producedPreferences"],
+                                                                               ["getProducedDefinition()", "getProducedDefinition"],
+                                                                               ["void foo() { def prefs = producedDefinition }", "producedDefinition"],
+                                                                               ["printf", "printf"],
+                                                                               ["sleep 10", "sleep"]])
     }
 
     @Unroll
-    def "#description not allowed and should fail to compile for #sandboxClass.simpleName"(String script, String expectedErrorPart, String description, Class sandboxClass) {
+    def "#description not allowed and should fail to compile for #sandboxClass.simpleName"(
+            String script, String expectedErrorPart, String description, Class sandboxClass)
+    {
         when:
             sandboxClass.newInstance(script).compile()
 
@@ -194,15 +194,16 @@ def foo() {
             ex.message.contains(expectedErrorPart)
 
         where:
-            [script, expectedErrorPart, description, sandboxClass] << combineWithSandboxes([
-                ["class MyShinyNewClass{}", "MyShinyNewClass", "Defining a new class"],
-                ["System.out.print 'Boom!'", "System.out", "Calling System.out"],
-                ["File.createNewFile('foo.txt')", "File", "Creating a File"]
-            ])
+            [script, expectedErrorPart, description, sandboxClass] << combineWithSandboxes(
+                    [["class MyShinyNewClass{}", "MyShinyNewClass", "Defining a new class"],
+                     ["System.out.print 'Boom!'", "System.out", "Calling System.out"],
+                     ["File.createNewFile('foo.txt')", "File", "Creating a File"]])
     }
 
     @Unroll
-    def "Local variable with no 'def' or type is not confused with property for #sandboxClass.simpleName"(Class sandboxClass, Class executorClass) {
+    def "Local variable with no 'def' or type is not confused with property for #sandboxClass.simpleName"(
+            Class sandboxClass, Class executorClass)
+    {
         given:
             def log = Mock(Log)
             def api = Mock(executorClass)
@@ -225,8 +226,8 @@ def foo() {
             _ * api.getLog() >> log
 
         where:
-            sandboxClass | executorClass
-            HubitatAppSandbox | AppExecutor
+            sandboxClass         | executorClass
+            HubitatAppSandbox    | AppExecutor
             HubitatDeviceSandbox | DeviceExecutor
     }
 
@@ -276,7 +277,9 @@ def foo() {
     @Unroll
     def "can override settings with userSettingValues for #sandboxClass.simpleName"(Class sandboxClass) {
         setup:
-            final def script = """
+            def script = null
+            if (sandboxClass == HubitatAppSandbox) {
+                script = """
 preferences {
     page(name:"mainPage", title:"Settings", install: true, uninstall: true) {
         section() {
@@ -285,21 +288,196 @@ preferences {
     }
 }
 """
+            } else {
+                script = """
+metadata {
+    preferences {
+        input (name:"testText", type: "text", title: "Test text", required: true)
+    }
+}
+"""
+            }
+            final List<Flags> flags = [Flags.DontValidateDefinition, Flags.DontValidatePreferences,
+                                       Flags.DontRequireParseMethodInDevice]
             String value = null
-
         when: 'Setting isn\'t overridden'
-            value = new HubitatAppSandbox(script).run(userSettingValues: [:],
-                    validationFlags: [Flags.DontValidateDefinition]).settings.testText
+            def sandbox = sandboxClass.newInstance(script).run(userSettingValues: [:], validationFlags: flags)
+            value = sandboxClass == HubitatAppSandbox ? sandbox.settings.testText : sandbox.testText
         then:
             value == null
-
         when: 'Setting is set to something'
-            value = new HubitatAppSandbox(script).run(userSettingValues: ['testText': 'My test text'],
-                    validationFlags: [Flags.DontValidateDefinition]).settings.testText
+            sandbox = sandboxClass.newInstance(script).run(userSettingValues: ['testText': 'My test text'],
+                    validationFlags: flags)
+            value = sandboxClass == HubitatAppSandbox ? sandbox.settings.testText : sandbox.testText
         then:
             value == 'My test text'
-
         where:
             sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+    }
+
+    @Unroll
+    def "#sandboxClass.simpleName: Getting its own method as closure is not confused with input reading and produces a string"(
+            Class sandboxClass, Class executorClass)
+    {
+        setup:
+            final def api = Mock(executorClass)
+            final def scriptText = """
+int myMethod1()
+{
+    return 42
+}
+
+int myMethod1(int val)
+{
+    return val
+}
+
+String myMethod2()
+{
+    return "Some string"
+}
+
+private static String myStaticPrivateMethod3()
+{
+    return "String from static method3"
+}
+
+def takesMethod(def method)
+{
+    return method
+}
+
+def getMethod1()
+{
+    return takesMethod(myMethod1)
+}
+
+def getMethod2()
+{
+    return takesMethod(myMethod2)
+}
+
+def getMethod3()
+{
+    return takesMethod(myStaticPrivateMethod3)
+}
+
+void scheduleUnschedule()
+{
+    schedule("cron string", myStaticPrivateMethod3)
+    unschedule(myMethod1)
+    unschedule(myMethod2)
+}
+"""
+
+            final List<Flags> flags = [Flags.DontValidateMetadata, Flags.DontValidateDefinition, Flags.DontValidatePreferences,
+                                       Flags.DontRequireParseMethodInDevice]
+
+        when:
+            def script = sandboxClass.newInstance(scriptText).run(validationFlags: flags, api: api)
+            script.scheduleUnschedule()
+
+        then:
+            script.getMethod1() == "myMethod1"
+            script.getMethod2() == "myMethod2"
+            script.getMethod3() == "myStaticPrivateMethod3"
+
+            1 * api.unschedule("myMethod1")
+            1 * api.unschedule("myMethod2")
+            1 * api.schedule("cron string", "myStaticPrivateMethod3")
+
+        where:
+            sandboxClass         | executorClass
+            HubitatAppSandbox    | AppExecutor
+            HubitatDeviceSandbox | DeviceExecutor
+    }
+
+    @Unroll
+    def "#sandboxClass.simpleName: Getting or setting its own property is not confused with input reading"(
+            Class sandboxClass, Class executorClass)
+    {
+        setup:
+            final def scriptText = """
+def getMyProp() 
+{
+    return state.myStateProp
+}
+
+void setMyProp(def val) 
+{
+    state.myStateProp = val
+}
+
+String getMyProp2() 
+{
+    return state.myStateProp2
+}
+
+void setMyProp2(String val) 
+{
+    state.myStateProp2 = val
+}
+
+List<String> readProperties()
+{
+    return [myProp, myProp2]
+}
+
+void writeProperties(String val1, String val2)
+{
+    myProp = val1
+    myProp2 = val2
+}
+"""
+
+            final List<Flags> flags = [Flags.DontValidateMetadata, Flags.DontValidateDefinition, Flags.DontValidatePreferences,
+                                       Flags.DontRequireParseMethodInDevice]
+            def state = [myStateProp: "Prop initial value", myStateProp2: "Prop initial value2"]
+            def api = Mock(executorClass) {
+                _ * getState() >> state
+            }
+
+        when:
+            def script = sandboxClass.newInstance(scriptText).run(validationFlags: flags, api: api)
+
+        then:
+            script.readProperties() == ["Prop initial value", "Prop initial value2"]
+            script.writeProperties("Updated value", "Updated value2")
+            script.readProperties() == ["Updated value", "Updated value2"]
+
+        where:
+            sandboxClass         | executorClass
+            HubitatAppSandbox    | AppExecutor
+            HubitatDeviceSandbox | DeviceExecutor
+    }
+
+    @Unroll
+    def "#sandboxClass.simpleName: Can override properties via metaclass"(Class sandboxClass)
+    {
+        setup:
+            final def scriptText = """
+def readProperty() 
+{
+    return myOverridenProperty
+}
+"""
+
+            final List<Flags> flags = [Flags.DontValidateMetadata, Flags.DontValidateDefinition, Flags.DontValidatePreferences,
+                                       Flags.DontRequireParseMethodInDevice]
+
+        when:
+            def script = sandboxClass.newInstance(scriptText).run(
+                    validationFlags: flags,
+                    customizeScriptBeforeRun: { script ->
+                        script.getMetaClass().myOverridenProperty = "Overriden value"
+            })
+
+        then:
+            script.readProperty() == "Overriden value"
+
+        where:
+            sandboxClass         | _
+            HubitatAppSandbox    | _
+            HubitatDeviceSandbox | _
     }
 }
