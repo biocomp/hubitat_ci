@@ -24,7 +24,7 @@ class MappingPath {
     {
         return { HubitatAppScript script, def params, def request ->
             def scriptWithInjectedProps = script.getMetaClass().invokeConstructor()
-            scriptWithInjectedProps.metaClass = script.metaClass
+            scriptWithInjectedProps.setMetaClass(script.getMetaClass())
 
             scriptWithInjectedProps.initialize(script)
             scriptWithInjectedProps.installMappingInjectedProps(params, request)

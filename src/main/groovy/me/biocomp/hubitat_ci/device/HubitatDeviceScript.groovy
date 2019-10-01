@@ -6,6 +6,7 @@ import me.biocomp.hubitat_ci.device.metadata.DeviceInput
 import me.biocomp.hubitat_ci.device.metadata.DeviceMetadataReader
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+import me.biocomp.hubitat_ci.util.ScriptUtil
 import me.biocomp.hubitat_ci.validation.DebuggerDetector
 
 /**
@@ -85,25 +86,7 @@ abstract class HubitatDeviceScript extends Script
                 return getMetaClass();
         }
 
-        def methodName = "get${property.capitalize()}"
-        try {
-            // Simple implementation of redirecting getter back to script class (if present)
-            // Don't need to support MOP here, everything can be mocked via AppExecutorBase interface.
-            def getter = this.getClass().getMethod(methodName, new Class[0])
-            //System.out.println "FOUND getter ${methodName}!"
-            return getter.invoke(this);
-        }
-        catch (NoSuchMethodException)
-        {
-            // It's OK, let's hope it'll be found in metaclass
-        }
-
-         // If no such property, try taking it from userSettingsMap
-        if (!getMetaClass().hasProperty(this, property)) {
-            return this.@userSettingsMap.get(property)
-        }
-
-        return getMetaClass().getProperty(this as GroovyObjectSupport, property)
+        return ScriptUtil.handleGetProperty(property, this, this.@userSettingsMap)
     }
 
     /*
@@ -113,14 +96,7 @@ abstract class HubitatDeviceScript extends Script
     @Override
     @CompileStatic
     void setProperty(String property, Object newValue) {
-        switch (property)
-        {
-            case "metaClass":
-                setMetaClass((MetaClass)newValue);
-                return;
-        }
-
-        this.@userSettingsMap.put(property, newValue)
+        ScriptUtil.handleSetProperty(property, this, newValue, this.@userSettingsMap)
     }
 
     @Override
