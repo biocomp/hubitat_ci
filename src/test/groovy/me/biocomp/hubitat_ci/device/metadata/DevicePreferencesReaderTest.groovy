@@ -184,8 +184,30 @@ metadata{
             input.options.options == ['val1', 'val2']
     }
 
-    def "Calling input() with invalid option fails"()
-    {
+    @Unroll
+    def "input type '#type' does not support options"(def type) {
+        when:
+            readInput("""name: 'nam', type: '$type', title: 'tit', options: ['val1', 'val2']""")
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("only 'enum' input type needs 'options' parameter")
+            e.message.contains("nam")
+            e.message.contains(type)
+
+        where:
+            type       | _
+            'bool'     | _
+            'decimal'  | _
+            'email'    | _
+            'number'   | _
+            'password' | _
+            'phone'    | _
+            'time'     | _
+            'text'     | _
+    }
+
+    def "Calling input() with invalid option fails"() {
         when:
             def input = readInput("badOption: 123, 'nam', 'bool'")
 
@@ -194,8 +216,7 @@ metadata{
             e.message.contains("'badOption' is not supported")
     }
 
-    def "Accessing 'inputs' that were not defined when running the script fails"()
-    {
+    def "Accessing 'inputs' that were not defined when running the script fails"() {
         setup:
             def script = new HubitatDeviceSandbox("""
 metadata {
@@ -221,8 +242,50 @@ def methodThatUsesInputs()
 
         then:
             AssertionError e = thrown()
-            e.message.contains("In 'someInternalMethod' settings were read that are not registered inputs: [missingInput]. These are registered inputs: [existingInput]. This is not allowed in strict mode (add Flags.AllowReadingNonInputSettings to allow this).")
+            e.message.contains(
+                    "In 'someInternalMethod' settings were read that are not registered inputs: [missingInput]. These are registered inputs: [existingInput]. This is not allowed in strict mode (add Flags.AllowReadingNonInputSettings to allow this).")
             !e.message.contains("'methodThatUsesInputs'")
+    }
+
+    @Unroll
+    def "Input (#type, #extraOptions) with defaults have default value, with no default have some meaningful value"(
+            def type, Map extraOptions, def expectedValue)
+    {
+        setup:
+            def script = new HubitatDeviceSandbox("""
+metadata {
+    preferences() {
+         input 'myInput', '${type}' ${extraOptions.collect { k, v -> ", ${k.inspect()}: ${v.inspect()}" }.join('')}
     }
 }
 
+def readInput()
+{
+    myInput
+}
+""").run(validationFlags: [Flags.DontRequireParseMethodInDevice, Flags.DontValidateDefinition])
+        expect:
+            script.readInput() == expectedValue
+
+        where:
+            type       | extraOptions                  || expectedValue
+            'bool'     | [:]                           || true
+            'bool'     | [defaultValue: false]         || false
+            'decimal'  | [:]                           || 0
+            'decimal'  | [defaultValue: 123]           || 123
+            'email'    | [:]                           || "Input 'myInput' of type 'time'"
+            'email'    | [defaultValue: 'default val'] || "default val"
+            'enum'     | [:]                           || "Input 'myInput' of type 'time'"
+            'enum'     | [defaultValue: 'default val'] || "default val"
+            'number'   | [:]                           || 0
+            'number'   | [defaultValue: 123]           || 123
+            'password' | [:]                           || "Input 'myInput' of type 'time'"
+            'password' | [defaultValue: 'default val'] || "default val"
+            'phone'    | [:]                           || 0
+            'phone'    | [defaultValue: 123]           || 123
+            'time'     | [:]                           || "Input 'myInput' of type 'time'"
+            'time'     | [defaultValue: 'default val'] || "default val"
+            'text'     | [:]                           || "Input 'myInput' of type 'time'"
+            'text'     | [defaultValue: 'default val'] || "default val"
+    }
+}

@@ -33,6 +33,19 @@ class AppData implements IInputSource {
 
     @Override
     @CompileStatic
+    def generateInputWrapper(String name) {
+        // Linear search + reconstruction of list of inputs too.
+        def input = preferences.getAllInputs().find{ it.readName() == name }
+        if (input)
+        {
+            return input.makeInputObject()
+        }
+
+        return null
+    }
+
+    @Override
+    @CompileStatic
     Set<String> getAllInputNames() {
         return preferences.getAllInputs().collect{ it.readName() } as Set<String>
     }

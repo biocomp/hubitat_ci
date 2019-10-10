@@ -71,8 +71,7 @@ class DeviceMetadataReader implements
     @Override
     def input(Map options, String name, String type) {
         def preferences = states.getOneOfCurrentStates('preferences()', 'section()') as List<DeviceInput>
-        def input = new DeviceInput([name: name, type: type], options)
-        validator.validateInput(input)
+        def input = new DeviceInput([name: name, type: type], options, validator.flags)
         preferences.add(input)
     }
 
@@ -80,8 +79,7 @@ class DeviceMetadataReader implements
     @CompileStatic
     def input(String name, String type) {
         def preferences = states.getOneOfCurrentStates('preferences()', 'section()') as List<DeviceInput>
-        def input = new DeviceInput([name: name, type: type], [:])
-        validator.validateInput(input)
+        def input = new DeviceInput([name: name, type: type], [:], validator.flags)
         preferences.add(input)
     }
 
@@ -89,8 +87,7 @@ class DeviceMetadataReader implements
     @CompileStatic
     def input(Map options) {
         def preferences = states.getOneOfCurrentStates('preferences()', 'section()') as List<DeviceInput>
-        def input = new DeviceInput([:], options)
-        validator.validateInput(input)
+        def input = new DeviceInput([:], options, validator.flags)
         preferences.add(input)
     }
 

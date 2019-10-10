@@ -3,6 +3,7 @@ package me.biocomp.hubitat_ci.device
 import me.biocomp.hubitat_ci.capabilities.Capabilities
 import me.biocomp.hubitat_ci.device.metadata.*
 import me.biocomp.hubitat_ci.util.RequreParseCompilationCusomizer
+import me.biocomp.hubitat_ci.validation.InputCommon
 import me.biocomp.hubitat_ci.validation.Flags
 import me.biocomp.hubitat_ci.validation.NamedParametersValidator
 import me.biocomp.hubitat_ci.validation.ValidatorBase
@@ -17,44 +18,6 @@ import java.lang.reflect.Method
 class DeviceValidator extends
         ValidatorBase
 {
-    //    private static final NamedParametersValidator preferencesValidatorWithOauth = NamedParametersValidator.make {
-    //        stringParameter(name: "oauthPage", required: true)
-    //    }
-    //
-    //    private static final NamedParametersValidator preferencesValidatorNoOauth = NamedParametersValidator.make {
-    //    }
-    //
-    //    private static final NamedParametersValidator inputOptionsValidator = NamedParametersValidator.make {
-    //        boolParameter(name: "capitalization")
-    //        objParameter(name: "defaultValue")
-    //        stringParameter(name: "name", required: true)
-    //        stringParameter(name: "title")
-    //        stringParameter(name: "description")
-    //        boolParameter(name: "multiple")
-    //        numericRangeParameter(name: "range")
-    //        boolParameter(name: "required")
-    //        boolParameter(name: "submitOnChange")
-    //        listOfStringsParameter(name: "options")
-    //        stringParameter(name: "type", required: true)
-    //        boolParameter(name: "hideWhenEmpty")
-    //    }
-    //
-    //    private static final HashSet<String> validStaticInputTypes = [
-    //        "bool",
-    //        //"bolean",
-    //        "decimal",
-    //        "email",
-    //        "enum",
-    //        "hub",
-    //        "icon",
-    //        "number",
-    //        "password",
-    //        "phone",
-    //        "time",
-    //        "text"
-    //    ] as HashSet
-
-
     DeviceValidator(
             EnumSet<Flags> setOfFlags = EnumSet.noneOf(Flags), List<Class> extraAllowedClasses = [],
             List<String> extraAllowedExpressions = [])
@@ -432,40 +395,19 @@ class DeviceValidator extends
         fingerprintOptionsValidator.validate("fingerprint(${fingerprint})", fingerprint, flags)
     }
 
-    private static final NamedParametersValidator inputOptionsValidator = NamedParametersValidator.make {
-        stringParameter("name", required(), canBeEmpty(), [Flags.DontValidateDeviceInputName])
-        enumStringParameter("type", required(), [
-            'bool',
-            'decimal',
-            'email',
-            'enum',
-            'number',
-            'password',
-            'phone',
-            'time',
-            'text',
-            'paragraph' // TODO: verify if it's really supported
-        ])
-        stringParameter("title", notRequired(), canBeEmpty())
-        stringParameter("description", notRequired(), canBeEmpty())
-        objParameter("defaultValue", notRequired(), canBeNull())
-        boolParameter("required", notRequired())
-        boolParameter("displayDuringSetup", notRequired())
-        numericRangeParameter("range", notRequired())
-        listOfStringsParameter("options", notRequired())
-    }
-
-    void validateInput(DeviceInput input)
-    {
-        inputOptionsValidator.validate(
-                input as String,
-                input.unnamedOptions,
-                input.options,
-                flags,
-                hasFlag(Flags.AllowMissingDeviceInputNameOrType)
-                    ? EnumSet.of(NamedParametersValidator.ValidatorOption.IgnoreMissingMandatoryInputs)
-                    : EnumSet.noneOf(NamedParametersValidator.ValidatorOption))
-    }
+//    void validateInput(DeviceInput input)
+//    {
+//        inputOptionsValidator.validate(
+//                input as String,
+//                input.unnamedOptions,
+//                input.options,
+//                flags,
+//                hasFlag(Flags.AllowMissingDeviceInputNameOrType)
+//                    ? EnumSet.of(NamedParametersValidator.ValidatorOption.IgnoreMissingMandatoryInputs)
+//                    : EnumSet.noneOf(NamedParametersValidator.ValidatorOption))
+//
+//        InputCommon.assertHasNoOptionsIfNotEnum(input, input.readType(), input.options)
+//    }
 
     void validateSection(String name)
     {

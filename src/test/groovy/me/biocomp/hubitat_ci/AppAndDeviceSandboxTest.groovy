@@ -1,14 +1,19 @@
 package me.biocomp.hubitat_ci
 
+import groovy.transform.CompileStatic
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
 import me.biocomp.hubitat_ci.api.common_api.Log
 import me.biocomp.hubitat_ci.api.device_api.DeviceExecutor
 import me.biocomp.hubitat_ci.app.HubitatAppSandbox
+import me.biocomp.hubitat_ci.app.preferences.Input
 import me.biocomp.hubitat_ci.device.HubitatDeviceSandbox
 import me.biocomp.hubitat_ci.validation.Flags
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import spock.lang.Specification
 import spock.lang.Unroll
+
+import static me.biocomp.hubitat_ci.app.preferences.PreferencesValidationCommon.parseOneChild
+import static org.codehaus.groovy.runtime.DefaultGroovyMethods.combinations
 
 /*
 *  Documented restrictions:
@@ -124,15 +129,46 @@ class AppAndDeviceSandboxTest extends
 {
     /**
      * Add HubitatAppSandbox and HubitatDeviceSandbox permutations*/
-    List<List> combineWithSandboxes(List<List> inputs) {
-        def results = []
+    List<List> combineWithSandboxes(def inputs) {
+        combinations([inputs, [HubitatAppSandbox, HubitatDeviceSandbox]]).collect{ it.flatten() } as List<List>
+    }
 
-        inputs.each {
-            results << (it.clone() << HubitatAppSandbox)
-            results << (it.clone() << HubitatDeviceSandbox)
+    @CompileStatic
+    static def parseInput(Class sandboxClass, String type, String extraOptions) {
+        if (extraOptions) {
+            extraOptions = ", " + extraOptions
         }
 
-        results
+        if (sandboxClass == HubitatAppSandbox) {
+            final def scriptText = """
+preferences{
+    page("name", "title", install: true){
+        section("sec"){
+            input 'myInput', '${type}' ${extraOptions} 
+        }
+    }
+}"""
+            return new HubitatAppSandbox(scriptText).run(validationFlags: [Flags.DontValidateDefinition]).producedPreferences.pages[0].sections[0].children[0]
+
+        } else {
+            final def scriptText = """
+metadata {
+    preferences() {
+         input 'myInput', '${type}' ${extraOptions}
+    }
+}"""
+            return new HubitatDeviceSandbox(scriptText).run(validationFlags: [Flags.DontValidateDefinition, Flags.DontRequireParseMethodInDevice]).producedPreferences[0]
+        }
+    }
+
+    @CompileStatic
+    static def parseInput(Class sandboxClass, String type, Map extraOptions) {
+        return parseInput(sandboxClass, type, extraOptions.collect { k, v -> "${k.inspect()}: ${v.inspect()}" }.join(','))
+    }
+
+    @CompileStatic
+    static def parseInput(Class sandboxClass, String type) {
+        return parseInput(sandboxClass, type, "")
     }
 
     List<List<String>> makeScriptVariations(List<List<String>> expressionsAndResults) {
@@ -479,5 +515,192 @@ def readProperty()
             sandboxClass         | _
             HubitatAppSandbox    | _
             HubitatDeviceSandbox | _
+
+    @Unroll
+    def "Invalid input(name, type) types fail #typeAndInputType"() {
+        when:
+            def type = typeAndInputType[0]
+            def input = typeAndInputType[1] ? parseOneChild("""input("nam1", '${type}')""") as Input : parseOneChild(
+                    """input(name: "nam1", type: '${type}')""") as Input
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("not supported")
+            e.message.contains("nam1")
+            e.message.contains(type)
+
+        where:
+            typeAndInputType << combinations([["capability.badCapability",
+                                               "devic.someDeviceName",
+                                               "devicee.someDeviceName",
+                                               "blah",
+                                               "booll"], [true, false]])
+    }
+
+    @Unroll
+    def "#sandboxClass.simpleName: Enum input type must have 'options'"(Class sandboxClass) {
+        when:
+            parseInput(sandboxClass, 'enum')
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("of type 'enum' must have 'options' parameter with enum values")
+
+        where:
+            sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+    }
+
+    @Unroll
+    def "#sandboxClass.simpleName: Non-enum input(type: '#type') types must not have options"(
+            String type, Class sandboxClass)
+    {
+        when:
+            parseInput(sandboxClass, type, 'options: ["A", "B"]')
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("only 'enum' input type needs 'options' parameter")
+            e.message.contains("myInput")
+
+        where:
+            [type, sandboxClass] << [
+                    ["capability.thermostat", HubitatAppSandbox],
+                    ["device.someDeviceName", HubitatAppSandbox],
+                    *combineWithSandboxes(["bool"])//,
+//                    //*combineWithSandboxes(["boolean"]),
+//                    *combineWithSandboxes(["decimal"]),
+//                    *combineWithSandboxes(["email"]),
+//                      //"enum", // Enum is tested separately - it needs 'options'
+//                    *combineWithSandboxes(["hub"]),
+//                    *combineWithSandboxes(["icon"]),
+//                    *combineWithSandboxes(["number"]),
+//                    *combineWithSandboxes(["password"]),
+//                    *combineWithSandboxes(["phone"]),
+//                    *combineWithSandboxes(["time"]),
+//                    *combineWithSandboxes(["text"])
+            ]
+    }
+
+    @Unroll
+    def "#sandboxClass.simpleName: Enum input type can take list of strings as options"(Class sandboxClass) {
+        when:
+            final def input = parseInput(sandboxClass, 'enum', "options: ['Val1', 'Val2']")
+
+        then:
+            input.readType() == 'enum'
+            input.options.options == ['Val1', 'Val2']
+
+        where:
+            sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+    }
+
+    @Unroll
+    def "#sandboxClass.simpleName: Enum input type can't take string as 'options'"(Class sandboxClass) {
+        when:
+            parseInput(sandboxClass, 'enum', [options: 'Val1'])
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("must be a list of values or map int->value")
+            e.message.contains("Val1")
+
+        where:
+            sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+    }
+
+    @Unroll
+    def "#sandboxClass.simpleName: Enum input type can take list of ints as options"(Class sandboxClass) {
+        when:
+            final def input = parseInput(sandboxClass, 'enum', [options: [11, 22]])
+
+        then:
+            input.readType() == 'enum'
+            input.options.options == [11, 22]
+
+        where:
+            sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+    }
+
+    @Unroll
+    def "#sandboxClass.simpleName: Enum input type can take map of int->string as options"(Class sandboxClass) {
+        when:
+            final def input = parseInput(sandboxClass, 'enum', [options: [42:'Val1', 33:'Val2']])
+
+        then:
+            input.readType() == 'enum'
+            input.options.options == [42: 'Val1', 33: 'Val2']
+
+        where:
+            sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+    }
+
+    @Unroll
+    def "#sandboxClass.simpleName: Enum input type can take map of string->string as options"(Class sandboxClass) {
+        when:
+            final def input = parseInput(sandboxClass, 'enum', [options: ['42':'Val1', '33':'Val2']])
+
+        then:
+            input.readType() == 'enum'
+            input.options.options == ["42": 'Val1', "33": 'Val2']
+
+        where:
+            sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+    }
+
+    @Unroll
+    def "#sandboxClass.simpleName: Failing cases: enum default value must be one of its options (#options)"(
+            String options, String expectedValidValues, Class sandboxClass)
+    {
+        when:
+            parseInput(sandboxClass, 'enum', "defaultValue: 'ValUnknown', options: ${options}")
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("defaultValue 'ValUnknown' is not one of valid values: ${expectedValidValues}")
+
+        where:
+            [options, expectedValidValues, sandboxClass] << combineWithSandboxes([
+                    ["['Val1', 'Val2']"           , "[Val1, Val2]"],
+                    ["[42:'Val1', 33:'Val2']"     , "[Val1, Val2] or [42, 33]"],
+                    ["['42':'Val1', '33':'Val2']" , "[Val1, Val2] or [42, 33]"]
+            ])
+    }
+
+    @Unroll
+    def "#sandboxClass.simpleName: Successful cases: enum default value must be one of its options (#options)"(
+            String options, String defaultValue, Class sandboxClass)
+    {
+        expect:
+            parseInput(sandboxClass, 'enum', "defaultValue: ${defaultValue}, options: ${options}")
+
+        where:
+            [options, defaultValue, sandboxClass] << combineWithSandboxes([
+                ["['Val1', 'Val2']"          , "'Val1'"],
+                ["['Val1', 'Val2']"          , "'Val2'"],
+                ["[42:'Val1', 33:'Val2']"    , "'Val1'"],
+                ["[42:'Val1', 33:'Val2']"    , "'42'"],
+                ["[42:'Val1', 33:'Val2']"    , "'33'"],
+                ["['42':'Val1', '33':'Val2']", "'Val2'"],
+                ["['42':'Val1', '33':'Val2']", "'42'"]
+             ])
+    }
+
+    @Unroll
+    def "#sandboxClass.simpleName: Enum options (#options) can't repeat each other"(
+            String options, String whatWasDuplicated, Class sandboxClass)
+    {
+        when:
+            parseInput(sandboxClass, 'enum', "options: ${options}")
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("enum ${whatWasDuplicated} was duplicated")
+
+        where:
+            [options, whatWasDuplicated, sandboxClass] << combineWithSandboxes([
+                ["['Val2', 'Val1', 'Val2']"                , "value 'Val2'"],
+                ["[11:'Val2', 22:'Val1', 33:'Val2']"       , "value 'Val2'"],
+                ["['11':'Val2', '22':'Val1', '33':'Val2']" , "value 'Val2'"]
+            ])
     }
 }

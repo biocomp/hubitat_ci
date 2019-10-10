@@ -84,7 +84,12 @@ class SettingsContainer implements
             }
         }
 
-        return registeredInputs.generateInputWrapper(name, userSettingValue)
+        if (this.@userSettingValues.containsKey(name)) {
+            return registeredInputs.generateInputWrapper(name, userSettingValue)
+        }
+        else {
+            return registeredInputs.generateInputWrapper(name)
+        }
     }
 
     @Override

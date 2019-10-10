@@ -7,7 +7,6 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 import static PreferencesValidationCommon.parseOneChild
-import static org.codehaus.groovy.runtime.DefaultGroovyMethods.combinations
 
 /**
  * Validation tests for preferences' inputs
@@ -189,155 +188,55 @@ hideWhenEmpty: true)
                      "text"]
     }
 
-    @Unroll
-    def "Invalid input(name, type) types fail #typeAndInputType"() {
-        when:
-            def type = typeAndInputType[0]
-            def input = typeAndInputType[1] ? parseOneChild("""input("nam1", '${type}')""") as Input : parseOneChild(
-                    """input(name: "nam1", type: '${type}')""") as Input
-
-        then:
-            AssertionError e = thrown()
-            e.message.contains("not supported")
-            e.message.contains("nam1")
-            e.message.contains(type)
-
-        where:
-            typeAndInputType << combinations([["capability.badCapability",
-                                               "devic.someDeviceName",
-                                               "devicee.someDeviceName",
-                                               "blah",
-                                               "booll"], [true, false]])
-    }
-
-    def "Enum input type must have 'options'"() {
-        when:
-            parseOneChild("input 'nam', 'enum'")
-
-        then:
-            AssertionError e = thrown()
-            e.message.contains("of type 'enum' must have 'options' parameter with enum values")
-    }
+    // Enum tests are in AppAndDeviceSandboxTest
 
     @Unroll
-    def "Non-enum input(type: '#type') types must not have options"(String type) {
-        when:
-            parseOneChild("""input(name: "nam1", type: '${type}', options: ["A", "B"])""")
-
-        then:
-            AssertionError e = thrown()
-            e.message.contains("only 'enum' input type needs 'options' parameter")
-            e.message.contains("nam1")
-
-        where:
-            type << ["capability.thermostat",
-                     "device.someDeviceName",
-                     "bool",
-                     //"boolean",
-                     "decimal",
-                     "email",
-                     //"enum", // Enum is tested separately - it needs 'options'
-                     "hub",
-                     "icon",
-                     "number",
-                     "password",
-                     "phone",
-                     "time",
-                     "text"]
+    def "Input (#type, #extraOptions) with defaults have default value, with no default have some meaningful value"(
+            def type, Map extraOptions, def expectedValue)
+    {
+        given:
+            final def scriptText = """
+preferences{
+    page("name", "title", install: true){
+        section("sec"){
+            input 'myInput', '${type}' ${extraOptions.collect { k, v -> ", ${k.inspect()}: ${v.inspect()}" }.join('')}
+        }
     }
+}
 
-    def "Enum input type can take list of strings as options"() {
-        when:
-            def input = parseOneChild("input 'nam', 'enum', options: ['Val1', 'Val2']")
+def readInput()
+{
+    return myInput
+}
+"""
+            final def script = new HubitatAppSandbox(scriptText).run(validationFlags: [Flags.DontValidateDefinition])
 
-        then:
-            input.readType() == 'enum'
-            input.options.options == ['Val1', 'Val2']
-    }
-
-    def "Enum input type can't take string as 'options'"() {
-        when:
-            def input = parseOneChild("input 'nam', 'enum', options: 'Val1'")
-
-        then:
-            AssertionError e = thrown()
-            e.message.contains("must be a list of values or map int->value")
-            e.message.contains("Val1")
-    }
-
-    def "Enum input type can take list of ints as options"() {
-        when:
-            def input = parseOneChild("input 'nam', 'enum', options: [11, 22]")
-
-        then:
-            input.readType() == 'enum'
-            input.options.options == [11, 22]
-    }
-
-
-    def "Enum input type can take map of int->string as options"() {
-        when:
-            def input = parseOneChild("input 'nam', 'enum', options: [42:'Val1', 33:'Val2']")
-
-        then:
-            input.readType() == 'enum'
-            input.options.options == [42: 'Val1', 33: 'Val2']
-    }
-
-    def "Enum input type can take map of string->string as options"() {
-        when:
-            def input = parseOneChild("input 'nam', 'enum', options: ['42':'Val1', '33':'Val2']")
-
-        then:
-            input.readType() == 'enum'
-            input.options.options == ["42": 'Val1', "33": 'Val2']
-    }
-
-    @Unroll
-    def "Failing cases: enum default value must be one of its options (#options)"(String options, String expectedValidValues) {
-        when:
-            parseOneChild("input 'nam', 'enum', defaultValue: 'ValUnknown', options: ${options}")
-
-        then:
-            AssertionError e = thrown()
-            e.message.contains("defaultValue 'ValUnknown' is not one of valid values: ${expectedValidValues}")
-
-        where:
-            options                      | expectedValidValues
-            "['Val1', 'Val2']"           | "[Val1, Val2]"
-            "[42:'Val1', 33:'Val2']"     | "[Val1, Val2] or [42, 33]"
-            "['42':'Val1', '33':'Val2']" | "[Val1, Val2] or [42, 33]"
-    }
-
-    @Unroll
-    def "Successful cases: enum default value must be one of its options (#options)"(String options, String defaultValue) {
         expect:
-            parseOneChild("input 'nam', 'enum', defaultValue: ${defaultValue}, options: ${options}")
+            script.readInput() == expectedValue
 
         where:
-            options                      | defaultValue
-            "['Val1', 'Val2']"           | "'Val1'"
-            "['Val1', 'Val2']"           | "'Val2'"
-            "[42:'Val1', 33:'Val2']"     | "'Val1'"
-            "[42:'Val1', 33:'Val2']"     | "'42'"
-            "[42:'Val1', 33:'Val2']"     | "'33'"
-            "['42':'Val1', '33':'Val2']" | "'Val2'"
-            "['42':'Val1', '33':'Val2']" | "'42'"
-    }
-
-    @Unroll
-    def "Enum options (#options) can't repeat each other"(String options, String whatWasDuplicated) {
-        when:
-            parseOneChild("input 'nam', 'enum', options: ${options}")
-
-        then:
-            AssertionError e = thrown()
-            e.message.contains("enum ${whatWasDuplicated} was duplicated")
-
-        where:
-            options                                   | whatWasDuplicated
-            "['Val2', 'Val1', 'Val2']"                | "value 'Val2'"
-            "[11:'Val2', 22:'Val1', 33:'Val2']"       | "value 'Val2'"
-            "['11':'Val2', '22':'Val1', '33':'Val2']" | "value 'Val2'"
+            type       | extraOptions                             || expectedValue
+            'bool'     | [:]                                      || true
+            'bool'     | [defaultValue: false]                    || false
+            'text'     | [:]                                      || "Input 'myInput' of type 'text'"
+            'text'     | [defaultValue: 'default val']            || "default val"
+            'hub'      | [:]                                      || "Input 'myInput' of type 'hub'"
+            'hub'      | [defaultValue: 'default val']            || "default val"
+            'email'    | [:]                                      || "Input 'myInput' of type 'email'"
+            'email'    | [defaultValue: 'default val']            || "default val"
+            'icon'     | [:]                                      || "Input 'myInput' of type 'icon'"
+            'icon'     | [defaultValue: 'default val']            || "default val"
+            'password' | [:]                                      || "Input 'myInput' of type 'password'"
+            'password' | [defaultValue: 'default val']            || "default val"
+            'time'     | [:]                                      || "Input 'myInput' of type 'time'"
+            'time'     | [defaultValue: 'default val']            || "default val"
+            'enum'     | [options: ['a', 'b']]                    || "a"
+            'enum'     | [defaultValue: 'b', options: ['a', 'b']] || "b"
+            'number'   | [:]                                      || 0
+            'number'   | [defaultValue: 123]                      || 123
+            'decimal'  | [:]                                      || 0
+            'decimal'  | [defaultValue: 123]                      || 123
+            'phone'    | [:]                                      || 0
+            'phone'    | [defaultValue: 123]                      || 123
     }
 }
