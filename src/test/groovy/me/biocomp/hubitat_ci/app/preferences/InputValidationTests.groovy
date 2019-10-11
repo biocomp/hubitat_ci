@@ -7,6 +7,7 @@ import spock.lang.Specification
 import spock.lang.Unroll
 
 import static PreferencesValidationCommon.parseOneChild
+import static org.codehaus.groovy.runtime.DefaultGroovyMethods.combinations
 
 /**
  * Validation tests for preferences' inputs
@@ -188,6 +189,28 @@ hideWhenEmpty: true)
                      "text"]
     }
 
+    @Unroll
+    def "Invalid input(name, type) types fail #typeAndInputType"() {
+        when:
+            def type = typeAndInputType[0]
+            def input = typeAndInputType[1] ? parseOneChild("""input("nam1", '${type}')""") as Input : parseOneChild(
+                    """input(name: "nam1", type: '${type}')""") as Input
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("not supported")
+            e.message.contains("nam1")
+            e.message.contains(type)
+
+        where:
+            typeAndInputType << combinations([["capability.badCapability",
+                                               "devic.someDeviceName",
+                                               "devicee.someDeviceName",
+                                               "blah",
+                                               "booll"], [true, false]])
+    }
+
+
     // Enum tests are in AppAndDeviceSandboxTest
 
     @Unroll
@@ -215,28 +238,34 @@ def readInput()
             script.readInput() == expectedValue
 
         where:
-            type       | extraOptions                             || expectedValue
-            'bool'     | [:]                                      || true
-            'bool'     | [defaultValue: false]                    || false
-            'text'     | [:]                                      || "Input 'myInput' of type 'text'"
-            'text'     | [defaultValue: 'default val']            || "default val"
-            'hub'      | [:]                                      || "Input 'myInput' of type 'hub'"
-            'hub'      | [defaultValue: 'default val']            || "default val"
-            'email'    | [:]                                      || "Input 'myInput' of type 'email'"
-            'email'    | [defaultValue: 'default val']            || "default val"
-            'icon'     | [:]                                      || "Input 'myInput' of type 'icon'"
-            'icon'     | [defaultValue: 'default val']            || "default val"
-            'password' | [:]                                      || "Input 'myInput' of type 'password'"
-            'password' | [defaultValue: 'default val']            || "default val"
-            'time'     | [:]                                      || "Input 'myInput' of type 'time'"
-            'time'     | [defaultValue: 'default val']            || "default val"
-            'enum'     | [options: ['a', 'b']]                    || "a"
-            'enum'     | [defaultValue: 'b', options: ['a', 'b']] || "b"
-            'number'   | [:]                                      || 0
-            'number'   | [defaultValue: 123]                      || 123
-            'decimal'  | [:]                                      || 0
-            'decimal'  | [defaultValue: 123]                      || 123
-            'phone'    | [:]                                      || 0
-            'phone'    | [defaultValue: 123]                      || 123
+            type       | extraOptions                                           || expectedValue
+            'bool'     | [:]                                                    || true
+            'bool'     | [defaultValue: false]                                  || false
+            'text'     | [:]                                                    || "Input 'myInput' of type 'text'"
+            'text'     | [defaultValue: 'default val']                          || "default val"
+            'hub'      | [:]                                                    || "Input 'myInput' of type 'hub'"
+            'hub'      | [defaultValue: 'default val']                          || "default val"
+            'email'    | [:]                                                    || "Input 'myInput' of type 'email'"
+            'email'    | [defaultValue: 'default val']                          || "default val"
+            'icon'     | [:]                                                    || "Input 'myInput' of type 'icon'"
+            'icon'     | [defaultValue: 'default val']                          || "default val"
+            'password' | [:]                                                    || "Input 'myInput' of type 'password'"
+            'password' | [defaultValue: 'default val']                          || "default val"
+            'time'     | [:]                                                    || "Input 'myInput' of type 'time'"
+            'time'     | [defaultValue: 'default val']                          || "default val"
+            'enum'     | [options: ['a', 'b']]                                  || "a"
+            'enum'     | [defaultValue: 'b', options: ['a', 'b']]               || "b"
+            'enum'     | [defaultValue: 'b', options: ['1': 'a', '2': 'b']]     || "2"
+            'enum'     | [defaultValue: 'b', options: [1: 'a', 2: 'b']]         || "2"
+            'enum'     | [defaultValue: '2', options: [1: 'a', 2: 'b']]         || "2"
+            'enum'     | [defaultValue: 2, options: [1: 'a', 2: 'b']]           || "2"
+            'enum'     | [defaultValue: 'b', options: [[1: 'a'], [2: 'b']]]     || "2"
+            'enum'     | [defaultValue: 'b', options: [['1': 'a'], ['2': 'b']]] || "2"
+            'number'   | [:]                                                    || 0
+            'number'   | [defaultValue: 123]                                    || 123
+            'decimal'  | [:]                                                    || 0
+            'decimal'  | [defaultValue: 123]                                    || 123
+            'phone'    | [:]                                                    || 0
+            'phone'    | [defaultValue: 123]                                    || 123
     }
 }

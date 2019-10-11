@@ -118,7 +118,7 @@ class Input {
 
         if (foundStaticType) {
             if (inputType == 'enum') {
-                InputCommon.validateEnumInput(options, defaultValue, enumValues, enumDisplayValues, validationFlags)
+                InputCommon.validateEnumInput(this, options, defaultValue, enumValues, enumDisplayValues, validationFlags)
             }
 
             return foundStaticType

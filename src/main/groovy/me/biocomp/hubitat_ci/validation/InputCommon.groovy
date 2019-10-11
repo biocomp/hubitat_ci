@@ -40,27 +40,47 @@ class InputCommon {
     }
 
     static void validateEnumInput(
+            def input,
             Map options,
             Map defaultValue,
             ArrayList<String> enumValues,
             ArrayList<String> enumDisplayValues,
             EnumSet<Flags> validationFlags) {
-        assert options != null && options.containsKey('options'): "${this}: input of type 'enum' must have 'options' parameter with enum values"
+        assert options != null && options.containsKey('options'): "${input}: input of type 'enum' must have 'options' parameter with enum values"
 
-        if (Map.isInstance(options.options)) {
+        if (Map.isInstance(options.options)) { // Map of key: value
             final def optionsMap = (Map) options.options
+
+            assert optionsMap.size() != 0 : "${input}: enum options can't be empty"
+
             ensureAndInsertUniqueValue("value", optionsMap.values().collect { it.toString() }, enumDisplayValues)
             ensureAndInsertUniqueValue("key", optionsMap.keySet().collect { it.toString() }, enumValues)
-        } else if (List.isInstance(options.options)) {
-            ensureAndInsertUniqueValue("value", options.options.collect { it.toString() }, enumDisplayValues)
-            enumValues.addAll(enumDisplayValues)
+        } else if (List.isInstance(options.options)) { // List
+            final def optionsList = options.options as List
+
+            assert optionsList.size() != 0 : "${input}: enum options can't be empty"
+
+            if (optionsList.find{Map.isInstance(it)} != null) { // List of key-value pairs (represented as 1-item maps).
+                final def validateMapElement = { it ->
+                    assert Map.isInstance(it) : "${input}: if enum options is a list, it must be a list of values or maps. But '${it.inspect()}' isn't a map."
+                    assert ((Map)it).size() == 1 : "${input}: when enum options is list of maps, each map must have one entry. But '${it.inspect()}' doesn't."
+                }
+
+                optionsList.each(validateMapElement)
+
+                ensureAndInsertUniqueValue("value", optionsList.collect { ((Map)it).values().first().toString() }, enumDisplayValues)
+                ensureAndInsertUniqueValue("key", optionsList.collect { ((Map)it).keySet().first().toString() }, enumValues)
+            } else { // Just a list of options
+                ensureAndInsertUniqueValue("value", options.options.collect { it.toString() }, enumDisplayValues)
+                enumValues.addAll(enumDisplayValues)
+            }
         } else if (!validationFlags.contains(Flags.AllowNullEnumInputOptions)) {
-            assert false, "${this}: enum input's 'options' must be a list of values or map int->value or string->value, but it is: ${options.options} of class ${options.options?.class}. To allow null options, use ${Flags.AllowNullEnumInputOptions}."
+            assert false, "${input}: enum input's 'options' must be a list of values or map int->value or string->value, but it is: ${options.options} of class ${options.options?.class}. To allow null options, use ${Flags.AllowNullEnumInputOptions}."
         }
 
         if (defaultValue.containsKey('defaultValue')) {
             final def addedEnumValues = enumValues ? " or ${enumValues}" : ""
-            assert enumDisplayValues.contains(defaultValue.defaultValue.toString()) || enumValues.contains(defaultValue.defaultValue.toString()): "${this}: defaultValue '${defaultValue.defaultValue}' is not one of valid values: ${enumDisplayValues}${addedEnumValues}"
+            assert enumDisplayValues.contains(defaultValue.defaultValue.toString()) || enumValues.contains(defaultValue.defaultValue.toString()): "${input}: defaultValue '${defaultValue.defaultValue}' is not one of valid values: ${enumDisplayValues}${addedEnumValues}"
         }
     }
 

@@ -3,8 +3,6 @@ package me.biocomp.hubitat_ci.device.metadata
 
 import groovy.transform.TupleConstructor
 import groovy.transform.TypeChecked
-import me.biocomp.hubitat_ci.app.preferences.DeviceInputObjectGenerator
-import me.biocomp.hubitat_ci.capabilities.Capabilities
 import me.biocomp.hubitat_ci.validation.BooleanInputObjectGenerator
 import me.biocomp.hubitat_ci.validation.Flags
 import me.biocomp.hubitat_ci.validation.IInputObjectGenerator
@@ -89,7 +87,11 @@ class DeviceInput {
                     toString(),
                     unnamedOptions,
                     options,
-                    validationFlags)
+                    validationFlags,
+                    validationFlags.contains(Flags.AllowMissingDeviceInputNameOrType)
+                    ? EnumSet.of(NamedParametersValidator.ValidatorOption.IgnoreMissingMandatoryInputs)
+                    : EnumSet.noneOf(NamedParametersValidator.ValidatorOption)
+            )
 
             return validateInputType(enumValues, enumDisplayValues)
         }
@@ -105,7 +107,7 @@ class DeviceInput {
 
         if (foundStaticType) {
             if (inputType == 'enum') {
-                InputCommon.validateEnumInput(options, defaultValue, enumValues, enumDisplayValues, validationFlags)
+                InputCommon.validateEnumInput(this, options, defaultValue, enumValues, enumDisplayValues, validationFlags)
             }
 
             return foundStaticType

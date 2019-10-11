@@ -1,6 +1,5 @@
 package me.biocomp.hubitat_ci.device.metadata
 
-import me.biocomp.hubitat_ci.api.common_api.Log
 import me.biocomp.hubitat_ci.api.device_api.DeviceExecutor
 import me.biocomp.hubitat_ci.device.HubitatDeviceSandbox
 import me.biocomp.hubitat_ci.util.CapturingLog
@@ -136,26 +135,24 @@ metadata{
     }
 
     @Unroll
-    def "Calling with valid type: input(#type) succeeds"(String type) {
+    def "Calling with valid type: input(#type) succeeds"(String type, String extraOptions) {
         when:
-            def input = readInput("name: 'nam', type: '${type}'")
+            def input = readInput("name: 'nam', type: '${type}'${extraOptions ? " , " + extraOptions : ""}")
 
         then:
             input.readType() == type
 
         where:
-            type << ['bool',
-                     'decimal',
-                     'email',
-                     'enum',
-                     'number',
-                     'password',
-                     'phone',
-                     'time',
-                     'text',
-                     'paragraph' // TODO: figure out if 'paragraph' is supported. It works, and produces a text input, but is not documented.
-                     // TODO: figure out if any type of input should work.
-            ]
+            type       | extraOptions
+            'bool'     | ""
+            'decimal'  | ""
+            'email'    | ""
+            'enum'     | "options: ['a', 'b']"
+            'number'   | ""
+            'password' | ""
+            'phone'    | ""
+            'time'     | ""
+            'text'     | ""
     }
 
     def "Calling with invalid input type fails"() {
@@ -268,24 +265,32 @@ def readInput()
             script.readInput() == expectedValue
 
         where:
-            type       | extraOptions                  || expectedValue
-            'bool'     | [:]                           || true
-            'bool'     | [defaultValue: false]         || false
-            'decimal'  | [:]                           || 0
-            'decimal'  | [defaultValue: 123]           || 123
-            'email'    | [:]                           || "Input 'myInput' of type 'time'"
-            'email'    | [defaultValue: 'default val'] || "default val"
-            'enum'     | [:]                           || "Input 'myInput' of type 'time'"
-            'enum'     | [defaultValue: 'default val'] || "default val"
-            'number'   | [:]                           || 0
-            'number'   | [defaultValue: 123]           || 123
-            'password' | [:]                           || "Input 'myInput' of type 'time'"
-            'password' | [defaultValue: 'default val'] || "default val"
-            'phone'    | [:]                           || 0
-            'phone'    | [defaultValue: 123]           || 123
-            'time'     | [:]                           || "Input 'myInput' of type 'time'"
-            'time'     | [defaultValue: 'default val'] || "default val"
-            'text'     | [:]                           || "Input 'myInput' of type 'time'"
-            'text'     | [defaultValue: 'default val'] || "default val"
+            type       | extraOptions                                           || expectedValue
+            'bool'     | [:]                                                    || true
+            'bool'     | [defaultValue: false]                                  || false
+            'decimal'  | [:]                                                    || 0
+            'decimal'  | [defaultValue: 123]                                    || 123
+            'email'    | [:]                                                    || "Input 'myInput' of type 'email'"
+            'email'    | [defaultValue: 'default val']                          || "default val"
+            'enum'     | [options: ['a', 'b']]                                  || "a"
+            'enum'     | [options: [1: 'a', 2: 'b']]                            || "1"
+            'enum'     | [options: ["1": 'a', "2": 'b']]                        || "1"
+            'enum'     | [options: ['a', 'b'], defaultValue: 'b']               || "b"
+            'enum'     | [options: [1: 'a', 2: 'b'], defaultValue: 'b']         || "2"
+            'enum'     | [options: [[1: 'a'], [2: 'b']], defaultValue: 'b']     || "2"
+            'enum'     | [options: [['1': 'a'], ['2': 'b']], defaultValue: 'b'] || "2"
+            'enum'     | [options: ['1': 'a', '2': 'b'], defaultValue: 'b']     || "2"
+            'enum'     | [options: ['1': 'a', '2': 'b'], defaultValue: '2']     || "2"
+            'enum'     | [options: ['1': 'a', '2': 'b'], defaultValue: '1']     || "1"
+            'number'   | [:]                                                    || 0
+            'number'   | [defaultValue: 123]                                    || 123
+            'password' | [:]                                                    || "Input 'myInput' of type 'password'"
+            'password' | [defaultValue: 'default val']                          || "default val"
+            'phone'    | [:]                                                    || 0
+            'phone'    | [defaultValue: 123]                                    || 123
+            'time'     | [:]                                                    || "Input 'myInput' of type 'time'"
+            'time'     | [defaultValue: 'default val']                          || "default val"
+            'text'     | [:]                                                    || "Input 'myInput' of type 'text'"
+            'text'     | [defaultValue: 'default val']                          || "default val"
     }
 }

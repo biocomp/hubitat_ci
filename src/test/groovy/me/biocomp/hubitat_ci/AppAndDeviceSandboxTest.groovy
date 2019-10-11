@@ -5,7 +5,6 @@ import me.biocomp.hubitat_ci.api.app_api.AppExecutor
 import me.biocomp.hubitat_ci.api.common_api.Log
 import me.biocomp.hubitat_ci.api.device_api.DeviceExecutor
 import me.biocomp.hubitat_ci.app.HubitatAppSandbox
-import me.biocomp.hubitat_ci.app.preferences.Input
 import me.biocomp.hubitat_ci.device.HubitatDeviceSandbox
 import me.biocomp.hubitat_ci.validation.Flags
 import org.codehaus.groovy.control.MultipleCompilationErrorsException
@@ -130,7 +129,7 @@ class AppAndDeviceSandboxTest extends
     /**
      * Add HubitatAppSandbox and HubitatDeviceSandbox permutations*/
     List<List> combineWithSandboxes(def inputs) {
-        combinations([inputs, [HubitatAppSandbox, HubitatDeviceSandbox]]).collect{ it.flatten() } as List<List>
+        combinations([inputs, [HubitatAppSandbox, HubitatDeviceSandbox]]).collect { it.flatten() } as List<List>
     }
 
     @CompileStatic
@@ -148,7 +147,9 @@ preferences{
         }
     }
 }"""
-            return new HubitatAppSandbox(scriptText).run(validationFlags: [Flags.DontValidateDefinition]).producedPreferences.pages[0].sections[0].children[0]
+            return new HubitatAppSandbox(scriptText).run(
+                    validationFlags: [Flags.DontValidateDefinition]).producedPreferences.pages[0].sections[0].children[
+                    0]
 
         } else {
             final def scriptText = """
@@ -157,13 +158,16 @@ metadata {
          input 'myInput', '${type}' ${extraOptions}
     }
 }"""
-            return new HubitatDeviceSandbox(scriptText).run(validationFlags: [Flags.DontValidateDefinition, Flags.DontRequireParseMethodInDevice]).producedPreferences[0]
+            return new HubitatDeviceSandbox(scriptText).run(
+                    validationFlags: [Flags.DontValidateDefinition, Flags.DontRequireParseMethodInDevice]).producedPreferences[
+                    0]
         }
     }
 
     @CompileStatic
     static def parseInput(Class sandboxClass, String type, Map extraOptions) {
-        return parseInput(sandboxClass, type, extraOptions.collect { k, v -> "${k.inspect()}: ${v.inspect()}" }.join(','))
+        return parseInput(sandboxClass, type,
+                extraOptions.collect { k, v -> "${k.inspect()}: ${v.inspect()}" }.join(','))
     }
 
     @CompileStatic
@@ -488,13 +492,12 @@ void writeProperties(String val1, String val2)
     }
 
     @Unroll
-    def "#sandboxClass.simpleName: Can override properties via metaclass"(Class sandboxClass)
-    {
+    def "#sandboxClass.simpleName: Can override properties via metaclass"(Class sandboxClass) {
         setup:
             final def scriptText = """
 def readProperty() 
 {
-    return myOverridenProperty
+    return myOverriddenProperty
 }
 """
 
@@ -502,39 +505,18 @@ def readProperty()
                                        Flags.DontRequireParseMethodInDevice]
 
         when:
-            def script = sandboxClass.newInstance(scriptText).run(
-                    validationFlags: flags,
-                    customizeScriptBeforeRun: { script ->
-                        script.getMetaClass().myOverridenProperty = "Overriden value"
-            })
+            def script = sandboxClass.newInstance(scriptText).run(validationFlags: flags,
+                    customizeScriptBeforeRun: {
+                        script -> script.getMetaClass().myOverriddenProperty = "Overridden value"
+                    })
 
         then:
-            script.readProperty() == "Overriden value"
+            script.readProperty() == "Overridden value"
 
         where:
             sandboxClass         | _
             HubitatAppSandbox    | _
             HubitatDeviceSandbox | _
-
-    @Unroll
-    def "Invalid input(name, type) types fail #typeAndInputType"() {
-        when:
-            def type = typeAndInputType[0]
-            def input = typeAndInputType[1] ? parseOneChild("""input("nam1", '${type}')""") as Input : parseOneChild(
-                    """input(name: "nam1", type: '${type}')""") as Input
-
-        then:
-            AssertionError e = thrown()
-            e.message.contains("not supported")
-            e.message.contains("nam1")
-            e.message.contains(type)
-
-        where:
-            typeAndInputType << combinations([["capability.badCapability",
-                                               "devic.someDeviceName",
-                                               "devicee.someDeviceName",
-                                               "blah",
-                                               "booll"], [true, false]])
     }
 
     @Unroll
@@ -563,22 +545,20 @@ def readProperty()
             e.message.contains("myInput")
 
         where:
-            [type, sandboxClass] << [
-                    ["capability.thermostat", HubitatAppSandbox],
-                    ["device.someDeviceName", HubitatAppSandbox],
-                    *combineWithSandboxes(["bool"])//,
-//                    //*combineWithSandboxes(["boolean"]),
-//                    *combineWithSandboxes(["decimal"]),
-//                    *combineWithSandboxes(["email"]),
-//                      //"enum", // Enum is tested separately - it needs 'options'
-//                    *combineWithSandboxes(["hub"]),
-//                    *combineWithSandboxes(["icon"]),
-//                    *combineWithSandboxes(["number"]),
-//                    *combineWithSandboxes(["password"]),
-//                    *combineWithSandboxes(["phone"]),
-//                    *combineWithSandboxes(["time"]),
-//                    *combineWithSandboxes(["text"])
-            ]
+            [type, sandboxClass] << [["capability.thermostat", HubitatAppSandbox],
+                                     ["device.someDeviceName", HubitatAppSandbox],
+                                     *combineWithSandboxes(["bool"]),
+                                     //*combineWithSandboxes(["boolean"]),
+                                     *combineWithSandboxes(["decimal"]),
+                                     *combineWithSandboxes(["email"]),
+                                     //"enum", // Enum is tested separately - it needs 'options'
+                                     ["hub", HubitatAppSandbox],
+                                     ["icon", HubitatAppSandbox],
+                                     *combineWithSandboxes(["number"]),
+                                     *combineWithSandboxes(["password"]),
+                                     *combineWithSandboxes(["phone"]),
+                                     *combineWithSandboxes(["time"]),
+                                     *combineWithSandboxes(["text"])]
     }
 
     @Unroll
@@ -624,7 +604,7 @@ def readProperty()
     @Unroll
     def "#sandboxClass.simpleName: Enum input type can take map of int->string as options"(Class sandboxClass) {
         when:
-            final def input = parseInput(sandboxClass, 'enum', [options: [42:'Val1', 33:'Val2']])
+            final def input = parseInput(sandboxClass, 'enum', [options: [42: 'Val1', 33: 'Val2']])
 
         then:
             input.readType() == 'enum'
@@ -637,11 +617,26 @@ def readProperty()
     @Unroll
     def "#sandboxClass.simpleName: Enum input type can take map of string->string as options"(Class sandboxClass) {
         when:
-            final def input = parseInput(sandboxClass, 'enum', [options: ['42':'Val1', '33':'Val2']])
+            final def input = parseInput(sandboxClass, 'enum', [options: ['42': 'Val1', '33': 'Val2']])
 
         then:
             input.readType() == 'enum'
             input.options.options == ["42": 'Val1', "33": 'Val2']
+
+        where:
+            sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+    }
+
+    @Unroll
+    def "#sandboxClass.simpleName: Enum input type can take list of maps of key->string as options"(
+            Class sandboxClass)
+    {
+        when:
+            final def input = parseInput(sandboxClass, 'enum', [options: [['42': 'Val1'], ['33': 'Val2']]])
+
+        then:
+            input.readType() == 'enum'
+            input.options.options == [["42": 'Val1'], ["33": 'Val2']]
 
         where:
             sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
@@ -659,11 +654,14 @@ def readProperty()
             e.message.contains("defaultValue 'ValUnknown' is not one of valid values: ${expectedValidValues}")
 
         where:
+            // @formatter:off
             [options, expectedValidValues, sandboxClass] << combineWithSandboxes([
-                    ["['Val1', 'Val2']"           , "[Val1, Val2]"],
-                    ["[42:'Val1', 33:'Val2']"     , "[Val1, Val2] or [42, 33]"],
-                    ["['42':'Val1', '33':'Val2']" , "[Val1, Val2] or [42, 33]"]
+                 ["['Val1', 'Val2']",               "[Val1, Val2]"],
+                 ["[42:'Val1', 33:'Val2']",         "[Val1, Val2] or [42, 33]"],
+                 ["['42':'Val1', '33':'Val2']",     "[Val1, Val2] or [42, 33]"],
+                 ["[['42':'Val1'], ['33':'Val2']]", "[Val1, Val2] or [42, 33]"]
             ])
+        // @formatter:on
     }
 
     @Unroll
@@ -674,15 +672,18 @@ def readProperty()
             parseInput(sandboxClass, 'enum', "defaultValue: ${defaultValue}, options: ${options}")
 
         where:
-            [options, defaultValue, sandboxClass] << combineWithSandboxes([
-                ["['Val1', 'Val2']"          , "'Val1'"],
-                ["['Val1', 'Val2']"          , "'Val2'"],
-                ["[42:'Val1', 33:'Val2']"    , "'Val1'"],
-                ["[42:'Val1', 33:'Val2']"    , "'42'"],
-                ["[42:'Val1', 33:'Val2']"    , "'33'"],
-                ["['42':'Val1', '33':'Val2']", "'Val2'"],
-                ["['42':'Val1', '33':'Val2']", "'42'"]
-             ])
+            // @formatter:off
+            [options, defaultValue, sandboxClass] << combineWithSandboxes(
+                    [["['Val1', 'Val2']",              "'Val1'"],
+                    ["['Val1', 'Val2']",               "'Val2'"],
+                    ["[42:'Val1', 33:'Val2']",         "'Val1'"],
+                    ["[42:'Val1', 33:'Val2']",         "'42'"],
+                    ["[42:'Val1', 33:'Val2']",         "'33'"],
+                    ["['42':'Val1', '33':'Val2']",     "'Val2'"],
+                    ["['42':'Val1', '33':'Val2']",     "'42'"],
+                    ["[['42':'Val1'], ['33':'Val2']]", "'Val2'"],
+                    ["[['42':'Val1'], ['33':'Val2']]", "'42'"]])
+            // @formatter:on
     }
 
     @Unroll
@@ -697,10 +698,38 @@ def readProperty()
             e.message.contains("enum ${whatWasDuplicated} was duplicated")
 
         where:
-            [options, whatWasDuplicated, sandboxClass] << combineWithSandboxes([
-                ["['Val2', 'Val1', 'Val2']"                , "value 'Val2'"],
-                ["[11:'Val2', 22:'Val1', 33:'Val2']"       , "value 'Val2'"],
-                ["['11':'Val2', '22':'Val1', '33':'Val2']" , "value 'Val2'"]
+            [options, whatWasDuplicated, sandboxClass] << combineWithSandboxes(
+                    [["['Val2', 'Val1', 'Val2']", "value 'Val2'"],
+                     ["[11:'Val2', 22:'Val1', 33:'Val2']", "value 'Val2'"],
+                     ["['11':'Val2', '22':'Val1', '33':'Val2']", "value 'Val2'"],
+                     ["[['11':'Val2'], ['22':'Val1'], ['33':'Val2']]", "value 'Val2'"]])
+    }
+
+    @Unroll
+    def "#sandboxClass.simpleName: enum options = (#options) leads to error: #error"(
+            String options, String error, Class sandboxClass)
+    {
+        when:
+            parseInput(sandboxClass, 'enum', "options: ${options}")
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains(error)
+
+        where:
+            // @formatter:off
+            [options, error, sandboxClass] << combineWithSandboxes([
+                 ["[[1:'Val1', 2:'Val2'], [3:'Val3']]", "when enum options is list of maps, each map must have one entry. But '[1:'Val1', 2:'Val2']' doesn't."],
+                 ["[['1':'Val1', '2':'Val2'], ['3':'Val3']]", "when enum options is list of maps, each map must have one entry. But '['1':'Val1', '2':'Val2']' doesn't."],
+                 ["[]", "enum options can't be empty"],
+                 ["[:]", "enum options can't be empty"],
+                 ["null", "'options' value can't be null"],
+                 ["[[:], [3:'Val3']]", "when enum options is list of maps, each map must have one entry. But '[:]' doesn't."],
+                 ["[[1:'Val1'], [:]]", "when enum options is list of maps, each map must have one entry. But '[:]' doesn't."],
+                 ["[['1':'Val1'], [:]]", "when enum options is list of maps, each map must have one entry. But '[:]' doesn't."],
+                 ["[[], [3:'Val3']]", "if enum options is a list, it must be a list of values or maps. But '[]' isn't a map."],
+                 ["['abc', [3:'Val3']]", "if enum options is a list, it must be a list of values or maps. But ''abc'' isn't a map."]
             ])
+        // @formatter:on
     }
 }
