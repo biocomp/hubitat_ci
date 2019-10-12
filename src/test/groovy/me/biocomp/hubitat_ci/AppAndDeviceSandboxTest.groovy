@@ -133,34 +133,41 @@ class AppAndDeviceSandboxTest extends
     }
 
     @CompileStatic
+    static String makeScriptWithInput(Class sandboxClass, String inputText) {
+        if (sandboxClass == HubitatAppSandbox) {
+            return """
+preferences{
+    page("name", "title", install: true){
+        section("sec"){
+            ${inputText} 
+        }
+    }
+}"""
+        } else {
+            return """
+metadata {
+    preferences() {
+         ${inputText}
+    }
+}"""
+        }
+    }
+
+    @CompileStatic
     static def parseInput(Class sandboxClass, String type, String extraOptions) {
         if (extraOptions) {
             extraOptions = ", " + extraOptions
         }
 
-        if (sandboxClass == HubitatAppSandbox) {
-            final def scriptText = """
-preferences{
-    page("name", "title", install: true){
-        section("sec"){
-            input 'myInput', '${type}' ${extraOptions} 
-        }
-    }
-}"""
-            return new HubitatAppSandbox(scriptText).run(
-                    validationFlags: [Flags.DontValidateDefinition]).producedPreferences.pages[0].sections[0].children[
-                    0]
+        final def scriptText = makeScriptWithInput(sandboxClass, "input 'myInput', '${type}' ${extraOptions}")
 
+        if (sandboxClass == HubitatAppSandbox) {
+            return new HubitatAppSandbox(scriptText).run(validationFlags: [Flags.DontValidateDefinition])
+                    .producedPreferences.pages[0].sections[0].children[0]
         } else {
-            final def scriptText = """
-metadata {
-    preferences() {
-         input 'myInput', '${type}' ${extraOptions}
-    }
-}"""
             return new HubitatDeviceSandbox(scriptText).run(
-                    validationFlags: [Flags.DontValidateDefinition, Flags.DontRequireParseMethodInDevice]).producedPreferences[
-                    0]
+                    validationFlags: [Flags.DontValidateDefinition, Flags.DontRequireParseMethodInDevice])
+                    .producedPreferences[0]
         }
     }
 
@@ -178,78 +185,78 @@ metadata {
     List<List<String>> makeScriptVariations(List<List<String>> expressionsAndResults) {
         def result = []
 
-        combineWithSandboxes(expressionsAndResults).each {
-            result << it
-            result << ["""
+            combineWithSandboxes(expressionsAndResults).each {
+                result << it
+                result << ["""
 def foo() {
     ${it[0]}
 }
 """, it[1], it[2]]
+            }
+
+            result
         }
 
-        result
-    }
+        @Unroll
+        def "Expression \"#script\" is not allowed and should fail to compile for #sandboxClass.simpleName"(
+                String script, String expectedErrorPart, Class sandboxClass)
+        {
+            when:
+                def sandbox = sandboxClass.newInstance(script)
 
-    @Unroll
-    def "Expression \"#script\" is not allowed and should fail to compile for #sandboxClass.simpleName"(
-            String script, String expectedErrorPart, Class sandboxClass)
-    {
-        when:
-            def sandbox = sandboxClass.newInstance(script)
+                // Not running the script, compilation should still fail.
+                sandbox.compile()
 
-            // Not running the script, compilation should still fail.
-            sandbox.compile()
+            then:
+                MultipleCompilationErrorsException ex = thrown()
+                ex.message.contains(expectedErrorPart)
 
-        then:
-            MultipleCompilationErrorsException ex = thrown()
-            ex.message.contains(expectedErrorPart)
+            where:
+                [script, expectedErrorPart, sandboxClass] << makeScriptVariations([["println 'a'", "println"],
+                                                                                   ["print 'a'", "print"],
+                                                                                   ["[].execute()", "execute"],
+                                                                                   ["String s\ns.getClass()", "getClass"],
+                                                                                   ["String s\ns.getMetaClass()", "getMetaClass"],
+                                                                                   ["String s\ns.setMetaClass(null)", "setMetaClass"],
+                                                                                   ["String s\ns.propertyMissing()", "propertyMissing"],
+                                                                                   ["String s\ns.methodMissing()", "methodMissing"],
+                                                                                   ["String s\ns.invokeMethod('a')", "invokeMethod"],
+                                                                                   ["getProducedPreferences()", "getProducedPreferences"],
+                                                                                   ["void foo() { def prefs = producedPreferences }", "producedPreferences"],
+                                                                                   ["getProducedDefinition()", "getProducedDefinition"],
+                                                                                   ["void foo() { def prefs = producedDefinition }", "producedDefinition"],
+                                                                                   ["printf", "printf"],
+                                                                                   ["sleep 10", "sleep"]])
+        }
 
-        where:
-            [script, expectedErrorPart, sandboxClass] << makeScriptVariations([["println 'a'", "println"],
-                                                                               ["print 'a'", "print"],
-                                                                               ["[].execute()", "execute"],
-                                                                               ["String s\ns.getClass()", "getClass"],
-                                                                               ["String s\ns.getMetaClass()", "getMetaClass"],
-                                                                               ["String s\ns.setMetaClass(null)", "setMetaClass"],
-                                                                               ["String s\ns.propertyMissing()", "propertyMissing"],
-                                                                               ["String s\ns.methodMissing()", "methodMissing"],
-                                                                               ["String s\ns.invokeMethod('a')", "invokeMethod"],
-                                                                               ["getProducedPreferences()", "getProducedPreferences"],
-                                                                               ["void foo() { def prefs = producedPreferences }", "producedPreferences"],
-                                                                               ["getProducedDefinition()", "getProducedDefinition"],
-                                                                               ["void foo() { def prefs = producedDefinition }", "producedDefinition"],
-                                                                               ["printf", "printf"],
-                                                                               ["sleep 10", "sleep"]])
-    }
+        @Unroll
+        def "#description not allowed and should fail to compile for #sandboxClass.simpleName"(
+                String script, String expectedErrorPart, String description, Class sandboxClass)
+        {
+            when:
+                sandboxClass.newInstance(script).compile()
 
-    @Unroll
-    def "#description not allowed and should fail to compile for #sandboxClass.simpleName"(
-            String script, String expectedErrorPart, String description, Class sandboxClass)
-    {
-        when:
-            sandboxClass.newInstance(script).compile()
+            then:
+                MultipleCompilationErrorsException ex = thrown()
+                ex.message.contains(expectedErrorPart)
 
-        then:
-            MultipleCompilationErrorsException ex = thrown()
-            ex.message.contains(expectedErrorPart)
+            where:
+                [script, expectedErrorPart, description, sandboxClass] << combineWithSandboxes(
+                        [["class MyShinyNewClass{}", "MyShinyNewClass", "Defining a new class"],
+                         ["System.out.print 'Boom!'", "System.out", "Calling System.out"],
+                         ["File.createNewFile('foo.txt')", "File", "Creating a File"]])
+        }
 
-        where:
-            [script, expectedErrorPart, description, sandboxClass] << combineWithSandboxes(
-                    [["class MyShinyNewClass{}", "MyShinyNewClass", "Defining a new class"],
-                     ["System.out.print 'Boom!'", "System.out", "Calling System.out"],
-                     ["File.createNewFile('foo.txt')", "File", "Creating a File"]])
-    }
+        @Unroll
+        def "Local variable with no 'def' or type is not confused with property for #sandboxClass.simpleName"(
+                Class sandboxClass, Class executorClass)
+        {
+            given:
+                def log = Mock(Log)
+                def api = Mock(executorClass)
 
-    @Unroll
-    def "Local variable with no 'def' or type is not confused with property for #sandboxClass.simpleName"(
-            Class sandboxClass, Class executorClass)
-    {
-        given:
-            def log = Mock(Log)
-            def api = Mock(executorClass)
-
-        when:
-            def script = new HubitatAppSandbox("""
+            when:
+                def script = new HubitatAppSandbox("""
 int loginCheck() {
     return 42
 }
@@ -262,106 +269,94 @@ def foo() {
 """).run(validationFlags: [Flags.DontValidateMetadata, Flags.DontValidatePreferences, Flags.DontValidateDefinition,
                            Flags.DontRequireParseMethodInDevice])
 
-        then:
-            _ * api.getLog() >> log
+            then:
+                _ * api.getLog() >> log
 
-        where:
-            sandboxClass         | executorClass
-            HubitatAppSandbox    | AppExecutor
-            HubitatDeviceSandbox | DeviceExecutor
-    }
-
-    private def makeScriptForPrivateCheck(def fileOrText, Class sandboxClass) {
-        return sandboxClass.newInstance(fileOrText).compile(
-                validationFlags: [Flags.DontValidateMetadata, Flags.DontRequireParseMethodInDevice],
-                customizeScriptBeforeRun: { script ->
-                    script.getMetaClass().myPrivateMethod1 = { -> "was overridden1!" }
-                    script.getMetaClass().myPrivateMethod2 = {
-                        def arg1, def arg2 -> "was overridden2(${arg1}, ${arg2})!"
-                    }
-                })
-    }
-
-    void verifyMethodsWereOverridden(Script script) {
-        assert script.myPrivateMethod1() == "was overridden1!"
-        assert script.publicMethodThatCallsPrivateMethod1() == "was overridden1!"
-        assert script.myPrivateMethod2(42, "abc") == "was overridden2(42, abc)!"
-        assert script.publicMethodThatCallsPrivateMethod2() == "was overridden2(123, argFromPublicMethod)!"
-    }
-
-    @Unroll
-    def "private methods in the Script (as text) can be mocked for #sandboxClass.simpleName"(Class sandboxClass) {
-        setup:
-            def script = makeScriptForPrivateCheck(new File("Scripts/ScriptWithPrivateMethod.groovy"), sandboxClass)
-
-        expect:
-            verifyMethodsWereOverridden(script)
-
-        where:
-            sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
-    }
-
-    @Unroll
-    def "private methods in the Script (as File) can be mocked for #sandboxClass.simpleName"(Class sandboxClass) {
-        setup:
-            def script = makeScriptForPrivateCheck(
-                    new File("Scripts/ScriptWithPrivateMethod.groovy").readLines().join('\n'), sandboxClass)
-
-        expect:
-            verifyMethodsWereOverridden(script)
-
-        where:
-            sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
-    }
-
-    @Unroll
-    def "can override settings with userSettingValues for #sandboxClass.simpleName"(Class sandboxClass) {
-        setup:
-            def script = null
-            if (sandboxClass == HubitatAppSandbox) {
-                script = """
-preferences {
-    page(name:"mainPage", title:"Settings", install: true, uninstall: true) {
-        section() {
-            input (name:"testText", type: "text", title: "Test text", required: true, multiple: false)
+            where:
+                sandboxClass         | executorClass
+                HubitatAppSandbox    | AppExecutor
+                HubitatDeviceSandbox | DeviceExecutor
         }
-    }
-}
-"""
-            } else {
-                script = """
-metadata {
-    preferences {
-        input (name:"testText", type: "text", title: "Test text", required: true)
-    }
-}
-"""
-            }
-            final List<Flags> flags = [Flags.DontValidateDefinition, Flags.DontValidatePreferences,
-                                       Flags.DontRequireParseMethodInDevice]
-            String value = null
-        when: 'Setting isn\'t overridden'
-            def sandbox = sandboxClass.newInstance(script).run(userSettingValues: [:], validationFlags: flags)
-            value = sandboxClass == HubitatAppSandbox ? sandbox.settings.testText : sandbox.testText
-        then:
-            value == null
-        when: 'Setting is set to something'
-            sandbox = sandboxClass.newInstance(script).run(userSettingValues: ['testText': 'My test text'],
-                    validationFlags: flags)
-            value = sandboxClass == HubitatAppSandbox ? sandbox.settings.testText : sandbox.testText
-        then:
-            value == 'My test text'
-        where:
-            sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
-    }
 
-    @Unroll
-    def "#sandboxClass.simpleName: Getting its own method as closure is not confused with input reading and produces a string"(
-            Class sandboxClass, Class executorClass)
-    {
-        setup:
-            final def api = Mock(executorClass)
-            final def scriptText = """
+        private def makeScriptForPrivateCheck(def fileOrText, Class sandboxClass) {
+            return sandboxClass.newInstance(fileOrText).compile(
+                    validationFlags: [Flags.DontValidateMetadata, Flags.DontRequireParseMethodInDevice],
+                    customizeScriptBeforeRun: { script ->
+                        script.getMetaClass().myPrivateMethod1 = { -> "was overridden1!" }
+                        script.getMetaClass().myPrivateMethod2 = {
+                            def arg1, def arg2 -> "was overridden2(${arg1}, ${arg2})!"
+                        }
+                    })
+        }
+
+        void verifyMethodsWereOverridden(Script script) {
+            assert script.myPrivateMethod1() == "was overridden1!"
+            assert script.publicMethodThatCallsPrivateMethod1() == "was overridden1!"
+            assert script.myPrivateMethod2(42, "abc") == "was overridden2(42, abc)!"
+            assert script.publicMethodThatCallsPrivateMethod2() == "was overridden2(123, argFromPublicMethod)!"
+        }
+
+        @Unroll
+        def "private methods in the Script (as text) can be mocked for #sandboxClass.simpleName"(Class sandboxClass) {
+            setup:
+                def script = makeScriptForPrivateCheck(new File("Scripts/ScriptWithPrivateMethod.groovy"), sandboxClass)
+
+            expect:
+                verifyMethodsWereOverridden(script)
+
+            where:
+                sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+        }
+
+        @Unroll
+        def "private methods in the Script (as File) can be mocked for #sandboxClass.simpleName"(Class sandboxClass) {
+            setup:
+                def script = makeScriptForPrivateCheck(
+                        new File("Scripts/ScriptWithPrivateMethod.groovy").readLines().join('\n'), sandboxClass)
+
+            expect:
+                verifyMethodsWereOverridden(script)
+
+            where:
+                sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+        }
+
+        @Unroll
+        def "can override settings with userSettingValues for #sandboxClass.simpleName"(Class sandboxClass) {
+            setup:
+                def script = makeScriptWithInput(
+                        sandboxClass,
+                        "input (name:'testText', type: 'text', title: 'Test text', required: true)")
+
+                final List<Flags> flags = [Flags.DontRequireParseMethodInDevice, Flags.DontValidateDefinition]
+                String value = null
+
+            when: 'Setting isn\'t overridden'
+                def sandbox = sandboxClass.newInstance(script).run(userSettingValues: [:], validationFlags: flags)
+                value = sandboxClass == HubitatAppSandbox ? sandbox.settings.testText : sandbox.testText
+
+            then:
+                value == "Input 'testText' of type 'text'" // Default generated value
+
+            when: 'Setting is set to something'
+                sandbox = sandboxClass.newInstance(script).run(userSettingValues: ['testText': 'My test text'],
+                        validationFlags: flags)
+                value = sandboxClass == HubitatAppSandbox ? sandbox.settings.testText : sandbox.testText
+
+            then:
+                value == 'My test text' // Override
+
+            where:
+                sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+        }
+
+        @Unroll
+        def "#sandboxClass.simpleName: Getting its own method as closure is not confused with input reading and produces a string"(
+                Class sandboxClass, Class executorClass)
+        {
+            setup:
+                final def api = Mock(executorClass)
+                final def scriptText = """
 int myMethod1()
 {
     return 42
@@ -410,34 +405,34 @@ void scheduleUnschedule()
 }
 """
 
-            final List<Flags> flags = [Flags.DontValidateMetadata, Flags.DontValidateDefinition, Flags.DontValidatePreferences,
-                                       Flags.DontRequireParseMethodInDevice]
+                final List<Flags> flags = [Flags.DontValidateMetadata, Flags.DontValidateDefinition, Flags.DontValidatePreferences,
+                                           Flags.DontRequireParseMethodInDevice]
 
-        when:
-            def script = sandboxClass.newInstance(scriptText).run(validationFlags: flags, api: api)
-            script.scheduleUnschedule()
+            when:
+                def script = sandboxClass.newInstance(scriptText).run(validationFlags: flags, api: api)
+                script.scheduleUnschedule()
 
-        then:
-            script.getMethod1() == "myMethod1"
-            script.getMethod2() == "myMethod2"
-            script.getMethod3() == "myStaticPrivateMethod3"
+            then:
+                script.getMethod1() == "myMethod1"
+                script.getMethod2() == "myMethod2"
+                script.getMethod3() == "myStaticPrivateMethod3"
 
-            1 * api.unschedule("myMethod1")
-            1 * api.unschedule("myMethod2")
-            1 * api.schedule("cron string", "myStaticPrivateMethod3")
+                1 * api.unschedule("myMethod1")
+                1 * api.unschedule("myMethod2")
+                1 * api.schedule("cron string", "myStaticPrivateMethod3")
 
-        where:
-            sandboxClass         | executorClass
-            HubitatAppSandbox    | AppExecutor
-            HubitatDeviceSandbox | DeviceExecutor
-    }
+            where:
+                sandboxClass         | executorClass
+                HubitatAppSandbox    | AppExecutor
+                HubitatDeviceSandbox | DeviceExecutor
+        }
 
-    @Unroll
-    def "#sandboxClass.simpleName: Getting or setting its own property is not confused with input reading"(
-            Class sandboxClass, Class executorClass)
-    {
-        setup:
-            final def scriptText = """
+        @Unroll
+        def "#sandboxClass.simpleName: Getting or setting its own property is not confused with input reading"(
+                Class sandboxClass, Class executorClass)
+        {
+            setup:
+                final def scriptText = """
 def getMyProp() 
 {
     return state.myStateProp
@@ -470,191 +465,191 @@ void writeProperties(String val1, String val2)
 }
 """
 
-            final List<Flags> flags = [Flags.DontValidateMetadata, Flags.DontValidateDefinition, Flags.DontValidatePreferences,
-                                       Flags.DontRequireParseMethodInDevice]
-            def state = [myStateProp: "Prop initial value", myStateProp2: "Prop initial value2"]
-            def api = Mock(executorClass) {
-                _ * getState() >> state
-            }
+                final List<Flags> flags = [Flags.DontValidateMetadata, Flags.DontValidateDefinition, Flags.DontValidatePreferences,
+                                           Flags.DontRequireParseMethodInDevice]
+                def state = [myStateProp: "Prop initial value", myStateProp2: "Prop initial value2"]
+                def api = Mock(executorClass) {
+                    _ * getState() >> state
+                }
 
-        when:
-            def script = sandboxClass.newInstance(scriptText).run(validationFlags: flags, api: api)
+            when:
+                def script = sandboxClass.newInstance(scriptText).run(validationFlags: flags, api: api)
 
-        then:
-            script.readProperties() == ["Prop initial value", "Prop initial value2"]
-            script.writeProperties("Updated value", "Updated value2")
-            script.readProperties() == ["Updated value", "Updated value2"]
+            then:
+                script.readProperties() == ["Prop initial value", "Prop initial value2"]
+                script.writeProperties("Updated value", "Updated value2")
+                script.readProperties() == ["Updated value", "Updated value2"]
 
-        where:
-            sandboxClass         | executorClass
-            HubitatAppSandbox    | AppExecutor
-            HubitatDeviceSandbox | DeviceExecutor
-    }
+            where:
+                sandboxClass         | executorClass
+                HubitatAppSandbox    | AppExecutor
+                HubitatDeviceSandbox | DeviceExecutor
+        }
 
-    @Unroll
-    def "#sandboxClass.simpleName: Can override properties via metaclass"(Class sandboxClass) {
-        setup:
-            final def scriptText = """
+        @Unroll
+        def "#sandboxClass.simpleName: Can override properties via metaclass"(Class sandboxClass) {
+            setup:
+                final def scriptText = """
 def readProperty() 
 {
     return myOverriddenProperty
 }
 """
 
-            final List<Flags> flags = [Flags.DontValidateMetadata, Flags.DontValidateDefinition, Flags.DontValidatePreferences,
-                                       Flags.DontRequireParseMethodInDevice]
+                final List<Flags> flags = [Flags.DontValidateMetadata, Flags.DontValidateDefinition, Flags.DontValidatePreferences,
+                                           Flags.DontRequireParseMethodInDevice]
 
-        when:
-            def script = sandboxClass.newInstance(scriptText).run(validationFlags: flags,
-                    customizeScriptBeforeRun: {
-                        script -> script.getMetaClass().myOverriddenProperty = "Overridden value"
-                    })
+            when:
+                def script = sandboxClass.newInstance(scriptText).run(validationFlags: flags,
+                        customizeScriptBeforeRun: {
+                            script -> script.getMetaClass().myOverriddenProperty = "Overridden value"
+                        })
 
-        then:
-            script.readProperty() == "Overridden value"
+            then:
+                script.readProperty() == "Overridden value"
 
-        where:
-            sandboxClass         | _
-            HubitatAppSandbox    | _
-            HubitatDeviceSandbox | _
-    }
+            where:
+                sandboxClass         | _
+                HubitatAppSandbox    | _
+                HubitatDeviceSandbox | _
+        }
 
-    @Unroll
-    def "#sandboxClass.simpleName: Enum input type must have 'options'"(Class sandboxClass) {
-        when:
-            parseInput(sandboxClass, 'enum')
+        @Unroll
+        def "#sandboxClass.simpleName: Enum input type must have 'options'"(Class sandboxClass) {
+            when:
+                parseInput(sandboxClass, 'enum')
 
-        then:
-            AssertionError e = thrown()
-            e.message.contains("of type 'enum' must have 'options' parameter with enum values")
+            then:
+                AssertionError e = thrown()
+                e.message.contains("of type 'enum' must have 'options' parameter with enum values")
 
-        where:
-            sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
-    }
+            where:
+                sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+        }
 
-    @Unroll
-    def "#sandboxClass.simpleName: Non-enum input(type: '#type') types must not have options"(
-            String type, Class sandboxClass)
-    {
-        when:
-            parseInput(sandboxClass, type, 'options: ["A", "B"]')
+        @Unroll
+        def "#sandboxClass.simpleName: Non-enum input(type: '#type') types must not have options"(
+                String type, Class sandboxClass)
+        {
+            when:
+                parseInput(sandboxClass, type, 'options: ["A", "B"]')
 
-        then:
-            AssertionError e = thrown()
-            e.message.contains("only 'enum' input type needs 'options' parameter")
-            e.message.contains("myInput")
+            then:
+                AssertionError e = thrown()
+                e.message.contains("only 'enum' input type needs 'options' parameter")
+                e.message.contains("myInput")
 
-        where:
-            [type, sandboxClass] << [["capability.thermostat", HubitatAppSandbox],
-                                     ["device.someDeviceName", HubitatAppSandbox],
-                                     *combineWithSandboxes(["bool"]),
-                                     //*combineWithSandboxes(["boolean"]),
-                                     *combineWithSandboxes(["decimal"]),
-                                     *combineWithSandboxes(["email"]),
-                                     //"enum", // Enum is tested separately - it needs 'options'
-                                     ["hub", HubitatAppSandbox],
-                                     ["icon", HubitatAppSandbox],
-                                     *combineWithSandboxes(["number"]),
-                                     *combineWithSandboxes(["password"]),
-                                     *combineWithSandboxes(["phone"]),
-                                     *combineWithSandboxes(["time"]),
-                                     *combineWithSandboxes(["text"])]
-    }
+            where:
+                [type, sandboxClass] << [["capability.thermostat", HubitatAppSandbox],
+                                         ["device.someDeviceName", HubitatAppSandbox],
+                                         *combineWithSandboxes(["bool"]),
+                                         //*combineWithSandboxes(["boolean"]),
+                                         *combineWithSandboxes(["decimal"]),
+                                         *combineWithSandboxes(["email"]),
+                                         //"enum", // Enum is tested separately - it needs 'options'
+                                         ["hub", HubitatAppSandbox],
+                                         ["icon", HubitatAppSandbox],
+                                         *combineWithSandboxes(["number"]),
+                                         *combineWithSandboxes(["password"]),
+                                         *combineWithSandboxes(["phone"]),
+                                         *combineWithSandboxes(["time"]),
+                                         *combineWithSandboxes(["text"])]
+        }
 
-    @Unroll
-    def "#sandboxClass.simpleName: Enum input type can take list of strings as options"(Class sandboxClass) {
-        when:
-            final def input = parseInput(sandboxClass, 'enum', "options: ['Val1', 'Val2']")
+        @Unroll
+        def "#sandboxClass.simpleName: Enum input type can take list of strings as options"(Class sandboxClass) {
+            when:
+                final def input = parseInput(sandboxClass, 'enum', "options: ['Val1', 'Val2']")
 
-        then:
-            input.readType() == 'enum'
-            input.options.options == ['Val1', 'Val2']
+            then:
+                input.readType() == 'enum'
+                input.options.options == ['Val1', 'Val2']
 
-        where:
-            sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
-    }
+            where:
+                sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+        }
 
-    @Unroll
-    def "#sandboxClass.simpleName: Enum input type can't take string as 'options'"(Class sandboxClass) {
-        when:
-            parseInput(sandboxClass, 'enum', [options: 'Val1'])
+        @Unroll
+        def "#sandboxClass.simpleName: Enum input type can't take string as 'options'"(Class sandboxClass) {
+            when:
+                parseInput(sandboxClass, 'enum', [options: 'Val1'])
 
-        then:
-            AssertionError e = thrown()
-            e.message.contains("must be a list of values or map int->value")
-            e.message.contains("Val1")
+            then:
+                AssertionError e = thrown()
+                e.message.contains("must be a list of values or map int->value")
+                e.message.contains("Val1")
 
-        where:
-            sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
-    }
+            where:
+                sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+        }
 
-    @Unroll
-    def "#sandboxClass.simpleName: Enum input type can take list of ints as options"(Class sandboxClass) {
-        when:
-            final def input = parseInput(sandboxClass, 'enum', [options: [11, 22]])
+        @Unroll
+        def "#sandboxClass.simpleName: Enum input type can take list of ints as options"(Class sandboxClass) {
+            when:
+                final def input = parseInput(sandboxClass, 'enum', [options: [11, 22]])
 
-        then:
-            input.readType() == 'enum'
-            input.options.options == [11, 22]
+            then:
+                input.readType() == 'enum'
+                input.options.options == [11, 22]
 
-        where:
-            sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
-    }
+            where:
+                sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+        }
 
-    @Unroll
-    def "#sandboxClass.simpleName: Enum input type can take map of int->string as options"(Class sandboxClass) {
-        when:
-            final def input = parseInput(sandboxClass, 'enum', [options: [42: 'Val1', 33: 'Val2']])
+        @Unroll
+        def "#sandboxClass.simpleName: Enum input type can take map of int->string as options"(Class sandboxClass) {
+            when:
+                final def input = parseInput(sandboxClass, 'enum', [options: [42: 'Val1', 33: 'Val2']])
 
-        then:
-            input.readType() == 'enum'
-            input.options.options == [42: 'Val1', 33: 'Val2']
+            then:
+                input.readType() == 'enum'
+                input.options.options == [42: 'Val1', 33: 'Val2']
 
-        where:
-            sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
-    }
+            where:
+                sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+        }
 
-    @Unroll
-    def "#sandboxClass.simpleName: Enum input type can take map of string->string as options"(Class sandboxClass) {
-        when:
-            final def input = parseInput(sandboxClass, 'enum', [options: ['42': 'Val1', '33': 'Val2']])
+        @Unroll
+        def "#sandboxClass.simpleName: Enum input type can take map of string->string as options"(Class sandboxClass) {
+            when:
+                final def input = parseInput(sandboxClass, 'enum', [options: ['42': 'Val1', '33': 'Val2']])
 
-        then:
-            input.readType() == 'enum'
-            input.options.options == ["42": 'Val1', "33": 'Val2']
+            then:
+                input.readType() == 'enum'
+                input.options.options == ["42": 'Val1', "33": 'Val2']
 
-        where:
-            sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
-    }
+            where:
+                sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+        }
 
-    @Unroll
-    def "#sandboxClass.simpleName: Enum input type can take list of maps of key->string as options"(
-            Class sandboxClass)
-    {
-        when:
-            final def input = parseInput(sandboxClass, 'enum', [options: [['42': 'Val1'], ['33': 'Val2']]])
+        @Unroll
+        def "#sandboxClass.simpleName: Enum input type can take list of maps of key->string as options"(
+                Class sandboxClass)
+        {
+            when:
+                final def input = parseInput(sandboxClass, 'enum', [options: [['42': 'Val1'], ['33': 'Val2']]])
 
-        then:
-            input.readType() == 'enum'
-            input.options.options == [["42": 'Val1'], ["33": 'Val2']]
+            then:
+                input.readType() == 'enum'
+                input.options.options == [["42": 'Val1'], ["33": 'Val2']]
 
-        where:
-            sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
-    }
+            where:
+                sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
+        }
 
-    @Unroll
-    def "#sandboxClass.simpleName: Failing cases: enum default value must be one of its options (#options)"(
-            String options, String expectedValidValues, Class sandboxClass)
-    {
-        when:
-            parseInput(sandboxClass, 'enum', "defaultValue: 'ValUnknown', options: ${options}")
+        @Unroll
+        def "#sandboxClass.simpleName: Failing cases: enum default value must be one of its options (#options)"(
+                String options, String expectedValidValues, Class sandboxClass)
+        {
+            when:
+                parseInput(sandboxClass, 'enum', "defaultValue: 'ValUnknown', options: ${options}")
 
-        then:
-            AssertionError e = thrown()
-            e.message.contains("defaultValue 'ValUnknown' is not one of valid values: ${expectedValidValues}")
+            then:
+                AssertionError e = thrown()
+                e.message.contains("defaultValue 'ValUnknown' is not one of valid values: ${expectedValidValues}")
 
-        where:
-            // @formatter:off
+            where:
+                // @formatter:off
             [options, expectedValidValues, sandboxClass] << combineWithSandboxes([
                  ["['Val1', 'Val2']",               "[Val1, Val2]"],
                  ["[42:'Val1', 33:'Val2']",         "[Val1, Val2] or [42, 33]"],
@@ -662,17 +657,17 @@ def readProperty()
                  ["[['42':'Val1'], ['33':'Val2']]", "[Val1, Val2] or [42, 33]"]
             ])
         // @formatter:on
-    }
+        }
 
-    @Unroll
-    def "#sandboxClass.simpleName: Successful cases: enum default value must be one of its options (#options)"(
-            String options, String defaultValue, Class sandboxClass)
-    {
-        expect:
-            parseInput(sandboxClass, 'enum', "defaultValue: ${defaultValue}, options: ${options}")
+        @Unroll
+        def "#sandboxClass.simpleName: Successful cases: enum default value must be one of its options (#options)"(
+                String options, String defaultValue, Class sandboxClass)
+        {
+            expect:
+                parseInput(sandboxClass, 'enum', "defaultValue: ${defaultValue}, options: ${options}")
 
-        where:
-            // @formatter:off
+            where:
+                // @formatter:off
             [options, defaultValue, sandboxClass] << combineWithSandboxes(
                     [["['Val1', 'Val2']",              "'Val1'"],
                     ["['Val1', 'Val2']",               "'Val2'"],
@@ -684,40 +679,40 @@ def readProperty()
                     ["[['42':'Val1'], ['33':'Val2']]", "'Val2'"],
                     ["[['42':'Val1'], ['33':'Val2']]", "'42'"]])
             // @formatter:on
-    }
+        }
 
-    @Unroll
-    def "#sandboxClass.simpleName: Enum options (#options) can't repeat each other"(
-            String options, String whatWasDuplicated, Class sandboxClass)
-    {
-        when:
-            parseInput(sandboxClass, 'enum', "options: ${options}")
+        @Unroll
+        def "#sandboxClass.simpleName: Enum options (#options) can't repeat each other"(
+                String options, String whatWasDuplicated, Class sandboxClass)
+        {
+            when:
+                parseInput(sandboxClass, 'enum', "options: ${options}")
 
-        then:
-            AssertionError e = thrown()
-            e.message.contains("enum ${whatWasDuplicated} was duplicated")
+            then:
+                AssertionError e = thrown()
+                e.message.contains("enum ${whatWasDuplicated} was duplicated")
 
-        where:
-            [options, whatWasDuplicated, sandboxClass] << combineWithSandboxes(
-                    [["['Val2', 'Val1', 'Val2']", "value 'Val2'"],
-                     ["[11:'Val2', 22:'Val1', 33:'Val2']", "value 'Val2'"],
-                     ["['11':'Val2', '22':'Val1', '33':'Val2']", "value 'Val2'"],
-                     ["[['11':'Val2'], ['22':'Val1'], ['33':'Val2']]", "value 'Val2'"]])
-    }
+            where:
+                [options, whatWasDuplicated, sandboxClass] << combineWithSandboxes(
+                        [["['Val2', 'Val1', 'Val2']", "value 'Val2'"],
+                         ["[11:'Val2', 22:'Val1', 33:'Val2']", "value 'Val2'"],
+                         ["['11':'Val2', '22':'Val1', '33':'Val2']", "value 'Val2'"],
+                         ["[['11':'Val2'], ['22':'Val1'], ['33':'Val2']]", "value 'Val2'"]])
+        }
 
-    @Unroll
-    def "#sandboxClass.simpleName: enum options = (#options) leads to error: #error"(
-            String options, String error, Class sandboxClass)
-    {
-        when:
-            parseInput(sandboxClass, 'enum', "options: ${options}")
+        @Unroll
+        def "#sandboxClass.simpleName: enum options = (#options) leads to error: #error"(
+                String options, String error, Class sandboxClass)
+        {
+            when:
+                parseInput(sandboxClass, 'enum', "options: ${options}")
 
-        then:
-            AssertionError e = thrown()
-            e.message.contains(error)
+            then:
+                AssertionError e = thrown()
+                e.message.contains(error)
 
-        where:
-            // @formatter:off
+            where:
+                // @formatter:off
             [options, error, sandboxClass] << combineWithSandboxes([
                  ["[[1:'Val1', 2:'Val2'], [3:'Val3']]", "when enum options is list of maps, each map must have one entry. But '[1:'Val1', 2:'Val2']' doesn't."],
                  ["[['1':'Val1', '2':'Val2'], ['3':'Val3']]", "when enum options is list of maps, each map must have one entry. But '['1':'Val1', '2':'Val2']' doesn't."],
@@ -731,5 +726,5 @@ def readProperty()
                  ["['abc', [3:'Val3']]", "if enum options is a list, it must be a list of values or maps. But ''abc'' isn't a map."]
             ])
         // @formatter:on
+        }
     }
-}
