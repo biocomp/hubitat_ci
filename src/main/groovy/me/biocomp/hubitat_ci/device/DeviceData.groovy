@@ -18,6 +18,12 @@ class DeviceData implements IInputSource {
     }
 
     @Override
+    def generateInputWrapper(String name) {
+        def input = producedPreferences.find{it->it.readName() == name}
+        return input ? input.makeInputObject() : null
+    }
+
+    @Override
     Set<String> getAllInputNames() {
         return producedPreferences.collect{it.readName()} as Set<String>
     }

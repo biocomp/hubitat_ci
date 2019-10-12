@@ -1,6 +1,5 @@
 package me.biocomp.hubitat_ci.device.metadata
 
-import me.biocomp.hubitat_ci.api.common_api.Log
 import me.biocomp.hubitat_ci.api.device_api.DeviceExecutor
 import me.biocomp.hubitat_ci.device.HubitatDeviceSandbox
 import me.biocomp.hubitat_ci.util.CapturingLog
@@ -136,26 +135,24 @@ metadata{
     }
 
     @Unroll
-    def "Calling with valid type: input(#type) succeeds"(String type) {
+    def "Calling with valid type: input(#type) succeeds"(String type, String extraOptions) {
         when:
-            def input = readInput("name: 'nam', type: '${type}'")
+            def input = readInput("name: 'nam', type: '${type}'${extraOptions ? " , " + extraOptions : ""}")
 
         then:
             input.readType() == type
 
         where:
-            type << ['bool',
-                     'decimal',
-                     'email',
-                     'enum',
-                     'number',
-                     'password',
-                     'phone',
-                     'time',
-                     'text',
-                     'paragraph' // TODO: figure out if 'paragraph' is supported. It works, and produces a text input, but is not documented.
-                     // TODO: figure out if any type of input should work.
-            ]
+            type       | extraOptions
+            'bool'     | ""
+            'decimal'  | ""
+            'email'    | ""
+            'enum'     | "options: ['a', 'b']"
+            'number'   | ""
+            'password' | ""
+            'phone'    | ""
+            'time'     | ""
+            'text'     | ""
     }
 
     def "Calling with invalid input type fails"() {
@@ -184,8 +181,30 @@ metadata{
             input.options.options == ['val1', 'val2']
     }
 
-    def "Calling input() with invalid option fails"()
-    {
+    @Unroll
+    def "input type '#type' does not support options"(def type) {
+        when:
+            readInput("""name: 'nam', type: '$type', title: 'tit', options: ['val1', 'val2']""")
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains("only 'enum' input type needs 'options' parameter")
+            e.message.contains("nam")
+            e.message.contains(type)
+
+        where:
+            type       | _
+            'bool'     | _
+            'decimal'  | _
+            'email'    | _
+            'number'   | _
+            'password' | _
+            'phone'    | _
+            'time'     | _
+            'text'     | _
+    }
+
+    def "Calling input() with invalid option fails"() {
         when:
             def input = readInput("badOption: 123, 'nam', 'bool'")
 
@@ -194,8 +213,7 @@ metadata{
             e.message.contains("'badOption' is not supported")
     }
 
-    def "Accessing 'inputs' that were not defined when running the script fails"()
-    {
+    def "Accessing 'inputs' that were not defined when running the script fails"() {
         setup:
             def script = new HubitatDeviceSandbox("""
 metadata {
@@ -221,8 +239,58 @@ def methodThatUsesInputs()
 
         then:
             AssertionError e = thrown()
-            e.message.contains("In 'someInternalMethod' settings were read that are not registered inputs: [missingInput]. These are registered inputs: [existingInput]. This is not allowed in strict mode (add Flags.AllowReadingNonInputSettings to allow this).")
+            e.message.contains(
+                    "In 'someInternalMethod' settings were read that are not registered inputs: [missingInput]. These are registered inputs: [existingInput]. This is not allowed in strict mode (add Flags.AllowReadingNonInputSettings to allow this).")
             !e.message.contains("'methodThatUsesInputs'")
+    }
+
+    @Unroll
+    def "Input (#type, #extraOptions) with defaults have default value, with no default have some meaningful value"(
+            def type, Map extraOptions, def expectedValue)
+    {
+        setup:
+            def script = new HubitatDeviceSandbox("""
+metadata {
+    preferences() {
+         input 'myInput', '${type}' ${extraOptions.collect { k, v -> ", ${k.inspect()}: ${v.inspect()}" }.join('')}
     }
 }
 
+def readInput()
+{
+    myInput
+}
+""").run(validationFlags: [Flags.DontRequireParseMethodInDevice, Flags.DontValidateDefinition])
+        expect:
+            script.readInput() == expectedValue
+
+        where:
+            type       | extraOptions                                           || expectedValue
+            'bool'     | [:]                                                    || true
+            'bool'     | [defaultValue: false]                                  || false
+            'decimal'  | [:]                                                    || 0
+            'decimal'  | [defaultValue: 123]                                    || 123
+            'email'    | [:]                                                    || "Input 'myInput' of type 'email'"
+            'email'    | [defaultValue: 'default val']                          || "default val"
+            'enum'     | [options: ['a', 'b']]                                  || "a"
+            'enum'     | [options: [1: 'a', 2: 'b']]                            || "1"
+            'enum'     | [options: ["1": 'a', "2": 'b']]                        || "1"
+            'enum'     | [options: ['a', 'b'], defaultValue: 'b']               || "b"
+            'enum'     | [options: [1: 'a', 2: 'b'], defaultValue: 'b']         || "2"
+            'enum'     | [options: [[1: 'a'], [2: 'b']], defaultValue: 'b']     || "2"
+            'enum'     | [options: [['1': 'a'], ['2': 'b']], defaultValue: 'b'] || "2"
+            'enum'     | [options: ['1': 'a', '2': 'b'], defaultValue: 'b']     || "2"
+            'enum'     | [options: ['1': 'a', '2': 'b'], defaultValue: '2']     || "2"
+            'enum'     | [options: ['1': 'a', '2': 'b'], defaultValue: '1']     || "1"
+            'number'   | [:]                                                    || 0
+            'number'   | [defaultValue: 123]                                    || 123
+            'password' | [:]                                                    || "Input 'myInput' of type 'password'"
+            'password' | [defaultValue: 'default val']                          || "default val"
+            'phone'    | [:]                                                    || 0
+            'phone'    | [defaultValue: 123]                                    || 123
+            'time'     | [:]                                                    || "Input 'myInput' of type 'time'"
+            'time'     | [defaultValue: 'default val']                          || "default val"
+            'text'     | [:]                                                    || "Input 'myInput' of type 'text'"
+            'text'     | [defaultValue: 'default val']                          || "default val"
+    }
+}

@@ -16,5 +16,7 @@ interface IInputSource {
      */
     def generateInputWrapper(String name, def userProvidedValue)
 
+    def generateInputWrapper(String name)
+
     Set<String> getAllInputNames()
 }

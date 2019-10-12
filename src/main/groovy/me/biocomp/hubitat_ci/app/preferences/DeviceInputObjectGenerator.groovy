@@ -6,6 +6,7 @@ import me.biocomp.hubitat_ci.capabilities.AttributeImpl
 import me.biocomp.hubitat_ci.capabilities.Capabilities
 import me.biocomp.hubitat_ci.capabilities.CapabilityAttributeInfo
 import groovy.transform.CompileStatic
+import me.biocomp.hubitat_ci.validation.IInputObjectGenerator
 
 import java.lang.reflect.Method
 
