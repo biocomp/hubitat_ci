@@ -1,7 +1,9 @@
 package me.biocomp.hubitat_ci.app.preferences
 
 import me.biocomp.hubitat_ci.capabilities.Capabilities
+import me.biocomp.hubitat_ci.util.NullableOptional
 import me.biocomp.hubitat_ci.validation.BooleanInputObjectGenerator
+import me.biocomp.hubitat_ci.validation.DefaultAndUserValues
 import me.biocomp.hubitat_ci.validation.IInputObjectGenerator
 import me.biocomp.hubitat_ci.validation.InputCommon
 import me.biocomp.hubitat_ci.validation.Flags
@@ -19,7 +21,7 @@ class Input {
     final IInputObjectGenerator typeWrapper
     
     // Map of one 'defaultValue' or 0 elements, meaning that there's no default value.
-    final Map<String, Object> defaultValue
+    final NullableOptional defaultValue
     
     // If type is enum, will contain enum values (and if values is map, then keys of the map)
     final ArrayList<String> enumValues = new ArrayList<String>()
@@ -63,7 +65,7 @@ class Input {
     }
 
     def makeInputObject() {
-        return typeWrapper.makeInputObject(readName(), readType(), InputCommon.readDefaultValueOrEnumFirstValue(defaultValue, readType(), enumValues, enumDisplayValues))
+        return typeWrapper.makeInputObject(readName(), readType(), DefaultAndUserValues.defaultValueOnly(InputCommon.readDefaultValueOrEnumFirstValue(defaultValue, readType(), enumValues, enumDisplayValues)))
     }
 
     private static final NamedParametersValidator inputOptionsValidator = NamedParametersValidator.make {

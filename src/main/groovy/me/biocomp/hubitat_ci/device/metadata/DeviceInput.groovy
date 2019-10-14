@@ -3,7 +3,9 @@ package me.biocomp.hubitat_ci.device.metadata
 
 import groovy.transform.TupleConstructor
 import groovy.transform.TypeChecked
+import me.biocomp.hubitat_ci.util.NullableOptional
 import me.biocomp.hubitat_ci.validation.BooleanInputObjectGenerator
+import me.biocomp.hubitat_ci.validation.DefaultAndUserValues
 import me.biocomp.hubitat_ci.validation.Flags
 import me.biocomp.hubitat_ci.validation.IInputObjectGenerator
 import me.biocomp.hubitat_ci.validation.InputCommon
@@ -22,7 +24,7 @@ class DeviceInput {
     final Map options
     final EnumSet<Flags> validationFlags
     final IInputObjectGenerator typeWrapper
-    final Map<String, Object> defaultValue // Map of one 'defaultValue' or 0 elements, meaning that there's no default value.
+    final NullableOptional defaultValue // Map of one 'defaultValue' or 0 elements, meaning that there's no default value.
     final ArrayList<String> enumValues = new ArrayList<String>() // If type is enum, will contain enum values (and if values is map, then keys of the map)
     final ArrayList<String> enumDisplayValues = new ArrayList<String>() // If type is enum, will contain enum values (and if values is map, then values of the map)
 
@@ -129,6 +131,6 @@ class DeviceInput {
 
     def makeInputObject()
     {
-        return typeWrapper.makeInputObject(readName(), readType(), InputCommon.readDefaultValueOrEnumFirstValue(defaultValue, readType(), enumValues, enumDisplayValues))
+        return typeWrapper.makeInputObject(readName(), readType(),  DefaultAndUserValues.defaultValueOnly(InputCommon.readDefaultValueOrEnumFirstValue(defaultValue, readType(), enumValues, enumDisplayValues)))
     }
 }

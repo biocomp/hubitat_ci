@@ -1,5 +1,6 @@
 package me.biocomp.hubitat_ci.validation
 
+import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 
 /**
@@ -19,15 +20,7 @@ interface IInputObjectGenerator
          <br/> userProvidedValue - value that user provided as mock (possibly null)
          <br/> defaultValue - value that was specified as default in input() (possibly null)
      */
-    def makeInputObject(String inputName, String inputType, Map<String, Object> userProvidedAndDefaultValues)
-}
-
-@PackageScope
-/**
- * Common methods for input generators
- */
-class InputImplCommon
-{
+    def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues)
 }
 
 /**
@@ -38,7 +31,8 @@ class TextInputObjectGenerator implements IInputObjectGenerator
     final String inputName
 
     @Override
-    def makeInputObject(String inputName, String inputType, Map<String, Object> userProvidedAndDefaultValues) {
+    @CompileStatic
+    def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues) {
         return InputCommon.returnUserOrDefaultOrCustomValue(
                 userProvidedAndDefaultValues,
                 "Input '${inputName}' of type '${inputType}'")
@@ -53,7 +47,8 @@ class BooleanInputObjectGenerator implements IInputObjectGenerator
     final String inputName
 
     @Override
-    def makeInputObject(String inputName, String inputType, Map<String, Object> userProvidedAndDefaultValues) {
+    @CompileStatic
+    def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues) {
         return InputCommon.returnUserOrDefaultOrCustomValue(userProvidedAndDefaultValues, new Boolean(true))
     }
 }
@@ -64,7 +59,7 @@ class BooleanInputObjectGenerator implements IInputObjectGenerator
 class NumberInputObjectGenerator implements IInputObjectGenerator
 {
     @Override
-    def makeInputObject(String inputName, String inputType, Map<String, Object> userProvidedAndDefaultValues) {
+    def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues) {
         return InputCommon.returnUserOrDefaultOrCustomValue(userProvidedAndDefaultValues, new Integer(0))
     }
 }
@@ -76,7 +71,8 @@ class NumberInputObjectGenerator implements IInputObjectGenerator
 class UnvalidatedInputObjectGenerator implements IInputObjectGenerator
 {
     @Override
-    def makeInputObject(String inputName, String inputType, Map<String, Object> userProvidedAndDefaultValues) {
+    @CompileStatic
+    def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues) {
         return InputCommon.returnUserOrDefaultOrCustomValue(
                 userProvidedAndDefaultValues,
                 "Input '${inputName}' type '${inputType}' was not validated, so this generic string is used as mock value")
