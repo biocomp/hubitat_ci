@@ -14,30 +14,7 @@ import me.biocomp.hubitat_ci.validation.TextInputObjectGenerator
 import me.biocomp.hubitat_ci.validation.UnvalidatedInputObjectGenerator
 
 @CompileStatic
-class Input {
-    final Map unnamedOptions
-    final Map options
-    final EnumSet<Flags> validationFlags
-    final IInputObjectGenerator typeWrapper
-    
-    // Map of one 'defaultValue' or 0 elements, meaning that there's no default value.
-    final NullableOptional defaultValue
-    
-    // If type is enum, will contain enum values (and if values is map, then keys of the map)
-    final ArrayList<String> enumValues = new ArrayList<String>()
-    
-    // If type is enum, will contain enum values (and if values is map, then values of the map)
-    final ArrayList<String> enumDisplayValues = new ArrayList<String>()
-    
-    Input(Map unnamedOptions, Map options, EnumSet<Flags> validationFlags) {
-        this.unnamedOptions = unnamedOptions
-        this.options = options
-        this.validationFlags = validationFlags
-
-        this.defaultValue = InputCommon.readDefaultValue(options)
-        this.typeWrapper = validateAndInitType(enumValues, enumDisplayValues)
-    }
-
+class Input extends InputCommon {
     String readName() {
         return unnamedOptions.name ? unnamedOptions.name : options?.name
     }
@@ -83,21 +60,29 @@ class Input {
         boolParameter("hideWhenEmpty", notRequired())
     }
 
-    private static final HashMap<String, IInputObjectGenerator> validStaticInputTypes = [bool    : new BooleanInputObjectGenerator(),
-                                                                                         //"boolean",
-                                                                                         decimal : new NumberInputObjectGenerator(),
-                                                                                         email   : new TextInputObjectGenerator(),
-                                                                                         enum    : new TextInputObjectGenerator(), // Todo: make enum input type?
-                                                                                         hub     : new TextInputObjectGenerator(),
-                                                                                         icon    : new TextInputObjectGenerator(),
-                                                                                         number  : new NumberInputObjectGenerator(),
-                                                                                         password: new TextInputObjectGenerator(),
-                                                                                         phone   : new NumberInputObjectGenerator(),
-                                                                                         time    : new TextInputObjectGenerator(),
-                                                                                         text    : new TextInputObjectGenerator()] as HashMap<String, IInputObjectGenerator>
+    // @formatter:off
+    private static final HashMap<String, IInputObjectGenerator> validStaticInputTypes = [
+         bool    : new BooleanInputObjectGenerator(),
+         //"boolean",
+         decimal : new NumberInputObjectGenerator(),
+         email   : new TextInputObjectGenerator(),
+         enum    : new TextInputObjectGenerator(), // Todo: make enum input type?
+         hub     : new TextInputObjectGenerator(),
+         icon    : new TextInputObjectGenerator(),
+         number  : new NumberInputObjectGenerator(),
+         password: new TextInputObjectGenerator(),
+         phone   : new NumberInputObjectGenerator(),
+         time    : new TextInputObjectGenerator(),
+         text    : new TextInputObjectGenerator()
+    ] as HashMap<String, IInputObjectGenerator>
+    // @formatter:on
 
+    Input(Map unnamedOptions, Map options, EnumSet<Flags> validationFlags) {
+        super(unnamedOptions, options, validationFlags)
+    }
 
-    private IInputObjectGenerator validateAndInitType(
+    @Override
+    IInputObjectGenerator validateAndInitType(
             ArrayList<String> enumValues, ArrayList<String> enumDisplayValues)
     {
         if (!validationFlags.contains(Flags.DontValidatePreferences)) {

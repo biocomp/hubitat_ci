@@ -2,45 +2,28 @@ package me.biocomp.hubitat_ci.validation
 
 import groovy.transform.CompileStatic
 import me.biocomp.hubitat_ci.util.NullableOptional
-import org.apache.commons.lang.ObjectUtils
 
 @CompileStatic
-class DefaultAndUserValues
-{
-    static DefaultAndUserValues empty()
-    {
-        return new DefaultAndUserValues()
+abstract class InputCommon {
+    final Map unnamedOptions
+    final Map options
+    final EnumSet<Flags> validationFlags
+    final IInputObjectGenerator typeWrapper
+    final NullableOptional defaultValue // Map of one 'defaultValue' or 0 elements, meaning that there's no default value.
+    final ArrayList<String> enumValues = new ArrayList<String>() // If type is enum, will contain enum values (and if values is map, then keys of the map)
+    final ArrayList<String> enumDisplayValues = new ArrayList<String>() // If type is enum, will contain enum values (and if values is map, then values of the map)
+
+    InputCommon(Map unnamedOptions, Map options, EnumSet<Flags> validationFlags) {
+        this.unnamedOptions = unnamedOptions
+        this.options = options
+        this.validationFlags = validationFlags
+
+        this.defaultValue = InputCommon.readDefaultValue(options)
+        this.typeWrapper = validateAndInitType(enumValues, enumDisplayValues)
     }
 
-    static DefaultAndUserValues defaultValueOnly(NullableOptional defaultValue)
-    {
-        return new DefaultAndUserValues(defaultValue)
-    }
+    abstract IInputObjectGenerator validateAndInitType(ArrayList<String> enumValues, ArrayList<String> enumDisplayValues)
 
-    static DefaultAndUserValues bothValues(NullableOptional defaultValue, NullableOptional userProvidedValue)
-    {
-        return new DefaultAndUserValues(defaultValue, userProvidedValue)
-    }
-
-    private DefaultAndUserValues() {}
-
-    private DefaultAndUserValues(NullableOptional defaultValue)
-    {
-        this.@defaultValue = defaultValue
-    }
-
-    private DefaultAndUserValues(NullableOptional defaultValue, NullableOptional userProvidedValue)
-    {
-        this.@defaultValue = defaultValue
-        this.@userProvidedValue = userProvidedValue
-    }
-
-    final NullableOptional defaultValue = NullableOptional.empty()
-    final NullableOptional userProvidedValue = NullableOptional.empty()
-}
-
-@CompileStatic
-class InputCommon {
     static void assertHasNoOptionsIfNotEnum(def input, String type, Map options)
     {
         if (type != 'enum') {

@@ -18,16 +18,7 @@ import me.biocomp.hubitat_ci.validation.UnvalidatedInputObjectGenerator
  * Information about 'input' in Device.
  */
 @TypeChecked
-@TupleConstructor
-class DeviceInput {
-    final Map unnamedOptions
-    final Map options
-    final EnumSet<Flags> validationFlags
-    final IInputObjectGenerator typeWrapper
-    final NullableOptional defaultValue // Map of one 'defaultValue' or 0 elements, meaning that there's no default value.
-    final ArrayList<String> enumValues = new ArrayList<String>() // If type is enum, will contain enum values (and if values is map, then keys of the map)
-    final ArrayList<String> enumDisplayValues = new ArrayList<String>() // If type is enum, will contain enum values (and if values is map, then values of the map)
-
+class DeviceInput extends InputCommon {
     private static final HashMap<String, IInputObjectGenerator> validStaticInputTypes =
             [bool    : new BooleanInputObjectGenerator(),
              decimal : new NumberInputObjectGenerator(),
@@ -38,7 +29,6 @@ class DeviceInput {
              phone   : new NumberInputObjectGenerator(),
              time    : new TextInputObjectGenerator(),
              text    : new TextInputObjectGenerator()] as HashMap<String, IInputObjectGenerator>
-
 
     private static final NamedParametersValidator inputOptionsValidator = NamedParametersValidator.make {
         stringParameter("name", required(), canBeEmpty(), [Flags.DontValidateDeviceInputName])
@@ -64,12 +54,7 @@ class DeviceInput {
     }
 
     DeviceInput(Map unnamedOptions, Map options, EnumSet<Flags> validationFlags) {
-        this.unnamedOptions = unnamedOptions
-        this.options = options
-        this.validationFlags = validationFlags
-
-        this.defaultValue = InputCommon.readDefaultValue(options)
-        this.typeWrapper = validateAndInitType(enumValues, enumDisplayValues)
+        super(unnamedOptions, options, validationFlags)
     }
 
     String readName()
@@ -82,7 +67,8 @@ class DeviceInput {
         return unnamedOptions.type != null ? unnamedOptions.type: options.type
     }
 
-    private IInputObjectGenerator validateAndInitType(ArrayList<String> enumValues, ArrayList<String> enumDisplayValues)
+    @Override
+    IInputObjectGenerator validateAndInitType(ArrayList<String> enumValues, ArrayList<String> enumDisplayValues)
     {
         if (!validationFlags.contains(Flags.DontValidatePreferences)) {
             inputOptionsValidator.validate(
