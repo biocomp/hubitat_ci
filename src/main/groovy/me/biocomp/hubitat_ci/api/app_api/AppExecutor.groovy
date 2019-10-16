@@ -64,7 +64,7 @@ interface AppExecutor extends
      * This is similar to getCurrentState(), but will immediately write and read from the backing data store.
      * Prefer using getCurrentState() over getAtomicState() when possible.
      */
-    //abstract Map getAtomicState()
+    abstract Map getAtomicState()
 
     /**
      * @return A map of name/value pairs that App can use to save and retrieve data across App executions.

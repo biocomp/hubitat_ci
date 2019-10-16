@@ -268,5 +268,7 @@ Methods:[
 ]
 
 CustomMethods:[
-  public Map com.hubitat.hub.executor.AppExecutor.getSettings() # Seems like AppExecutor implements this property via custom 'getProperty' or 'propertyMissing'. It's not visible in properties or declared fields either.
+  # Seems like AppExecutor implements these properties via custom 'getProperty' or 'propertyMissing'. It's not visible in properties or declared fields either.
+  public Map com.hubitat.hub.executor.AppExecutor.getSettings()
+  public Map com.hubitat.hub.executor.AppExecutor.getAtomicState()
 ]
