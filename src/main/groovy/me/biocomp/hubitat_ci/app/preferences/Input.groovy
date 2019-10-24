@@ -15,14 +15,6 @@ import me.biocomp.hubitat_ci.validation.UnvalidatedInputObjectGenerator
 
 @CompileStatic
 class Input extends InputCommon {
-    String readName() {
-        return unnamedOptions.name ? unnamedOptions.name : options?.name
-    }
-
-    String readType() {
-        return unnamedOptions.type ? unnamedOptions.type : options?.type
-    }
-
     static boolean isCapabilityType(String type) {
         return type =~ /capability\.[a-zA-Z0-9._]+/
     }
@@ -38,11 +30,15 @@ class Input extends InputCommon {
     }
 
     def makeInputObject(def userProvidedValue) {
-        return typeWrapper.makeInputObject(readName(), readType(), InputCommon.makeDefaultAndUserValuesMap(userProvidedValue, defaultValue, readType(), enumValues, enumDisplayValues))
+        return typeWrapper.makeInputObject(readName(), readType(),
+                InputCommon.makeDefaultAndUserValuesMap(userProvidedValue, defaultValue, readType(), enumValues,
+                        enumDisplayValues))
     }
 
     def makeInputObject() {
-        return typeWrapper.makeInputObject(readName(), readType(), DefaultAndUserValues.defaultValueOnly(InputCommon.readDefaultValueOrEnumFirstValue(defaultValue, readType(), enumValues, enumDisplayValues)))
+        return typeWrapper.makeInputObject(readName(), readType(),
+                DefaultAndUserValues.defaultValueOnly(InputCommon.readDefaultValueOrEnumFirstValue(defaultValue,
+                        readType(), enumValues, enumDisplayValues)))
     }
 
     private static final NamedParametersValidator inputOptionsValidator = NamedParametersValidator.make {
@@ -81,31 +77,38 @@ class Input extends InputCommon {
         super(unnamedOptions, options, validationFlags)
     }
 
+
     @Override
-    IInputObjectGenerator validateAndInitType(
-            ArrayList<String> enumValues, ArrayList<String> enumDisplayValues)
+    boolean validateInputBasics()
     {
         if (!validationFlags.contains(Flags.DontValidatePreferences)) {
             inputOptionsValidator.validate(toString(),
                     unnamedOptions,
                     options,
                     validationFlags)
+            return true
+        }
 
-            return validateInputType(enumValues, enumDisplayValues)
+        return false
+    }
+
+    @Override
+    IInputObjectGenerator validateAndInitType(boolean basicValidationDone)
+    {
+        if (basicValidationDone) {
+            return validateInputType()
         }
 
         return new UnvalidatedInputObjectGenerator();
     }
 
-    private IInputObjectGenerator validateInputType(ArrayList<String> enumValues, ArrayList<String> enumDisplayValues) {
+    private IInputObjectGenerator validateInputType() {
         final def inputType = readType()
         final def foundStaticType = validStaticInputTypes.get(inputType)
 
-        InputCommon.assertHasNoOptionsIfNotEnum(this, readType(), options)
-
         if (foundStaticType) {
             if (inputType == 'enum') {
-                InputCommon.validateEnumInput(this, options, defaultValue, enumValues, enumDisplayValues, validationFlags)
+                validateEnumInput()
             }
 
             return foundStaticType

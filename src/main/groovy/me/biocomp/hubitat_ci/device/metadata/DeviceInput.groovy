@@ -57,45 +57,41 @@ class DeviceInput extends InputCommon {
         super(unnamedOptions, options, validationFlags)
     }
 
-    String readName()
-    {
-        return unnamedOptions.name != null ? unnamedOptions.name : options.name
-    }
-
-    String readType()
-    {
-        return unnamedOptions.type != null ? unnamedOptions.type: options.type
-    }
-
     @Override
-    IInputObjectGenerator validateAndInitType(ArrayList<String> enumValues, ArrayList<String> enumDisplayValues)
+    boolean validateInputBasics()
     {
         if (!validationFlags.contains(Flags.DontValidatePreferences)) {
-            inputOptionsValidator.validate(
-                    toString(),
+            inputOptionsValidator.validate(toString(),
                     unnamedOptions,
                     options,
                     validationFlags,
-                    validationFlags.contains(Flags.AllowMissingDeviceInputNameOrType)
-                    ? EnumSet.of(NamedParametersValidator.ValidatorOption.IgnoreMissingMandatoryInputs)
-                    : EnumSet.noneOf(NamedParametersValidator.ValidatorOption)
-            )
+                    validationFlags.contains(Flags.AllowMissingDeviceInputNameOrType) ? EnumSet.of(
+                            NamedParametersValidator.ValidatorOption.IgnoreMissingMandatoryInputs) : EnumSet.noneOf(
+                            NamedParametersValidator.ValidatorOption))
 
-            return validateInputType(enumValues, enumDisplayValues)
+            return true
+        }
+
+        return false
+    }
+
+    @Override
+    IInputObjectGenerator validateAndInitType(boolean basicValidationDone)
+    {
+        if (basicValidationDone) {
+            return validateInputType()
         }
 
         return new UnvalidatedInputObjectGenerator();
     }
 
-    private IInputObjectGenerator validateInputType(ArrayList<String> enumValues, ArrayList<String> enumDisplayValues) {
+    private IInputObjectGenerator validateInputType() {
         final def inputType = readType()
         final def foundStaticType = validStaticInputTypes.get(inputType)
 
-        InputCommon.assertHasNoOptionsIfNotEnum(this, readType(), options)
-
         if (foundStaticType) {
             if (inputType == 'enum') {
-                InputCommon.validateEnumInput(this, options, defaultValue, enumValues, enumDisplayValues, validationFlags)
+                validateEnumInput()
             }
 
             return foundStaticType
