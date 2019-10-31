@@ -107,10 +107,6 @@ class Input extends InputCommon {
         final def foundStaticType = validStaticInputTypes.get(inputType)
 
         if (foundStaticType) {
-            if (inputType == 'enum') {
-                validateEnumInput()
-            }
-
             return foundStaticType
         }
 

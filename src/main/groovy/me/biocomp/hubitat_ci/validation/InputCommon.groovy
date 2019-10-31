@@ -17,11 +17,12 @@ abstract class InputCommon {
         this.unnamedOptions = unnamedOptions
         this.options = options
         this.validationFlags = validationFlags
-
-        def basicValidationDone = validateInputBasics()
-        assertHasNoOptionsIfNotEnum()
-
         this.defaultValue = readDefaultValue(options)
+
+        final def basicValidationDone = validateInputBasics()
+
+        validateEnumInputOrThatInputHasNoOptions()
+
         this.typeWrapper = validateAndInitType(basicValidationDone)
     }
 
@@ -49,10 +50,12 @@ abstract class InputCommon {
         return unnamedOptions.type != null ? unnamedOptions.type: options.type
     }
 
-    private void assertHasNoOptionsIfNotEnum()
+    private  void validateEnumInputOrThatInputHasNoOptions()
     {
         if (readType() != 'enum') {
             assert !options || !options.containsKey('options'): "${this}: only 'enum' input type needs 'options' parameter."
+        } else {
+            validateEnumInput()
         }
     }
 
