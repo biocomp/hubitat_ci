@@ -10,7 +10,7 @@ class DeviceInputTypeTest extends Specification{
     def "Simple capability 'ThermostatCoolingSetpoint' input generates object with all proper fields and methods"()
     {
         setup:
-            def device = new DeviceInputObjectGenerator(ThermostatCoolingSetpoint, "ThermostatCoolingSetpoint").makeInputObject('n', 't',  DefaultAndUserValues.empty())
+            def device = new DeviceInputValueFactory(ThermostatCoolingSetpoint, "ThermostatCoolingSetpoint").makeInputObject('n', 't',  DefaultAndUserValues.empty())
             def attributes = device.getSupportedAttributes()
 
         expect:
@@ -35,7 +35,7 @@ class DeviceInputTypeTest extends Specification{
     def "Complex capability 'Thermostat' input generates object with all proper fields and methods"()
     {
         setup:
-            def device = new DeviceInputObjectGenerator(Thermostat, "Thermostat").makeInputObject('n', 't',  DefaultAndUserValues.empty())
+            def device = new DeviceInputValueFactory(Thermostat, "Thermostat").makeInputObject('n', 't',  DefaultAndUserValues.empty())
             def attributes = device.getSupportedAttributes()
 
         expect:
@@ -81,7 +81,7 @@ class DeviceInputTypeTest extends Specification{
     {
         when:
             def userThermostat = new MockThermostat()
-            def device = new DeviceInputObjectGenerator(Thermostat, "Thermostat").makeInputObject('n', 't',  DefaultAndUserValues.bothValues(
+            def device = new DeviceInputValueFactory(Thermostat, "Thermostat").makeInputObject('n', 't',  DefaultAndUserValues.bothValues(
                     NullableOptional.empty(), NullableOptional.withValue(userThermostat)))
 
             device.setCoolingSetpoint(42.42)
@@ -100,7 +100,7 @@ class DeviceInputTypeTest extends Specification{
     def "Device without capability has null capability and no attributes"()
     {
         when:
-            def device = new DeviceInputObjectGenerator(null, "SomeDevice").makeInputObject('n', 't',  DefaultAndUserValues.empty())
+            def device = new DeviceInputValueFactory(null, "SomeDevice").makeInputObject('n', 't',  DefaultAndUserValues.empty())
 
         then:
             device.supportedAttributes == []

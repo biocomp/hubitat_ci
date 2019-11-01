@@ -7,16 +7,16 @@ import me.biocomp.hubitat_ci.capabilities.Capabilities
 import me.biocomp.hubitat_ci.capabilities.CapabilityAttributeInfo
 import groovy.transform.CompileStatic
 import me.biocomp.hubitat_ci.validation.DefaultAndUserValues
-import me.biocomp.hubitat_ci.validation.IInputObjectGenerator
+import me.biocomp.hubitat_ci.validation.IInputValueFactory
 
 import java.lang.reflect.Method
 
-class DeviceInputObjectGenerator implements IInputObjectGenerator
+class DeviceInputValueFactory implements IInputValueFactory
 {
     final Class capability
     final Class generatedDevice
 
-    DeviceInputObjectGenerator(Class capability, String deviceOrCapabilityName)
+    DeviceInputValueFactory(Class capability, String deviceOrCapabilityName)
     {
         this.capability = capability
         this.generatedDevice = generateDeviceClass(capability, deviceOrCapabilityName)

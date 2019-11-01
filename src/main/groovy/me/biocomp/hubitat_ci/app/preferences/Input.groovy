@@ -1,17 +1,15 @@
 package me.biocomp.hubitat_ci.app.preferences
 
 import me.biocomp.hubitat_ci.capabilities.Capabilities
-import me.biocomp.hubitat_ci.util.NullableOptional
-import me.biocomp.hubitat_ci.validation.BooleanInputObjectGenerator
+import me.biocomp.hubitat_ci.validation.BooleanInputValueFactory
 import me.biocomp.hubitat_ci.validation.DefaultAndUserValues
-import me.biocomp.hubitat_ci.validation.IInputObjectGenerator
+import me.biocomp.hubitat_ci.validation.IInputValueFactory
 import me.biocomp.hubitat_ci.validation.InputCommon
 import me.biocomp.hubitat_ci.validation.Flags
 import me.biocomp.hubitat_ci.validation.NamedParametersValidator
 import groovy.transform.CompileStatic
-import me.biocomp.hubitat_ci.validation.NumberInputObjectGenerator
-import me.biocomp.hubitat_ci.validation.TextInputObjectGenerator
-import me.biocomp.hubitat_ci.validation.UnvalidatedInputObjectGenerator
+import me.biocomp.hubitat_ci.validation.NumberInputValueFactory
+import me.biocomp.hubitat_ci.validation.TextInputValueFactory
 
 @CompileStatic
 class Input extends InputCommon {
@@ -57,20 +55,20 @@ class Input extends InputCommon {
     }
 
     // @formatter:off
-    private static final HashMap<String, IInputObjectGenerator> validStaticInputTypes = [
-         bool    : new BooleanInputObjectGenerator(),
+    private static final HashMap<String, IInputValueFactory> validStaticInputTypes = [
+         bool    : new BooleanInputValueFactory(),
          //"boolean",
-         decimal : new NumberInputObjectGenerator(),
-         email   : new TextInputObjectGenerator(),
-         enum    : new TextInputObjectGenerator(), // Todo: make enum input type?
-         hub     : new TextInputObjectGenerator(),
-         icon    : new TextInputObjectGenerator(),
-         number  : new NumberInputObjectGenerator(),
-         password: new TextInputObjectGenerator(),
-         phone   : new NumberInputObjectGenerator(),
-         time    : new TextInputObjectGenerator(),
-         text    : new TextInputObjectGenerator()
-    ] as HashMap<String, IInputObjectGenerator>
+         decimal : new NumberInputValueFactory(),
+         email   : new TextInputValueFactory(),
+         enum    : new TextInputValueFactory(), // Todo: make enum input type?
+         hub     : new TextInputValueFactory(),
+         icon    : new TextInputValueFactory(),
+         number  : new NumberInputValueFactory(),
+         password: new TextInputValueFactory(),
+         phone   : new NumberInputValueFactory(),
+         time    : new TextInputValueFactory(),
+         text    : new TextInputValueFactory()
+    ] as HashMap<String, IInputValueFactory>
     // @formatter:on
 
     Input(Map unnamedOptions, Map options, EnumSet<Flags> validationFlags) {
@@ -93,16 +91,7 @@ class Input extends InputCommon {
     }
 
     @Override
-    IInputObjectGenerator validateAndInitType(boolean basicValidationDone)
-    {
-        if (basicValidationDone) {
-            return validateInputType()
-        }
-
-        return new UnvalidatedInputObjectGenerator();
-    }
-
-    private IInputObjectGenerator validateInputType() {
+    IInputValueFactory validateAndInitType() {
         final def inputType = readType()
         final def foundStaticType = validStaticInputTypes.get(inputType)
 
@@ -113,14 +102,14 @@ class Input extends InputCommon {
         if (Input.isCapabilityType(inputType)) {
             final def foundCapability = Input.findCapabilityFromTypeString(inputType)
             if (foundCapability) {
-                return new DeviceInputObjectGenerator(foundCapability, foundCapability.simpleName)
+                return new DeviceInputValueFactory(foundCapability, foundCapability.simpleName)
             } else {
                 assert false: "Input ${this}'s capability '${inputType}' is not supported. Supported capabilities: ${Capabilities.capabilitiesByDeviceSelector.keySet()}"
             }
         }
 
         if (inputType =~ /device\.[a-zA-Z0-9._]+/) {
-            return new DeviceInputObjectGenerator(null, inputType.substring('device.'.length()))
+            return new DeviceInputValueFactory(null, inputType.substring('device.'.length()))
             // Unknown capabilities, just using dummy device
         }
 

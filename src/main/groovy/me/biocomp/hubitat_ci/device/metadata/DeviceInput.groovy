@@ -1,34 +1,31 @@
 package me.biocomp.hubitat_ci.device.metadata
 
 
-import groovy.transform.TupleConstructor
 import groovy.transform.TypeChecked
-import me.biocomp.hubitat_ci.util.NullableOptional
-import me.biocomp.hubitat_ci.validation.BooleanInputObjectGenerator
+import me.biocomp.hubitat_ci.validation.BooleanInputValueFactory
 import me.biocomp.hubitat_ci.validation.DefaultAndUserValues
 import me.biocomp.hubitat_ci.validation.Flags
-import me.biocomp.hubitat_ci.validation.IInputObjectGenerator
+import me.biocomp.hubitat_ci.validation.IInputValueFactory
 import me.biocomp.hubitat_ci.validation.InputCommon
 import me.biocomp.hubitat_ci.validation.NamedParametersValidator
-import me.biocomp.hubitat_ci.validation.NumberInputObjectGenerator
-import me.biocomp.hubitat_ci.validation.TextInputObjectGenerator
-import me.biocomp.hubitat_ci.validation.UnvalidatedInputObjectGenerator
+import me.biocomp.hubitat_ci.validation.NumberInputValueFactory
+import me.biocomp.hubitat_ci.validation.TextInputValueFactory
 
 /**
  * Information about 'input' in Device.
  */
 @TypeChecked
 class DeviceInput extends InputCommon {
-    private static final HashMap<String, IInputObjectGenerator> validStaticInputTypes =
-            [bool    : new BooleanInputObjectGenerator(),
-             decimal : new NumberInputObjectGenerator(),
-             email   : new TextInputObjectGenerator(),
-             enum    : new TextInputObjectGenerator(), // Todo: make enum input type?
-             number  : new NumberInputObjectGenerator(),
-             password: new TextInputObjectGenerator(),
-             phone   : new NumberInputObjectGenerator(),
-             time    : new TextInputObjectGenerator(),
-             text    : new TextInputObjectGenerator()] as HashMap<String, IInputObjectGenerator>
+    private static final HashMap<String, IInputValueFactory> validStaticInputTypes =
+            [bool    : new BooleanInputValueFactory(),
+             decimal : new NumberInputValueFactory(),
+             email   : new TextInputValueFactory(),
+             enum    : new TextInputValueFactory(), // Todo: make enum input type?
+             number  : new NumberInputValueFactory(),
+             password: new TextInputValueFactory(),
+             phone   : new NumberInputValueFactory(),
+             time    : new TextInputValueFactory(),
+             text    : new TextInputValueFactory()] as HashMap<String, IInputValueFactory>
 
     private static final NamedParametersValidator inputOptionsValidator = NamedParametersValidator.make {
         stringParameter("name", required(), canBeEmpty(), [Flags.DontValidateDeviceInputName])
@@ -76,16 +73,7 @@ class DeviceInput extends InputCommon {
     }
 
     @Override
-    IInputObjectGenerator validateAndInitType(boolean basicValidationDone)
-    {
-        if (basicValidationDone) {
-            return validateInputType()
-        }
-
-        return new UnvalidatedInputObjectGenerator();
-    }
-
-    private IInputObjectGenerator validateInputType() {
+    IInputValueFactory validateAndInitType() {
         final def inputType = readType()
         final def foundStaticType = validStaticInputTypes.get(inputType)
 

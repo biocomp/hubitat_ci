@@ -1,7 +1,6 @@
 package me.biocomp.hubitat_ci.validation
 
 import groovy.transform.CompileStatic
-import groovy.transform.PackageScope
 
 /**
  * Input objects generator.
@@ -10,7 +9,7 @@ import groovy.transform.PackageScope
  * In particular, 'device' or 'capability' input object can have all the supported methods
  * and attributes generated, and fail if user calls incorrect ones.
  */
-interface IInputObjectGenerator
+interface IInputValueFactory
 {
     /**
         Makes an instance of input object that can be used in the script.
@@ -26,7 +25,7 @@ interface IInputObjectGenerator
 /**
  * Produces any text type like 'email', 'text' and so on.
  */
-class TextInputObjectGenerator implements IInputObjectGenerator
+class TextInputValueFactory implements IInputValueFactory
 {
     final String inputName
 
@@ -42,7 +41,7 @@ class TextInputObjectGenerator implements IInputObjectGenerator
 /**
  * Produces Boolean object
  */
-class BooleanInputObjectGenerator implements IInputObjectGenerator
+class BooleanInputValueFactory implements IInputValueFactory
 {
     final String inputName
 
@@ -56,7 +55,7 @@ class BooleanInputObjectGenerator implements IInputObjectGenerator
 /**
  * Number input generator (produces Integer).
  */
-class NumberInputObjectGenerator implements IInputObjectGenerator
+class NumberInputValueFactory implements IInputValueFactory
 {
     @Override
     def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues) {
@@ -68,7 +67,7 @@ class NumberInputObjectGenerator implements IInputObjectGenerator
  * When input validation is disabled, this generator is used for all types.
  * Produces either String or user-provided object.
  */
-class UnvalidatedInputObjectGenerator implements IInputObjectGenerator
+class UnvalidatedInputValueFactory implements IInputValueFactory
 {
     @Override
     @CompileStatic

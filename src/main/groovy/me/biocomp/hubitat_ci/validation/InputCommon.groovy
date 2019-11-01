@@ -8,7 +8,7 @@ abstract class InputCommon {
     final Map unnamedOptions
     final Map options
     final EnumSet<Flags> validationFlags
-    final IInputObjectGenerator typeWrapper
+    final IInputValueFactory typeWrapper
     final NullableOptional defaultValue // Map of one 'defaultValue' or 0 elements, meaning that there's no default value.
     final ArrayList<String> enumValues = new ArrayList<String>() // If type is enum, will contain enum values (and if values is map, then keys of the map)
     final ArrayList<String> enumDisplayValues = new ArrayList<String>() // If type is enum, will contain enum values (and if values is map, then values of the map)
@@ -23,12 +23,13 @@ abstract class InputCommon {
 
         validateEnumInputOrThatInputHasNoOptions()
 
-        this.typeWrapper = validateAndInitType(basicValidationDone)
+        this.typeWrapper = validateAndInitTypeOrUseDefault(basicValidationDone)
     }
 
     /**
-     * Validate basic things like parameter names, mandatory parameters, non-null name and type
-     * @return true, if validation was performed. This will be sent into validateAndInitType.
+     * Validate basic things like parameter names, mandatory parameters, non-null name and type.
+     * Type values and IInputObjectGenerator will be created later.
+     * @return true, if validation was performed.
      */
     abstract boolean validateInputBasics()
 
@@ -38,7 +39,16 @@ abstract class InputCommon {
      * @param enumDisplayValues
      * @return wrapper for input type to construct input values during script execution.
      */
-    abstract IInputObjectGenerator validateAndInitType(boolean basicValidationDone)
+    abstract IInputValueFactory validateAndInitType()
+
+    private IInputValueFactory validateAndInitTypeOrUseDefault(boolean basicValidationDone)
+    {
+        if (basicValidationDone) {
+            return validateAndInitType()
+        }
+
+        return new UnvalidatedInputValueFactory();
+    }
 
     String readName()
     {
