@@ -51,7 +51,7 @@ class DeviceInput extends InputCommon {
     }
 
     DeviceInput(Map unnamedOptions, Map options, EnumSet<Flags> validationFlags) {
-        super(unnamedOptions, options, validationFlags)
+        super(unnamedOptions, options, validationFlags, validStaticInputTypes)
     }
 
     @Override
@@ -73,15 +73,8 @@ class DeviceInput extends InputCommon {
     }
 
     @Override
-    IInputValueFactory validateAndInitType() {
-        final def inputType = readType()
-        final def foundStaticType = validStaticInputTypes.get(inputType)
-
-        if (foundStaticType) {
-            return foundStaticType
-        }
-
-        assert false: "Input ${this}'s type ${inputType} is not supported. Valid types are: ${validStaticInputTypes} + 'capability.yourCapabilityName' + 'device.yourDeviceName'"
+    IInputValueFactory typeNotFoundInTypeTable(String inputType) {
+        assert false: "Input ${this}'s type ${inputType} is not supported. Valid types are: ${validStaticInputTypes}"
     }
 
     @Override

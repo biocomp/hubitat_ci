@@ -72,7 +72,7 @@ class Input extends InputCommon {
     // @formatter:on
 
     Input(Map unnamedOptions, Map options, EnumSet<Flags> validationFlags) {
-        super(unnamedOptions, options, validationFlags)
+        super(unnamedOptions, options, validationFlags, validStaticInputTypes)
     }
 
 
@@ -91,28 +91,21 @@ class Input extends InputCommon {
     }
 
     @Override
-    IInputValueFactory validateAndInitType() {
-        final def inputType = readType()
-        final def foundStaticType = validStaticInputTypes.get(inputType)
-
-        if (foundStaticType) {
-            return foundStaticType
-        }
-
-        if (Input.isCapabilityType(inputType)) {
-            final def foundCapability = Input.findCapabilityFromTypeString(inputType)
+    IInputValueFactory typeNotFoundInTypeTable(String typeName) {
+        if (Input.isCapabilityType(typeName)) {
+            final def foundCapability = Input.findCapabilityFromTypeString(typeName)
             if (foundCapability) {
                 return new DeviceInputValueFactory(foundCapability, foundCapability.simpleName)
             } else {
-                assert false: "Input ${this}'s capability '${inputType}' is not supported. Supported capabilities: ${Capabilities.capabilitiesByDeviceSelector.keySet()}"
+                assert false: "Input ${this}'s capability '${typeName}' is not supported. Supported capabilities: ${Capabilities.capabilitiesByDeviceSelector.keySet()}"
             }
         }
 
-        if (inputType =~ /device\.[a-zA-Z0-9._]+/) {
-            return new DeviceInputValueFactory(null, inputType.substring('device.'.length()))
+        if (typeName =~ /device\.[a-zA-Z0-9._]+/) {
+            return new DeviceInputValueFactory(null, typeName.substring('device.'.length()))
             // Unknown capabilities, just using dummy device
         }
 
-        assert false: "Input ${this}'s type ${inputType} is not supported. Valid types are: ${validStaticInputTypes} + 'capability.yourCapabilityName' + 'device.yourDeviceName'"
+        assert false: "Input ${this}'s type ${typeName} is not supported. Valid types are: ${validStaticInputTypes} + 'capability.yourCapabilityName' + 'device.yourDeviceName'"
     }
 }

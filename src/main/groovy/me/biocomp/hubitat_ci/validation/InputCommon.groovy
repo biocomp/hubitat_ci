@@ -12,12 +12,14 @@ abstract class InputCommon {
     final NullableOptional defaultValue // Map of one 'defaultValue' or 0 elements, meaning that there's no default value.
     final ArrayList<String> enumValues = new ArrayList<String>() // If type is enum, will contain enum values (and if values is map, then keys of the map)
     final ArrayList<String> enumDisplayValues = new ArrayList<String>() // If type is enum, will contain enum values (and if values is map, then values of the map)
+    final HashMap<String, IInputValueFactory> inputTypesTable
 
-    InputCommon(Map unnamedOptions, Map options, EnumSet<Flags> validationFlags) {
+    InputCommon(Map unnamedOptions, Map options, EnumSet<Flags> validationFlags, HashMap<String, IInputValueFactory> inputTypesTable) {
         this.unnamedOptions = unnamedOptions
         this.options = options
         this.validationFlags = validationFlags
         this.defaultValue = readDefaultValue(options)
+        this.inputTypesTable = inputTypesTable
 
         final def basicValidationDone = validateInputBasics()
 
@@ -39,12 +41,19 @@ abstract class InputCommon {
      * @param enumDisplayValues
      * @return wrapper for input type to construct input values during script execution.
      */
-    abstract IInputValueFactory validateAndInitType()
+    abstract IInputValueFactory typeNotFoundInTypeTable(String typeName);
 
     private IInputValueFactory validateAndInitTypeOrUseDefault(boolean basicValidationDone)
     {
         if (basicValidationDone) {
-            return validateAndInitType()
+            final def inputType = readType()
+            final def foundStaticType = inputTypesTable.get(inputType)
+
+            if (foundStaticType) {
+                return foundStaticType
+            }
+
+            return typeNotFoundInTypeTable(inputType)
         }
 
         return new UnvalidatedInputValueFactory();
