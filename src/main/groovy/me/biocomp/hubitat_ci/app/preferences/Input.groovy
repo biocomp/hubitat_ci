@@ -22,23 +22,6 @@ class Input extends InputCommon {
         return (Class) Capabilities.capabilitiesByDeviceSelector.get(type.substring(11))
     }
 
-    @Override
-    String toString() {
-        return "input(options: ${options}, unnamedOptions: ${unnamedOptions})"
-    }
-
-    def makeInputObject(def userProvidedValue) {
-        return typeWrapper.makeInputObject(readName(), readType(),
-                InputCommon.makeDefaultAndUserValuesMap(userProvidedValue, defaultValue, readType(), enumValues,
-                        enumDisplayValues))
-    }
-
-    def makeInputObject() {
-        return typeWrapper.makeInputObject(readName(), readType(),
-                DefaultAndUserValues.defaultValueOnly(InputCommon.readDefaultValueOrEnumFirstValue(defaultValue,
-                        readType(), enumValues, enumDisplayValues)))
-    }
-
     private static final NamedParametersValidator inputOptionsValidator = NamedParametersValidator.make {
         boolParameter("capitalization", notRequired())
         objParameter("defaultValue", notRequired(), canBeNull())
@@ -74,7 +57,6 @@ class Input extends InputCommon {
     Input(Map unnamedOptions, Map options, EnumSet<Flags> validationFlags) {
         super(unnamedOptions, options, validationFlags, validStaticInputTypes)
     }
-
 
     @Override
     boolean validateInputBasics()

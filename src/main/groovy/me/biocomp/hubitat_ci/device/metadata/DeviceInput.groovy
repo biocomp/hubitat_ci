@@ -76,20 +76,4 @@ class DeviceInput extends InputCommon {
     IInputValueFactory typeNotFoundInTypeTable(String inputType) {
         assert false: "Input ${this}'s type ${inputType} is not supported. Valid types are: ${validStaticInputTypes}"
     }
-
-    @Override
-    String toString()
-    {
-        return "input(unnamed options: ${unnamedOptions}, options = ${options})"
-    }
-
-    def makeInputObject(def userProvidedValue)
-    {
-        return typeWrapper.makeInputObject(readName(), readType(), InputCommon.makeDefaultAndUserValuesMap(userProvidedValue, defaultValue, readType(), enumValues, enumDisplayValues))
-    }
-
-    def makeInputObject()
-    {
-        return typeWrapper.makeInputObject(readName(), readType(),  DefaultAndUserValues.defaultValueOnly(InputCommon.readDefaultValueOrEnumFirstValue(defaultValue, readType(), enumValues, enumDisplayValues)))
-    }
 }

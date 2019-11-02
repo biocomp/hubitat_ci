@@ -43,6 +43,11 @@ abstract class InputCommon {
      */
     abstract IInputValueFactory typeNotFoundInTypeTable(String typeName);
 
+    @Override
+    String toString() {
+        return "input(options: ${options}, unnamedOptions: ${unnamedOptions})"
+    }
+
     private IInputValueFactory validateAndInitTypeOrUseDefault(boolean basicValidationDone)
     {
         if (basicValidationDone) {
@@ -190,5 +195,17 @@ abstract class InputCommon {
         } else {
             return customValue
         }
+    }
+
+    def makeInputObject(def userProvidedValue) {
+        return typeWrapper.makeInputObject(readName(), readType(),
+                InputCommon.makeDefaultAndUserValuesMap(userProvidedValue, defaultValue, readType(), enumValues,
+                        enumDisplayValues))
+    }
+
+    def makeInputObject() {
+        return typeWrapper.makeInputObject(readName(), readType(),
+                DefaultAndUserValues.defaultValueOnly(InputCommon.readDefaultValueOrEnumFirstValue(defaultValue,
+                        readType(), enumValues, enumDisplayValues)))
     }
 }
