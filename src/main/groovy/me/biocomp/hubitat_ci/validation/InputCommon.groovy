@@ -199,13 +199,13 @@ abstract class InputCommon {
 
     def makeInputObject(def userProvidedValue) {
         return typeWrapper.makeInputObject(readName(), readType(),
-                InputCommon.makeDefaultAndUserValuesMap(userProvidedValue, defaultValue, readType(), enumValues,
+                makeDefaultAndUserValuesMap(userProvidedValue, defaultValue, readType(), enumValues,
                         enumDisplayValues))
     }
 
     def makeInputObject() {
         return typeWrapper.makeInputObject(readName(), readType(),
-                DefaultAndUserValues.defaultValueOnly(InputCommon.readDefaultValueOrEnumFirstValue(defaultValue,
+                DefaultAndUserValues.defaultValueOnly(readDefaultValueOrEnumFirstValue(defaultValue,
                         readType(), enumValues, enumDisplayValues)))
     }
 }
