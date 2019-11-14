@@ -15,7 +15,6 @@ import static org.codehaus.groovy.runtime.DefaultGroovyMethods.combinations
 class InputValidationTests extends
         Specification
 {
-
     def "input() can only consist of name and type"() {
         given:
             def input = parseOneChild("input 'nam', 'bool'")
