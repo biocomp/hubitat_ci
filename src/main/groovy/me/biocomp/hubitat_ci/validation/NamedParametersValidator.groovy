@@ -117,7 +117,7 @@ class NamedParametersValidator {
         options?.each(validateOneParameter)
 
         if (!validatorOptions.contains(ValidatorOption.IgnoreMissingMandatoryInputs)) {
-            assert mandatoryParameters.size() == 0: "${context}: mandatory parameters '${mandatoryParameters}' not set. All mandatory parameters are: ${supportedParameters.keySet().sort()}"
+            assert mandatoryParameters.size() == 0: "${context}: mandatory parameters '${mandatoryParameters}' not set. All supported parameters are: ${supportedParameters.keySet().sort()}"
         }
     }
 

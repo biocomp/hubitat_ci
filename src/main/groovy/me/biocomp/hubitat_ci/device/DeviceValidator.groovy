@@ -40,7 +40,7 @@ class DeviceValidator extends
     }
 
     /**
-     * Add device-specific compilation cusomizers
+     * Add device-specific compilation customizers
      */
     private List<CompilationCustomizer> makeCustomizers()
     {
@@ -158,7 +158,6 @@ class DeviceValidator extends
             assert duplicateCapabilities.size() == 0: "Capabilities ${duplicateCapabilities} are duplicate, this is not useful."
         }
 
-        //{
         def duplicateCommands = findDuplicates(deviceMetadataReader.producedDefinition.commands.collect { it.toString() })
         assert duplicateCommands.size() == 0 : "Commands ${duplicateCommands} are duplicate, this is not useful."
     }

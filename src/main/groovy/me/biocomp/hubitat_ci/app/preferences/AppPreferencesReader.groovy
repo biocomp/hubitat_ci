@@ -16,6 +16,9 @@ import groovy.transform.TypeChecked
 class AppPreferencesReader implements
         AppExecutor
 {
+    /**
+     * @param userSettingsValue - user can define settings in UTs, and rest of the settings will be added to it too.
+     */
     AppPreferencesReader(
             HubitatAppScript parentScript,
             AppExecutor delegate,

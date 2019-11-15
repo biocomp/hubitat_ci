@@ -256,7 +256,7 @@ def foo() {
                 def api = Mock(executorClass)
 
             when:
-                def script = new HubitatAppSandbox("""
+                def script = sandboxClass.newInstance("""
 int loginCheck() {
     return 42
 }
@@ -266,8 +266,8 @@ def foo() {
     if (LoginCheck) { log.debug '1' }
     else { log.debug '2' }
 } 
-""").run(validationFlags: [Flags.DontValidateMetadata, Flags.DontValidatePreferences, Flags.DontValidateDefinition,
-                           Flags.DontRequireParseMethodInDevice])
+""").run(api: api, validationFlags: [Flags.DontValidateMetadata, Flags.DontValidatePreferences, Flags.DontValidateDefinition,
+                                     Flags.DontRequireParseMethodInDevice])
 
             then:
                 _ * api.getLog() >> log

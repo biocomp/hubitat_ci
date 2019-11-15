@@ -113,19 +113,23 @@ def on()
             e.message.contains('off()')
     }
 
-    def "Invalid capability in definition() fails"() {
+    @Unroll
+    def "Invalid capability '#badCapability' in definition() fails"(badCapability) {
         when:
             def capabilitiesResult = readDefinition("""
-    definition(name: "nam"){
-        capability 'Im Bad Capability'
+    definition(name: "nam", author: 'a', namespace: 'n'){
+        capability $badCapability
     }""").capabilities
 
         then:
             AssertionError error = thrown()
-            error.message.contains('Im Bad Capability')
+            error.message.contains(badCapability.toString())
             error.message.contains('not supported')
             error.message.contains(Capabilities.capabilitiesByPrettyName.keySet().asList()[0])
             error.message.contains(Capabilities.capabilitiesByPrettyName.keySet().asList()[10])
+            
+        where:
+            badCapability << [null, "''", "'Im A Bad Capability'"]
     }
 
     def "There must be at least one capability"() {
@@ -184,16 +188,20 @@ def on()
             error.message.contains("doesn't have a name")
     }
 
-    def "attribute() with non-enum type can't have 'possibleValues'"() {
+    @Unroll
+    def "attribute() with non-enum type '#type' can't have 'possibleValues'"(String type) {
         when:
-            readSingleAttribute("attribute 'nam', 'number', ['one', 'two']")
+            readSingleAttribute("attribute 'nam', '${type}', ['one', 'two']")
 
         then:
             AssertionError error = thrown()
             error.message.contains('nam')
-            error.message.contains('number')
+            error.message.contains(type)
             error.message.contains('enum')
             error.message.contains("have possible values specified")
+            
+        where:
+            type << ['number', 'string']
     }
 
     @Unroll
@@ -308,19 +316,23 @@ def cmd(int a) {}
             type << ['number', 'string']
     }
 
-    def "command() fails with invalid data type"() {
+    @Unroll
+    def "command() fails with invalid data type '#commandDataType'"(commandDataType) {
         when:
             readDefinition("""definition(name: "n", namespace: "nm", author: "a"){
-                command 'cmd', ["I'm bad type"]
+                command 'cmd', [$commandDataType]
             }""", validationFlags: [Flags.DontValidateCapabilities, Flags.AllowMissingCommandMethod])
 
         then:
             AssertionError e = thrown()
-            e.message.contains("I'm bad type")
+            e.message.contains(commandDataType)
             e.message.contains("not supported")
             e.message.matches(/.*(?i)argument type.*/)
             e.message.contains("string")
             e.message.contains("number")
+            
+        where:
+            commandDataType << ["'Im a bad type'", "''"]
     }
 
     @Unroll
