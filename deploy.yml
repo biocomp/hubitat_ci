@@ -7,7 +7,7 @@ jobs:
 - deployment: DeployMavenPackage
   displayName: "Deploy Maven package"
   pool:
-    name: "vs2017-win2016"
+    vmImage: "vs2017-win2016"
     demands: java
 
   environment: 'hubitat_ci-dev'
