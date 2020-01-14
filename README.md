@@ -1,6 +1,6 @@
 # Hubitat CI
 
-[![Build Status](https://biocomp.visualstudio.com/HubitatCiRelease/_apis/build/status/hubitat_ci%20build?branchName=master)](https://biocomp.visualstudio.com/HubitatCiRelease/_build/latest?definitionId=10&branchName=master)
+[![Build Status](https://biocomp.visualstudio.com/HubitatCiRelease/_apis/build/status/hubitat_ci%20build?branchName=master)](https://biocomp.visualstudio.com/HubitatCiRelease/_build/latest?definitionId=13&branchName=master)
 
 This library allows testing of Hubitat scripts locally on your machine (and via **C**ontinuous **I**ntegration, thus Hubitat CI).
 
