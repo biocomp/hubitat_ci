@@ -1,5 +1,9 @@
 name: $(Build.DefinitionName)_$(SourceBranchName)_$(Date:yyyy_MM_dd)$(Rev:.r)
 
+pool:
+  vmImage: "vs2017-win2016"
+  demands: java
+
 trigger: none # Not running for commits. This is to be run manually.
 pr: none # Not running for PRs.
 
@@ -18,7 +22,7 @@ jobs:
         steps:
         - checkout: self
           submodules: true
-        
+
         - task: Gradle@2
           displayName: 'gradlew build groovydoc publish'
           inputs:
