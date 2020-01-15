@@ -1,10 +1,5 @@
 package me.biocomp.hubitat_ci.util
 
-import com.sun.istack.internal.NotNull
-import groovy.transform.TypeChecked
-
-import java.lang.reflect.Type
-import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
