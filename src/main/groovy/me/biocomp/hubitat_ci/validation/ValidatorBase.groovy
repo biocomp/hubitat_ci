@@ -118,7 +118,7 @@ class ValidatorBase {
                                                             groovy.util.XmlSlurper,
                                                             groovy.xml.XmlUtil,
                                                             java.net.URI,
-                                                            java.util.AbstractList.RandomAccessSubList,
+                                                            //java.util.RandomAccessSubList,
                                                             //org.apache.commons.codec.binary.Base64,
                                                             //org.apache.xerces.dom.DocumentImpl,
                                                             //org.apache.xerces.dom.ElementImpl,
