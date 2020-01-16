@@ -73,60 +73,78 @@ class AppSubscriptionReader implements AppExecutor  {
     private final static def validLocationEvents = ["mode", "position", "sunset", "sunrise", "sunriseTime", "sunsetTime"] as HashSet<String>
 
     @CompileStatic
-    private static void validateSubscribeMethod(GString description, Object toWhat, NullableOptional attributeNameOrNameAndValueOrEventName, Object handlerMethod, EnumSet<Flags> flags, HubitatAppScript script)
+    private static void validateNotNullOrEmpty(String description, Object toWhat, NullableOptional attributeNameOrNameAndValueOrEventName)
     {
-        if (flags.contains(Flags.DontValidateSubscriptions))
-        {
-            return
-        }
-
-        // Need to be able to get input object.
         assert toWhat != null : "${description}: Object being subscribe()'d to is null"
 
         if (attributeNameOrNameAndValueOrEventName.hasValue) {
             assert (attributeNameOrNameAndValueOrEventName.value as String): "${description}: event/attribute/value name parameter can't be null or empty"
         }
+    }
 
-        // Check the event handler
+    @CompileStatic
+    private static void validateHandler(String description, Object handlerMethod, HubitatAppScript script)
+    {
         assert handlerMethod != null: "${description} can't be called with null event handler"
         if (handlerMethod instanceof String) {
-            // Now need to run named closure that is adding dynamic pages
             final def methodWithOneObjectArg = script.getMetaClass().pickMethod(handlerMethod, [Object] as Class[])
             assert methodWithOneObjectArg: "${description} refers to method '${handlerMethod}' which does not exist in the script (method must one arg)."
         }
+    }
 
-        if (Location.isInstance(toWhat)) {
-            if (attributeNameOrNameAndValueOrEventName.hasValue) {
-                assert validLocationEvents.find{ it == attributeNameOrNameAndValueOrEventName.value }: "${description}: '${attributeNameOrNameAndValueOrEventName.value}' is not a valid event for location. Valid values are: ${(validLocationEvents as HashSet<String>).inspect()}."
-            }
+    @CompileStatic
+    private static void validateLocation(String description, NullableOptional attributeNameOrNameAndValueOrEventName)
+    {
+        if (attributeNameOrNameAndValueOrEventName.hasValue) {
+            assert validLocationEvents.find{ it == attributeNameOrNameAndValueOrEventName.value }: "${description}: '${attributeNameOrNameAndValueOrEventName.value}' is not a valid event for location. Valid values are: ${(validLocationEvents as HashSet<String>).inspect()}."
         }
-        else {
-            assert Device.isInstance(toWhat)  : "${description}: Object ${toWhat} is not a valid input (not a device) to subscribe to. Note: subscribe(app) is not supported."
+    }
 
-            final def device = (Device)toWhat
-            final def capability = device.capability
+    @CompileStatic
+    private static void validateDevice(String description, Object toWhat, NullableOptional attributeNameOrNameAndValueOrEventName)
+    {
+        assert Device.isInstance(toWhat)  : "${description}: Object ${toWhat} is not a valid input (not a device) to subscribe to. Note: subscribe(app) is not supported."
 
-            // Only validate capability attributes if capability is known
-            if (capability != null) {
-                assert attributeNameOrNameAndValueOrEventName.hasValue : "${description}: when subscribing to device event, you need to specify at least the capability"
+        final def device = (Device)toWhat
+        final def capability = device.capability
 
-                final def attributes = device.supportedAttributes
-                final def nameAndMaybeValue = (attributeNameOrNameAndValueOrEventName.value as String).split(/(\.)/)
+        // Only validate capability attributes if capability is known
+        if (capability != null) {
+            assert attributeNameOrNameAndValueOrEventName.hasValue : "${description}: when subscribing to device event, you need to specify at least the capability"
 
-                assert(nameAndMaybeValue.size() == 1 || nameAndMaybeValue.size() == 2): "'${attributeNameOrNameAndValueOrEventName.value}' should either be 'attibuteName' or 'attributename.attributevalue'"
-                final def attribute = attributes.find { it.name == nameAndMaybeValue[0]}
+            final def attributes = device.supportedAttributes
+            final def nameAndMaybeValue = (attributeNameOrNameAndValueOrEventName.value as String).split(/(\.)/)
 
-                assert attribute: "${description}: Device '${capability.simpleName}' does not contain attribute '${nameAndMaybeValue[0]}'. Valid attributes are: ${attributes.collect { it.name }}"
+            assert(nameAndMaybeValue.size() == 1 || nameAndMaybeValue.size() == 2): "'${attributeNameOrNameAndValueOrEventName.value}' should either be 'attibuteName' or 'attributename.attributevalue'"
+            final def attribute = attributes.find { it.name == nameAndMaybeValue[0]}
 
-                // Validate value
-                if (nameAndMaybeValue.size() == 2)
+            assert attribute: "${description}: Device '${capability.simpleName}' does not contain attribute '${nameAndMaybeValue[0]}'. Valid attributes are: ${attributes.collect { it.name }}"
+
+            // Validate value
+            if (nameAndMaybeValue.size() == 2)
+            {
+                if (attribute.dataType == 'ENUM')
                 {
-                    if (attribute.dataType == 'ENUM')
-                    {
-                        assert (attribute.values.find{ it == nameAndMaybeValue[1]}!= null): "${description}: '${nameAndMaybeValue[0]}' for device '${capability.simpleName}' does not have value '${nameAndMaybeValue[1]}'. Valid values are: ${attribute.values}"
-                    }
+                    assert (attribute.values.find{ it == nameAndMaybeValue[1]}!= null): "${description}: '${nameAndMaybeValue[0]}' for device '${capability.simpleName}' does not have value '${nameAndMaybeValue[1]}'. Valid values are: ${attribute.values}"
                 }
             }
+        }
+    }
+
+    @CompileStatic
+    private static void validateSubscribeMethod(String description, Object toWhat, NullableOptional attributeNameOrNameAndValueOrEventName, Object handlerMethod, EnumSet<Flags> flags, HubitatAppScript script)
+    {
+        if (flags.contains(Flags.DontValidateSubscriptions)) {
+            return
+        }
+
+        validateNotNullOrEmpty(description, toWhat, attributeNameOrNameAndValueOrEventName)
+        validateHandler(description, handlerMethod, script)
+        if (Location.isInstance(toWhat)) {
+            validateLocation(description, attributeNameOrNameAndValueOrEventName)
+        }
+        else {
+            validateDevice(description, toWhat, attributeNameOrNameAndValueOrEventName)
         }
     }
 
