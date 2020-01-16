@@ -24,7 +24,7 @@ class DeviceInputValueFactory implements IInputValueFactory
 
     @CompileStatic
     private static void printAttributeInfo(StringBuilder builder, CapabilityAttributeInfo attribute) {
-        builder.append("""results.add(new ${AttributeImpl.canonicalName}('${attribute.name}', '${attribute.typeString}'))
+        builder.append("""results.add(new ${AttributeImpl.canonicalName}('${attribute.name}', '${attribute.typeString}', ${attribute.values.inspect()}))
 """)}
 
     @CompileStatic

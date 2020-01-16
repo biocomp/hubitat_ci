@@ -5,6 +5,10 @@ import me.biocomp.hubitat_ci.api.app_api.AppExecutor
 import groovy.transform.CompileStatic
 import groovy.transform.PackageScope
 import groovy.transform.TypeChecked
+import me.biocomp.hubitat_ci.api.common_api.InstalledAppWrapper
+import me.biocomp.hubitat_ci.api.common_api.Location
+import me.biocomp.hubitat_ci.util.NullableOptional
+import me.biocomp.hubitat_ci.validation.Flags
 
 /**
  * Intercepts subscribe() methods and validates attribute names against capabilities.
@@ -12,18 +16,25 @@ import groovy.transform.TypeChecked
 @TypeChecked
 @PackageScope
 class AppSubscriptionReader implements AppExecutor  {
-    AppSubscriptionReader(AppExecutor delegate, AppValidator validator, AppData data)
+    AppSubscriptionReader(AppExecutor delegate, AppValidator validator, AppData data, HubitatAppScript script)
     {
         this.delegate = delegate
         this.validator = validator
         this.data = data
+        this.script = script
     }
 
     @Override
     @CompileStatic
     void subscribe(Object toWhat, String attributeNameOrNameAndValueOrEventName, Object handlerMethod, Map options)
     {
-        validateSubscribeMethod(toWhat, attributeNameOrNameAndValueOrEventName, handlerMethod)
+        validateSubscribeMethod(
+                "subscribe(${toWhat.inspect()}, '${attributeNameOrNameAndValueOrEventName}', ${handlerMethod.inspect()}, ${options})",
+                toWhat,
+                NullableOptional.withValue(attributeNameOrNameAndValueOrEventName),
+                handlerMethod,
+                this.validator.flags,
+                this.script)
         delegate?.subscribe(toWhat, attributeNameOrNameAndValueOrEventName, handlerMethod, options)
     }
 
@@ -31,16 +42,24 @@ class AppSubscriptionReader implements AppExecutor  {
     @CompileStatic
     void subscribe(Object toWhat, Object handlerMethod)
     {
-        validateSubscribeMethod(toWhat, null, handlerMethod)
+        validateSubscribeMethod(
+                "subscribe(${toWhat.inspect()}, ${handlerMethod.inspect()})",
+                toWhat, NullableOptional.empty(), handlerMethod, this.validator.flags, this.script)
         delegate?.subscribe(toWhat, handlerMethod)
     }
 
     @Override
     @CompileStatic
-    void subscribe(Object toWhat, String attributeNameOrNameAndValueOrEventName, Object handler)
+    void subscribe(Object toWhat, String attributeNameOrNameAndValueOrEventName, Object handlerMethod)
     {
-        validateSubscribeMethod(toWhat, attributeNameOrNameAndValueOrEventName, handler)
-        delegate?.subscribe(toWhat, attributeNameOrNameAndValueOrEventName, handler)
+        validateSubscribeMethod(
+                "subscribe(${toWhat.inspect()}, '${attributeNameOrNameAndValueOrEventName}', ${handlerMethod.inspect()})",
+                toWhat,
+                NullableOptional.withValue(attributeNameOrNameAndValueOrEventName),
+                handlerMethod,
+                this.validator.flags,
+                this.script)
+        delegate?.subscribe(toWhat, attributeNameOrNameAndValueOrEventName, handlerMethod)
     }
 
     /*
@@ -51,30 +70,64 @@ class AppSubscriptionReader implements AppExecutor  {
     void subscribe(app, handlerMethod)
     */
 
+    private final static def validLocationEvents = ["mode", "position", "sunset", "sunrise", "sunriseTime", "sunsetTime"] as HashSet<String>
+
     @CompileStatic
-    private void validateSubscribeMethod(Object toWhat, String attributeNameOrNameAndValueOrEventName, Object handlerMethod)
+    private static void validateSubscribeMethod(GString description, Object toWhat, NullableOptional attributeNameOrNameAndValueOrEventName, Object handlerMethod, EnumSet<Flags> flags, HubitatAppScript script)
     {
-        // Need to be able to get input object.
-        assert Device.isInstance(toWhat) : "Object ${toWhat} is not a valid input (not a device) to subscribe to."
-
-        def device = (Device)toWhat
-        def capability = device.capability
-
-        // Only validate capability attributes if capability is known
-        if (capability != null) {
-            def attributes = device.supportedAttributes
-            assert attributes.find {
-                it.name == attributeNameOrNameAndValueOrEventName
-            }: "Device '${capability.simpleName}' does not contain attribute '${attributeNameOrNameAndValueOrEventName}'. Valid attributes are: ${attributes.collect { it.name }}"
+        if (flags.contains(Flags.DontValidateSubscriptions))
+        {
+            return
         }
 
-        // Then check that it's a capability
-        // Then parse attributeNameOrNameAndValueOrEventName and get an attribute or event name.
+        // Need to be able to get input object.
+        assert toWhat != null : "${description}: Object being subscribe()'d to is null"
 
-        // From docs: "The specific attribute value to subscribe to, in the format "<attributeName>.<attributeValue>"
+        if (attributeNameOrNameAndValueOrEventName.hasValue) {
+            assert (attributeNameOrNameAndValueOrEventName.value as String): "${description}: event/attribute/value name parameter can't be null or empty"
+        }
 
+        // Check the event handler
+        assert handlerMethod != null: "${description} can't be called with null event handler"
+        if (handlerMethod instanceof String) {
+            // Now need to run named closure that is adding dynamic pages
+            final def methodWithOneObjectArg = script.getMetaClass().pickMethod(handlerMethod, [Object] as Class[])
+            assert methodWithOneObjectArg: "${description} refers to method '${handlerMethod}' which does not exist in the script (method must one arg)."
+        }
 
-        // Then validate that capability has it
+        if (Location.isInstance(toWhat)) {
+            if (attributeNameOrNameAndValueOrEventName.hasValue) {
+                assert validLocationEvents.find{ it == attributeNameOrNameAndValueOrEventName.value }: "${description}: '${attributeNameOrNameAndValueOrEventName.value}' is not a valid event for location. Valid values are: ${(validLocationEvents as HashSet<String>).inspect()}."
+            }
+        }
+        else {
+            assert Device.isInstance(toWhat)  : "${description}: Object ${toWhat} is not a valid input (not a device) to subscribe to. Note: subscribe(app) is not supported."
+
+            final def device = (Device)toWhat
+            final def capability = device.capability
+
+            // Only validate capability attributes if capability is known
+            if (capability != null) {
+                assert attributeNameOrNameAndValueOrEventName.hasValue : "${description}: when subscribing to device event, you need to specify at least the capability"
+
+                final def attributes = device.supportedAttributes
+                final def nameAndMaybeValue = (attributeNameOrNameAndValueOrEventName.value as String).split(/(\.)/)
+
+                assert(nameAndMaybeValue.size() == 1 || nameAndMaybeValue.size() == 2): "'${attributeNameOrNameAndValueOrEventName.value}' should either be 'attibuteName' or 'attributename.attributevalue'"
+                final def attribute = attributes.find { it.name == nameAndMaybeValue[0]}
+
+                assert attribute: "${description}: Device '${capability.simpleName}' does not contain attribute '${nameAndMaybeValue[0]}'. Valid attributes are: ${attributes.collect { it.name }}"
+
+                // Validate value
+                if (nameAndMaybeValue.size() == 2)
+                {
+                    if (attribute.dataType == 'ENUM')
+                    {
+                        assert (attribute.values.find{ it == nameAndMaybeValue[1]}!= null): "${description}: '${nameAndMaybeValue[0]}' for device '${capability.simpleName}' does not have value '${nameAndMaybeValue[1]}'. Valid values are: ${attribute.values}"
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -91,4 +144,5 @@ class AppSubscriptionReader implements AppExecutor  {
     final private AppExecutor delegate
     final private AppValidator validator
     final private AppData data
+    final private HubitatAppScript script
 }

@@ -32,6 +32,7 @@ enum Flags
     DontValidateMetadata,
     DontValidatePreferences,
     DontValidateDefinition,
+    DontValidateSubscriptions, // subscribe() method arguments are not validated
     DontValidateMappings,
     DontValidateCapabilities,
     DontValidateAttributes,

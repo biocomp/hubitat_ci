@@ -64,7 +64,7 @@ abstract class HubitatAppScript extends
 
         // This guy needs to be first - it checks if its api is null,
         // and then does nothing in subscribe().
-        this.subscriptionReader = new AppSubscriptionReader(api, validator, data)
+        this.subscriptionReader = new AppSubscriptionReader(api, validator, data, this)
         api = this.subscriptionReader
         validateAfterRun.add(this.subscriptionReader.&initializationComplete)
 

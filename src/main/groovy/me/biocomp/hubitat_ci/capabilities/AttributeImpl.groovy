@@ -19,10 +19,11 @@ class AttributeImpl implements Attribute {
     private final String name_
     private final List<String> values_
 
-    AttributeImpl(String name, String dataType)
+    AttributeImpl(String name, String dataType, List<String> attributeValues)
     {
         this.name_ = name
         this.dataType_ = dataType
+        this.values_ = attributeValues
     }
 
     @Override
