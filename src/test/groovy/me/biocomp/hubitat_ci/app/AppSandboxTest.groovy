@@ -81,6 +81,28 @@ ${eventHandler}
             subscribeCall << badSubscriptionsAndExpectedErrors.collect { it[0] }
     }
 
+    @Unroll
+    def "subscribe() will succeed when called for #subscribeCall because #why"() {
+        setup:
+            final def script = makeScriptForSubscribeTest(subscribeCall)
+            final def api = Mock(AppExecutor) {
+                _ * getLocation() >> Mock(Location)
+            }
+
+        expect:
+            new HubitatAppSandbox(script).run(api: api, validationFlags: [Flags.DontValidateDefinition]).installed()
+
+        where:
+            subscribeCall                                                  | why
+            "subscribe(device1, 'coolingSetpoint', evtHandler)"            | "it's a device with correct event"
+            "subscribe(device1, 'thermostatMode', evtHandler)"             | "it's a device with correct event"
+            "subscribe(device1, 'thermostatMode.cool', evtHandler)"        | "it's a device with correct event and value"
+            "subscribe(location, evtHandler)"                              | "it's a location (with no event)"
+            "subscribe(location, '${validLocationEvents[0]}', evtHandler)" | "it's a location with correct event '${validLocationEvents[0]}'"
+            "subscribe(location, '${validLocationEvents[3]}', evtHandler)" | "it's a location with correct event '${validLocationEvents[3]}'"
+            "subscribe(device1, 'thermostatMode', { evtHandler() } )"      | "Event handler being a closure also works"
+            "subscribe(location, { log.info(evt.name) } )"                 | "Event handler being a closure also works for location"
+    }
 
     @Unroll
     def "#subscribeCall will fail for '#handler' with '#errorText'"() {
