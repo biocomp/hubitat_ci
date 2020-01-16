@@ -27,9 +27,9 @@ class InputTypeTest extends Specification{
     def "Enum input is 'defaultValue' when provided"()
     {
         expect:
-            //new Input([name: 'n', type: 'enum'], [defaultValue: 'Val2', options: ["Val1", "Val2"]], EnumSet.noneOf(Flags)).makeInputObject() == "Val2"
-            //new Input([name: 'n', type: 'enum'], [defaultValue: 'Val2', options: [42:"Val1", 33:"Val2"]], EnumSet.noneOf(Flags)).makeInputObject() == "33"
-            //new Input([name: 'n', type: 'enum'], [defaultValue: '33', options: ["42":"Val1", "33":"Val2"]], EnumSet.noneOf(Flags)).makeInputObject() == "33"
+            new Input([name: 'n', type: 'enum'], [defaultValue: 'Val2', options: ["Val1", "Val2"]], EnumSet.noneOf(Flags)).makeInputObject() == "Val2"
+            new Input([name: 'n', type: 'enum'], [defaultValue: 'Val2', options: [42:"Val1", 33:"Val2"]], EnumSet.noneOf(Flags)).makeInputObject() == "33"
+            new Input([name: 'n', type: 'enum'], [defaultValue: '33', options: ["42":"Val1", "33":"Val2"]], EnumSet.noneOf(Flags)).makeInputObject() == "33"
             new Input([name: 'n', type: 'enum'], [defaultValue: 33, options: [42:"Val1", 33:"Val2"]], EnumSet.noneOf(Flags)).makeInputObject() == "33"
     }
 }

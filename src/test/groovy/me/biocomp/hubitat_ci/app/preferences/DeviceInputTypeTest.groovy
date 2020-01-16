@@ -2,6 +2,7 @@ package me.biocomp.hubitat_ci.app.preferences
 
 import me.biocomp.hubitat_ci.capabilities.Thermostat
 import me.biocomp.hubitat_ci.capabilities.ThermostatCoolingSetpoint
+import me.biocomp.hubitat_ci.capabilities.ThermostatMode
 import me.biocomp.hubitat_ci.util.NullableOptional
 import me.biocomp.hubitat_ci.validation.DefaultAndUserValues
 import spock.lang.Specification
@@ -105,5 +106,14 @@ class DeviceInputTypeTest extends Specification{
         then:
             device.supportedAttributes == []
             device.capability == null
+    }
+
+    def "Enum attribute values are properly listed"() {
+        setup:
+            final def device = new DeviceInputValueFactory(ThermostatMode, "ThermostatMode").makeInputObject('n', 't', DefaultAndUserValues.empty())
+            final def attributes = device.getSupportedAttributes()
+
+        expect:
+            attributes.find{it.name == "thermostatMode"}.values as Set == ["auto", "off", "heat", "emergency heat", "cool"] as Set
     }
 }

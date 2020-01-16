@@ -55,6 +55,7 @@ class CapabilityAttributeInfo {
         this.name = name
         this.type = type
         this.typeString = typeString
+        this.values = readEnumValues(type)
 
         def supportedOptionsClone = (HashSet<String>)supportedOptions.clone()
         def readOption = { String o ->
@@ -101,9 +102,19 @@ class CapabilityAttributeInfo {
         }
     }
 
+    @CompileStatic
+    private static List<String> readEnumValues(Class type) {
+        if (type.isEnum()) {
+            return type.enumConstants.collect{it.toString()}.toList()
+        }
+
+        null
+    }
+
     public final String name
     public final Class type
     public final String typeString
     public final Double min = null
     public final Double max = null
+    public final List<String> values
 }
