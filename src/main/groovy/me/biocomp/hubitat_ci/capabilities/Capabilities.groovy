@@ -27,6 +27,11 @@ class Capabilities
         return result
     }
 
+    /**
+     * Read map of CapabilityAttributeInfo from capability class (from all of its intefaces).
+     * @param capability to read attributes from
+     * @return
+     */
     @CompileStatic
     static HashMap<String, CapabilityAttributeInfo> readAttributes(Class capability)
     {
@@ -39,6 +44,34 @@ class Capabilities
 
         return result
     }
+
+//    /**
+//     * Return attributes for capability as Attribute objects used by Hubitat.
+//     * @param capability
+//     * @return
+//     */
+//    @CompileStatic
+//    static List<Attribute> generateAttributes(Class capability) {
+//        return []
+//    }
+//
+//    /**
+//     * Return commands for capability as Command objects used by Hubitat.
+//     * @param capability
+//     * @return
+//     */
+//    static List<Command> generateCommands(Class capability) {
+//        return []
+//    }
+//
+//    /**
+//     * Return commands for capability as Command objects used by Hubitat.
+//     * @param capability
+//     * @return
+//     */
+//    static List<Command> generateCapability(Class capability) {
+//        return []
+//    }
 
     @CompileStatic
     static List<Method> readMethods(Class capability)
@@ -190,7 +223,7 @@ class Capabilities
          UltravioletIndex,
          Valve,
          VideoCamera,
-         VideoCapture,
+         //VideoCapture,
          VoltageMeasurement,
          WaterSensor,
          WindowShade,

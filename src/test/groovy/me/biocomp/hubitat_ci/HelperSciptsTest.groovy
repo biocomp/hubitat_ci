@@ -4,7 +4,6 @@ import groovy.transform.CompileStatic
 import groovy.transform.Sortable
 import groovy.transform.TupleConstructor
 import groovy.transform.TypeChecked
-import me.biocomp.hubitat_ci.api.Device
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
 import me.biocomp.hubitat_ci.api.common_api.Hub

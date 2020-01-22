@@ -33,6 +33,10 @@ enum Flags
     DontValidatePreferences,
     DontValidateDefinition,
     DontValidateSubscriptions, // subscribe() method arguments are not validated
+    AllowAnyDeviceAttributeOrCapabilityInSubscribe, // subscribe() method will allow any attribute names for devices
+    AllowAnyExistingDeviceAttributeOrCapabilityInSubscribe, // subscribe() method will allow any of existing attribute names for devices (not only ones from current capability).
+    AllowAnyAttributeEnumValuesInSubscribe, // If subscribe() is for attribute value, allow any value. Otherwise, enum values are validated.
+
     DontValidateMappings,
     DontValidateCapabilities,
     DontValidateAttributes,

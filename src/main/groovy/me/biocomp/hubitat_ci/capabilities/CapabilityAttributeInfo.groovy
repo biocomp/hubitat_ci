@@ -7,14 +7,28 @@ class CapabilityAttributeList
 {
     HashMap<String, CapabilityAttributeInfo> result = new HashMap<String, CapabilityAttributeInfo>()
 
-    void attribute(Map options = [:], String name, Class type)
+    void jsonObject(String name)
     {
-        result.put(name, new CapabilityAttributeInfo(options, name, type))
+        result.put(name, new CapabilityAttributeInfo(name, "JSON_OBJECT"))
     }
 
-    void attribute(Map options = [:], String name, String typeString, Class type)
+    void number(Map options = [:], String name)
     {
-        result.put(name, new CapabilityAttributeInfo(options, name, typeString, type))
+        result.put(name, new CapabilityAttributeInfo(options, name, "NUMBER"))
+    }
+
+    void stringAttribute(String name)
+    {
+        result.put(name, new CapabilityAttributeInfo(name, "STRING"))
+    }
+
+    void enumAttribute(String name, List<String> values)
+    {
+        result.put(name, new CapabilityAttributeInfo([:], name, "ENUM", values))
+    }
+
+    void date(String name) {
+        result.put(name, new CapabilityAttributeInfo(name, "DATE"))
     }
 }
 
@@ -37,25 +51,34 @@ class CapabilityAttributeInfo {
         return list.result
     }
 
-    private static final HashMap<Class, String> typeToString = [
-            (Number): "NUMBER",
-            (String): "STRING",
-            (GString): "STRING",
-            (Object): "OBJECT",
-            (Double): "NUMBER"
-    ] as HashMap
+    private static final HashSet<String> validTypeStrings = [
+            "STRING",
+            "NUMBER",
+            "VECTOR3",
+            "ENUM",
+            "DYNAMIC_ENUM",
+            "COLOR_MAP",
+            "JSON_OBJECT",
+            "DATE",
+            "BOOLEAN"
+    ] as HashSet<String>
 
     @CompileStatic
-    CapabilityAttributeInfo(Map options = [:], String name, String typeString, Class type)
+    CapabilityAttributeInfo(Map options = [:], String name, String typeString, List<String> values = null)
     {
         assert name
-        assert type
         assert typeString
 
         this.name = name
-        this.type = type
         this.typeString = typeString
-        this.values = readEnumValues(type)
+        this.values = values
+
+        assert validTypeStrings.contains(this.typeString): "Unsupported type string ${this.typeString}."
+        if (typeString == "ENUM")
+        {
+            assert values
+            assert values.unique().size() == values.size(): "Attribute ${name} enum values have duplicates: ${values}"
+        }
 
         def supportedOptionsClone = (HashSet<String>)supportedOptions.clone()
         def readOption = { String o ->
@@ -74,45 +97,7 @@ class CapabilityAttributeInfo {
         max = (Double)readOption("max")
     }
 
-    /**
-     * This constructor infers type string from the 'type' parameter.
-     * @param name
-     * @param type
-     * @param options
-     */
-    @CompileStatic
-    CapabilityAttributeInfo(Map options = [:], String name, Class type)
-    {
-        this(options, name, inferTypeString(type), type)
-    }
-
-    static String inferTypeString(Class from)
-    {
-        assert from
-
-        if (from.isEnum())
-        {
-            return "ENUM"
-        }
-        else
-        {
-            String typeString = typeToString.get(from)
-            assert typeString: "Type ${from} is not supported or doesn't have mapping - provide it explicitly"
-            return typeString
-        }
-    }
-
-    @CompileStatic
-    private static List<String> readEnumValues(Class type) {
-        if (type.isEnum()) {
-            return type.enumConstants.collect{it.toString()}.toList()
-        }
-
-        null
-    }
-
     public final String name
-    public final Class type
     public final String typeString
     public final Double min = null
     public final Double max = null

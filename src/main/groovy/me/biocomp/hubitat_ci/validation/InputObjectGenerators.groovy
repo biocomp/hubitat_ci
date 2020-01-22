@@ -74,7 +74,7 @@ class UnvalidatedInputValueFactory implements IInputValueFactory
     def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues) {
         return InputCommon.returnUserOrDefaultOrCustomValue(
                 userProvidedAndDefaultValues,
-                "Input '${inputName}' type '${inputType}' was not validated, so this generic string is used as mock value")
+                new UnvalidatedInput(inputName, inputType))
     }
 }
 
