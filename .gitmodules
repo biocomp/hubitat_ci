@@ -19,6 +19,3 @@
 [submodule "SubmodulesWithScripts/Hubitat"]
 	path = SubmodulesWithScripts/Hubitat
 	url = https://github.com/biocomp/Hubitat.git
-[submodule "SubmodulesWithScripts/SmartThings"]
-	path = SubmodulesWithScripts/SmartThings
-	url = https://github.com/biocomp/SmartThings.git

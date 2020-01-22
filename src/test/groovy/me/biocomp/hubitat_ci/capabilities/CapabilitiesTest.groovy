@@ -114,7 +114,7 @@ class CapabilitiesTest extends Specification
             new TestCapabilityInfo("ultravioletIndex", "UltravioletIndex", "Ultraviolet Index"),
             new TestCapabilityInfo("valve", "Valve"),
             new TestCapabilityInfo("videoCamera", "VideoCamera", "Video Camera"),
-            new TestCapabilityInfo("videoCapture", "VideoCapture", "Video Capture"),
+            //new TestCapabilityInfo("videoCapture", "VideoCapture", "Video Capture"),
             new TestCapabilityInfo("voltageMeasurement", "VoltageMeasurement", "Voltage Measurement"),
             new TestCapabilityInfo("waterSensor", "WaterSensor", "Water Sensor"),
             new TestCapabilityInfo("windowShade", "WindowShade", "Window Shade"),

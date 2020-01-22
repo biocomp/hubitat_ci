@@ -1,10 +1,12 @@
 package me.biocomp.hubitat_ci.app.preferences
 
+import me.biocomp.hubitat_ci.capabilities.GeneratedCapability
 import me.biocomp.hubitat_ci.capabilities.Thermostat
 import me.biocomp.hubitat_ci.capabilities.ThermostatCoolingSetpoint
 import me.biocomp.hubitat_ci.capabilities.ThermostatMode
 import me.biocomp.hubitat_ci.util.NullableOptional
 import me.biocomp.hubitat_ci.validation.DefaultAndUserValues
+import me.biocomp.hubitat_ci.validation.GeneratedDeviceInputBase
 import spock.lang.Specification
 
 class DeviceInputTypeTest extends Specification{
@@ -15,9 +17,12 @@ class DeviceInputTypeTest extends Specification{
             def attributes = device.getSupportedAttributes()
 
         expect:
-            assert device.capability == ThermostatCoolingSetpoint
-            assert attributes.size() == 1
+            assert device.capabilities.size() == 1
+            assert device.capabilities[0].name == "ThermostatCoolingSetpoint"
 
+            assert device.capabilities[0].getAttributes() == attributes
+
+            assert attributes.size() == 1
             assert attributes[0].getDataType() == "NUMBER"
             assert attributes[0].dataType == "NUMBER"
 
@@ -40,18 +45,20 @@ class DeviceInputTypeTest extends Specification{
             def attributes = device.getSupportedAttributes()
 
         expect:
-            !device.hasUserProvidedValue()
+            GeneratedDeviceInputBase.isInstance(device)
 
-            assert device.capability == Thermostat.class
-            assert attributes.collect{it.name} as Set == ["supportedThermostatFanModes", "supportedThermostatModes", "temperature", "coolingSetpoint", "thermostatFanMode", "heatingSetpoint", "thermostatMode", "thermostatOperatingState", "schedule", "thermostatSetpoint"] as Set
+            device.capabilities.size() == 1
+            device.capabilities[0].name == "Thermostat"
 
-            assert((Double)device.currentCoolingSetpoint == 0)
-            assert((Double)device.currentHeatingSetpoint == 0)
-            assert(device.currentSupportedThermostatFanModes == 0)
-            assert(device.currentSupportedThermostatModes == 0)
-            assert(device.currentTemperature == 0)
-            assert(device.currentThermostatSetpoint == 0)
-            assert(device.currentSchedule == 0)
+            attributes.collect{it.name} as Set == ["supportedThermostatFanModes", "supportedThermostatModes", "temperature", "coolingSetpoint", "thermostatFanMode", "heatingSetpoint", "thermostatMode", "thermostatOperatingState", "schedule", "thermostatSetpoint"] as Set
+
+            (Double)device.currentCoolingSetpoint == 0
+            (Double)device.currentHeatingSetpoint == 0
+            device.currentSupportedThermostatFanModes == 0
+            device.currentSupportedThermostatModes == 0
+            device.currentTemperature == 0
+            device.currentThermostatSetpoint == 0
+            device.currentSchedule == 0
 
             // Just make sure this is callable
             device.setCoolingSetpoint(42.42)
@@ -78,7 +85,7 @@ class DeviceInputTypeTest extends Specification{
         final List<Number> heatingSetpoints = []
     }
 
-    def "When user object provided, calls to methods and attributes are redirected to it"()
+    def "When user object provided, it is returned instead"()
     {
         when:
             def userThermostat = new MockThermostat()
@@ -89,23 +96,13 @@ class DeviceInputTypeTest extends Specification{
             device.setHeatingSetpoint(12.12)
 
         then:
-            device.userProvidedValue == userThermostat
+            device == userThermostat
             userThermostat.coolingSetpoints == [42.42]
             userThermostat.heatingSetpoints == [12.12]
 
             assert(device.currentCoolingSetpoint == 123)
             assert(device.currentHeatingSetpoint == 42)
             assert(device.currentTemperature == 22)
-    }
-
-    def "Device without capability has null capability and no attributes"()
-    {
-        when:
-            def device = new DeviceInputValueFactory(null, "SomeDevice").makeInputObject('n', 't',  DefaultAndUserValues.empty())
-
-        then:
-            device.supportedAttributes == []
-            device.capability == null
     }
 
     def "Enum attribute values are properly listed"() {

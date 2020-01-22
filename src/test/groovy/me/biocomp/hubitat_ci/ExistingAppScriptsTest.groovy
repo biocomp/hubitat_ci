@@ -1,12 +1,13 @@
 package me.biocomp.hubitat_ci
 
+import me.biocomp.hubitat_ci.api.Attribute
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
+import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
 import me.biocomp.hubitat_ci.api.common_api.InstalledAppWrapper
+import me.biocomp.hubitat_ci.api.common_api.Location
 import me.biocomp.hubitat_ci.api.common_api.Log
 import me.biocomp.hubitat_ci.app.AppValidator
 import me.biocomp.hubitat_ci.app.HubitatAppSandbox
-import me.biocomp.hubitat_ci.capabilities.SwitchLevel
-import me.biocomp.hubitat_ci.capabilities.Thermostat
 import me.biocomp.hubitat_ci.validation.Flags
 import spock.lang.Specification
 
@@ -87,14 +88,35 @@ class ThermostatDimerSyncHelperTest extends
 
     def "Installation succeeds"() {
         setup:
-            def log = Mock(Log)
-            AppExecutor api = Mock { _ * getLog() >> log }
+            final def log = Mock(Log)
+            final AppExecutor api = Mock { _ * getLog() >> log }
 
-            def thermostat = "ThermostatMock"
-            def coolingDimmer = "CoolingDimmerMock"
-            def heatingDimmer = "HeatingDimmerMock"
+            final def thermostat = Mock(DeviceWrapper)
+                    {
+                        _*getLabel() >> "thermostat"
+                        _*getSupportedAttributes() >> [
+                                Mock(Attribute){ _*getName() >> "coolingSetpoint" },
+                                Mock(Attribute){ _*getName() >> "heatingSetpoint" }
+                        ]
+                    }
 
-            def script = sandbox.run(
+            final def coolingDimmer = Mock(DeviceWrapper)
+                    {
+                        _*getLabel() >> "coolingDimmer"
+                        _*getSupportedAttributes() >> [
+                                Mock(Attribute){ _*getName() >> "level" }
+                        ]
+                    }
+
+            final def heatingDimmer = Mock(DeviceWrapper)
+                    {
+                        _*getLabel() >> "heatingDimmer"
+                        _*getSupportedAttributes() >> [
+                                Mock(Attribute){ _*getName() >> "level" }
+                        ]
+                    }
+
+            final def script = sandbox.run(
                     api: api, userSettingValues: [
                     thermostat: thermostat,
                     coolingDimmer: coolingDimmer,
@@ -106,10 +128,10 @@ class ThermostatDimerSyncHelperTest extends
 
         then:
             1* log.debug("Initializing")
-            1* api.subscribe({it.capability == Thermostat && it.userProvidedValue == thermostat}, "coolingSetpoint", _)
-            1* api.subscribe({it.capability == Thermostat && it.userProvidedValue == thermostat}, "heatingSetpoint", _)
-            1* api.subscribe({it.capability == SwitchLevel && it.userProvidedValue == coolingDimmer}, "level", _)
-            1* api.subscribe({it.capability == SwitchLevel && it.userProvidedValue == heatingDimmer}, "level", _)
+            1* api.subscribe(thermostat, "coolingSetpoint", _)
+            1* api.subscribe(thermostat, "heatingSetpoint", _)
+            1* api.subscribe(coolingDimmer, "level", _)
+            1* api.subscribe(heatingDimmer, "level", _)
     }
 }
 
@@ -287,5 +309,52 @@ class Tonesto7HomebridgeScriptTest extends Specification
                             Flags.AllowNullEnumInputOptions],
                             [],
                             ["execute"]))
+    }
+}
+
+class InfluxDbLoggerTest extends Specification {
+    HubitatAppSandbox sandbox = new HubitatAppSandbox(new File("SubmodulesWithScripts/influxdb_logger/influxdb-logger.groovy"))
+
+    def "Basic validation"() {
+        expect:
+            sandbox.run()
+    }
+
+    def "Calling major script methods doesn't cause issues"() {
+        setup:
+            // Create mock log
+            def log = Mock(Log)
+            def app = Mock(InstalledAppWrapper){
+                _*getLabel() >> "My label"
+            }
+
+            def state = [:]
+            // Make AppExecutor return the mock log
+            AppExecutor api = Mock{
+                _*getLog() >> log
+                _*getState() >> state
+                _*getApp() >> app
+                _*getLocation() >> Mock(Location)
+            }
+
+            // Parse, construct script object, run validations
+            def script = sandbox.run(
+                    api: api,
+                    userSettingValues: [
+                            prefSoftPollingInterval: "10",
+                            prefDatabaseUser: "MyUserName",
+                            prefDatabasePass: "MyPassword"],
+                    validationFlags: [Flags.AllowAnyExistingDeviceAttributeOrCapabilityInSubscribe])
+
+            final def callScriptMethods = {
+                script.installed()
+                script.updated()
+                script.softPoll()
+                script.uninstalled()
+                return true
+            }
+
+        expect:
+            callScriptMethods()
     }
 }
