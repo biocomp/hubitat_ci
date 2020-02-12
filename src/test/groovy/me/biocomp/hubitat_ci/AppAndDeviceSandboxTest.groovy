@@ -372,6 +372,8 @@ String myMethod2()
     return "Some string"
 }
 
+def myMethod4() {}
+
 private static String myStaticPrivateMethod3()
 {
     return "String from static method3"
@@ -397,11 +399,17 @@ def getMethod3()
     return takesMethod(myStaticPrivateMethod3)
 }
 
+def getMethod4()
+{
+    return takesMethod(myMethod4)
+}
+
 void scheduleUnschedule()
 {
     schedule("cron string", myStaticPrivateMethod3)
     unschedule(myMethod1)
     unschedule(myMethod2)
+    unschedule(myMethod4)
 }
 """
 
@@ -416,9 +424,11 @@ void scheduleUnschedule()
                 script.getMethod1() == "myMethod1"
                 script.getMethod2() == "myMethod2"
                 script.getMethod3() == "myStaticPrivateMethod3"
+                script.getMethod4() == "myMethod4"
 
                 1 * api.unschedule("myMethod1")
                 1 * api.unschedule("myMethod2")
+                1 * api.unschedule("myMethod4")
                 1 * api.schedule("cron string", "myStaticPrivateMethod3")
 
             where:

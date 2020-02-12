@@ -74,6 +74,10 @@ abstract class InputCommon {
         return unnamedOptions.type != null ? unnamedOptions.type: options.type
     }
 
+    boolean getMultipleValues() {
+        options != null && options.multiple
+    }
+
     private  void validateEnumInputOrThatInputHasNoOptions()
     {
         if (readType() != 'enum') {
@@ -186,26 +190,30 @@ abstract class InputCommon {
         return DefaultAndUserValues.bothValues(extendedDefaultValue, NullableOptional.withValue(userProvidedValue))
     }
 
-    static def returnUserOrDefaultOrCustomValue(DefaultAndUserValues userProvidedAndDefaultValues, Object customValue)
+    static def returnUserOrDefaultOrCustomValue(DefaultAndUserValues userProvidedAndDefaultValues, Object customValue, boolean multipleValues)
     {
         if (userProvidedAndDefaultValues.userProvidedValue.hasValue) {
             return userProvidedAndDefaultValues.userProvidedValue.value
         } else if (userProvidedAndDefaultValues.defaultValue.hasValue) {
             return userProvidedAndDefaultValues.defaultValue.value
         } else {
-            return customValue
+            if (multipleValues) {
+                return [customValue]
+            } else {
+                return customValue
+            }
         }
     }
 
     def makeInputObject(def userProvidedValue) {
         return typeWrapper.makeInputObject(readName(), readType(),
                 makeDefaultAndUserValuesMap(userProvidedValue, defaultValue, readType(), enumValues,
-                        enumDisplayValues))
+                        enumDisplayValues), multipleValues)
     }
 
     def makeInputObject() {
         return typeWrapper.makeInputObject(readName(), readType(),
                 DefaultAndUserValues.defaultValueOnly(readDefaultValueOrEnumFirstValue(defaultValue,
-                        readType(), enumValues, enumDisplayValues)))
+                        readType(), enumValues, enumDisplayValues)), multipleValues)
     }
 }

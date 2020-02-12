@@ -26,12 +26,17 @@ class DeviceInputValueFactory implements IInputValueFactory
     }
 
     @Override
-    def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues)
+    @CompileStatic
+    def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues, boolean multipleValues)
     {
         if (userProvidedAndDefaultValues.userProvidedValue.hasValue) {
             userProvidedAndDefaultValues.userProvidedValue.value
         } else {
-            generatedDevice.newInstance(inputName, inputType, capability)
+            if (multipleValues) {
+                [ generatedDevice.newInstance(inputName, inputType, capability)]
+            } else {
+                generatedDevice.newInstance(inputName, inputType, capability)
+            }
         }
     }
 
