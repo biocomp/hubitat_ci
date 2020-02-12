@@ -354,7 +354,6 @@ class InfluxDbLoggerTest extends Specification {
                 return true
             }
 
-
         expect:
             callScriptMethods()
     }
