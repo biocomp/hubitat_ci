@@ -98,40 +98,43 @@ class AppSubscriptionReader implements AppExecutor {
             Capabilities.capabilitiesByDeviceSelector.collect{Capabilities.readAttributes(it.value).collect{it.key}}.flatten() as HashSet<String>
 
     @CompileStatic
-    private static void validateDevice(
+    private static void validateDeviceOrDevices(
             Object toWhat,
             NullableOptional attributeNameOrNameAndValueOrEventName,
             EnumSet<Flags> flags,
             Closure makeError) {
-        assert DeviceWrapper.isInstance(toWhat): makeError(": object ${toWhat} is not a valid input (not a device) to subscribe to. Note: subscribe(app) is not supported")
 
-        // Capability is specified, and if it's valid, return
-        if (attributeNameOrNameAndValueOrEventName.hasValue && Capabilities.capabilitiesByDeviceSelector.containsKey(attributeNameOrNameAndValueOrEventName.value)) {
-            return
-        }
+        toWhat.each {
+            maybeDevice ->
+            assert DeviceWrapper.isInstance(maybeDevice): makeError(": object ${maybeDevice} is not a valid input (not a device) to subscribe to. Note: subscribe(app) is not supported")
 
-        final def device = (DeviceWrapper) toWhat
-        if (!flags.contains(Flags.AllowAnyDeviceAttributeOrCapabilityInSubscribe) && !flags.contains(Flags.AllowAnyExistingDeviceAttributeOrCapabilityInSubscribe)) {
-            assert attributeNameOrNameAndValueOrEventName.hasValue: makeError(": when subscribing to device event, you need to specify at least an event name")
-
-            final def attributes = device.supportedAttributes
-            final def nameAndMaybeValue = (attributeNameOrNameAndValueOrEventName.value as String).split(/(\.)/)
-
-            assert (nameAndMaybeValue.size() == 1 || nameAndMaybeValue.size() == 2): ": '${attributeNameOrNameAndValueOrEventName.value}' should either be 'attibuteName' or 'attributename.attributevalue'"
-            final def attribute = attributes.find { it.name.equalsIgnoreCase(nameAndMaybeValue[0]) }
-
-            assert attribute: makeError(": device '${device.label}' does not contain attribute '${nameAndMaybeValue[0]}'. Valid attributes are: ${attributes.collect { it.name }}")
-
-            // Validate value
-            if (!flags.contains(Flags.AllowAnyAttributeEnumValuesInSubscribe) && nameAndMaybeValue.size() == 2) {
-                if (attribute.dataType == 'ENUM') {
-                    assert (attribute.values.find { it.equalsIgnoreCase(nameAndMaybeValue[1]) } != null): makeError(": '${nameAndMaybeValue[0]}' for device '${device.label}' does not have value '${nameAndMaybeValue[1]}'. Valid values are: ${attribute.values}")
-                }
+            // Capability is specified, and if it's valid, return
+            if (attributeNameOrNameAndValueOrEventName.hasValue && Capabilities.capabilitiesByDeviceSelector.containsKey(attributeNameOrNameAndValueOrEventName.value)) {
+                return
             }
-        }
-        else if (flags.contains(Flags.AllowAnyExistingDeviceAttributeOrCapabilityInSubscribe)) {
-            assert attributeNameOrNameAndValueOrEventName.hasValue: makeError(": when subscribing to device event, you need to specify at least an event name")
-            assert allExistingAttributes.find{ it.compareToIgnoreCase(attributeNameOrNameAndValueOrEventName.value as String)} != null: makeError(": '${attributeNameOrNameAndValueOrEventName}' is not one of valid attributes: ${allExistingAttributes})")
+
+            final def device = (DeviceWrapper) maybeDevice
+            if (!flags.contains(Flags.AllowAnyDeviceAttributeOrCapabilityInSubscribe) && !flags.contains(Flags.AllowAnyExistingDeviceAttributeOrCapabilityInSubscribe)) {
+                assert attributeNameOrNameAndValueOrEventName.hasValue: makeError(": when subscribing to device event, you need to specify at least an event name")
+
+                final def attributes = device.supportedAttributes
+                final def nameAndMaybeValue = (attributeNameOrNameAndValueOrEventName.value as String).split(/(\.)/)
+
+                assert (nameAndMaybeValue.size() == 1 || nameAndMaybeValue.size() == 2): ": '${attributeNameOrNameAndValueOrEventName.value}' should either be 'attibuteName' or 'attributename.attributevalue'"
+                final def attribute = attributes.find { it.name.equalsIgnoreCase(nameAndMaybeValue[0]) }
+
+                assert attribute: makeError(": device '${device.label}' does not contain attribute '${nameAndMaybeValue[0]}'. Valid attributes are: ${attributes.collect { it.name }}")
+
+                // Validate value
+                if (!flags.contains(Flags.AllowAnyAttributeEnumValuesInSubscribe) && nameAndMaybeValue.size() == 2) {
+                    if (attribute.dataType == 'ENUM') {
+                        assert (attribute.values.find { it.equalsIgnoreCase(nameAndMaybeValue[1]) } != null): makeError(": '${nameAndMaybeValue[0]}' for device '${device.label}' does not have value '${nameAndMaybeValue[1]}'. Valid values are: ${attribute.values}")
+                    }
+                }
+            } else if (flags.contains(Flags.AllowAnyExistingDeviceAttributeOrCapabilityInSubscribe)) {
+                assert attributeNameOrNameAndValueOrEventName.hasValue: makeError(": when subscribing to device event, you need to specify at least an event name")
+                assert allExistingAttributes.find { it.compareToIgnoreCase(attributeNameOrNameAndValueOrEventName.value as String) } != null: makeError(": '${attributeNameOrNameAndValueOrEventName}' is not one of valid attributes: ${allExistingAttributes})")
+            }
         }
     }
 
@@ -149,7 +152,7 @@ class AppSubscriptionReader implements AppExecutor {
             if (Location.isInstance(toWhat)) {
                 validateLocation(attributeNameOrNameAndValueOrEventName, makeError)
             } else {
-                validateDevice(toWhat, attributeNameOrNameAndValueOrEventName, flags, makeError)
+                validateDeviceOrDevices(toWhat, attributeNameOrNameAndValueOrEventName, flags, makeError)
             }
         }
     }

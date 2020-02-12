@@ -16,14 +16,14 @@ class AppSubscriptionReaderTest extends Specification {
         _ * getLocation() >> Mock(Location)
     }
 
-    private void runScript(String subscribeCall, String handler, List<Flags> validationFlags = []) {
+    private void runScript(String subscribeCall, String handler, List<Flags> validationFlags = [], boolean multiple = false) {
         def flags = validationFlags.clone()
         flags << Flags.DontValidateDefinition
-        new HubitatAppSandbox(makeScriptForSubscribeTest(subscribeCall, handler)).run(api: api, validationFlags: flags).installed()
+        new HubitatAppSandbox(makeScriptForSubscribeTest(subscribeCall, handler, multiple)).run(api: api, validationFlags: flags).installed()
     }
 
-    private void runScript(String subscribeCall, List<Flags> validationFlags = []) {
-        runScript(subscribeCall, "def evtHandler(evt) {}", validationFlags)
+    private void runScript(String subscribeCall, List<Flags> validationFlags = [], boolean multiple = false) {
+        runScript(subscribeCall, "def evtHandler(evt) {}", validationFlags, multiple)
     }
 
     static final private def validLocationEvents = ["mode", "position", "sunset", "sunrise", "sunriseTime", "sunsetTime"]
@@ -66,13 +66,13 @@ class AppSubscriptionReaderTest extends Specification {
            [ "subscribe(location, { log.info(evt.name) } )"                 , "Event handler being a closure also works for location" ],
     ].collect{[subscribeCall: it[0], explanation: it[1]]}
 
-    static private def makeScriptForSubscribeTest(String subscribeCall, String eventHandler) {
+    static private def makeScriptForSubscribeTest(String subscribeCall, String eventHandler, boolean multiple = false) {
         """
 preferences {
     page(name:"mainPage", title:"Settings", install: true, uninstall: true) {
         section() {
-            input (name:"device1", type: "capability.thermostat", title: "Thermostat", required: true, multiple: false)
-            input (name:"number1", type: "number", title: "Number", required: true, multiple: false)
+            input (name:"device1", type: "capability.thermostat", title: "Thermostat", required: true, multiple: ${multiple})
+            input (name:"number1", type: "number", title: "Number", required: true, multiple: ${multiple})
         }
     }
 }
@@ -98,6 +98,20 @@ ${eventHandler}
         where:
             subscribeCall << badSubscriptionsAndExpectedErrors.collect { it.subscribeCall }
             expectedError << badSubscriptionsAndExpectedErrors.collect { it.expectedError }
+    }
+
+    @Unroll
+    def "#subscribeCall will normally fail with '#expectedError' when multiple=true"() {
+        when:
+            runScript(subscribeCall, [], true)
+
+        then:
+            AssertionError e = thrown()
+            e.message.contains(expectedError)
+
+        where: // Just choose a few cases that actually use inputs
+            subscribeCall << [2,5,6,7].collect{badSubscriptionsAndExpectedErrors[it].subscribeCall}
+            expectedError << [2,5,6,7].collect{badSubscriptionsAndExpectedErrors[it].expectedError}
     }
 
     private static List<Map<String, Object>> badCasesThatWorkWithFlag(Flags flag) {
@@ -133,6 +147,16 @@ ${eventHandler}
         where:
             subscribeCall << successfulTestCases.collect{it.subscribeCall}
             why << successfulTestCases.collect{it.explanation}
+    }
+
+    @Unroll
+    def "subscribe() will succeed when called for #subscribeCall because #why when device's multiple = true"() {
+        expect:
+            runScript(subscribeCall, [], true)
+
+        where:
+            subscribeCall << [0,2,10].collect{successfulTestCases[it].subscribeCall}
+            why << [0,2,10].collect{successfulTestCases[it].explanation}
     }
 
     @Unroll

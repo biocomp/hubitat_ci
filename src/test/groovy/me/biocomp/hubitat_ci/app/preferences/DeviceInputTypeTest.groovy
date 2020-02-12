@@ -1,19 +1,34 @@
 package me.biocomp.hubitat_ci.app.preferences
 
+import groovy.transform.TypeChecked
+import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
+import me.biocomp.hubitat_ci.app.HubitatAppSandbox
 import me.biocomp.hubitat_ci.capabilities.GeneratedCapability
 import me.biocomp.hubitat_ci.capabilities.Thermostat
 import me.biocomp.hubitat_ci.capabilities.ThermostatCoolingSetpoint
 import me.biocomp.hubitat_ci.capabilities.ThermostatMode
 import me.biocomp.hubitat_ci.util.NullableOptional
 import me.biocomp.hubitat_ci.validation.DefaultAndUserValues
+import me.biocomp.hubitat_ci.validation.Flags
 import me.biocomp.hubitat_ci.validation.GeneratedDeviceInputBase
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class DeviceInputTypeTest extends Specification{
-    def "Simple capability 'ThermostatCoolingSetpoint' input generates object with all proper fields and methods"()
+    private static def getDevice(def from) {
+        if (DeviceWrapper.isInstance(from)) {
+            from
+        } else {
+            from[0]
+        }
+    }
+
+    @Unroll
+    def "Simple capability 'ThermostatCoolingSetpoint' input generates object with all proper fields and methods (multiple = #multiple)"()
     {
         setup:
-            def device = new DeviceInputValueFactory(ThermostatCoolingSetpoint, "ThermostatCoolingSetpoint").makeInputObject('n', 't',  DefaultAndUserValues.empty())
+            def device = getDevice(new DeviceInputValueFactory(ThermostatCoolingSetpoint, "ThermostatCoolingSetpoint")
+                    .makeInputObject('n', 't',  DefaultAndUserValues.empty(), multiple))
             def attributes = device.getSupportedAttributes()
 
         expect:
@@ -36,12 +51,16 @@ class DeviceInputTypeTest extends Specification{
 
             // Just make sure this is callable
             device.setCoolingSetpoint(42.42)
+
+        where:
+            multiple << [true, false]
     }
 
     def "Complex capability 'Thermostat' input generates object with all proper fields and methods"()
     {
         setup:
-            def device = new DeviceInputValueFactory(Thermostat, "Thermostat").makeInputObject('n', 't',  DefaultAndUserValues.empty())
+            def device = new DeviceInputValueFactory(Thermostat, "Thermostat")
+                    .makeInputObject('n', 't',  DefaultAndUserValues.empty(), false)
             def attributes = device.getSupportedAttributes()
 
         expect:
@@ -85,12 +104,14 @@ class DeviceInputTypeTest extends Specification{
         final List<Number> heatingSetpoints = []
     }
 
-    def "When user object provided, it is returned instead"()
+    @Unroll
+    def "When user object provided, it is returned instead (multiple = #multiple is ignored)"()
     {
         when:
             def userThermostat = new MockThermostat()
-            def device = new DeviceInputValueFactory(Thermostat, "Thermostat").makeInputObject('n', 't',  DefaultAndUserValues.bothValues(
-                    NullableOptional.empty(), NullableOptional.withValue(userThermostat)))
+            def device = new DeviceInputValueFactory(Thermostat, "Thermostat")
+                    .makeInputObject('n', 't',  DefaultAndUserValues.bothValues(
+                        NullableOptional.empty(), NullableOptional.withValue(userThermostat)), multiple)
 
             device.setCoolingSetpoint(42.42)
             device.setHeatingSetpoint(12.12)
@@ -103,14 +124,45 @@ class DeviceInputTypeTest extends Specification{
             assert(device.currentCoolingSetpoint == 123)
             assert(device.currentHeatingSetpoint == 42)
             assert(device.currentTemperature == 22)
+
+        where:
+            multiple << [true, false]
     }
 
-    def "Enum attribute values are properly listed"() {
+    @Unroll
+    def "Enum attribute values are properly listed (multiple = #multiple)"() {
         setup:
-            final def device = new DeviceInputValueFactory(ThermostatMode, "ThermostatMode").makeInputObject('n', 't', DefaultAndUserValues.empty())
+            final def device = getDevice(new DeviceInputValueFactory(ThermostatMode, "ThermostatMode")
+                    .makeInputObject('n', 't', DefaultAndUserValues.empty(), multiple))
             final def attributes = device.getSupportedAttributes()
 
         expect:
             attributes.find{it.name == "thermostatMode"}.values as Set == ["auto", "off", "heat", "emergency heat", "cool"] as Set
+
+        where:
+            multiple << [true, false]
+    }
+
+    def "End to end test - device input type is properly generated, user value is used when provided, and multiple produces an empty"() {
+        setup:
+            final def script = new HubitatAppSandbox(PreferencesValidationCommon.pageWith("""
+                input "multipleInputNoUserValue", "capability.alarm", title: "Tit1", multiple: true
+                input "singleInputNoUserValue", "capability.alarm", title: "Tit2"
+                input "multipleInputOverriden", "capability.alarm", title: "Tit3", multiple: true
+                input "singleInputOverriden", "capability.alarm", title: "Tit4"
+""")).run(userSettingValues: [
+                multipleInputOverriden: ["MyVal1", "MyVal2"],
+                singleInputOverriden: "MyVal3"],
+            validationFlags: [Flags.DontValidateDefinition])
+
+        expect:
+            script.multipleInputNoUserValue.size() == 1
+            script.multipleInputNoUserValue[0].name == "name_generated_from_multipleInputNoUserValue"
+
+            script.singleInputNoUserValue.name == "name_generated_from_singleInputNoUserValue"
+
+            script.multipleInputOverriden == ["MyVal1", "MyVal2"]
+
+            script.singleInputOverriden == "MyVal3"
     }
 }

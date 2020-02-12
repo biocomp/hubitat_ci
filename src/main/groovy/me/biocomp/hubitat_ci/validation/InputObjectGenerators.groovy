@@ -18,8 +18,9 @@ interface IInputValueFactory
         @param userProvidedAndDefaultValues - map of 0-2 elements with possible values:
          <br/> userProvidedValue - value that user provided as mock (possibly null)
          <br/> defaultValue - value that was specified as default in input() (possibly null)
+        @param multipleValues - true, if input is multiple values.
      */
-    def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues)
+    def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues, boolean multipleValues)
 }
 
 /**
@@ -31,10 +32,11 @@ class TextInputValueFactory implements IInputValueFactory
 
     @Override
     @CompileStatic
-    def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues) {
+    def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues, boolean multipleValues) {
         return InputCommon.returnUserOrDefaultOrCustomValue(
                 userProvidedAndDefaultValues,
-                "Input '${inputName}' of type '${inputType}'")
+                "Input '${inputName}' of type '${inputType}'",
+                multipleValues)
     }
 }
 
@@ -47,8 +49,8 @@ class BooleanInputValueFactory implements IInputValueFactory
 
     @Override
     @CompileStatic
-    def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues) {
-        return InputCommon.returnUserOrDefaultOrCustomValue(userProvidedAndDefaultValues, new Boolean(true))
+    def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues, boolean multipleValues) {
+        return InputCommon.returnUserOrDefaultOrCustomValue(userProvidedAndDefaultValues, new Boolean(true), multipleValues)
     }
 }
 
@@ -58,8 +60,8 @@ class BooleanInputValueFactory implements IInputValueFactory
 class NumberInputValueFactory implements IInputValueFactory
 {
     @Override
-    def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues) {
-        return InputCommon.returnUserOrDefaultOrCustomValue(userProvidedAndDefaultValues, new Integer(0))
+    def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues, boolean multipleValues) {
+        return InputCommon.returnUserOrDefaultOrCustomValue(userProvidedAndDefaultValues, new Integer(0), multipleValues)
     }
 }
 
@@ -71,10 +73,11 @@ class UnvalidatedInputValueFactory implements IInputValueFactory
 {
     @Override
     @CompileStatic
-    def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues) {
+    def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues, boolean multipleValues) {
         return InputCommon.returnUserOrDefaultOrCustomValue(
                 userProvidedAndDefaultValues,
-                new UnvalidatedInput(inputName, inputType))
+                new UnvalidatedInput(inputName, inputType),
+                 multipleValues)
     }
 }
 
