@@ -142,7 +142,7 @@ ${eventHandler}
     @Unroll
     def "subscribe() will succeed when called for #subscribeCall because #why"() {
         expect:
-            runScript(subscribeCall, [], true)
+            runScript(subscribeCall)
 
         where:
             subscribeCall << successfulTestCases.collect{it.subscribeCall}
@@ -152,7 +152,7 @@ ${eventHandler}
     @Unroll
     def "subscribe() will succeed when called for #subscribeCall because #why when device's multiple = true"() {
         expect:
-            runScript(subscribeCall)
+            runScript(subscribeCall, [], true)
 
         where:
             subscribeCall << [0,2,10].collect{successfulTestCases[it].subscribeCall}

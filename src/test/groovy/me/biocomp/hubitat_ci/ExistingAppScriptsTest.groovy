@@ -348,8 +348,6 @@ class InfluxDbLoggerTest extends Specification {
 
             final def callScriptMethods = {
                 script.installed()
-                script.installed()
-                script.updated()
                 script.updated()
                 script.softPoll()
                 script.uninstalled()
