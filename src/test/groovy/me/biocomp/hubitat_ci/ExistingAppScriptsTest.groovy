@@ -346,10 +346,18 @@ class InfluxDbLoggerTest extends Specification {
                             prefDatabasePass: "MyPassword"],
                     validationFlags: [Flags.AllowAnyExistingDeviceAttributeOrCapabilityInSubscribe])
 
-            script.installed()
-            script.updated()
+            final def callScriptMethods = {
+                script.installed()
+                script.installed()
+                script.updated()
+                script.updated()
+                script.softPoll()
+                script.uninstalled()
+                return true
+            }
+
 
         expect:
-            state.headers.Authorization != ""
+            callScriptMethods()
     }
 }
