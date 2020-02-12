@@ -145,8 +145,8 @@ ${eventHandler}
             runScript(subscribeCall, [], true)
 
         where:
-            subscribeCall << [0,2,10].collect{successfulTestCases[it].subscribeCall}
-            why << [0,2,10].collect{successfulTestCases[it].explanation}
+            subscribeCall << successfulTestCases.collect{it.subscribeCall}
+            why << successfulTestCases.collect{it.explanation}
     }
 
     @Unroll
@@ -155,8 +155,8 @@ ${eventHandler}
             runScript(subscribeCall)
 
         where:
-            subscribeCall << successfulTestCases.collect{it.subscribeCall}
-            why << successfulTestCases.collect{it.explanation}
+            subscribeCall << [0,2,10].collect{successfulTestCases[it].subscribeCall}
+            why << [0,2,10].collect{successfulTestCases[it].explanation}
     }
 
     @Unroll
