@@ -1,5 +1,7 @@
 package me.biocomp.hubitat_ci.api.common_api
 
+import me.biocomp.hubitat_ci.api.Protocol
+
 /**
  * Real methods:
  *
@@ -25,8 +27,43 @@ package me.biocomp.hubitat_ci.api.common_api
  public void hubitat.device.HubMultiAction.setMetaClass(groovy.lang.MetaClass),
  */
 
-trait HubMultiAction
+class HubMultiAction
 {
+    /*
+    List cmds - List of commands to perform
+    Protocol protocol - Specific protocol to be used. Default value is Protocol.LAN.
+    String dni - Device Network ID of the device. Default value is null. For dni, we recommend using MAC address and not use IP and port numbers.
+    */
+    
+    HubMultiAction() {
+        this.cmds = cmds;
+        this.protocol = protocol;
+        this.deviceNetworkId = deviceNetworkId;
+    }
+    
+    HubMultiAction(List cmds) {
+        this.cmds = cmds;
+        this.protocol = protocol;
+        this.deviceNetworkId = deviceNetworkId;
+    }
+    
+    HubMultiAction(List cmds, Protocol protocol) {
+        this.cmds = cmds;
+        this.protocol = protocol;
+        this.deviceNetworkId = deviceNetworkId;
+    }
+    
+    HubMultiAction(List cmds, Protocol protocol, String deviceNetworkId) {
+        this.cmds = cmds;
+        this.protocol = protocol;
+        this.deviceNetworkId = deviceNetworkId;
+    }
+    
+    List<String> cmds;
+    Protocol protocol;
+    String deviceNetworkId;
+    
+    /* Do these need to be implemented? Hmm
     abstract void add(HubAction action)
     abstract void add(HubMultiAction action)
     abstract void add(String action)
@@ -34,5 +71,6 @@ trait HubMultiAction
 
     abstract List getActionList()
     abstract void setActionList(List)
+    */
 }
 

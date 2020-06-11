@@ -18,6 +18,9 @@ class SandboxClassLoader extends ClassLoader {
         {
             case 'hubitat.device.HubAction':
                 return 'me.biocomp.hubitat_ci.api.common_api.HubAction'
+                
+            case 'hubitat.device.HubMultiAction':
+                return 'me.biocomp.hubitat_ci.api.common_api.HubMultiAction'
 
             case 'hubitat.device.HubResponse':
                 return 'me.biocomp.hubitat_ci.api.common_api.HubResponse'
