@@ -67,6 +67,7 @@ class AppDefinitionReaderTest extends
                     iconUrl: "v",
                     iconX2Url: "v",
                     iconX3Url: "v",
+                    parent: "biocomp:My Parent",
                     ${entry})/$).run(validationFlags: [Flags.DontValidatePreferences]).getProducedDefinition()
     }
 
