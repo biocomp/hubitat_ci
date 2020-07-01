@@ -21,6 +21,7 @@ class AppDefinitionReader implements
         stringParameter("iconX2Url", required(), canBeEmpty())
         stringParameter("iconX3Url", required(), canBeEmpty())
         stringParameter("category", notRequired(), mustNotBeEmpty())
+        stringParameter("parent", notRequired(), mustNotBeEmpty())
         boolParameter("singleInstance", notRequired())
         boolParameter("oauth", notRequired())
     }

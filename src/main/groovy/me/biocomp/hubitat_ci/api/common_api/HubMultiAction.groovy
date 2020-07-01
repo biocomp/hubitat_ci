@@ -1,5 +1,7 @@
 package me.biocomp.hubitat_ci.api.common_api
 
+import me.biocomp.hubitat_ci.api.Protocol
+
 /**
  * Real methods:
  *
@@ -10,29 +12,38 @@ package me.biocomp.hubitat_ci.api.common_api
  * public hubitat.device.HubMultiAction()
  *
  * Rest:
- public void hubitat.device.HubMultiAction.add(hubitat.device.HubAction),
- public void hubitat.device.HubMultiAction.add(hubitat.device.HubMultiAction),
- public void hubitat.device.HubMultiAction.add(java.lang.String),
- public void hubitat.device.HubMultiAction.add(java.util.List),
-
- public java.util.List hubitat.device.HubMultiAction.getActionList(),
- public groovy.lang.MetaClass hubitat.device.HubMultiAction.getMetaClass(),
- public java.lang.Object hubitat.device.HubMultiAction.getProperty(java.lang.String),
- public java.lang.Object hubitat.device.HubMultiAction.invokeMethod(java.lang.String,java.lang.Object),
- public void hubitat.device.HubMultiAction.setProperty(java.lang.String,java.lang.Object)
-
- public void hubitat.device.HubMultiAction.setActionList(java.util.List),
- public void hubitat.device.HubMultiAction.setMetaClass(groovy.lang.MetaClass),
+ * Meta:
+ * public java.lang.Object hubitat.device.HubMultiAction.invokeMethod(java.lang.String,java.lang.Object),
+ * public groovy.lang.MetaClass hubitat.device.HubMultiAction.getMetaClass(),
+ * public java.lang.Object hubitat.device.HubMultiAction.getProperty(java.lang.String),
+ * public void hubitat.device.HubMultiAction.setProperty(java.lang.String,java.lang.Object)
+ * public void hubitat.device.HubMultiAction.setMetaClass(groovy.lang.MetaClass),
+ *
+ * Getters (most relevant for mock)
+ * public java.util.List hubitat.device.HubMultiAction.getActionList(),
+ * public void hubitat.device.HubMultiAction.setActionList(java.util.List),
+ *
+ * Other (Not implemented, don't appear to be used in normal app code)
+ * public void hubitat.device.HubMultiAction.add(hubitat.device.HubAction),
+ * public void hubitat.device.HubMultiAction.add(hubitat.device.HubMultiAction),
+ * public void hubitat.device.HubMultiAction.add(java.lang.String),
+ * public void hubitat.device.HubMultiAction.add(java.util.List),
  */
-
-trait HubMultiAction
+class HubMultiAction
 {
-    abstract void add(HubAction action)
-    abstract void add(HubMultiAction action)
-    abstract void add(String action)
-    abstract void add(List action)
+    /*
+    List<String> cmds - List of commands to perform
+    Protocol protocol - Specific protocol to be used. Default value is Protocol.LAN.
+    String dni - Device Network ID of the device. Default value is null. For dni, we recommend using MAC address and not use IP and port numbers.
+    */
 
-    abstract List getActionList()
-    abstract void setActionList(List)
+    HubMultiAction(List cmds = null, Protocol protocol = null, String deviceNetworkId = null) {
+        this.cmds = cmds
+        this.protocol = protocol
+        this.deviceNetworkId = deviceNetworkId
+    }
+    
+    List<String> cmds
+    Protocol protocol
+    String deviceNetworkId
 }
-
