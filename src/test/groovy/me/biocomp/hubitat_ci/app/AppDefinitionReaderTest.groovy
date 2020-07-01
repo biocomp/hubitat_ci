@@ -67,7 +67,6 @@ class AppDefinitionReaderTest extends
                     iconUrl: "v",
                     iconX2Url: "v",
                     iconX3Url: "v",
-                    parent: "biocomp:My Parent",
                     ${entry})/$).run(validationFlags: [Flags.DontValidatePreferences]).getProducedDefinition()
     }
 
@@ -77,6 +76,7 @@ class AppDefinitionReaderTest extends
             generateValidDefinitionsWith("category: 'cat'").category == 'cat'
             generateValidDefinitionsWith("singleInstance: true").singleInstance == true
             generateValidDefinitionsWith("oauth: true").oauth == true
+            generateValidDefinitionsWith("parent: 'biocomp:My Parent'").parent == 'biocomp:My Parent'
     }
 
     def "Unsupported parameters cause error"()
