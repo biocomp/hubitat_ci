@@ -1,0 +1,26 @@
+package me.biocomp.hubitat_ci.api.device_api.zwave.commandclasses
+
+trait SecurityV1 {
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.NetworkKeySet networkKeySet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.NetworkKeySet networkKeySet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.NetworkKeyVerify networkKeyVerify()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.NetworkKeyVerify networkKeyVerify(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecurityCommandsSupportedGet securityCommandsSupportedGet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecurityCommandsSupportedGet securityCommandsSupportedGet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecurityCommandsSupportedReport securityCommandsSupportedReport()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecurityCommandsSupportedReport securityCommandsSupportedReport(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecurityMessageEncapsulation securityMessageEncapsulation()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecurityMessageEncapsulation securityMessageEncapsulation(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecurityMessageEncapsulationNonceGet securityMessageEncapsulationNonceGet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecurityMessageEncapsulationNonceGet securityMessageEncapsulationNonceGet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecurityNonceGet securityNonceGet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecurityNonceGet securityNonceGet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecurityNonceReport securityNonceReport()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecurityNonceReport securityNonceReport(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecuritySchemeGet securitySchemeGet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecuritySchemeGet securitySchemeGet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecuritySchemeInherit securitySchemeInherit()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecuritySchemeInherit securitySchemeInherit(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecuritySchemeReport securitySchemeReport()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1.SecuritySchemeReport securitySchemeReport(java.util.Map a)
+}

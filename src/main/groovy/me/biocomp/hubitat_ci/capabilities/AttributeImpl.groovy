@@ -1,5 +1,6 @@
 package me.biocomp.hubitat_ci.capabilities
 
+import groovy.transform.AutoImplement
 import me.biocomp.hubitat_ci.api.Attribute
 import groovy.transform.CompileStatic
 
@@ -14,6 +15,7 @@ import groovy.transform.CompileStatic
  * You can get the supported Attributes of a Device through the Device’s getSupportedAttributes() method.
  */
 @CompileStatic
+@AutoImplement
 class AttributeImpl implements Attribute {
     private final String dataType_
     private final String name_

@@ -75,6 +75,17 @@ class ParametersToValidate
                 }))
     }
 
+    @CompileStatic
+    void oauthParameter()
+    {
+        addParameter(new Parameter("oauth", IsRequired.No, [],
+                { def flags, String context, def value ->
+                    assert value != null: "${context}: 'oauth' value can't be null"
+                    String valuePrinted = value.toString()
+                    assert (valuePrinted == "false" || valuePrinted == "true" || value instanceof Map) : "${context}: oauth's value is not boolean or a map, it's ${value}"
+                }))
+    }
+
     enum CanBeNull
     {
         Yes,

@@ -23,7 +23,7 @@ class AppDefinitionReader implements
         stringParameter("category", notRequired(), mustNotBeEmpty())
         stringParameter("parent", notRequired(), mustNotBeEmpty())
         boolParameter("singleInstance", notRequired())
-        boolParameter("oauth", notRequired())
+        oauthParameter()
     }
 
     AppDefinitionReader(AppExecutor delegate, EnumSet<Flags> validationFlags, Map<String, Object> definitions) {

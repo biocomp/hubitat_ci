@@ -1,0 +1,25 @@
+package me.biocomp.hubitat_ci.api.device_api.zwave.commands.multichannelv2
+
+trait MultiChannelCmdEncap {
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.multichannelv2.MultiChannelCmdEncap encapsulate(me.biocomp.hubitat_ci.api.device_api.zwave.Command a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.Command encapsulatedCommand(java.util.Map a)
+    abstract java.lang.String format()
+    abstract java.lang.Boolean getBitAddress()
+    abstract java.lang.String getCMD()
+    abstract java.lang.Short getCommand()
+    abstract java.lang.Short getCommandClass()
+    abstract java.lang.Short getCommandClassId()
+    abstract java.lang.Short getCommandId()
+    abstract java.lang.Short getDestinationEndPoint()
+    abstract java.util.List getParameter()
+    abstract java.util.List getPayload()
+    abstract java.lang.Boolean getRes01()
+    abstract java.lang.Short getSourceEndPoint()
+    abstract void setBitAddress(java.lang.Boolean a)
+    abstract void setCommand(java.lang.Short a)
+    abstract void setCommandClass(java.lang.Short a)
+    abstract void setDestinationEndPoint(java.lang.Short a)
+    abstract void setParameter(java.util.List a)
+    abstract void setRes01(java.lang.Boolean a)
+    abstract void setSourceEndPoint(java.lang.Short a)
+}

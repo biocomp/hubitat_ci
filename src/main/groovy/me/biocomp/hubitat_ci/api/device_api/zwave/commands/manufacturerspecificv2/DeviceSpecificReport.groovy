@@ -1,0 +1,27 @@
+package me.biocomp.hubitat_ci.api.device_api.zwave.commands.manufacturerspecificv2
+
+trait DeviceSpecificReport {
+    abstract java.lang.String format()
+    abstract java.lang.String getCMD()
+    abstract java.lang.Short getCommandClassId()
+    abstract java.lang.Short getCommandId()
+    abstract java.lang.Short getDEVICE_ID_DATA_FORMAT_BINARY()
+    abstract java.lang.Short getDEVICE_ID_DATA_FORMAT_UTF8()
+    abstract java.lang.Short getDEVICE_ID_TYPE_FACTORY_DEFAULT()
+    abstract java.lang.Short getDEVICE_ID_TYPE_PSEUDO_RANDOM()
+    abstract java.lang.Short getDEVICE_ID_TYPE_SERIAL_NUMBER()
+    abstract java.util.List getDeviceIdData()
+    abstract java.lang.Short getDeviceIdDataFormat()
+    abstract java.lang.Short getDeviceIdDataLengthIndicator()
+    abstract java.lang.Short getDeviceIdType()
+    abstract java.util.List getPayload()
+    abstract void setDEVICE_ID_DATA_FORMAT_BINARY(java.lang.Short a)
+    abstract void setDEVICE_ID_DATA_FORMAT_UTF8(java.lang.Short a)
+    abstract void setDEVICE_ID_TYPE_FACTORY_DEFAULT(java.lang.Short a)
+    abstract void setDEVICE_ID_TYPE_PSEUDO_RANDOM(java.lang.Short a)
+    abstract void setDEVICE_ID_TYPE_SERIAL_NUMBER(java.lang.Short a)
+    abstract void setDeviceIdData(java.util.List a)
+    abstract void setDeviceIdDataFormat(java.lang.Short a)
+    abstract void setDeviceIdDataLengthIndicator(java.lang.Short a)
+    abstract void setDeviceIdType(java.lang.Short a)
+}

@@ -1,0 +1,27 @@
+package me.biocomp.hubitat_ci.api.device_api.zwave.commands.securityv1
+
+trait SecurityMessageEncapsulationNonceGet {
+    abstract java.lang.String format()
+    abstract java.lang.String getCMD()
+    abstract java.util.List getCommandByte()
+    abstract java.lang.Short getCommandClassId()
+    abstract java.lang.Short getCommandClassIdentifier()
+    abstract java.lang.Short getCommandId()
+    abstract java.lang.Short getCommandIdentifier()
+    abstract java.util.List getInitializationVector()
+    abstract java.util.List getMessageAuthenticationCode()
+    abstract java.util.List getPayload()
+    abstract java.lang.Short getReceiversNonceIdentifier()
+    abstract java.lang.Boolean getSecondFrame()
+    abstract java.lang.Short getSequenceCounter()
+    abstract java.lang.Boolean getSequenced()
+    abstract void setCommandByte(java.util.List a)
+    abstract void setCommandClassIdentifier(java.lang.Short a)
+    abstract void setCommandIdentifier(java.lang.Short a)
+    abstract void setInitializationVector(java.util.List a)
+    abstract void setMessageAuthenticationCode(java.util.List a)
+    abstract void setReceiversNonceIdentifier(java.lang.Short a)
+    abstract void setSecondFrame(java.lang.Boolean a)
+    abstract void setSequenceCounter(java.lang.Short a)
+    abstract void setSequenced(java.lang.Boolean a)
+}
