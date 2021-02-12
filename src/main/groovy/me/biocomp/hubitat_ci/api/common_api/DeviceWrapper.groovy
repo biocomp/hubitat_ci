@@ -26,12 +26,13 @@ trait DeviceWrapper {
 
     abstract List<State> getCurrentStates()
 
-
-    /**The latest reported values of the specified attribute.*/
-    abstract def currentValue(String attributeName)
-
-    /**The latest reported values of the specified attribute.*/
-    abstract def currentValue(String attributeName, boolean unknown)
+    /**
+     * Retrieve the current value of an attribute. By default this value is cached during a single run of the driver.
+     * attributeName - The attribute to get the current value of.
+     * skipCache - Optional, do not use the cached value of the attribute, instead force the system
+     *             to read the latest from the database.
+     */
+    abstract def currentValue(String attributeName, boolean skipCache=false)
 
     /**List of Events for the Device in reverse chronological order (newest first).
      @param options - map that only supports one option:
@@ -62,7 +63,6 @@ trait DeviceWrapper {
     /**Unique system ID*/
     abstract String getId()
 
-    /**Label set by user*/
     abstract String getLabel()
 
     /**
@@ -88,10 +88,25 @@ trait DeviceWrapper {
      */
     abstract String getTypeName()
 
+    /**
+     * Determines if the device has the specified attribute. This works for both built-in and custom attributes.
+     * @param attributeName The attribute to check for.
+     * @return True if the attribute exists, false otherwise
+     */
     abstract boolean hasAttribute(String attributeName)
 
+    /**
+     * Determines if the device has the specified capability.
+     * @param commandName The capability to check for.
+     * @return True if the capability exists, false otherwise.
+     */
     abstract boolean hasCapability(String capabilityName)
 
+    /**
+     * Determines if the device has the specified command. This works for both built-in and custom commands.
+     * @param commandName The command to check for.
+     * @return True if the command exists, false otherwise.
+     */
     abstract boolean hasCommand(String commandName)
 
     /**Latest device state for the specified attribute.*/
@@ -117,8 +132,19 @@ trait DeviceWrapper {
     abstract Long getParentAppId()
     abstract Long getParentDeviceId()
     abstract Map getData()
+
+    /**
+     * Get a data value that was set for this device.
+     * @param The String value of the data item.
+     * @return The value of the data.
+     */
     abstract String getDataValue(String name)
+
+    /**
+     * DEPRECATED: See getDataValue, this method is a wrapper for getDataValue.
+     */
     abstract String getDeviceDataByName(String deviceName)
+
     abstract String getDriverType()
     abstract String getControllerType()
     abstract String getEndpointId()
@@ -130,10 +156,34 @@ trait DeviceWrapper {
     abstract void sendEvent(Map)
     abstract void setDeviceNetworkId(String)
     abstract void setDisplayName(String)
+
+    /**
+     * Update the label of the device.
+     * @param the new label for the device.
+     */
     abstract void setLabel(String label)
+
     abstract void setLanId(String id)
+
+    /**
+     * Update the name of the device.
+     * @param name the new name for the device.
+     */
     abstract void setName(String name)
+
+    /**
+     * Update or create a data value for this device.
+     * @param The name of the data item to store.
+     * @param The value of the data item to store.
+     */
     abstract void updateDataValue(String name, String value)
+
+    /**
+     * Remove a data value from a device.
+     * @param The name of the data item to remove.
+     */
+    abstract void removeDataValue(String name, String value)
+
     abstract void updateSetting(String name, Boolean value)
     abstract void updateSetting(String name, Date value)
     abstract void updateSetting(String name, Double value)

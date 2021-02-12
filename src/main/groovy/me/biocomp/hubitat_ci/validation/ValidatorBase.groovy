@@ -245,7 +245,8 @@ class ValidatorBase {
             return true
         }
 
-        if (classNode.name.startsWith('me.biocomp.hubitat_ci.api.device_api.zwave'))
+        if (classNode.name.startsWith('me.biocomp.hubitat_ci.api.device_api.zwave') ||
+            classNode.name.startsWith('me.biocomp.hubitat_ci.api.device_api.zigbee'))
         {
             return true
         }

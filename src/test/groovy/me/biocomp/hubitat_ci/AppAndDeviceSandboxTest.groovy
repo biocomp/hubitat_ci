@@ -11,7 +11,6 @@ import org.codehaus.groovy.control.MultipleCompilationErrorsException
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static me.biocomp.hubitat_ci.app.preferences.PreferencesValidationCommon.parseOneChild
 import static org.codehaus.groovy.runtime.DefaultGroovyMethods.combinations
 
 /*
@@ -245,6 +244,39 @@ def foo() {
                         [["class MyShinyNewClass{}", "MyShinyNewClass", "Defining a new class"],
                          ["System.out.print 'Boom!'", "System.out", "Calling System.out"],
                          ["File.createNewFile('foo.txt')", "File", "Creating a File"]])
+        }
+
+        List<List<String>> makeHubitatScriptImportVariations(List<String> expressionsAndResults) {
+            def result = []
+
+            expressionsAndResults.each {
+                result << "import ${it}"
+                result << "def foo(${it} arg) { }"
+            }
+
+            return combineWithSandboxes(result)
+        }
+
+        @Unroll
+        def "Expression '#script' is allowed"(String script, Class sandboxClass)
+        {
+            when:
+                final List<Flags> flags = [Flags.DontValidateMetadata, Flags.DontValidateDefinition, Flags.DontValidatePreferences,
+                                           Flags.DontRequireParseMethodInDevice]
+            then:
+                sandboxClass.newInstance(script).compile(validationFlags: flags)
+
+            where:
+                [script, sandboxClass] << makeHubitatScriptImportVariations(
+                    ['hubitat.device.HubAction',
+                     'hubitat.device.HubMultiAction',
+                     'hubitat.device.HubResponse',
+                     'hubitat.device.Protocol',
+                     'hubitat.zigbee.clusters.iaszone.ZoneStatus',
+                     'hubitat.zigbee.SmartShield',
+                     'hubitat.zigbee.zcl.DataType',
+                     // There are a lot of zwave classes, just use one
+                     'hubitat.zwave.commands.alarmv1.AlarmReport'])
         }
 
         @Unroll
@@ -519,9 +551,7 @@ def readProperty()
                 script.readProperty() == "Overridden value"
 
             where:
-                sandboxClass         | _
-                HubitatAppSandbox    | _
-                HubitatDeviceSandbox | _
+                sandboxClass << [HubitatAppSandbox, HubitatDeviceSandbox]
         }
 
         @Unroll
