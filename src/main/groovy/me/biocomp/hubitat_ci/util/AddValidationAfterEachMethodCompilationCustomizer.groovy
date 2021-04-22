@@ -50,7 +50,7 @@ class AddValidationAfterEachMethodCompilationCustomizer extends CompilationCusto
                     }
 
                     originalMethods.add(new MethodNode(
-                            original.name + "_original",
+                            original.name + "_original_overwritten_by_hubitat_ci_ValidatorBase",
                             original.modifiers,
                             original.returnType,
                             original.parameters,
@@ -88,21 +88,21 @@ class AddValidationAfterEachMethodCompilationCustomizer extends CompilationCusto
     {
         new MethodCallExpression(
                 new VariableExpression("this"),
-                new ConstantExpression(original.name + "_original"),
+                new ConstantExpression(original.name + "_original_overwritten_by_hubitat_ci_ValidatorBase"),
                 methodArgsExpression)
     }
 
     private static ExpressionStatement callOriginalAndCaptureIntoVariable(
             MethodNode original, ArgumentListExpression methodArgsExpression)
     {
-        new ExpressionStatement(new DeclarationExpression(new VariableExpression("result"),
+        new ExpressionStatement(new DeclarationExpression(new VariableExpression("result_created_by_hubitat_ci_ValidatorBase", original.returnType),
                 Token.newSymbol(Types.EQUAL, 0, 0),
                 callOriginal(original, methodArgsExpression)))
     }
 
     private static Statement returnResult()
     {
-        return new ReturnStatement(new VariableExpression("result"))
+        return new ReturnStatement(new VariableExpression("result_created_by_hubitat_ci_ValidatorBase"))
     }
 
     private static Statement callValidator(String methodName) {
