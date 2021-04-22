@@ -1,7 +1,8 @@
 package me.biocomp.hubitat_ci.api.device_api.zwave
 
-trait Zwave
-{
+import me.biocomp.hubitat_ci.api.device_api.zwave.commandclasses.VersionV1
 
+trait Zwave {
+    abstract VersionV1 getVersionV1()
 }
 
