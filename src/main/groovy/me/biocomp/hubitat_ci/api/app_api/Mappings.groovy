@@ -4,6 +4,8 @@ package me.biocomp.hubitat_ci.api.app_api
  * Define http mappings to script's handlers.
  */
 interface Mappings {
+    abstract boolean _is_hubitat_ci_private()
+
     /**
      * Adds mappings for the relativePath
      * @param relativePath

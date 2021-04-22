@@ -1,6 +1,8 @@
 package me.biocomp.hubitat_ci.api.app_api
 
 interface Page {
+    abstract boolean _is_hubitat_ci_private()
+
     /**
      * Adds section to a page.
      * @see #section(Map, String, Closure)

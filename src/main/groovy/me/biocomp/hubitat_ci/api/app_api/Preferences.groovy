@@ -1,6 +1,8 @@
 package me.biocomp.hubitat_ci.api.app_api
 
 interface Preferences extends Page {
+    abstract boolean _is_hubitat_ci_private()
+
     /**
      * Adds page of settings.
      * @see #page(Map, Closure)

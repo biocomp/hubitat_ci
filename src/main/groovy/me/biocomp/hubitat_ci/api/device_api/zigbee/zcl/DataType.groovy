@@ -70,5 +70,13 @@ enum DataType {
     IEEE_ADDRESS(0xF0),
     SECKEY128(0xF1),
     
-    UNKNOWN(0xFF),
+    UNKNOWN(0xFF)
+
+    DataType(int val) {
+        val = val
+    }
+
+    boolean _is_hubitat_ci_private() { true }
+
+    private int val
 }

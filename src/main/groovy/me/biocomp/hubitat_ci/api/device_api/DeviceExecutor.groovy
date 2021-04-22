@@ -7,6 +7,11 @@ import me.biocomp.hubitat_ci.api.device_api.zwave.Zwave
 
 interface DeviceTileAttribute {
     /**
+     * Don't expect this class to be exported from Hubitat controller
+     */
+    abstract boolean _is_hubitat_ci_private()
+
+    /**
      * Same as state() above for multi-attribute tiles.
      * @param options. See state() method options parameter.
      * @param stateNameOrAttributeNameOrValue
@@ -19,6 +24,11 @@ interface DeviceTileAttribute {
 trait DeviceMultiAttributeTile implements
         DeviceTileAttribute
 {
+    /**
+     * Don't expect this class to be exported from Hubitat controller
+     */
+    abstract boolean _is_hubitat_ci_private()
+
     /**
      * Add attribute to multi-attribute tile (use inside multiAttributeTile()'s closure)
      *
@@ -47,6 +57,11 @@ trait DeviceMultiAttributeTile implements
 }
 
 trait DeviceTile {
+    /**
+     * Don't expect this class to be exported from Hubitat controller
+     */
+    abstract boolean _is_hubitat_ci_private()
+
     /**
      * Bind tile to device's state (for single-attribute tile).
      * (use inside closure passed into a specific tile creation method())
@@ -81,6 +96,11 @@ trait DeviceTile {
 }
 
 trait DeviceDefinition {
+    /**
+     * Don't expect this class to be exported from Hubitat controller
+     */
+    abstract boolean _is_hubitat_ci_private()
+
     /**
      * Called in the definition() method to define that this device supports the specified capability.
      *
@@ -127,6 +147,11 @@ trait DeviceTiles extends
         DeviceMultiAttributeTile implements
         DeviceTile
 {
+    /**
+     * Don't expect this class to be exported from Hubitat controller
+     */
+    abstract boolean _is_hubitat_ci_private()
+
     /**
      * Define which tile is main tile (use inside closure passed into tiles())*/
     abstract void main(String tileTitle)
@@ -247,6 +272,11 @@ trait DeviceTiles extends
 
 trait DevicePreferences {
     /**
+     * Don't expect this class to be exported from Hubitat controller
+     */
+    abstract boolean _is_hubitat_ci_private()
+
+    /**
      * Define a setting inside preferences.
      * (to be used inside closure passed into preferences())
      *
@@ -294,6 +324,11 @@ trait DeviceMetadata implements
         DevicePreferences
 {
     /**
+     * Don't expect this class to be exported from Hubitat controller
+     */
+    abstract boolean _is_hubitat_ci_private()
+
+    /**
      * Piece of metadata(), defines major device's properties.
      *
      * @param options.supported parameters are:
@@ -326,6 +361,11 @@ trait DeviceMetadata implements
 interface DeviceMetadataSource extends
         DeviceMetadata
 {
+    /**
+     * Don't expect this class to be exported from Hubitat controller
+     */
+    abstract boolean _is_hubitat_ci_private()
+
     /**
      * Defines metadata for the device.
      *
@@ -441,8 +481,9 @@ trait DeviceExecutor implements
     abstract String getLinkText(DeviceWrapper w)
     abstract boolean displayed(String a, boolean b)
     abstract HubAction response(String s)
-    abstract HubAction response(Command c)
     abstract HubMultiAction response(List l)
+    abstract HubAction response(me.biocomp.hubitat_ci.api.device_api.zwave.Command a) // Original: public static hubitat.device.HubAction com.hubitat.hub.executor.DeviceExecutor.response(hubitat.zwave.Command)
+
     abstract Short getZwaveHubNodeId()
 
     abstract void setAttributes(def a)
@@ -463,5 +504,9 @@ trait DeviceExecutor implements
 
     abstract void graphTile(Map options)
     abstract void image(Map options)
+
+    abstract void removeDataValue(java.lang.String a) // Original: public void com.hubitat.hub.executor.DeviceExecutor.removeDataValue(java.lang.String)
+    abstract java.lang.String zwaveSecureEncap(me.biocomp.hubitat_ci.api.device_api.zwave.Command a) // Original: public java.lang.String com.hubitat.hub.executor.DeviceExecutor.zwaveSecureEncap(hubitat.zwave.Command)
+    abstract java.lang.String zwaveSecureEncap(java.lang.String a) // Original: public java.lang.String com.hubitat.hub.executor.DeviceExecutor.zwaveSecureEncap(java.lang.String)
 }
 

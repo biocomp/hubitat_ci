@@ -1,6 +1,8 @@
 package me.biocomp.hubitat_ci.util
 
-
+import me.biocomp.hubitat_ci.api.device_api.DeviceExecutor
+import me.biocomp.hubitat_ci.app.HubitatAppSandbox
+import me.biocomp.hubitat_ci.validation.Flags
 import org.codehaus.groovy.control.CompilerConfiguration
 import org.codehaus.groovy.control.customizers.CompilationCustomizer
 import spock.lang.Specification
@@ -39,6 +41,7 @@ class ValidationAfterEachMethodCustomizerTest extends
 
         if (customizer) {
             compilerConfiguration.compilationCustomizers.add(customizer)
+            compilerConfiguration.compilationCustomizers.add(new LoggingCompilationCustomizer())
         }
 
         def parsedScript = new GroovyShell(this.class.classLoader,
@@ -73,5 +76,26 @@ class ValidationAfterEachMethodCustomizerTest extends
             "String foo() { return bar() }\n String bar() { return 'I am bar' }"                                    || ["validate(bar)", "validate(foo)"]
             "String foo() { return bar() }\n static String bar() { return 'I am static bar' }"                      || ["validate(foo)"]
             "String foo() { return bar('bararg') }\n String bar(String arg) { return \"I have an arg = \${arg}!\" }" || ["validate(bar)", "validate(foo)"]
+    }
+
+
+
+    def "Can read values from overriden methods"() {
+        when:
+            final def script = new HubitatAppSandbox("""
+private static Map bar(def cls)
+{
+    Map result = [:]
+    return result // Test was failing before with variable named 'result'
+}
+
+private String foo()
+{
+    return "blah"
+}
+""").run(validationFlags: [Flags.DontValidateDefinition, Flags.DontRunScript])
+
+        then:
+            script.foo() == "blah"
     }
 }

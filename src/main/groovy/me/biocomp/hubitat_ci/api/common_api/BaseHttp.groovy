@@ -1,7 +1,15 @@
 package me.biocomp.hubitat_ci.api.common_api
 
+import groovy.transform.CompileStatic
+
 trait BaseHttp
 {
+    /**
+     * Don't expect this class to be exported from Hubitat controller
+     */
+    @CompileStatic
+    abstract boolean _is_hubitat_ci_private()
+
     abstract Object httpGet(String address, Closure handler)
     abstract Object httpGet(Map options, Closure handler)
 

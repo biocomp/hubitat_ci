@@ -1,0 +1,95 @@
+[
+    {
+        "class_name": "com.hubitat.hub.executor.DeviceExecutor",
+        "methods": [
+            {
+                "returnType": "void",
+                "name": "sendHubCommand",
+                "parameters": ["hubitat.device.HubAction"],
+                "as_string": "public com.hubitat.hub.executor.DeviceExecutor(hubitat.device.HubAction)"
+            },
+            {
+                "returnType": "void",
+                "name": "sendHubCommand",
+                "parameters": ["hubitat.device.HubMultiAction"],
+                "as_string": "public com.hubitat.hub.executor.DeviceExecutor(hubitat.device.HubMultiAction)"
+            }
+        ]
+    },
+    {
+        "class_name": "com.hubitat.hub.executor.AppExecutor",
+        "methods": [
+            {
+                "returnType": "java.util.Map",
+                "name": "getAtomicState",
+                "parameters": []
+            },
+            {
+                "returnType": "java.util.Map",
+                "name": "getSettings",
+                "parameters": []
+            },
+            {
+                "returnType": "void",
+                "name": "sendHubCommand",
+                "parameters": ["hubitat.device.HubAction"],
+                "as_string": "public com.hubitat.hub.executor.AppExecutor(hubitat.device.HubAction)"
+            },
+            {
+                "returnType": "void",
+                "name": "sendHubCommand",
+                "parameters": ["hubitat.device.HubMultiAction"],
+                "as_string": "public com.hubitat.hub.executor.AppExecutor(hubitat.device.HubMultiAction)"
+            }
+        ]
+    },
+    {
+        "class_name": "com.hubitat.app.ChildDeviceWrapper",
+        "methods": [
+            {
+                "returnType": "com.hubitat.hub.domain.Device",
+                "name": "getDevice",
+                "parameters": []
+            }
+        ]
+    },
+    {
+        "class_name": "com.hubitat.hub.executor.BaseExecutor$Log",
+        "ignore_methods": [
+            {
+                "name": "getLogInfoMap"
+            },
+            {
+                "name": "setLogInfoMap"
+            }
+        ]
+    },
+    {
+        "class_name": "hubitat.device.HubAction",
+        "options": ["generate_class"],
+        "methods": [
+            {
+                "returnType": "hubitat.device.Protocol",
+                "name": "getProtocol"
+            },
+            {
+                "returnType": "void",
+                "name": "setProtocol",
+                "parameters": ["hubitat.device.Protocol"]
+            }
+        ]
+    },
+    {
+        "class_name": "hubitat.device.HubMultiAction",
+        "options": ["generate_class"]
+    },
+    {
+        "class_name": "com.hubitat.app.DeviceWrapperList",
+        "options": ["generate_class"],
+        "ignore_methods": [
+            {
+                "name": "toArray"
+            }
+        ]
+    }
+]

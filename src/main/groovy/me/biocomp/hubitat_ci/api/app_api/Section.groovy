@@ -2,6 +2,11 @@ package me.biocomp.hubitat_ci.api.app_api
 
 interface Section {
     /**
+     * Don't expect this class to be exported from Hubitat controller
+     */
+    abstract boolean _is_hubitat_ci_private()
+
+    /**
      * Allows the user to select devices or enter values to be used during execution of the App.
      * <p>
      * Inputs are the most commonly used preference elements.

@@ -9,6 +9,11 @@ import groovy.util.slurpersupport.GPathResult
 trait BaseExecutor implements BaseAsyncHttp, BaseScheduler, BaseHttp
 {
     /**
+     * Don't expect this class to be exported from Hubitat controller
+     */
+    abstract boolean _is_hubitat_ci_private()
+
+    /**
      * @return log object
      */
     abstract Log getLog()
@@ -155,6 +160,29 @@ trait BaseExecutor implements BaseAsyncHttp, BaseScheduler, BaseHttp
     abstract void sendPushMessage(String a, String b)
 
     abstract void createLocationVariable(String name, List a = null, boolean b = false)
+
+    abstract void sendHubCommand(HubAction action)
+    abstract void sendHubCommand(HubMultiAction action)
+
+
+    abstract java.util.Map getAllEntitlements() // Original: public static java.util.Map com.hubitat.hub.executor.BaseExecutor.getAllEntitlements()
+    abstract java.lang.Integer getEntitlementQuantity(java.lang.String a) // Original: public java.lang.Integer com.hubitat.hub.executor.BaseExecutor.getEntitlementQuantity(java.lang.String)
+    abstract java.lang.String getExceptionMessageWithLine(java.lang.Throwable a) // Original: public static java.lang.String com.hubitat.hub.executor.BaseExecutor.getExceptionMessageWithLine(java.lang.Throwable)
+    abstract java.lang.String getHubAccountHash() // Original: public static java.lang.String com.hubitat.hub.executor.BaseExecutor.getHubAccountHash()
+    abstract java.lang.String getMacAddress() // Original: public static java.lang.String com.hubitat.hub.executor.BaseExecutor.getMacAddress()
+    abstract java.lang.String getStackTrace(java.lang.Throwable a) // Original: public static java.lang.String com.hubitat.hub.executor.BaseExecutor.getStackTrace(java.lang.Throwable)
+    abstract java.util.Date getTodaysSunrise() // Original: public static java.util.Date com.hubitat.hub.executor.BaseExecutor.getTodaysSunrise()
+    abstract java.util.Date getTodaysSunset() // Original: public static java.util.Date com.hubitat.hub.executor.BaseExecutor.getTodaysSunset()
+    abstract java.util.Date getTomorrowsSunrise() // Original: public static java.util.Date com.hubitat.hub.executor.BaseExecutor.getTomorrowsSunrise()
+    abstract java.util.Date getTomorrowsSunset() // Original: public static java.util.Date com.hubitat.hub.executor.BaseExecutor.getTomorrowsSunset()
+    abstract java.lang.String getZWaveDeviceJoinName(java.lang.Integer a, java.lang.Integer b, java.lang.Integer c) // Original: public static java.lang.String com.hubitat.hub.executor.BaseExecutor.getZWaveDeviceJoinName(java.lang.Integer,java.lang.Integer,java.lang.Integer)
+    abstract java.lang.String getZWaveDeviceJoinName(java.lang.String a, java.lang.String b, java.lang.String c) // Original: public static java.lang.String com.hubitat.hub.executor.BaseExecutor.getZWaveDeviceJoinName(java.lang.String,java.lang.String,java.lang.String)
+    abstract java.lang.String getZigbeeDeviceJoinName(java.lang.String a, java.lang.String b) // Original: public static java.lang.String com.hubitat.hub.executor.BaseExecutor.getZigbeeDeviceJoinName(java.lang.String,java.lang.String)
+    abstract java.lang.Boolean hasEntitlement(java.lang.String a) // Original: public java.lang.Boolean com.hubitat.hub.executor.BaseExecutor.hasEntitlement(java.lang.String)
+    abstract void httpPatch(java.util.Map a, groovy.lang.Closure b) // Original: public static void com.hubitat.hub.executor.BaseExecutor.httpPatch(java.util.Map,groovy.lang.Closure)
+    abstract void httpPatch(java.lang.String a, java.lang.String b, groovy.lang.Closure c) // Original: public static void com.hubitat.hub.executor.BaseExecutor.httpPatch(java.lang.String,java.lang.String,groovy.lang.Closure)
+    abstract java.lang.Object parseJsonFromBase64(java.lang.String a) // Original: public static java.lang.Object com.hubitat.hub.executor.BaseExecutor.parseJsonFromBase64(java.lang.String)
+    abstract boolean ping(java.lang.String a, int b) // Original: public static boolean com.hubitat.hub.executor.BaseExecutor.ping(java.lang.String,int)
 }
 
 
