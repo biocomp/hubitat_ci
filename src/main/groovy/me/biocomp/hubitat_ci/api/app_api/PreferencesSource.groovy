@@ -4,6 +4,8 @@ package me.biocomp.hubitat_ci.api.app_api
  * Entry point for all preferences() related calls.
  */
 interface PreferencesSource extends Preferences, Page, Section {
+    abstract boolean _is_hubitat_ci_private()
+
     /**
      * Adds dynanmic page
      *

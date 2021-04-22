@@ -1,7 +1,15 @@
 package me.biocomp.hubitat_ci.api.common_api
 
+import groovy.transform.CompileStatic
+
 trait BaseAsyncHttp
 {
+    /**
+     * Don't expect this class to be exported from Hubitat controller
+     */
+    @CompileStatic
+    abstract boolean _is_hubitat_ci_private()
+
     // GET
 
     abstract void asynchttpGet(MetaMethod handlerMethod)

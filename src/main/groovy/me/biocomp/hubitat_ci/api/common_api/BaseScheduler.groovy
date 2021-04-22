@@ -1,7 +1,15 @@
 package me.biocomp.hubitat_ci.api.common_api
 
+import groovy.transform.CompileStatic
+
 trait BaseScheduler
 {
+    /**
+     * Don't expect this class to be exported from Hubitat controller
+     */
+    @CompileStatic
+    abstract boolean _is_hubitat_ci_private()
+
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:

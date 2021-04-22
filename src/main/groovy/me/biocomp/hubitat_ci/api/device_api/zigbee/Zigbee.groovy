@@ -60,7 +60,13 @@ trait Zigbee {
         KEY_ESTABLISHMENT_CLUSTER(0x0800),
         DIAGONSTICS_CLUSTER(0x0B05),
         METER_IDENTIFICATION_CLUSTER(0x0B01),
-        ELECTRICAL_MEASUREMENT_CLUSTER(0x0B04),
+        ELECTRICAL_MEASUREMENT_CLUSTER(0x0B04)
+
+        ZigbeeCluster(int val) {
+            val = val
+        }
+
+        private int val
     }
 
     abstract List batteryConfig()
@@ -75,10 +81,6 @@ trait Zigbee {
     abstract List colorTemperatureConfig()
 
     abstract List colorTemperatureRefresh(int delay = STANDARD_DELAY_INT)
-
-    abstract List command(int cluster, int command, String... payload)
-    abstract List command(int cluster, int command, Map additionalParams = [:], int delay = STANDARD_DELAY_INT)
-    abstract List command(int cluster, int command, Map additionalParam, int delay, String... payload)
 
     abstract List configureReporting(int clusterId, int attributeId, int dataType, int minReportTime, int maxReportTime,
                                      int reportableChange = null, Map additionalParams = [:],
@@ -217,18 +219,37 @@ trait Zigbee {
     // Couldn't find any documentation for this overload
     // abstract List setSaturation(int, int, int)
 
-    abstract static String swapOctets(String bytes)
+    abstract String swapOctets(String bytes)
 
     abstract List temperatureConfig()
     abstract List temperatureConfig(int minRefreshInterval, int maxRefreshInterval)
 
-    abstract Object this$dist$get$1(String)
-
-    abstract Object this$dist$invoke$1(String, Object)
-
-    abstract void this$dist$set$1(String, Object)
-
     abstract List writeAttribute(int cluster, int attributeId, int dataType, int value, Map additionalParams = [:],
                                  int delay=null)
+
+    abstract java.util.List command(java.lang.Integer a, java.lang.Integer b, java.lang.String[] c) // Original: public java.util.List com.hubitat.zigbee.Zigbee.command(java.lang.Integer,java.lang.Integer,java.lang.String[])
+    abstract java.util.List command(java.lang.Integer a, java.lang.Integer b, java.util.Map c, int d, java.lang.String[] e) // Original: public java.util.List com.hubitat.zigbee.Zigbee.command(java.lang.Integer,java.lang.Integer,java.util.Map,int,java.lang.String[])
+
+
+    abstract java.util.List command(java.lang.Integer a, java.lang.Integer b, java.util.Map c, java.lang.String[] d) // Original: public java.util.List com.hubitat.zigbee.Zigbee.command(java.lang.Integer,java.lang.Integer,java.util.Map,java.lang.String[])
+    abstract java.util.List enrollResponse(int a) // Original: public java.util.List com.hubitat.zigbee.Zigbee.enrollResponse(int)
+    abstract java.util.Map getKnownDescription(java.lang.String a) // Original: public static java.util.Map com.hubitat.zigbee.Zigbee.getKnownDescription(java.lang.String)
+    abstract java.util.List onOffConfig(java.lang.String a) // Original: public java.util.List com.hubitat.zigbee.Zigbee.onOffConfig(java.lang.String)
+    abstract java.util.List onOffConfig(java.lang.String a, java.lang.Integer b, java.lang.Integer c) // Original: public java.util.List com.hubitat.zigbee.Zigbee.onOffConfig(java.lang.String,java.lang.Integer,java.lang.Integer)
+    abstract java.util.List reportingConfiguration(java.lang.Integer a, java.lang.Integer b) // Original: public java.util.List com.hubitat.zigbee.Zigbee.reportingConfiguration(java.lang.Integer,java.lang.Integer)
+    abstract java.util.List reportingConfiguration(java.lang.Integer a, java.lang.Integer b, java.util.Map c) // Original: public java.util.List com.hubitat.zigbee.Zigbee.reportingConfiguration(java.lang.Integer,java.lang.Integer,java.util.Map)
+    abstract java.util.List reportingConfiguration(java.lang.Integer a, java.lang.Integer b, java.util.Map c, int d) // Original: public java.util.List com.hubitat.zigbee.Zigbee.reportingConfiguration(java.lang.Integer,java.lang.Integer,java.util.Map,int)
+    abstract java.util.List setColorTemperature(java.lang.Integer a, int b, int c) // Original: public java.util.List com.hubitat.zigbee.Zigbee.setColorTemperature(java.lang.Integer,int,int)
+    abstract java.util.List setColorTemperature(java.lang.String a, int b, int c) // Original: public java.util.List com.hubitat.zigbee.Zigbee.setColorTemperature(java.lang.String,int,int)
+    abstract java.util.List setColorTemperature(java.math.BigDecimal a, int b, int c) // Original: public java.util.List com.hubitat.zigbee.Zigbee.setColorTemperature(java.math.BigDecimal,int,int)
+    abstract java.util.List setColorXY(java.util.Map a) // Original: public java.util.List com.hubitat.zigbee.Zigbee.setColorXY(java.util.Map)
+    abstract java.util.List setColorXY(java.util.Map a, int b) // Original: public java.util.List com.hubitat.zigbee.Zigbee.setColorXY(java.util.Map,int)
+    abstract java.util.List setGroupColorTemperature(java.lang.Integer a, java.lang.Integer b, int c, int d) // Original: public java.util.List com.hubitat.zigbee.Zigbee.setGroupColorTemperature(java.lang.Integer,java.lang.Integer,int,int)
+    abstract java.util.List setGroupColorTemperature(java.lang.Integer a, java.lang.String b, int c, int d) // Original: public java.util.List com.hubitat.zigbee.Zigbee.setGroupColorTemperature(java.lang.Integer,java.lang.String,int,int)
+    abstract java.util.List setGroupColorTemperature(java.lang.Integer a, java.math.BigDecimal b, int c, int d) // Original: public java.util.List com.hubitat.zigbee.Zigbee.setGroupColorTemperature(java.lang.Integer,java.math.BigDecimal,int,int)
+    abstract java.util.List setGroupLevel(java.lang.Integer a, java.lang.Integer b, java.math.BigDecimal c, int d) // Original: public java.util.List com.hubitat.zigbee.Zigbee.setGroupLevel(java.lang.Integer,java.lang.Integer,java.math.BigDecimal,int)
+    abstract java.util.List setHue(java.lang.Integer a, int b, int c) // Original: public java.util.List com.hubitat.zigbee.Zigbee.setHue(java.lang.Integer,int,int)
+    abstract java.util.List setLevel(java.lang.Integer a, java.math.BigDecimal b, int c) // Original: public java.util.List com.hubitat.zigbee.Zigbee.setLevel(java.lang.Integer,java.math.BigDecimal,int)
+    abstract java.util.List setSaturation(java.lang.Integer a, int b, int c) // Original: public java.util.List com.hubitat.zigbee.Zigbee.setSaturation(java.lang.Integer,int,int)
 }
 

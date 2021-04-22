@@ -2,6 +2,7 @@ package me.biocomp.hubitat_ci.app
 
 import groovy.transform.CompileStatic
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
+import me.biocomp.hubitat_ci.api.common_api.ChildDeviceWrapper
 import me.biocomp.hubitat_ci.api.common_api.InstalledAppWrapper
 import me.biocomp.hubitat_ci.api.common_api.Location
 import me.biocomp.hubitat_ci.validation.Flags
@@ -14,11 +15,15 @@ class AppSubscriptionReaderTest extends Specification {
     def api = Mock(AppExecutor) {
         _ * getApp() >> Mock(InstalledAppWrapper)
         _ * getLocation() >> Mock(Location)
+        _ * getChildDevices() >> [Mock(ChildDeviceWrapper){
+
+        }]
     }
 
     private void runScript(String subscribeCall, String handler, List<Flags> validationFlags = [], boolean multiple = false) {
         def flags = validationFlags.clone()
         flags << Flags.DontValidateDefinition
+
         new HubitatAppSandbox(makeScriptForSubscribeTest(subscribeCall, handler, multiple)).run(api: api, validationFlags: flags).installed()
     }
 
@@ -64,6 +69,7 @@ class AppSubscriptionReaderTest extends Specification {
            [ "subscribe(location, '${validLocationEvents[3]}', evtHandler)" , "it's a location with correct event '${validLocationEvents[3]}'" ],
            [ "subscribe(device1, 'thermostatMode', { evtHandler() } )"      , "Event handler being a closure also works" ],
            [ "subscribe(location, { log.info(evt.name) } )"                 , "Event handler being a closure also works for location" ],
+           [ "subscribe(getChildDevices()[0], 'thermostat', evtHandler)"      , "it's a ChildDeviceWrapper and correct capability specified" ],
     ].collect{[subscribeCall: it[0], explanation: it[1]]}
 
     static private def makeScriptForSubscribeTest(String subscribeCall, String eventHandler, boolean multiple = false) {

@@ -104,6 +104,7 @@ class AppSubscriptionReader implements AppExecutor {
             EnumSet<Flags> flags,
             Closure makeError) {
 
+        toWhat = Map.isInstance(toWhat) ? [toWhat] : toWhat // Workaround if toWhat is mock created from a map.
         toWhat.each {
             maybeDevice ->
             assert DeviceWrapper.isInstance(maybeDevice): makeError(": object ${maybeDevice} is not a valid input (not a device) to subscribe to. Note: subscribe(app) is not supported")
