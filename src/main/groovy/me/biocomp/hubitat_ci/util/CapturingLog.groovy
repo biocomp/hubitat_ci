@@ -56,7 +56,7 @@ class CapturingLog implements Log
         }
 
         if (Options.Capture in options) {
-            records << new Tuple(Level.trace, record)
+            records << new Tuple(level, record)
         }
     }
 
