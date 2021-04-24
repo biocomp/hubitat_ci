@@ -24,7 +24,7 @@ if (System.getenv("AZURE_ARTIFACTS_ENV_ACCESS_TOKEN") || (project.hasProperty('a
             maven(MavenPublication){
                 groupId = 'me.biocomp.hubitat_ci'
                 artifactId = 'hubitat_ci'
-                version = 0.15
+                version = 0.16
 
                 from components.java
 
