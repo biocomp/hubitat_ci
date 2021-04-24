@@ -1,0 +1,27 @@
+package me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1
+
+trait ThermostatHeatingModeSet {
+    abstract java.lang.String format()
+    abstract java.lang.String getCMD()
+    abstract java.lang.Short getCommandClassId()
+    abstract java.lang.Short getCommandId()
+    abstract java.lang.Short getMODE_ANTI_FREEZE()
+    abstract java.lang.Short getMODE_AUTOMATIC()
+    abstract java.lang.Short getMODE_MANUAL()
+    abstract java.lang.Short getMODE_MANUAL_TIMED()
+    abstract java.lang.Short getMODE_OFF()
+    abstract java.lang.Short getMODE_OFF_3_HOURS()
+    abstract java.lang.Short getMODE_OFF_TIMED()
+    abstract java.lang.Short getMODE_TEMPORARY_MANUAL()
+    abstract java.lang.Short getMode()
+    abstract java.util.List getPayload()
+    abstract void setMODE_ANTI_FREEZE(java.lang.Short a)
+    abstract void setMODE_AUTOMATIC(java.lang.Short a)
+    abstract void setMODE_MANUAL(java.lang.Short a)
+    abstract void setMODE_MANUAL_TIMED(java.lang.Short a)
+    abstract void setMODE_OFF(java.lang.Short a)
+    abstract void setMODE_OFF_3_HOURS(java.lang.Short a)
+    abstract void setMODE_OFF_TIMED(java.lang.Short a)
+    abstract void setMODE_TEMPORARY_MANUAL(java.lang.Short a)
+    abstract void setMode(java.lang.Short a)
+}

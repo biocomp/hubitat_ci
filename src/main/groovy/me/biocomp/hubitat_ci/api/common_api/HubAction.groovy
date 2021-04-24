@@ -42,20 +42,27 @@ class HubAction
     String action - A string comprised of the request details targeted for the device.
     Protocol protocol - Specific protocol to be used. Default value is Protocol.LAN.
     String dni - Device Network ID of the device. Default value is null. For dni, we recommend using MAC address and not use IP and port numbers.
-    Map options - Default value is null. Available options are:
-        callback 	Name of the callback method
-        type 	    Type of LAN request. Allowed values are: LAN_TYPE_CLIENT, LAN_TYPE_SERVER. Default value is LAN_TYPE_CLIENT.
-        protocol 	Allowed values are LAN_PROTOCOL_TCP and LAN_PROTOCOL_UDP and default value is LAN_PROTOCOL_TCP. Note the difference in allowed values of this parameter when used in Maps params and Protocol protocol signatures.
+    Map options - Optional settings when sending the command. See examples for usage. Possible values:
+        callback - A method name to pass the response from the HubAction back to. If not specified the response will be handed to the parse method of a Device or will be discarded if this HubAction was called from an App.
+        destinationAddress - The destination address to use when sending LAN messages. In the format ip:port, if no port is specified it defaults to 80.
+        destinationPort - The port number to use when sending UPNP discovery messages. Defaults to 1900.
+        type - The type of message to send if its not a standard HTTP request.
 
-    Map params - Available parameters are:
-        Parameter 	Description
-        path 	Allowed values are any string of the form "/somepath". Default value is "/".
-        method 	Allowed values are "POST", "GET", "PUT" and "PATCH". Default value is "POST".
-        protocol 	Allowed values are Protocol.LAN. Default value is also Protocol.LAN.
-        headers 	A map of HTTP headers. The HOST should be the "IP":"port" string of the device.
-            Default values are ['Accept': '*//*', 'User-Agent': 'Linux UPnP/1.0 SmartThings',]. If 'Content-Type' is not included, then it is set to 'application/json' if params:body is a Map; otherwise 'Content-Type' is set to 'text/xml; charset="utf-8"'.
-        query 	A map of URL query parameters.
-        body 	Request body.
+            HubAction.LAN_TYPE_UDPCLIENT - Send message as a UDP package.
+            HubAction.LAN_TYPE_RAW - Send message as a raw TCP message.
+
+        secureCode - Used as part of a wake on lan request.
+        encoding
+        ignoreResponse - (true/false) Used as part of UDP messages, instructs the system to ignore any response from the device to this message.
+        parseWarning - (true/false) Used as part of UDP messages, instructs the system to send any error message back to the parse method or callback method of the device. (Since 2.2.0)
+        timeout - Used as part of UPD or TCP messages. Sets the timeout for response from the device, defaults to 10 seconds, acceptable range is 1 to 300.
+
+    Map params - a list of parameters for sending a Lan message. Possible values:
+        method - The http method to use, ie GET, POST, etc.
+        path - The path to access on the http endpoint.
+        query - Any query parameters to use when calling the path.
+        body - The request body to send.
+        headers - Additional headers to use in the http request.
      */
 
     HubAction(String action, Protocol protocol)
@@ -68,20 +75,38 @@ class HubAction
     {
         this.action = action
         this.protocol = protocol
-        this.dni = dni
+        this.deviceNetworkId = dni
         this.options = options
     }
 
     HubAction(Map params, String dni = null, Map options = null)
     {
         this.params = params
-        this.dni = dni
+        this.deviceNetworkId = dni
         this.options = options
     }
 
-    String action
+    HubAction() {} // Original: public hubitat.device.HubAction()
+    HubAction(java.lang.String action) { this.action = action} // Original: public hubitat.device.HubAction(java.lang.String)
+    HubAction(java.lang.String action, me.biocomp.hubitat_ci.api.Protocol protocol, java.util.Map options) {
+        this.action = action
+        this.protocol = protocol
+        this.options = options
+    } // Original: public hubitat.device.HubAction(java.lang.String,hubitat.device.Protocol,java.util.Map)
+
+    java.lang.String getCallbackMethod() // Original: public java.lang.String hubitat.device.HubAction.getCallbackMethod()
+    {
+        return options?.callback
+    }
+
+    java.net.URI getURI() // Original: public java.net.URI hubitat.device.HubAction.getURI()
+    {
+        return new URI("https://hubitat.com/") // Not really sure how URI is constructed from parameters
+    }
+
+    final String action
     Protocol protocol
-    String dni
+    String deviceNetworkId
     Map options
-    Map params
+    private Map params
 }

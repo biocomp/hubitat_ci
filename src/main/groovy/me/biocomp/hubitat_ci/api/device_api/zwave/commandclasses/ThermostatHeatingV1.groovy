@@ -1,0 +1,28 @@
+package me.biocomp.hubitat_ci.api.device_api.zwave.commandclasses
+
+trait ThermostatHeatingV1 {
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingModeGet thermostatHeatingModeGet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingModeGet thermostatHeatingModeGet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingModeReport thermostatHeatingModeReport()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingModeReport thermostatHeatingModeReport(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingModeSet thermostatHeatingModeSet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingModeSet thermostatHeatingModeSet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingRelayStatusGet thermostatHeatingRelayStatusGet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingRelayStatusGet thermostatHeatingRelayStatusGet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingRelayStatusReport thermostatHeatingRelayStatusReport()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingRelayStatusReport thermostatHeatingRelayStatusReport(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingSetpointGet thermostatHeatingSetpointGet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingSetpointGet thermostatHeatingSetpointGet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingSetpointReport thermostatHeatingSetpointReport()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingSetpointReport thermostatHeatingSetpointReport(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingSetpointSet thermostatHeatingSetpointSet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingSetpointSet thermostatHeatingSetpointSet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingStatusGet thermostatHeatingStatusGet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingStatusGet thermostatHeatingStatusGet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingStatusReport thermostatHeatingStatusReport()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingStatusReport thermostatHeatingStatusReport(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingStatusSet thermostatHeatingStatusSet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingStatusSet thermostatHeatingStatusSet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingTimedOffSet thermostatHeatingTimedOffSet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatheatingv1.ThermostatHeatingTimedOffSet thermostatHeatingTimedOffSet(java.util.Map a)
+}

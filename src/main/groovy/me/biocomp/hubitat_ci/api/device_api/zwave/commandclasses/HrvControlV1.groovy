@@ -1,0 +1,26 @@
+package me.biocomp.hubitat_ci.api.device_api.zwave.commandclasses
+
+trait HrvControlV1 {
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlBypassGet hrvControlBypassGet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlBypassGet hrvControlBypassGet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlBypassReport hrvControlBypassReport()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlBypassReport hrvControlBypassReport(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlBypassSet hrvControlBypassSet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlBypassSet hrvControlBypassSet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlModeGet hrvControlModeGet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlModeGet hrvControlModeGet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlModeReport hrvControlModeReport()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlModeReport hrvControlModeReport(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlModeSet hrvControlModeSet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlModeSet hrvControlModeSet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlModeSupportedGet hrvControlModeSupportedGet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlModeSupportedGet hrvControlModeSupportedGet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlModeSupportedReport hrvControlModeSupportedReport()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlModeSupportedReport hrvControlModeSupportedReport(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlVentilationRateGet hrvControlVentilationRateGet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlVentilationRateGet hrvControlVentilationRateGet(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlVentilationRateReport hrvControlVentilationRateReport()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlVentilationRateReport hrvControlVentilationRateReport(java.util.Map a)
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlVentilationRateSet hrvControlVentilationRateSet()
+    abstract me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvcontrolv1.HrvControlVentilationRateSet hrvControlVentilationRateSet(java.util.Map a)
+}

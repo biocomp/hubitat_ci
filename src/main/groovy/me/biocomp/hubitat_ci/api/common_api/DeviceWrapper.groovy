@@ -182,7 +182,7 @@ trait DeviceWrapper {
      * Remove a data value from a device.
      * @param The name of the data item to remove.
      */
-    abstract void removeDataValue(String name, String value)
+    abstract void removeDataValue(String name)
 
     abstract void updateSetting(String name, Boolean value)
     abstract void updateSetting(String name, Date value)
@@ -191,4 +191,8 @@ trait DeviceWrapper {
     abstract void updateSetting(String name, Long value)
     abstract void updateSetting(String name, Map value)
     abstract void updateSetting(String name, String value)
+
+    abstract me.biocomp.hubitat_ci.api.State currentState(java.lang.String a) // Original: public com.hubitat.hub.domain.State com.hubitat.app.DeviceWrapper.currentState(java.lang.String)
+    abstract java.lang.Object getSetting(java.lang.String a) // Original: public java.lang.Object com.hubitat.app.DeviceWrapper.getSetting(java.lang.String)
+    abstract boolean isLinkedDevice() // Original: public boolean com.hubitat.app.DeviceWrapper.isLinkedDevice()
 }

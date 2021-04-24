@@ -622,7 +622,6 @@ class State {
     }
 
     @Unroll
-    @Ignore // Un-ignore in next PR where API definitions are fixed
     def "Verify exported API class #clsName (#exists)"() {
         when:
             def localClassName = ApiExporter.renameHubitatClass(clsName, c_basePackageName, false)

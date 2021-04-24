@@ -8,8 +8,6 @@ package me.biocomp.hubitat_ci.api.common_api
  * that is the Location into which the App or Device was installed.
  */
 interface Location {
-    abstract boolean getContactBookEnabled()
-
     abstract String getMode()
     abstract Mode getCurrentMode()
     abstract List<Mode> getModes()
@@ -46,14 +44,10 @@ interface Location {
     abstract Map toMap(boolean a)
     abstract String getFormattedLatitude()
     abstract String getFormattedLongitude()
-    abstract String getHelloHome()
     abstract String getTimeFormat()
-    abstract boolean isContactBookEnabled()
     abstract void createVariable(String name)
     abstract void createVariable(String name, List unknown)
     abstract void removeVariable(String name)
-    abstract void setContactBookEnabled(boolean enable)
-    abstract void setHelloHome(String helloString)
     abstract void setId(Long id)
     abstract void setLatitude(BigDecimal latitude)
     abstract void setLongitude(BigDecimal longitude)
@@ -64,4 +58,10 @@ interface Location {
     abstract void setTimeZone(TimeZone zone)
     abstract void setVersion(Long version)
     abstract void setZipCode(String zip)
+
+    abstract me.biocomp.hubitat_ci.api.common_api.Hub getHub() // Original: public static com.hubitat.hub.domain.Hub com.hubitat.hub.domain.Location.getHub()
+    abstract java.lang.Long getModeId() // Original: public java.lang.Long com.hubitat.hub.domain.Location.getModeId()
+    abstract java.lang.String getState() // Original: public java.lang.String com.hubitat.hub.domain.Location.getState()
+    abstract void setModeId(java.lang.Long a) // Original: public void com.hubitat.hub.domain.Location.setModeId(java.lang.Long)
+    abstract void setState(java.lang.String a) // Original: public void com.hubitat.hub.domain.Location.setState(java.lang.String)
 }

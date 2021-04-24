@@ -1,0 +1,27 @@
+package me.biocomp.hubitat_ci.api.device_api.zwave.commands.supervisionv1
+
+trait SupervisionReport {
+    abstract java.lang.String format()
+    abstract java.lang.String getCMD()
+    abstract java.lang.Short getCommandClassId()
+    abstract java.lang.Short getCommandId()
+    abstract java.lang.Short getDuration()
+    abstract java.lang.Short getFAIL()
+    abstract java.lang.Boolean getMoreStatusUpdates()
+    abstract java.lang.Short getNO_SUPPORT()
+    abstract java.util.List getPayload()
+    abstract java.lang.Short getReserved()
+    abstract java.lang.Short getSUCCESS()
+    abstract java.lang.Short getSessionID()
+    abstract java.lang.Short getStatus()
+    abstract java.lang.Short getWORKING()
+    abstract void setDuration(java.lang.Short a)
+    abstract void setFAIL(java.lang.Short a)
+    abstract void setMoreStatusUpdates(java.lang.Boolean a)
+    abstract void setNO_SUPPORT(java.lang.Short a)
+    abstract void setReserved(java.lang.Short a)
+    abstract void setSUCCESS(java.lang.Short a)
+    abstract void setSessionID(java.lang.Short a)
+    abstract void setStatus(java.lang.Short a)
+    abstract void setWORKING(java.lang.Short a)
+}

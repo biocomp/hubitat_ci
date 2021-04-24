@@ -1,0 +1,25 @@
+package me.biocomp.hubitat_ci.api.device_api.zwave.commands.thermostatsetpointv1
+
+trait ThermostatSetpointSupportedReport {
+    abstract java.lang.String format()
+    abstract java.lang.Boolean getAutoChangeover()
+    abstract java.util.List getBitmask()
+    abstract java.lang.String getCMD()
+    abstract java.lang.Short getCommandClassId()
+    abstract java.lang.Short getCommandId()
+    abstract java.lang.Boolean getCooling()
+    abstract java.lang.Boolean getDryAir()
+    abstract java.lang.Boolean getFurnace()
+    abstract java.lang.Boolean getHeating()
+    abstract java.lang.Boolean getMoistAir()
+    abstract java.lang.Boolean getNone()
+    abstract java.util.List getPayload()
+    abstract void setAutoChangeover(java.lang.Boolean a)
+    abstract void setBitmask(java.util.List a)
+    abstract void setCooling(java.lang.Boolean a)
+    abstract void setDryAir(java.lang.Boolean a)
+    abstract void setFurnace(java.lang.Boolean a)
+    abstract void setHeating(java.lang.Boolean a)
+    abstract void setMoistAir(java.lang.Boolean a)
+    abstract void setNone(java.lang.Boolean a)
+}

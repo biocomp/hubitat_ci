@@ -1,0 +1,25 @@
+package me.biocomp.hubitat_ci.api.device_api.zwave.commands.doorlockv1
+
+trait DoorLockOperationSet {
+    abstract java.lang.String format()
+    abstract java.lang.String getCMD()
+    abstract java.lang.Short getCommandClassId()
+    abstract java.lang.Short getCommandId()
+    abstract java.lang.Short getDOOR_LOCK_MODE_DOOR_SECURED()
+    abstract java.lang.Short getDOOR_LOCK_MODE_DOOR_UNSECURED()
+    abstract java.lang.Short getDOOR_LOCK_MODE_DOOR_UNSECURED_FOR_INSIDE_DOOR_HANDLES()
+    abstract java.lang.Short getDOOR_LOCK_MODE_DOOR_UNSECURED_FOR_INSIDE_DOOR_HANDLES_WITH_TIMEOUT()
+    abstract java.lang.Short getDOOR_LOCK_MODE_DOOR_UNSECURED_FOR_OUTSIDE_DOOR_HANDLES()
+    abstract java.lang.Short getDOOR_LOCK_MODE_DOOR_UNSECURED_FOR_OUTSIDE_DOOR_HANDLES_WITH_TIMEOUT()
+    abstract java.lang.Short getDOOR_LOCK_MODE_DOOR_UNSECURED_WITH_TIMEOUT()
+    abstract java.lang.Short getDoorLockMode()
+    abstract java.util.List getPayload()
+    abstract void setDOOR_LOCK_MODE_DOOR_SECURED(java.lang.Short a)
+    abstract void setDOOR_LOCK_MODE_DOOR_UNSECURED(java.lang.Short a)
+    abstract void setDOOR_LOCK_MODE_DOOR_UNSECURED_FOR_INSIDE_DOOR_HANDLES(java.lang.Short a)
+    abstract void setDOOR_LOCK_MODE_DOOR_UNSECURED_FOR_INSIDE_DOOR_HANDLES_WITH_TIMEOUT(java.lang.Short a)
+    abstract void setDOOR_LOCK_MODE_DOOR_UNSECURED_FOR_OUTSIDE_DOOR_HANDLES(java.lang.Short a)
+    abstract void setDOOR_LOCK_MODE_DOOR_UNSECURED_FOR_OUTSIDE_DOOR_HANDLES_WITH_TIMEOUT(java.lang.Short a)
+    abstract void setDOOR_LOCK_MODE_DOOR_UNSECURED_WITH_TIMEOUT(java.lang.Short a)
+    abstract void setDoorLockMode(java.lang.Short a)
+}

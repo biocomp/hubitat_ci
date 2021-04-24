@@ -1,0 +1,27 @@
+package me.biocomp.hubitat_ci.api.device_api.zwave.commands.basictariffinfov1
+
+trait BasicTariffInfoReport {
+    abstract java.lang.String format()
+    abstract java.lang.String getCMD()
+    abstract java.lang.Short getCommandClassId()
+    abstract java.lang.Short getCommandId()
+    abstract java.lang.Boolean getDual()
+    abstract java.lang.Short getE1CurrentRateInUse()
+    abstract java.lang.Integer getE1RateConsumptionRegister()
+    abstract java.lang.Short getE1TimeForNextRateHours()
+    abstract java.lang.Short getE1TimeForNextRateMinutes()
+    abstract java.lang.Short getE1TimeForNextRateSeconds()
+    abstract java.lang.Short getE2CurrentRateInUse()
+    abstract java.lang.Integer getE2RateConsumptionRegister()
+    abstract java.util.List getPayload()
+    abstract java.lang.Short getTotalNoImportRates()
+    abstract void setDual(java.lang.Boolean a)
+    abstract void setE1CurrentRateInUse(java.lang.Short a)
+    abstract void setE1RateConsumptionRegister(java.lang.Integer a)
+    abstract void setE1TimeForNextRateHours(java.lang.Short a)
+    abstract void setE1TimeForNextRateMinutes(java.lang.Short a)
+    abstract void setE1TimeForNextRateSeconds(java.lang.Short a)
+    abstract void setE2CurrentRateInUse(java.lang.Short a)
+    abstract void setE2RateConsumptionRegister(java.lang.Integer a)
+    abstract void setTotalNoImportRates(java.lang.Short a)
+}

@@ -1,0 +1,25 @@
+package me.biocomp.hubitat_ci.api.device_api.zwave.commands.hrvstatusv1
+
+trait HrvStatusGet {
+    abstract java.lang.String format()
+    abstract java.lang.String getCMD()
+    abstract java.lang.Short getCommandClassId()
+    abstract java.lang.Short getCommandId()
+    abstract java.util.List getPayload()
+    abstract java.lang.Short getSTATUS_PARAMETER_DISCHARGE_AIR_TEMPERATURE()
+    abstract java.lang.Short getSTATUS_PARAMETER_EXHAUST_AIR_TEMPERATURE()
+    abstract java.lang.Short getSTATUS_PARAMETER_OUTDOOR_AIR_TEMPERATURE()
+    abstract java.lang.Short getSTATUS_PARAMETER_RELATIVE_HUMIDITY_IN_ROOM()
+    abstract java.lang.Short getSTATUS_PARAMETER_REMAINING_FILTER_LIFE()
+    abstract java.lang.Short getSTATUS_PARAMETER_ROOM_TEMPERATURE()
+    abstract java.lang.Short getSTATUS_PARAMETER_SUPPLY_AIR_TEMPERATURE()
+    abstract java.lang.Short getStatusParameter()
+    abstract void setSTATUS_PARAMETER_DISCHARGE_AIR_TEMPERATURE(java.lang.Short a)
+    abstract void setSTATUS_PARAMETER_EXHAUST_AIR_TEMPERATURE(java.lang.Short a)
+    abstract void setSTATUS_PARAMETER_OUTDOOR_AIR_TEMPERATURE(java.lang.Short a)
+    abstract void setSTATUS_PARAMETER_RELATIVE_HUMIDITY_IN_ROOM(java.lang.Short a)
+    abstract void setSTATUS_PARAMETER_REMAINING_FILTER_LIFE(java.lang.Short a)
+    abstract void setSTATUS_PARAMETER_ROOM_TEMPERATURE(java.lang.Short a)
+    abstract void setSTATUS_PARAMETER_SUPPLY_AIR_TEMPERATURE(java.lang.Short a)
+    abstract void setStatusParameter(java.lang.Short a)
+}

@@ -1,9 +1,11 @@
 package me.biocomp.hubitat_ci.capabilities
 
+import groovy.transform.AutoImplement
 import groovy.transform.CompileStatic
 import me.biocomp.hubitat_ci.api.Attribute
 
 @CompileStatic
+@AutoImplement
 class GeneratedAttribute implements Attribute {
     GeneratedAttribute(CapabilityAttributeInfo info) {
         name = info.name

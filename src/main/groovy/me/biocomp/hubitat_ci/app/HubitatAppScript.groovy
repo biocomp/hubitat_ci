@@ -108,6 +108,7 @@ abstract class HubitatAppScript extends
         this.preferencesReader.validateAfterMethodCall(methodName)
     }
 
+    @CompileStatic
     Preferences getProducedPreferences() {
         data.preferences
     }

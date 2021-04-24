@@ -33,4 +33,16 @@ trait Capability
     abstract List<Attribute> getAttributes()
     abstract List<Command> getCommands()
     abstract String getName()
+
+    java.lang.Long getId() {} // Original: public java.lang.Long com.hubitat.hub.domain.Capability.getId()
+    java.lang.String getReference() {} // Original: public java.lang.String com.hubitat.hub.domain.Capability.getReference()
+    java.lang.Long getVersion() {} // Original: public java.lang.Long com.hubitat.hub.domain.Capability.getVersion()
+    void setAttributes(java.util.List a) {} // Original: public void com.hubitat.hub.domain.Capability.setAttributes(java.util.List)
+    void setCommands(java.util.List a) {} // Original: public void com.hubitat.hub.domain.Capability.setCommands(java.util.List)
+    void setId(java.lang.Long a) {} // Original: public void com.hubitat.hub.domain.Capability.setId(java.lang.Long)
+    void setName(java.lang.String a) {} // Original: public void com.hubitat.hub.domain.Capability.setName(java.lang.String)
+    void setReference(java.lang.String a) {} // Original: public void com.hubitat.hub.domain.Capability.setReference(java.lang.String)
+    void setVersion(java.lang.Long a) {} // Original: public void com.hubitat.hub.domain.Capability.setVersion(java.lang.Long)
+    java.util.Map toMap() {} // Original: public java.util.Map com.hubitat.hub.domain.Capability.toMap()
+    java.util.Map toMap(boolean a) {} // Original: public java.util.Map com.hubitat.hub.domain.Capability.toMap(boolean)
 }

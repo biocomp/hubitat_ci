@@ -32,4 +32,11 @@ trait InstalledAppWrapper
     abstract void updateSetting(String settingName, Long val)
     abstract void updateSetting(String settingName, Map val)
     abstract void updateSetting(String settingName, String val)
+
+    abstract me.biocomp.hubitat_ci.api.hub.AppAtomicState getAtomicState() // Original: public com.hubitat.hub.AppAtomicState com.hubitat.app.InstalledAppWrapper.getAtomicState()
+    abstract java.lang.Object getSetting(java.lang.String a) // Original: public java.lang.Object com.hubitat.app.InstalledAppWrapper.getSetting(java.lang.String)
+    abstract java.util.Map getState() // Original: public java.util.Map com.hubitat.app.InstalledAppWrapper.getState()
+    abstract void saveState() // Original: public void com.hubitat.app.InstalledAppWrapper.saveState()
+    abstract void setAtomicState(me.biocomp.hubitat_ci.api.hub.AppAtomicState a) // Original: public void com.hubitat.app.InstalledAppWrapper.setAtomicState(com.hubitat.hub.AppAtomicState)
+    abstract void setState(java.util.Map a) // Original: public void com.hubitat.app.InstalledAppWrapper.setState(java.util.Map)
 }

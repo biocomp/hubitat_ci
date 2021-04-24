@@ -2,6 +2,7 @@ package me.biocomp.hubitat_ci.validation
 
 import me.biocomp.hubitat_ci.util.AddValidationAfterEachMethodCompilationCustomizer
 import me.biocomp.hubitat_ci.util.DoNotCallMeBinding
+import me.biocomp.hubitat_ci.util.LoggingCompilationCustomizer
 import me.biocomp.hubitat_ci.util.RemovePrivateFromScriptCompilationCustomizer
 import me.biocomp.hubitat_ci.util.SandboxClassLoader
 import groovy.json.JsonBuilder
@@ -260,7 +261,9 @@ class ValidatorBase {
 
     private static void validateAfterEachMethod(CompilerConfiguration options) {
         options.addCompilationCustomizers(new AddValidationAfterEachMethodCompilationCustomizer())
-        // debug - print out resulting script: options.addCompilationCustomizers(new LoggingCompilationCustomizer())
+
+        // debug - print out resulting script:
+        // options.addCompilationCustomizers(new LoggingCompilationCustomizer())
     }
 
     @TypeChecked(TypeCheckingMode.SKIP)

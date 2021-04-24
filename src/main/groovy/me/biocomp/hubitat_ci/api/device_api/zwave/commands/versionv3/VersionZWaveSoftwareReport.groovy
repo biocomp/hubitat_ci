@@ -1,0 +1,27 @@
+package me.biocomp.hubitat_ci.api.device_api.zwave.commands.versionv3
+
+trait VersionZWaveSoftwareReport {
+    abstract java.lang.String format()
+    abstract java.lang.Integer getApplicationBuild()
+    abstract java.lang.Integer getApplicationVersion()
+    abstract java.lang.String getCMD()
+    abstract java.lang.Short getCommandClassId()
+    abstract java.lang.Short getCommandId()
+    abstract java.lang.Integer getFrameworkBuild()
+    abstract java.lang.Integer getFrameworkVersion()
+    abstract java.lang.Integer getInterfaceBuild()
+    abstract java.lang.Integer getInterfaceVersion()
+    abstract java.util.List getPayload()
+    abstract java.lang.Integer getProtocolBuild()
+    abstract java.lang.Integer getProtocolVersion()
+    abstract java.lang.Integer getSdkVersion()
+    abstract void setApplicationBuild(java.lang.Integer a)
+    abstract void setApplicationVersion(java.lang.Integer a)
+    abstract void setFrameworkBuild(java.lang.Integer a)
+    abstract void setFrameworkVersion(java.lang.Integer a)
+    abstract void setInterfaceBuild(java.lang.Integer a)
+    abstract void setInterfaceVersion(java.lang.Integer a)
+    abstract void setProtocolBuild(java.lang.Integer a)
+    abstract void setProtocolVersion(java.lang.Integer a)
+    abstract void setSdkVersion(java.lang.Integer a)
+}

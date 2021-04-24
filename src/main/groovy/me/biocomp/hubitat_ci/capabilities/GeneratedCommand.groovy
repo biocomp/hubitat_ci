@@ -1,11 +1,13 @@
 package me.biocomp.hubitat_ci.capabilities
 
+import groovy.transform.AutoImplement
 import groovy.transform.CompileStatic
 import me.biocomp.hubitat_ci.api.Command
 
 import java.lang.reflect.Method
 
 @CompileStatic
+@AutoImplement
 class GeneratedCommand implements Command {
     GeneratedCommand(Method method) {
         name = method.name
