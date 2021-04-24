@@ -1,5 +1,6 @@
 package me.biocomp.hubitat_ci
 
+import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
 import groovy.transform.AutoImplement
 import groovy.transform.CompileStatic
@@ -22,7 +23,6 @@ import me.biocomp.hubitat_ci.util.ApiExporter
 import me.biocomp.hubitat_ci.util.CapturingLog
 import me.biocomp.hubitat_ci.util.PreprocessedClasses
 import me.biocomp.hubitat_ci.validation.Flags
-
 import spock.lang.Ignore
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -72,8 +72,8 @@ class ApiCompatibilityTest extends Specification
             final def sortedActualDiscoveredTypes = actualDiscoveredTypes.collect { [name: it.key, obj: it.value.obj, cls: it.value.cls] }.sort { it.name }
             final def sortedExpectedDiscoveredTypes = discoveredTypes.sort { it.name }
 
-            def expectedName = expectedDump.class_name ? expectedDump.class_name : expectedDump.enum_name
-            def actualName = actualDump.class_name ? actualDump.class_name : actualDump.enum_name
+            def expectedName = ApiExporter.readClassName(expectedDump)
+            def actualName = ApiExporter.readClassName(actualDump)
 
         then:
             assert actualName == expectedName
@@ -266,7 +266,7 @@ class ApiCompatibilityTest extends Specification
             def result = jsonSlurper.parseText(responseText)
             def classes = result.classes
 
-            new File("src/test/groovy/hubitat_api.json").write(responseText)
+            new File("src/test/groovy/hubitat_api.json").write(JsonOutput.prettyPrint(responseText))
 
         then:
             !classes.find { it.class_name?.contains("AppExecutor") }.methods.isEmpty() //!= startsWith('[{"class_name":"hubitat_api_exporter_app"')//"[[class_name:'hubitat_api_exporter_app',methods:[]]]"
@@ -596,6 +596,29 @@ class State {
         where:
             cls << ApiExporter.findExportedClasses("src/main/groovy/me/biocomp/hubitat_ci/api", "me.biocomp.hubitat_ci.api")
             clsName = cls.name
+    }
+
+    def "Basic validations for hubitat_api.json"() {
+        when:
+            def numberOfClasses = [:]
+            c_exportedClasses.each{
+                String className = ApiExporter.readClassName(it)
+                if (numberOfClasses.containsKey(className)) {
+                    numberOfClasses[className]++;
+                } else {
+                    numberOfClasses[className] = 1;
+                }
+            }
+
+            def duplicates = []
+            numberOfClasses.each{
+                if (it.value > 1) {
+                    duplicates << [it.key, it.value]
+                }
+            }
+
+        then:
+            assert duplicates.size() == 0 : duplicates.collect{ "Class ${it[0]} has ${it[1]} copies in json" }.join("\n")
     }
 
     @Unroll
