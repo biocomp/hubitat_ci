@@ -415,5 +415,7 @@ private String dumpClassesImpl()
         }
     }
 
+    // Dedupe and sort classes by name
+    classes = classes.collectEntries{[it.class_name ? it.class_name : it.enum_name, it]}.collect{it.value}.sort{it.class_name ? it.class_name : it.enum_name}
     return groovy.json.JsonOutput.toJson([firmware_version: location.hubs[0].firmwareVersionString, classes: classes])
 }
