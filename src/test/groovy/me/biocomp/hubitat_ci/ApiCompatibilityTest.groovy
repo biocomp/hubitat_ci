@@ -80,8 +80,8 @@ class ApiCompatibilityTest extends Specification
 
             if (expectedDump.methods) {
                 assert actualDump.methods.size() == expectedDump.methods.size()
-                assert actualDump.methods.collect{[it.name, it.returnType, it.parameters, it.modifiers]}.sort{it[0]} as ArrayList ==
-                    expectedDump.methods.collect{[it.name, it.returnType, it.parameters, it.modifiers]}.sort{it[0]} as ArrayList
+                assert actualDump.methods.collect{[it.name, it.returnType, it.parameters, it.modifiers]}.sort{it[0] + it[1].name + it[2].join(",")} as ArrayList ==
+                    expectedDump.methods.collect{[it.name, it.returnType, it.parameters, it.modifiers]}.sort{it[0] + it[1].name + it[2].join(",")} as ArrayList
             } else if (expectedDump.enum_values) {
                 assert expectedDump.enum_values == actualDump.enum_values
             }
