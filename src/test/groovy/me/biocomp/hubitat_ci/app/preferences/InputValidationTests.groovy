@@ -161,7 +161,7 @@ hideWhenEmpty: true)
             e.message.contains("text")
     }
 
-    def "Checking that valid input() types succeed"(String type) {
+    def "Checking that valid input types succeed"(String type) {
         when:
             def input = [parseOneChild("""input("nam1", '${type}')""") as Input,
                          parseOneChild("""input(name: "nam1", type: '${type}')""") as Input]

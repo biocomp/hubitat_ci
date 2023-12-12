@@ -24,10 +24,10 @@ class DeviceInputTypeTest extends Specification{
     }
 
     @Unroll
-    def "Simple capability 'ThermostatCoolingSetpoint' input generates object with all proper fields and methods (multiple = #multiple)"()
+    def "Simple capability 'ThermostatCoolingSetpoint' input generates object with all proper fields and methods, multiple = #multiple" ()
     {
         setup:
-            def device = getDevice(new DeviceInputValueFactory(ThermostatCoolingSetpoint, "ThermostatCoolingSetpoint")
+            def device = getDevice(new DeviceInputValueFactory(ThermostatCoolingSetpoint)
                     .makeInputObject('n', 't',  DefaultAndUserValues.empty(), multiple))
             def attributes = device.getSupportedAttributes()
 
@@ -59,7 +59,7 @@ class DeviceInputTypeTest extends Specification{
     def "Complex capability 'Thermostat' input generates object with all proper fields and methods"()
     {
         setup:
-            def device = new DeviceInputValueFactory(Thermostat, "Thermostat")
+            def device = new DeviceInputValueFactory(Thermostat)
                     .makeInputObject('n', 't',  DefaultAndUserValues.empty(), false)
             def attributes = device.getSupportedAttributes()
 
@@ -105,11 +105,11 @@ class DeviceInputTypeTest extends Specification{
     }
 
     @Unroll
-    def "When user object provided, it is returned instead (multiple = #multiple is ignored)"()
+    def "When user object provided, it is returned instead, multiple = #multiple is ignored"()
     {
         when:
             def userThermostat = new MockThermostat()
-            def device = new DeviceInputValueFactory(Thermostat, "Thermostat")
+            def device = new DeviceInputValueFactory(Thermostat)
                     .makeInputObject('n', 't',  DefaultAndUserValues.bothValues(
                         NullableOptional.empty(), NullableOptional.withValue(userThermostat)), multiple)
 
@@ -130,9 +130,9 @@ class DeviceInputTypeTest extends Specification{
     }
 
     @Unroll
-    def "Enum attribute values are properly listed (multiple = #multiple)"() {
+    def "Enum attribute values are properly listed, multiple = #multiple"() {
         setup:
-            final def device = getDevice(new DeviceInputValueFactory(ThermostatMode, "ThermostatMode")
+            final def device = getDevice(new DeviceInputValueFactory(ThermostatMode)
                     .makeInputObject('n', 't', DefaultAndUserValues.empty(), multiple))
             final def attributes = device.getSupportedAttributes()
 
