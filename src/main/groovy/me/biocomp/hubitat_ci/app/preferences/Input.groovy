@@ -77,7 +77,7 @@ class Input extends InputCommon {
         if (Input.isCapabilityType(typeName)) {
             final def foundCapability = Input.findCapabilityFromTypeString(typeName)
             if (foundCapability) {
-                return new DeviceInputValueFactory(foundCapability)
+                return new DeviceInputValueFactory([foundCapability])
             } else {
                 assert false: "Input ${this}'s capability '${typeName}' is not supported. Supported capabilities: ${Capabilities.capabilitiesByDeviceSelector.keySet()}"
             }
