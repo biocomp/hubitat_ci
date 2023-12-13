@@ -16,6 +16,8 @@ import me.biocomp.hubitat_ci.capabilities.GeneratedCapability
  */
 @AutoImplement
 class GeneratedDeviceInputBase implements DeviceWrapper {
+    private static int nextDeviceId = 1
+
     GeneratedDeviceInputBase(String inputName, String inputType, List<Class> capabilityClasses) {
         capabilities = new ArrayList<Capability>()
         supportedAttributes = new ArrayList<Attribute>()
@@ -40,6 +42,9 @@ class GeneratedDeviceInputBase implements DeviceWrapper {
 
         this.inputName = inputName
         this.inputType = inputType
+
+        this.deviceId = nextDeviceId
+        nextDeviceId++
     }
 
     @Override
@@ -50,6 +55,11 @@ class GeneratedDeviceInputBase implements DeviceWrapper {
     @Override
     String getName() {
         "name_generated_from_${inputName}"
+    }
+
+    @Override
+    String getDisplayName() {
+        inputName
     }
 
     @Override
@@ -67,6 +77,14 @@ class GeneratedDeviceInputBase implements DeviceWrapper {
         return capabilities
     }
 
+    @Override currentValue(String attributeName) {
+        if (!state) {
+            return null
+        }
+
+        return state[attributeName]
+    }
+
     @Override
     String toString() {
         "GeneratedDevice(input: ${inputName}, type: ${inputType})"
@@ -77,4 +95,6 @@ class GeneratedDeviceInputBase implements DeviceWrapper {
     private final List<Capability> capabilities
     private final String inputName
     private final String inputType
+
+    final long deviceId
 }
