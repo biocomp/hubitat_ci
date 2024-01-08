@@ -25,16 +25,6 @@ class DeviceInputValueFactory implements IInputValueFactory
         this.generatedDevice = generateDeviceClass(capabilities)
     }
 
-    DeviceInputValueFactory(Class capability, String capabilityName)
-    {
-        this.capabilities = [capability]
-
-        /// Class is generated because of need to support all the attributes (via getCurrent<attribute>()) and methods.
-        /// It seems trickier to use propertyMissing and methodMissing than to just generate the class.
-        /// Also, error about invalid calls to such class should be more clear.
-        this.generatedDevice = generateDeviceClass(capability, capabilityName)
-    }
-
     @Override
     @CompileStatic
     def makeInputObject(String inputName, String inputType, DefaultAndUserValues userProvidedAndDefaultValues, boolean multipleValues)
@@ -73,6 +63,11 @@ class DeviceInputValueFactory implements IInputValueFactory
     {
         final def builder = new StringBuilder()
 
+        def capabilityNames = capabilities.collect{it.class.getSimpleName()}
+        if (capabilityNames.isEmpty()) {
+           capabilityNames = ["NoCapabilities"]
+        }
+
         def attributes = new ArrayList<CapabilityAttributeInfo>()
         def methods = new ArrayList<Method>()
 
@@ -81,39 +76,7 @@ class DeviceInputValueFactory implements IInputValueFactory
             methods.addAll(Capabilities.readMethods(it))
         }
 
-        final def capabilityName = capabilities[0].class.getSimpleName()
-        final def className = "Device_WithCapability_${capabilityName}_Impl"
-
-        builder.append(
-                """
-import groovy.transform.CompileStatic
-
-class ${className} extends ${GeneratedDeviceInputBase.canonicalName} {
-    ${className}(String inputName, String inputType, List<Class> capabilities) { super(inputName, inputType, capabilities) }
-
-    """)
-        // Attributes
-        attributes.each{printAttributeValue(builder, it)}
-
-        // Methods
-        methods.each{printMethod(builder, it)}
-
-        // End of the class:
-        builder.append("""
-}"""
-        )
-
-        return new GroovyClassLoader().parseClass(builder.toString())
-    }
-
-    @CompileStatic
-    private static Class generateDeviceClass(Class capability, String capabilityName)
-    {
-        final def builder = new StringBuilder()
-        def attributes = capability ? Capabilities.readAttributes(capability).values() : new ArrayList<CapabilityAttributeInfo>()
-        def methods = capability ? Capabilities.readMethods(capability) : new ArrayList<Method>()
-
-        final def className = "Device_WithCapability_${capabilityName}_Impl"
+        final def className = "Device_WithCapabilities_${capabilityNames.join('_')}_Impl"
 
         builder.append(
                 """

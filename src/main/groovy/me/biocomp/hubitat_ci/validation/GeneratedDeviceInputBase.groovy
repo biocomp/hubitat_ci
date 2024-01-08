@@ -24,19 +24,17 @@ class GeneratedDeviceInputBase implements DeviceWrapper {
         supportedCommands = new ArrayList<Command>()
 
         capabilityClasses.each { capabilityClass ->
-            if (capabilityClass != null) {
-                def generatedCapability = new GeneratedCapability(capabilityClass)
-                if (generatedCapability != null) {
-                    capabilities.add(generatedCapability)
+            assert capabilityClass != null : "Capability class cannot be null"
 
-                    if (generatedCapability.attributes != null && generatedCapability.attributes.size() > 0) {
-                        supportedAttributes.addAll(generatedCapability.attributes)
-                    }
+            def generatedCapability = new GeneratedCapability(capabilityClass)
+            capabilities.add(generatedCapability)
 
-                    if (generatedCapability.commands != null && generatedCapability.commands.size() > 0) {
-                        supportedCommands.addAll(generatedCapability.commands)
-                    }
-                }
+            if (generatedCapability.attributes != null) {
+                supportedAttributes.addAll(generatedCapability.attributes)
+            }
+
+            if (generatedCapability.commands != null) {
+                supportedCommands.addAll(generatedCapability.commands)
             }
         }
 
