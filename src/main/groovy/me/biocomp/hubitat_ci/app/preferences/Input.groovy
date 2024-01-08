@@ -84,7 +84,7 @@ class Input extends InputCommon {
         }
 
         if (typeName =~ /device\.[a-zA-Z0-9._]+/) {
-            return new DeviceInputValueFactory(null, typeName.substring('device.'.length()))
+            return new DeviceInputValueFactory([])
             // Unknown capabilities, just using dummy device
         }
 
