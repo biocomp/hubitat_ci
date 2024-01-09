@@ -1,6 +1,7 @@
 package me.biocomp.hubitat_ci.validation
 
 import groovy.transform.AutoImplement
+import groovy.transform.Synchronized
 import groovy.transform.TupleConstructor
 import me.biocomp.hubitat_ci.api.Attribute
 import me.biocomp.hubitat_ci.api.Capability
@@ -16,8 +17,6 @@ import me.biocomp.hubitat_ci.capabilities.GeneratedCapability
  */
 @AutoImplement
 class GeneratedDeviceInputBase implements DeviceWrapper {
-    private static int nextDeviceId = 1
-
     GeneratedDeviceInputBase(String inputName, String inputType, List<Class> capabilityClasses) {
         capabilities = new ArrayList<Capability>()
         supportedAttributes = new ArrayList<Attribute>()
@@ -41,8 +40,15 @@ class GeneratedDeviceInputBase implements DeviceWrapper {
         this.inputName = inputName
         this.inputType = inputType
 
-        this.deviceId = nextDeviceId
+        this.deviceId = generateNextDeviceId()
+    }
+
+    private static int nextDeviceId = 0
+
+    @Synchronized
+    int generateNextDeviceId() {
         nextDeviceId++
+        return nextDeviceId
     }
 
     @Override
