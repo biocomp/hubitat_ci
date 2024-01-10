@@ -1,9 +1,11 @@
 package me.biocomp.hubitat_ci.validation
 
 import groovy.transform.AutoImplement
+import groovy.transform.Synchronized
 import groovy.transform.TupleConstructor
 import me.biocomp.hubitat_ci.api.Attribute
 import me.biocomp.hubitat_ci.api.Capability
+import me.biocomp.hubitat_ci.api.Command
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
 import me.biocomp.hubitat_ci.capabilities.GeneratedCapability
 
@@ -15,11 +17,38 @@ import me.biocomp.hubitat_ci.capabilities.GeneratedCapability
  */
 @AutoImplement
 class GeneratedDeviceInputBase implements DeviceWrapper {
-    GeneratedDeviceInputBase(String inputName, String inputType, Class capabilityClass) {
-        capability = new GeneratedCapability(capabilityClass)
-        supportedAttributes = capability.attributes
+    GeneratedDeviceInputBase(String inputName, String inputType, List<Class> capabilityClasses) {
+        capabilities = new ArrayList<Capability>()
+        supportedAttributes = new ArrayList<Attribute>()
+        supportedCommands = new ArrayList<Command>()
+
+        capabilityClasses.each { capabilityClass ->
+            assert capabilityClass != null : "Capability class cannot be null"
+
+            def generatedCapability = new GeneratedCapability(capabilityClass)
+            capabilities.add(generatedCapability)
+
+            if (generatedCapability.attributes != null) {
+                supportedAttributes.addAll(generatedCapability.attributes)
+            }
+
+            if (generatedCapability.commands != null) {
+                supportedCommands.addAll(generatedCapability.commands)
+            }
+        }
+
         this.inputName = inputName
         this.inputType = inputType
+
+        this.deviceId = generateNextDeviceId()
+    }
+
+    private static int nextDeviceId = 0
+
+    @Synchronized
+    private static int generateNextDeviceId() {
+        nextDeviceId++
+        return nextDeviceId
     }
 
     @Override
@@ -33,13 +62,31 @@ class GeneratedDeviceInputBase implements DeviceWrapper {
     }
 
     @Override
+    String getDisplayName() {
+        inputName
+    }
+
+    @Override
     List<Attribute> getSupportedAttributes() {
         return supportedAttributes
     }
 
     @Override
+    List<Command> getSupportedCommands() {
+        return supportedCommands
+    }
+
+    @Override
     List<Capability> getCapabilities() {
-        [capability]
+        return capabilities
+    }
+
+    @Override currentValue(String attributeName) {
+        if (!state) {
+            return null
+        }
+
+        return state[attributeName]
     }
 
     @Override
@@ -48,7 +95,10 @@ class GeneratedDeviceInputBase implements DeviceWrapper {
     }
 
     private final List<Attribute> supportedAttributes
-    private final Capability capability
+    private final List<Command> supportedCommands
+    private final List<Capability> capabilities
     private final String inputName
     private final String inputType
+
+    final long deviceId
 }

@@ -12,17 +12,17 @@ import java.lang.reflect.Method
 
 class DeviceInputValueFactory implements IInputValueFactory
 {
-    final Class capability
+    final List<Class> capabilities
     final Class generatedDevice
 
-    DeviceInputValueFactory(Class capability, String deviceOrCapabilityName)
+    DeviceInputValueFactory(List<Class> capabilities)
     {
-        this.capability = capability
+        this.capabilities = capabilities
 
         /// Class is generated because of need to support all the attributes (via getCurrent<attribute>()) and methods.
         /// It seems trickier to use propertyMissing and methodMissing than to just generate the class.
         /// Also, error about invalid calls to such class should be more clear.
-        this.generatedDevice = generateDeviceClass(capability, deviceOrCapabilityName)
+        this.generatedDevice = generateDeviceClass(capabilities)
     }
 
     @Override
@@ -33,16 +33,16 @@ class DeviceInputValueFactory implements IInputValueFactory
             userProvidedAndDefaultValues.userProvidedValue.value
         } else {
             if (multipleValues) {
-                [ generatedDevice.newInstance(inputName, inputType, capability)]
+                [ generatedDevice.newInstance(inputName, inputType, this.capabilities)]
             } else {
-                generatedDevice.newInstance(inputName, inputType, capability)
+                generatedDevice.newInstance(inputName, inputType, this.capabilities)
             }
         }
     }
 
     @CompileStatic
     private static void printAttributeValue(StringBuilder builder, CapabilityAttributeInfo attribute) {
-        builder.append("""def getCurrent${attribute.name.capitalize()}() { 
+        builder.append("""def getCurrent${attribute.name.capitalize()}() {
             0
         }
         """)}
@@ -52,27 +52,38 @@ class DeviceInputValueFactory implements IInputValueFactory
         builder.append("""
     ${method.returnType.canonicalName} ${method.name}(
         ${method.parameters.collect{it.type.canonicalName + " " + it.name}.join(", ")}
-    ) { 
+    ) {
             null
     }
 """)
     }
 
     @CompileStatic
-    private static Class generateDeviceClass(Class capability, String deviceOrCapabilityName)
+    private static Class generateDeviceClass(List<Class> capabilities)
     {
         final def builder = new StringBuilder()
-        def attributes = capability ? Capabilities.readAttributes(capability).values() : new ArrayList<CapabilityAttributeInfo>()
-        def methods = capability ? Capabilities.readMethods(capability) : new ArrayList<Method>()
 
-        final def className = "Device_WithCapability_${deviceOrCapabilityName}_Impl"
+        def capabilityNames = capabilities.collect{it.class.getSimpleName()}
+        if (capabilityNames.isEmpty()) {
+           capabilityNames = ["NoCapabilities"]
+        }
+
+        def attributes = new ArrayList<CapabilityAttributeInfo>()
+        def methods = new ArrayList<Method>()
+
+        capabilities.each{
+            attributes.addAll(Capabilities.readAttributes(it).values())
+            methods.addAll(Capabilities.readMethods(it))
+        }
+
+        final def className = "Device_WithCapabilities_${capabilityNames.join('_')}_Impl"
 
         builder.append(
                 """
 import groovy.transform.CompileStatic
 
 class ${className} extends ${GeneratedDeviceInputBase.canonicalName} {
-    ${className}(String inputName, String inputType, ${Class.getCanonicalName()} capability) { super(inputName, inputType, capability) }
+    ${className}(String inputName, String inputType, List<Class> capabilities) { super(inputName, inputType, capabilities) }
 
     """)
         // Attributes

@@ -7,6 +7,8 @@ import me.biocomp.hubitat_ci.capabilities.GeneratedCapability
 import me.biocomp.hubitat_ci.capabilities.Thermostat
 import me.biocomp.hubitat_ci.capabilities.ThermostatCoolingSetpoint
 import me.biocomp.hubitat_ci.capabilities.ThermostatMode
+import me.biocomp.hubitat_ci.capabilities.Switch
+import me.biocomp.hubitat_ci.capabilities.SwitchLevel
 import me.biocomp.hubitat_ci.util.NullableOptional
 import me.biocomp.hubitat_ci.validation.DefaultAndUserValues
 import me.biocomp.hubitat_ci.validation.Flags
@@ -24,10 +26,10 @@ class DeviceInputTypeTest extends Specification{
     }
 
     @Unroll
-    def "Simple capability 'ThermostatCoolingSetpoint' input generates object with all proper fields and methods (multiple = #multiple)"()
+    def "Simple capability 'ThermostatCoolingSetpoint' input generates object with all proper fields and methods, multiple = #multiple" ()
     {
         setup:
-            def device = getDevice(new DeviceInputValueFactory(ThermostatCoolingSetpoint, "ThermostatCoolingSetpoint")
+            def device = getDevice(new DeviceInputValueFactory([ThermostatCoolingSetpoint])
                     .makeInputObject('n', 't',  DefaultAndUserValues.empty(), multiple))
             def attributes = device.getSupportedAttributes()
 
@@ -59,7 +61,7 @@ class DeviceInputTypeTest extends Specification{
     def "Complex capability 'Thermostat' input generates object with all proper fields and methods"()
     {
         setup:
-            def device = new DeviceInputValueFactory(Thermostat, "Thermostat")
+            def device = new DeviceInputValueFactory([Thermostat])
                     .makeInputObject('n', 't',  DefaultAndUserValues.empty(), false)
             def attributes = device.getSupportedAttributes()
 
@@ -84,6 +86,48 @@ class DeviceInputTypeTest extends Specification{
             device.setHeatingSetpoint(42.42)
     }
 
+    @Unroll
+    def "Multiple capability input generates object with all proper fields and methods, multiple = #multiple" ()
+    {
+        setup:
+            def device = getDevice(new DeviceInputValueFactory([Switch, SwitchLevel])
+                    .makeInputObject('n', 't',  DefaultAndUserValues.empty(), multiple))
+            def attributes = device.getSupportedAttributes()
+            def commands = device.getSupportedCommands()
+
+        expect:
+            assert device.capabilities.size() == 2
+            assert device.capabilities[0].name == "Switch"
+            assert device.capabilities[1].name == "SwitchLevel"
+
+            assert device.capabilities[0].getAttributes()[0] == attributes[0]
+            assert device.capabilities[1].getAttributes()[0] == attributes[1]
+
+            assert attributes.size() == 2
+
+            assert attributes[0].getDataType() == "ENUM"
+            assert attributes[0].dataType == "ENUM"
+            assert attributes[0].getName() == 'switch'
+            assert attributes[0].name == 'switch'
+            assert attributes[0].getValues() == ["on", "off"]
+            assert attributes[0].values == ["on", "off"]
+
+            assert attributes[1].getDataType() == "NUMBER"
+            assert attributes[1].dataType == "NUMBER"
+            assert attributes[1].getName() == 'level'
+            assert attributes[1].name == 'level'
+            assert attributes[1].getValues() == null
+            assert attributes[1].values == null
+
+            assert commands.size() == 3
+            assert commands[0].name == "off"
+            assert commands[1].name == "on"
+            assert commands[2].name == "setLevel"
+
+        where:
+            multiple << [true, false]
+    }
+
     class MockThermostat
     {
         final double currentCoolingSetpoint = 123
@@ -105,11 +149,11 @@ class DeviceInputTypeTest extends Specification{
     }
 
     @Unroll
-    def "When user object provided, it is returned instead (multiple = #multiple is ignored)"()
+    def "When user object provided, it is returned instead, multiple = #multiple is ignored"()
     {
         when:
             def userThermostat = new MockThermostat()
-            def device = new DeviceInputValueFactory(Thermostat, "Thermostat")
+            def device = new DeviceInputValueFactory([Thermostat])
                     .makeInputObject('n', 't',  DefaultAndUserValues.bothValues(
                         NullableOptional.empty(), NullableOptional.withValue(userThermostat)), multiple)
 
@@ -130,9 +174,9 @@ class DeviceInputTypeTest extends Specification{
     }
 
     @Unroll
-    def "Enum attribute values are properly listed (multiple = #multiple)"() {
+    def "Enum attribute values are properly listed, multiple = #multiple"() {
         setup:
-            final def device = getDevice(new DeviceInputValueFactory(ThermostatMode, "ThermostatMode")
+            final def device = getDevice(new DeviceInputValueFactory([ThermostatMode])
                     .makeInputObject('n', 't', DefaultAndUserValues.empty(), multiple))
             final def attributes = device.getSupportedAttributes()
 

@@ -8,30 +8,30 @@ repositories {
 }
 
 task sourcesJar(type: Jar) {
-    classifier = 'sources'
+    archiveClassifier = 'sources'
     from sourceSets.main.allSource
 }
 
 task groovydocJar(type: Jar, dependsOn: groovydoc) {
-    classifier 'groovydoc'
+    archiveClassifier = 'groovydoc'
     from groovydoc.destinationDir
 }
 
 if (System.getenv("AZURE_ARTIFACTS_ENV_ACCESS_TOKEN") || (project.hasProperty('azureArtifactsGradleAccessToken')))
 {
-    publishing {
-        publications {
-            maven(MavenPublication){
-                groupId = 'me.biocomp.hubitat_ci'
-                artifactId = 'hubitat_ci'
-                version = 0.17
+publishing {
+    publications {
+        maven(MavenPublication){
+            groupId = 'me.biocomp.hubitat_ci'
+            artifactId = 'hubitat_ci'
+            version = 0.22
 
-                from components.java
+            from components.java
 
-                artifact sourcesJar
-                artifact groovydocJar
-            }
+            artifact sourcesJar
+            artifact groovydocJar
         }
+    }
 
         repositories{
             maven {
@@ -49,10 +49,10 @@ dependencies {
     implementation 'org.codehaus.groovy:groovy-all:2.5.4'
     implementation 'org.ow2.asm:asm:7.0'
 
-    compile 'su.litvak.chromecast:api-v2:0.11.1'
+    implementation 'su.litvak.chromecast:api-v2:0.11.1'
 
-    compile 'org.codehaus.groovy.modules.http-builder:http-builder:0.5.0'
+    implementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.5.0'
 
-    testCompile "org.spockframework:spock-core:1.2-groovy-2.5"
+    testImplementation "org.spockframework:spock-core:1.2-groovy-2.5"
     testImplementation 'junit:junit:4.12'
 }
