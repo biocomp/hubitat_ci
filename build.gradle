@@ -52,4 +52,5 @@ dependencies {
 
     testImplementation "org.spockframework:spock-core:1.2-groovy-2.5"
     testImplementation 'junit:junit:4.12'
+    testImplementation group: 'cglib', name: 'cglib-nodep', version: '3.3.0'
 }
