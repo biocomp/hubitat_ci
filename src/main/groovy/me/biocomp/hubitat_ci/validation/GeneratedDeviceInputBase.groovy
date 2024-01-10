@@ -46,7 +46,7 @@ class GeneratedDeviceInputBase implements DeviceWrapper {
     private static int nextDeviceId = 0
 
     @Synchronized
-    int generateNextDeviceId() {
+    private static int generateNextDeviceId() {
         nextDeviceId++
         return nextDeviceId
     }
