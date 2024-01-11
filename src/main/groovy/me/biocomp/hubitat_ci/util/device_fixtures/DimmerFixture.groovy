@@ -5,6 +5,7 @@ import me.biocomp.hubitat_ci.validation.DefaultAndUserValues
 
 import me.biocomp.hubitat_ci.capabilities.Switch
 import me.biocomp.hubitat_ci.capabilities.SwitchLevel
+import me.biocomp.hubitat_ci.capabilities.DoubleTapableButton
 
 /**
  * Factory for creating fixtures of dimmer devices that behave like real dimmers in Hubitat.
@@ -17,7 +18,7 @@ class DimmerFixture {
     * Constructs a new instance of a dimmer device fixture.
     */
     static def create(String name) {
-        def deviceInputValueFactory = new DeviceInputValueFactory([Switch, SwitchLevel])
+        def deviceInputValueFactory = new DeviceInputValueFactory([Switch, SwitchLevel, DoubleTapableButton])
 
         def dimmerDevice = deviceInputValueFactory.makeInputObject(name, 't',  DefaultAndUserValues.empty(), false)
 
@@ -43,6 +44,9 @@ class DimmerFixture {
                 if (level > 0) {
                     on()
                 }
+            }
+            dimmerMetaClass.doubleTap = { buttonNumber ->
+                appExecutor.sendEvent(dimmerDevice, [name: "doubleTapped.${buttonNumber}", value: buttonNumber])
             }
         }
 

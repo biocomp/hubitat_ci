@@ -35,7 +35,7 @@ abstract class AppExecutorWithEventForwarding implements AppExecutor {
     void sendEvent(DeviceWrapper device, Map properties) {
         subscriptions.each { SubInfo subInfo ->
             if (subInfo.toWhat == device && subInfo.attributeNameOrNameAndValueOrEventName == properties.name) {
-                def generatedEvent = new EventArgs(subInfo.toWhat.deviceId, device, properties.value)
+                def generatedEvent = new EventArgs(subInfo.toWhat.deviceId, device, properties.name, properties.value)
                 script."$subInfo.handler"(generatedEvent)
             }
         }
@@ -57,11 +57,13 @@ class SubInfo {
 class EventArgs {
     Object deviceId
     DeviceWrapper device
+    String name
     Object value
 
-    EventArgs(Object deviceId, DeviceWrapper device, Object value) {
+    EventArgs(Object deviceId, DeviceWrapper device, String name, Object value) {
         this.deviceId = deviceId
         this.device = device
+        this.name = name
         this.value = value
     }
 }
