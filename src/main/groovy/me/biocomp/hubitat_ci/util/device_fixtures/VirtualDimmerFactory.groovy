@@ -1,4 +1,4 @@
-package me.biocomp.hubitat_ci.util.virtual_device_factories
+package me.biocomp.hubitat_ci.util.device_fixtures
 
 import me.biocomp.hubitat_ci.app.preferences.DeviceInputValueFactory
 import me.biocomp.hubitat_ci.validation.DefaultAndUserValues
@@ -7,15 +7,15 @@ import me.biocomp.hubitat_ci.capabilities.Switch
 import me.biocomp.hubitat_ci.capabilities.SwitchLevel
 
 /**
- * Factory for creating virtual dimmer devices that behave like real dimmers in Hubitat.
- * These dimmer devices can be used in testing of app scripts.
+ * Factory for creating fixtures of dimmer devices that behave like real dimmers in Hubitat.
+ * These dimmer devices can be used in testing of app scripts, by passing them as inputs.
  * Like real dimmers, they implement both the Switch and SwitchLevel capabilities.
  * They also maintain state, and send events when their state changes.
  */
-class VirtualDimmerFactory {
+class DimmerFixtureFactory {
     private DeviceInputValueFactory deviceInputValueFactory
 
-    VirtualDimmerFactory() {
+    DimmerFixtureFactory() {
         this.deviceInputValueFactory = new DeviceInputValueFactory([Switch, SwitchLevel])
     }
 

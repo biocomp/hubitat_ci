@@ -9,7 +9,7 @@ import me.biocomp.hubitat_ci.api.common_api.Location
 import me.biocomp.hubitat_ci.api.common_api.Log
 import me.biocomp.hubitat_ci.app.AppValidator
 import me.biocomp.hubitat_ci.app.HubitatAppSandbox
-import me.biocomp.hubitat_ci.util.virtual_device_factories.VirtualDimmerFactory
+import me.biocomp.hubitat_ci.util.device_fixtures.DimmerFixtureFactory
 import me.biocomp.hubitat_ci.validation.Flags
 import spock.lang.Specification
 
@@ -24,7 +24,7 @@ class EventSubscriptionsTest extends
         _*getLog() >> log
     }
 
-    def dimmerFactory = new VirtualDimmerFactory()
+    def dimmerFactory = new DimmerFixtureFactory()
 
     def "Basic validation"() {
         expect:

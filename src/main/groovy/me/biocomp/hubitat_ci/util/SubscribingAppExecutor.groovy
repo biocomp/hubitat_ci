@@ -8,7 +8,7 @@ import me.biocomp.hubitat_ci.app.HubitatAppScript
 * An implementation of the subscribe() and sendEvent() portions of AppExecutor,
 * for use in testing of apps that subscribe to device events.
 * It is not a full implementation of the AppExecutor abstract class, so it
-* is still expected to be used by a Spock Spy.
+* is still expected to be wrapped in a Spock Spy.
 */
 abstract class SubscribingAppExecutor implements AppExecutor {
     private List<SubInfo> subscriptions = []
@@ -34,11 +34,9 @@ abstract class SubscribingAppExecutor implements AppExecutor {
     @Override
     void sendEvent(DeviceWrapper device, Map properties) {
         subscriptions.each { SubInfo subInfo ->
-            if (subInfo.toWhat == device) {
-                if (subInfo.attributeNameOrNameAndValueOrEventName == properties.name) {
-                    def generatedEvent = new EventArgs(subInfo.toWhat.deviceId, device, properties.value)
-                    script."$subInfo.handler"(generatedEvent)
-                }
+            if (subInfo.toWhat == device && subInfo.attributeNameOrNameAndValueOrEventName == properties.name) {
+                def generatedEvent = new EventArgs(subInfo.toWhat.deviceId, device, properties.value)
+                script."$subInfo.handler"(generatedEvent)
             }
         }
     }
