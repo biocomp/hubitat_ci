@@ -10,7 +10,7 @@ import me.biocomp.hubitat_ci.app.HubitatAppScript
 * It is not a full implementation of the AppExecutor abstract class, so it
 * is still expected to be wrapped in a Spock Spy.
 */
-abstract class SubscribingAppExecutor implements AppExecutor {
+abstract class AppExecutorWithEventForwarding implements AppExecutor {
     private List<SubInfo> subscriptions = []
 
     private HubitatAppScript script

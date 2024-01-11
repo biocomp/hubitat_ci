@@ -2,7 +2,7 @@ package me.biocomp.hubitat_ci
 
 import me.biocomp.hubitat_ci.api.Attribute
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
-import me.biocomp.hubitat_ci.util.SubscribingAppExecutor
+import me.biocomp.hubitat_ci.util.AppExecutorWithEventForwarding
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
 import me.biocomp.hubitat_ci.api.common_api.InstalledAppWrapper
 import me.biocomp.hubitat_ci.api.common_api.Location
@@ -14,7 +14,7 @@ import me.biocomp.hubitat_ci.validation.Flags
 import spock.lang.Specification
 
 /**
-* These are tests of the SubscribingAppExecutor class, to make sure it successfully passes
+* These are tests of the AppExecutorWithEventForwarding class, to make sure it successfully passes
 * events raised by a device to the apps subscribing to those events.
 */
 class EventSubscriptionsTest extends Specification {
@@ -22,7 +22,7 @@ class EventSubscriptionsTest extends Specification {
 
     def log = Mock(Log)
 
-    def appExecutor = Spy(SubscribingAppExecutor) {
+    def appExecutor = Spy(AppExecutorWithEventForwarding) {
         _*getLog() >> log
     }
 
