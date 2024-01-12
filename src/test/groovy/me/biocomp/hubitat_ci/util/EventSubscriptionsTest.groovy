@@ -9,7 +9,7 @@ import me.biocomp.hubitat_ci.api.common_api.Location
 import me.biocomp.hubitat_ci.api.common_api.Log
 import me.biocomp.hubitat_ci.app.AppValidator
 import me.biocomp.hubitat_ci.app.HubitatAppSandbox
-import me.biocomp.hubitat_ci.util.device_fixtures.DimmerFixture
+import me.biocomp.hubitat_ci.util.device_fixtures.DimmerFixtureFactory
 import me.biocomp.hubitat_ci.validation.Flags
 import spock.lang.Specification
 
@@ -33,7 +33,7 @@ class EventSubscriptionsTest extends Specification {
 
     void "App initialize subscribes to events"() {
         given:
-        def dimmerFixture = DimmerFixture.create('n')
+        def dimmerFixture = DimmerFixtureFactory.create('n')
 
         // Run the app sandbox, passing the dimmer fixture in.
         def appScript = sandbox.run(api: appExecutor,
@@ -52,7 +52,7 @@ class EventSubscriptionsTest extends Specification {
     void "levelHandler() ensures minimum level"() {
         given:
         // Define a dimmer fixture
-        def dimmerFixture = DimmerFixture.create('n')
+        def dimmerFixture = DimmerFixtureFactory.create('n')
 
         // Run the app sandbox, passing the dimmer fixture in.
         def appScript = sandbox.run(api: appExecutor,
@@ -74,7 +74,7 @@ class EventSubscriptionsTest extends Specification {
     void "setLevel() can turn on the dimmer"() {
         given:
         // Define a dimmer fixture
-        def dimmerFixture = DimmerFixture.create('n')
+        def dimmerFixture = DimmerFixtureFactory.create('n')
 
         // Run the app sandbox, passing the dimmer fixture in.
         def appScript = sandbox.run(api: appExecutor,
@@ -96,7 +96,7 @@ class EventSubscriptionsTest extends Specification {
     void "setLevel() does not turn on dimmer if zero"() {
         given:
         // Define a dimmer fixture
-        def dimmerFixture = DimmerFixture.create('n')
+        def dimmerFixture = DimmerFixtureFactory.create('n')
 
         // Run the app sandbox, passing the dimmer fixture in.
         def appScript = sandbox.run(api: appExecutor,
@@ -118,7 +118,7 @@ class EventSubscriptionsTest extends Specification {
     void "levelHandler() does not change level if above the minimum"() {
         given:
         // Define a dimmer fixture
-        def dimmerFixture = DimmerFixture.create('n')
+        def dimmerFixture = DimmerFixtureFactory.create('n')
 
         // Run the app sandbox, passing the dimmer fixture in.
         def appScript = sandbox.run(api: appExecutor,
@@ -140,8 +140,8 @@ class EventSubscriptionsTest extends Specification {
     void "levelHandler() adjusts correct dimmer from among multiple devices"() {
         given:
         // Define two dimmer fixtures
-        def dimmerFixture1 = DimmerFixture.create('n1')
-        def dimmerFixture2 = DimmerFixture.create('n2')
+        def dimmerFixture1 = DimmerFixtureFactory.create('n1')
+        def dimmerFixture2 = DimmerFixtureFactory.create('n2')
 
         // Run the app sandbox, passing the dimmer fixtures in.
         def appScript = sandbox.run(api: appExecutor,
@@ -166,7 +166,7 @@ class EventSubscriptionsTest extends Specification {
         void "switchOnHandler() ensures minimum level"() {
         given:
         // Define a dimmer fixture
-        def dimmerFixture = DimmerFixture.create('n')
+        def dimmerFixture = DimmerFixtureFactory.create('n')
 
         // Run the app sandbox, passing the dimmer fixture in.
         def appScript = sandbox.run(api: appExecutor,
@@ -188,7 +188,7 @@ class EventSubscriptionsTest extends Specification {
     void "switchOnHandler() does not change level if above the minimum"() {
         given:
         // Define a dimmer fixture
-        def dimmerFixture = DimmerFixture.create('n')
+        def dimmerFixture = DimmerFixtureFactory.create('n')
 
         // Run the app sandbox, passing the dimmer fixture in.
         def appScript = sandbox.run(api: appExecutor,
@@ -210,8 +210,8 @@ class EventSubscriptionsTest extends Specification {
     void "switchOnHandler() adjusts correct dimmer from among multiple devices"() {
         given:
         // Define two dimmer fixtures
-        def dimmerFixture1 = DimmerFixture.create('n1')
-        def dimmerFixture2 = DimmerFixture.create('n2')
+        def dimmerFixture1 = DimmerFixtureFactory.create('n1')
+        def dimmerFixture2 = DimmerFixtureFactory.create('n2')
 
         // Run the app sandbox, passing the dimmer fixtures in.
         def appScript = sandbox.run(api: appExecutor,

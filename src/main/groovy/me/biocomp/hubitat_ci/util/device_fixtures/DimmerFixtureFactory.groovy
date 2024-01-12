@@ -13,7 +13,7 @@ import me.biocomp.hubitat_ci.capabilities.DoubleTapableButton
  * Like real dimmers, they implement both the Switch and SwitchLevel capabilities.
  * They also maintain state, and send events when their state changes.
  */
-class DimmerFixture {
+class DimmerFixtureFactory {
     /**
     * Constructs a new instance of a dimmer device fixture.
     */
