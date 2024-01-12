@@ -35,7 +35,7 @@ class EventSubscriptionsTest extends Specification {
         def dimmerDevice = deviceInputValueFactory.makeInputObject(name, 't',  DefaultAndUserValues.empty(), false)
         def dimmerMetaClass = dimmerDevice.getMetaClass()
 
-        dimmerMetaClass.initialize = { appExecutor, script, state ->
+        dimmerMetaClass.initialize = { appExecutor, state ->
             dimmerMetaClass.state = state
             dimmerMetaClass.on = {
                 state.switch = "on"
@@ -90,7 +90,7 @@ class EventSubscriptionsTest extends Specification {
             )
         appExecutor.setSubscribingScript(appScript)
 
-        dimmerFixture.initialize(appExecutor, appScript, [switch: "on", level: 99])
+        dimmerFixture.initialize(appExecutor, [switch: "on", level: 99])
 
         when:
         appScript.installed()
@@ -112,7 +112,7 @@ class EventSubscriptionsTest extends Specification {
             )
         appExecutor.setSubscribingScript(appScript)
 
-        dimmerFixture.initialize(appExecutor, appScript, [switch: "off", level: 99])
+        dimmerFixture.initialize(appExecutor, [switch: "off", level: 99])
 
         when:
         appScript.installed()
@@ -134,7 +134,7 @@ class EventSubscriptionsTest extends Specification {
             )
         appExecutor.setSubscribingScript(appScript)
 
-        dimmerFixture.initialize(appExecutor, appScript, [switch: "off", level: 99])
+        dimmerFixture.initialize(appExecutor, [switch: "off", level: 99])
 
         when:
         appScript.installed()
@@ -156,7 +156,7 @@ class EventSubscriptionsTest extends Specification {
             )
         appExecutor.setSubscribingScript(appScript)
 
-        dimmerFixture.initialize(appExecutor, appScript, [switch: "on", level: 99])
+        dimmerFixture.initialize(appExecutor, [switch: "on", level: 99])
 
         when:
         appScript.installed()
@@ -179,8 +179,8 @@ class EventSubscriptionsTest extends Specification {
             )
         appExecutor.setSubscribingScript(appScript)
 
-        dimmerFixture1.initialize(appExecutor, appScript, [switch: "on", level: 99])
-        dimmerFixture2.initialize(appExecutor, appScript, [switch: "on", level: 99])
+        dimmerFixture1.initialize(appExecutor, [switch: "on", level: 99])
+        dimmerFixture2.initialize(appExecutor, [switch: "on", level: 99])
 
         when:
         appScript.installed()
@@ -204,7 +204,7 @@ class EventSubscriptionsTest extends Specification {
             )
         appExecutor.setSubscribingScript(appScript)
 
-        dimmerFixture.initialize(appExecutor, appScript, [switch: "off", level: 0])
+        dimmerFixture.initialize(appExecutor, [switch: "off", level: 0])
 
         when:
         appScript.installed()
@@ -226,7 +226,7 @@ class EventSubscriptionsTest extends Specification {
             )
         appExecutor.setSubscribingScript(appScript)
 
-        dimmerFixture.initialize(appExecutor, appScript, [switch: "off", level: 99])
+        dimmerFixture.initialize(appExecutor, [switch: "off", level: 99])
 
         when:
         appScript.installed()
@@ -249,8 +249,8 @@ class EventSubscriptionsTest extends Specification {
             )
         appExecutor.setSubscribingScript(appScript)
 
-        dimmerFixture1.initialize(appExecutor, appScript, [switch: "off", level: 0])
-        dimmerFixture2.initialize(appExecutor, appScript, [switch: "off", level: 0])
+        dimmerFixture1.initialize(appExecutor, [switch: "off", level: 0])
+        dimmerFixture2.initialize(appExecutor, [switch: "off", level: 0])
 
         when:
         appScript.installed()

@@ -25,7 +25,7 @@ class DimmerFixtureFactory {
         def dimmerMetaClass = dimmerDevice.getMetaClass()
 
         // Calling initialize attaches behavior involving commands, state maintenance, and sending events.
-        dimmerMetaClass.initialize = { appExecutor, script, state ->
+        dimmerMetaClass.initialize = { appExecutor, state ->
             dimmerMetaClass.state = state
             dimmerMetaClass.on = {
                 state.switch = "on"
