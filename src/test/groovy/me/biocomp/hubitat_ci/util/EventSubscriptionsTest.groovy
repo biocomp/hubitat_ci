@@ -44,7 +44,7 @@ class EventSubscriptionsTest extends Specification {
         appScript.initialize()
 
         then:
-        // Expect that events are subscribe to
+        // Expect that events are subscribed to
         1 * appExecutor.subscribe([dimmerFixture], 'level', 'levelHandler')
         1 * appExecutor.subscribe([dimmerFixture], 'switch.on', 'switchOnHandler')
     }
