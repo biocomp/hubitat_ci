@@ -35,7 +35,7 @@ abstract class AppExecutorWithEventForwarding implements AppExecutor {
     void sendEvent(DeviceWrapper device, Map properties) {
         subscriptions.each { SubInfo subInfo ->
             if (subInfo.toWhat == device && subInfo.attributeNameOrNameAndValueOrEventName == properties.name) {
-                def generatedEvent = new DeviceEventArgs(subInfo.toWhat.deviceId, device, properties.name, properties.value)
+                def generatedEvent = new DeviceEventArgs(device.getIdAsLong(), device, properties.name, properties.value)
                 script."$subInfo.handler"(generatedEvent)
             }
         }
@@ -55,22 +55,22 @@ abstract class AppExecutorWithEventForwarding implements AppExecutor {
             this.handler = handler
         }
     }
+}
 
-    /**
-    * Private class for sending events to handlers in app scripts.  It replicates
-    * the key parts of the events that the Hubitat framework passes to app scripts.
-    */
-    private class DeviceEventArgs {
-        Object deviceId
-        DeviceWrapper device
-        String name
-        Object value
+/**
+* Private class for sending events to handlers in app scripts.  It replicates
+* the key parts of the events that the Hubitat framework passes to app scripts.
+*/
+class DeviceEventArgs {
+    Object deviceId
+    DeviceWrapper device
+    String name
+    Object value
 
-        DeviceEventArgs(Object deviceId, DeviceWrapper device, String name, Object value) {
-            this.deviceId = deviceId
-            this.device = device
-            this.name = name
-            this.value = value
-        }
+    DeviceEventArgs(Object deviceId, DeviceWrapper device, String name, Object value) {
+        this.deviceId = deviceId
+        this.device = device
+        this.name = name
+        this.value = value
     }
 }
