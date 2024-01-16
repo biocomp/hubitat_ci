@@ -1,4 +1,4 @@
-package me.biocomp.hubitat_ci
+package me.biocomp.hubitat_ci.util.device_fixtures
 
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
