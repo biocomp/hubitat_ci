@@ -35,7 +35,7 @@ publishing {
 
         repositories{
             maven {
-                url System.getenv("MAVEN_ENDPOINT") ?: "${mavenEndpoint}" ?: "https://biocomp.pkgs.visualstudio.com/HubitatCiRelease/_packaging/hubitat_ci_feed/maven/v1"
+                url System.getenv("MAVEN_ENDPOINT") ?: "https://biocomp.pkgs.visualstudio.com/HubitatCiRelease/_packaging/hubitat_ci_feed/maven/v1"
                 credentials {
                     username "AZURE_ARTIFACTS"
                     password System.getenv("AZURE_ARTIFACTS_ENV_ACCESS_TOKEN") ?: "${azureArtifactsGradleAccessToken}"
