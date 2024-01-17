@@ -43,7 +43,7 @@ class GeneratedDeviceInputBase implements DeviceWrapper {
         this.deviceId = generateNextDeviceId()
     }
 
-    private static int nextDeviceId = 0
+    private static long nextDeviceId = 0
 
     @Synchronized
     private static int generateNextDeviceId() {
@@ -64,6 +64,11 @@ class GeneratedDeviceInputBase implements DeviceWrapper {
     @Override
     String getDisplayName() {
         inputName
+    }
+
+    @Override
+    Long getIdAsLong() {
+        deviceId
     }
 
     @Override
