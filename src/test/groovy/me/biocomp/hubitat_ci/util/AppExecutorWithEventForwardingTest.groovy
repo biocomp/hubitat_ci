@@ -101,4 +101,17 @@ class AppExecutorWithEventForwardingTest extends Specification {
         then:
         0 * appScript.levelHandler(_)
     }
+
+    def "Dates are parsed correctly by toDateTime method" () {
+        given:
+        def dateString = "2020-11-02T14:32:17+0000"
+
+        when:
+        def date = appExecutor.toDateTime(dateString)
+
+        then:
+        // This is the format that Hubitat hub uses when it converts dates to strings
+        // (as it does when storing a date in app or device state)
+        date.format("yyyy-MM-dd'T'HH:mm:ssZ", TimeZone.getTimeZone('UTC')) == dateString
+    }
 }
