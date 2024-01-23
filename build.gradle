@@ -17,14 +17,14 @@ task groovydocJar(type: Jar, dependsOn: groovydoc) {
     from groovydoc.destinationDir
 }
 
-if (System.getenv("AZURE_ARTIFACTS_ENV_ACCESS_TOKEN") || (project.hasProperty('azureArtifactsGradleAccessToken')))
+if (System.getenv("AZURE_ARTIFACTS_ENV_ACCESS_TOKEN") || project.hasProperty('azureArtifactsGradleAccessToken'))
 {
 publishing {
     publications {
         maven(MavenPublication){
             groupId = 'me.biocomp.hubitat_ci'
             artifactId = 'hubitat_ci'
-            version = 0.22
+            version = 0.23
 
             from components.java
 
@@ -35,7 +35,7 @@ publishing {
 
         repositories{
             maven {
-                url 'https://biocomp.pkgs.visualstudio.com/HubitatCiRelease/_packaging/hubitat_ci_feed/maven/v1'
+                url System.getenv("MAVEN_ENDPOINT") ?: "https://biocomp.pkgs.visualstudio.com/HubitatCiRelease/_packaging/hubitat_ci_feed/maven/v1"
                 credentials {
                     username "AZURE_ARTIFACTS"
                     password System.getenv("AZURE_ARTIFACTS_ENV_ACCESS_TOKEN") ?: "${azureArtifactsGradleAccessToken}"
@@ -47,6 +47,7 @@ publishing {
 
 dependencies {
     implementation 'org.codehaus.groovy:groovy-all:2.5.4'
+    implementation 'org.codehaus.groovy:groovy-dateutil:2.5.4'
     implementation 'org.ow2.asm:asm:7.0'
 
     implementation 'su.litvak.chromecast:api-v2:0.11.1'
