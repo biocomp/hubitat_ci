@@ -15,6 +15,13 @@ abstract class AppExecutorWithEventForwarding implements AppExecutor {
 
     private HubitatAppScript script
 
+    @Override
+    Date toDateTime(String dateTimeString) {
+        // Hubitat hub converts dates to strings when you store them in state.  It uses the
+        // format: 2020-11-02T14:32:17+0000
+        return Date.parse("yyyy-MM-dd'T'HH:mm:ssZ", dateTimeString)
+    }
+
     void setSubscribingScript(HubitatAppScript script) {
         this.script = script
     }
