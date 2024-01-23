@@ -1,6 +1,6 @@
 package me.biocomp.hubitat_ci
 
-import me.biocomp.hubitat_ci.util.AppExecutorWithEventForwarding
+import me.biocomp.hubitat_ci.util.IntegrationAppExecutor
 import me.biocomp.hubitat_ci.util.DeviceEventArgs
 import me.biocomp.hubitat_ci.util.TimeKeeper
 import me.biocomp.hubitat_ci.app.HubitatAppScript
@@ -16,8 +16,8 @@ abstract class LevelHandlingAppScript extends HubitatAppScript {
     abstract void levelHandler(DeviceEventArgs args)
 }
 
-class AppExecutorWithEventForwardingTest extends Specification {
-    def appExecutor = Spy(AppExecutorWithEventForwarding)
+class IntegrationAppExecutorTests extends Specification {
+    def appExecutor = Spy(IntegrationAppExecutor)
 
     def appScript = Mock(LevelHandlingAppScript)
 
@@ -25,7 +25,7 @@ class AppExecutorWithEventForwardingTest extends Specification {
         appExecutor.setSubscribingScript(appScript)
     }
 
-    def "AppExecutorWithEventForwarding will forward a message"() {
+    def "IntegrationAppExecutor will forward a message"() {
         given:
         def device = Mock(DeviceWrapper) {
             _*getIdAsLong() >> 1
@@ -89,7 +89,7 @@ class AppExecutorWithEventForwardingTest extends Specification {
         }
     }
 
-    def "AppExecutorWithEventForwarding ignores unsubscribed events"() {
+    def "IntegrationAppExecutor ignores unsubscribed events"() {
         given:
         def device = Mock(DeviceWrapper) {
             _*getIdAsLong() >> 1
