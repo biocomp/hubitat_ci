@@ -10,6 +10,7 @@ class TimeKeeperTests extends Specification {
     def currentDate = new Date()
 
     def setup() {
+        TimeZone.setDefault(TimeZone.getTimeZone('UTC'))
     }
 
     void "Can make normal Date objects"() {
@@ -34,7 +35,7 @@ class TimeKeeperTests extends Specification {
 
         then:
             date != currentDate
-            date.toString() == "Sun Aug 31 08:23:45 CDT 2014"
+            date.toString() == "Sun Aug 31 08:23:45 UTC 2014"
 
         cleanup:
             timekeeper.uninstall()
@@ -72,7 +73,7 @@ class TimeKeeperTests extends Specification {
 
         then:
             date2 != currentDate
-            date2.toString() == "Sun Aug 31 08:23:45 CDT 2014"
+            date2.toString() == "Sun Aug 31 08:23:45 UTC 2014"
 
         cleanup:
             timekeeper.uninstall()
@@ -88,7 +89,7 @@ class TimeKeeperTests extends Specification {
 
         then:
             date != currentDate
-            date.toString() == "Sun Aug 31 08:23:45 CDT 2014"
+            date.toString() == "Sun Aug 31 08:23:45 UTC 2014"
 
         when:
             timekeeper.advanceMinutes(5)
@@ -96,7 +97,7 @@ class TimeKeeperTests extends Specification {
 
         then:
             date2 != currentDate
-            date2.toString() == "Sun Aug 31 08:28:45 CDT 2014"
+            date2.toString() == "Sun Aug 31 08:28:45 UTC 2014"
 
         cleanup:
             timekeeper.uninstall()
@@ -112,7 +113,7 @@ class TimeKeeperTests extends Specification {
 
         then:
             date != currentDate
-            date.toString() == "Sun Aug 31 08:23:45 CDT 2014"
+            date.toString() == "Sun Aug 31 08:23:45 UTC 2014"
 
         when:
             timekeeper.advanceSeconds(5)
@@ -120,7 +121,7 @@ class TimeKeeperTests extends Specification {
 
         then:
             date2 != currentDate
-            date2.toString() == "Sun Aug 31 08:23:50 CDT 2014"
+            date2.toString() == "Sun Aug 31 08:23:50 UTC 2014"
 
         cleanup:
             timekeeper.uninstall()
@@ -136,7 +137,7 @@ class TimeKeeperTests extends Specification {
 
         then:
             date != currentDate
-            date.toString() == "Sun Aug 31 08:23:45 CDT 2014"
+            date.toString() == "Sun Aug 31 08:23:45 UTC 2014"
 
         when:
             timekeeper.advanceHours(5)
@@ -144,7 +145,7 @@ class TimeKeeperTests extends Specification {
 
         then:
             date2 != currentDate
-            date2.toString() == "Sun Aug 31 13:23:45 CDT 2014"
+            date2.toString() == "Sun Aug 31 13:23:45 UTC 2014"
 
         cleanup:
             timekeeper.uninstall()
@@ -160,7 +161,7 @@ class TimeKeeperTests extends Specification {
 
         then:
             date != currentDate
-            date.toString() == "Sun Aug 31 08:23:45 CDT 2014"
+            date.toString() == "Sun Aug 31 08:23:45 UTC 2014"
 
         when:
             timekeeper.advanceDays(5)
@@ -168,7 +169,7 @@ class TimeKeeperTests extends Specification {
 
         then:
             date2 != currentDate
-            date2.toString() == "Fri Sep 05 08:23:45 CDT 2014"
+            date2.toString() == "Fri Sep 05 08:23:45 UTC 2014"
 
         cleanup:
             timekeeper.uninstall()
@@ -184,7 +185,7 @@ class TimeKeeperTests extends Specification {
 
         then:
             date != currentDate
-            date.toString() == "Sun Aug 31 08:23:45 CDT 2014"
+            date.toString() == "Sun Aug 31 08:23:45 UTC 2014"
 
         when:
             timekeeper.uninstall()
