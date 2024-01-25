@@ -20,8 +20,6 @@ import spock.lang.Specification
 */
 class DateSubstitutionTest extends Specification {
     HubitatAppSandbox sandbox = new HubitatAppSandbox(new File("Scripts/DimmerMinimums.groovy"))
-    def now = new Date()
-
     def log = Mock(Log)
 
     def appExecutor = Spy(AppExecutorWithEventForwarding) {
@@ -38,6 +36,7 @@ class DateSubstitutionTest extends Specification {
         appExecutor.setSubscribingScript(appScript)
 
         when:
+        def now = new Date()
         def nowAccordingToTheAppScript = appScript.scriptNow()
 
         then:
@@ -54,6 +53,7 @@ class DateSubstitutionTest extends Specification {
         appExecutor.setSubscribingScript(appScript)
 
         when:
+        def now = new Date()
         def timekeeper = new TimeKeeper(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:45"))
         timekeeper.install()
 

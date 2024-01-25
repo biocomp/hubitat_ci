@@ -36,11 +36,13 @@ class AppValidator extends ValidatorBase{
     }
 
     HubitatAppScript parseScript(File scriptFile) {
-        return constructParser(HubitatAppScript).parse(scriptFile) as HubitatAppScript
+        def scriptFileText = scriptFile.getText('UTF-8')
+        return parseScript(scriptFileText)
     }
 
     HubitatAppScript parseScript(String scriptText) {
-        return constructParser(HubitatAppScript).parse(scriptText) as HubitatAppScript
+        scriptText = scriptText.replaceAll("new\\s*Date\\s*\\(\\s*\\)", "new me.biocomp.hubitat_ci.util.TimeKeeperDate()")
+        return constructParser(HubitatAppScript).parse(scriptText, "Script1") as HubitatAppScript
     }
 
     @CompileStatic

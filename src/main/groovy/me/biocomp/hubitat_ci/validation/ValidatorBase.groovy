@@ -5,6 +5,7 @@ import me.biocomp.hubitat_ci.util.DoNotCallMeBinding
 import me.biocomp.hubitat_ci.util.LoggingCompilationCustomizer
 import me.biocomp.hubitat_ci.util.RemovePrivateFromScriptCompilationCustomizer
 import me.biocomp.hubitat_ci.util.SandboxClassLoader
+import me.biocomp.hubitat_ci.util.TimeKeeperDate
 import groovy.json.JsonBuilder
 import groovy.time.TimeCategory
 import groovy.transform.CompileStatic
@@ -66,6 +67,7 @@ class ValidatorBase {
                                                             Collection,
                                                             Collections,
                                                             Date,
+                                                            TimeKeeperDate,
                                                             DecimalFormat,
                                                             Double,
                                                             Float,
