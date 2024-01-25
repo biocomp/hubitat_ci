@@ -7,6 +7,8 @@ import groovy.transform.CompileStatic
 class SandboxClassLoader extends ClassLoader {
     SandboxClassLoader(ClassLoader parent) {
         super(parent)
+
+        super.loadClass("java.util.Date", true)
     }
 
     @Override
@@ -22,9 +24,12 @@ class SandboxClassLoader extends ClassLoader {
 
         switch (name)
         {
+            case 'java.util.Date':
+                return "me.biocomp.hubitat_ci.util.TimeKeeperDate"
+
             case 'hubitat.device.HubAction':
                 return "${basePackageName}common_api.HubAction"
-                
+
             case 'hubitat.device.HubMultiAction':
                 return "${basePackageName}common_api.HubMultiAction"
 
@@ -112,7 +117,7 @@ class SandboxClassLoader extends ClassLoader {
 
             case ~/hubitat\.zwave\..*/:
                 return name.replace('hubitat.zwave', "${basePackageName}device_api.zwave")
-                
+
             case ~/hubitat\.zigbee\..*/:
                 return name.replace('hubitat.zigbee', "${basePackageName}device_api.zigbee")
 
@@ -126,4 +131,3 @@ class SandboxClassLoader extends ClassLoader {
         //return name.replaceAll('''hubitat[\\.$]device[\\.$]''', "me.biocomp.hubitat_ci.api.")
     }
 }
-
