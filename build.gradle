@@ -49,6 +49,7 @@ dependencies {
     implementation 'org.codehaus.groovy:groovy-all:2.5.4'
     implementation 'org.codehaus.groovy:groovy-dateutil:2.5.4'
     implementation 'org.ow2.asm:asm:7.0'
+    implementation 'org.quartz-scheduler:quartz:2.3.0'
 
     implementation 'su.litvak.chromecast:api-v2:0.11.1'
 
