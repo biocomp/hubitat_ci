@@ -1,8 +1,9 @@
 package me.biocomp.hubitat_ci
 
 import me.biocomp.hubitat_ci.util.IntegrationScheduler
+import me.biocomp.hubitat_ci.util.TimeKeeper
 
-// import groovy.time.*
+ //import groovy.time.*
 // import org.quartz.CronExpression
 
 import spock.lang.Specification
@@ -17,7 +18,10 @@ class IntegrationSchedulerTests extends Specification {
     def scheduler = new IntegrationScheduler()
     def listener = Mock(TestListener)
 
+    String ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+
     def setup() {
+        TimeZone.setDefault(TimeZone.getTimeZone('UTC'))
     }
 
     // def "test2"() {
@@ -200,5 +204,107 @@ class IntegrationSchedulerTests extends Specification {
             scheduler._scheduleRequests[0].cronExpressionOrIsoDate == "0 0 */3 * * ?"
             scheduler._scheduleRequests[0].handlerMethod == "handler"
             scheduler._scheduleRequests[0].options == null
+    }
+
+    def "schedule with a Date generates a request with the ISO date"() {
+        when:
+            def date = new Date()
+            scheduler.schedule(date, "handler")
+
+        then:
+            scheduler._scheduleRequests.size() == 1
+            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == date.format(ISO_8601_FORMAT)
+            scheduler._scheduleRequests[0].handlerMethod == "handler"
+            scheduler._scheduleRequests[0].options == null
+            scheduler._scheduleRequests[0].deleteAfterSingleRun == false
+    }
+
+    def "runOnce with a Date generates a request with the ISO date"() {
+        when:
+            def date = new Date()
+            scheduler.runOnce(date, "handler")
+
+        then:
+            scheduler._scheduleRequests.size() == 1
+            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == date.format(ISO_8601_FORMAT)
+            scheduler._scheduleRequests[0].handlerMethod == "handler"
+            scheduler._scheduleRequests[0].options == null
+            scheduler._scheduleRequests[0].deleteAfterSingleRun == true
+    }
+
+    def "runIn generates a request with an ISO date that is the amount of seconds in the future"() {
+        when:
+            def seconds = 60
+            def now = new Date()
+            def expectedDate = new Date(now.getTime() + (seconds * 1000))
+            scheduler.runIn(seconds, "handler")
+
+        then:
+            scheduler._scheduleRequests.size() == 1
+            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == expectedDate.format(ISO_8601_FORMAT)
+            scheduler._scheduleRequests[0].handlerMethod == "handler"
+            scheduler._scheduleRequests[0].options == null
+            scheduler._scheduleRequests[0].deleteAfterSingleRun == true
+    }
+
+    def "runInMillis generates a request with an ISO date that is the amount of millis in the future"() {
+        when:
+            def millis = 50
+            def now = new Date()
+            def expectedDate = new Date(now.getTime() + millis)
+            scheduler.runInMillis(millis, "handler")
+
+        then:
+            scheduler._scheduleRequests.size() == 1
+            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == expectedDate.format(ISO_8601_FORMAT)
+            scheduler._scheduleRequests[0].handlerMethod == "handler"
+            scheduler._scheduleRequests[0].options == null
+            scheduler._scheduleRequests[0].deleteAfterSingleRun == true
+    }
+
+    def "runIn also interoperates with the TimeKeeper class"() {
+        given:
+            def timekeeper = new TimeKeeper(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:45"))
+            timekeeper.install()
+            def tkScheduler = new IntegrationScheduler(timekeeper)
+
+        when:
+            def seconds = 60
+            def now = timekeeper.now()
+            def expectedDate = new Date(now.getTime() + (seconds * 1000))
+            tkScheduler.runIn(seconds, "handler")
+
+        then:
+            tkScheduler._scheduleRequests.size() == 1
+            tkScheduler._scheduleRequests[0].cronExpressionOrIsoDate == expectedDate.format(ISO_8601_FORMAT)
+            tkScheduler._scheduleRequests[0].handlerMethod == "handler"
+            tkScheduler._scheduleRequests[0].options == null
+            tkScheduler._scheduleRequests[0].deleteAfterSingleRun == true
+
+        cleanup:
+            timekeeper.uninstall()
+    }
+
+    def "runInMillis also interoperates with the TimeKeeper class"() {
+        given:
+            def timekeeper = new TimeKeeper(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:45"))
+            timekeeper.install()
+            def tkScheduler = new IntegrationScheduler(timekeeper)
+
+        when:
+            def millis = 50
+            def now = timekeeper.now()
+            def expectedDate = new Date(now.getTime() + millis)
+            tkScheduler.runInMillis(millis, "handler")
+
+        then:
+            tkScheduler._scheduleRequests.size() == 1
+            tkScheduler._scheduleRequests[0].cronExpressionOrIsoDate == expectedDate.format(ISO_8601_FORMAT)
+            tkScheduler._scheduleRequests[0].handlerMethod == "handler"
+            tkScheduler._scheduleRequests[0].options == null
+            tkScheduler._scheduleRequests[0].deleteAfterSingleRun == true
+
+        cleanup:
+            timekeeper.uninstall()
     }
 }

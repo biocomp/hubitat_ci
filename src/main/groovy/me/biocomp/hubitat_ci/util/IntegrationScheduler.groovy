@@ -14,14 +14,16 @@ import org.quartz.CronExpression
 * executes any scheduled methods that would be between the old time and the new time.
 */
 class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
-    IntegrationScheduler() {
-    }
+    private TimeKeeper timekeeper
 
     IntegrationScheduler(TimeKeeper timekeeper) {
         timekeeper?.addListener(this)
+        this.timekeeper = timekeeper
     }
 
     boolean _is_hubitat_ci_private() { true }
+
+    String ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'"
 
     @Override
     void timeChangedEventReceived(TimeChangedEvent event) {
@@ -183,7 +185,7 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
         runInMillis(delayInMilliSeconds, handlerMethod.name, options)
     }
     void runInMillis(Long delayInMilliSeconds, String handlerMethod, Map options) {
-        runOnce(new Date((new Date()).getTime() + delayInMilliSeconds), handlerMethod, options)
+        runOnce(new Date((timekeeper != null ? timekeeper.now() : new Date()).getTime() + delayInMilliSeconds), handlerMethod, options)
     }
 
     /**
@@ -205,13 +207,7 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
         runOnce(dateTime, handlerMethod.name, options)
     }
     void runOnce(Date dateTime, String handlerMethod, Map options) {
-        def scheduleRequest = new ScheduleRequest(
-            cronExpressionOrIsoDate: ############,
-            handlerMethod: handlerMethod,
-            options: options,
-            deleteAfterSingleRun: true
-        )
-        _scheduleRequests.add(scheduleRequest)
+        runOnce(dateTime.format(ISO_8601_FORMAT), handlerMethod, options)
     }
 
     /**
@@ -223,10 +219,24 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
      *  overwrite (Boolean) - Specify [overwrite: false] to not overwrite any existing pending schedule handler for the given method (the abstract behavior is to overwrite the pending schedule). Specifying [overwrite: false] can lead to multiple different schedules for the same handler method, so be sure your handler method can handle this.
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runOnce(String dateTime, MetaMethod handlerMethod) {}
-    void runOnce(String dateTime, String handlerMethod) {}
-    void runOnce(String dateTime, MetaMethod handlerMethod, Map options) {}
-    void runOnce(String dateTime, String handlerMethod, Map options) {}
+    void runOnce(String dateTime, MetaMethod handlerMethod) {
+        runOnce(dateTime, handlerMethod.name, null)
+    }
+    void runOnce(String dateTime, String handlerMethod) {
+        runOnce(dateTime, handlerMethod, null)
+    }
+    void runOnce(String dateTime, MetaMethod handlerMethod, Map options) {
+        runOnce(dateTime, handlerMethod.name, options)
+    }
+    void runOnce(String dateTime, String handlerMethod, Map options) {
+        def scheduleRequest = new ScheduleRequest(
+            cronExpressionOrIsoDate: dateTime,
+            handlerMethod: handlerMethod,
+            options: options,
+            deleteAfterSingleRun: true
+        )
+        _scheduleRequests.add(scheduleRequest)
+    }
 
     /**
      * Creates a scheduled job that calls the handlerMethod once per day at the time specified.
@@ -235,10 +245,18 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
      * @param options. Supported keys:
      *  data (Map) - will be passed to handlerMethod
      */
-    void schedule(Date dateTime, MetaMethod handlerMethod) {}
-    void schedule(Date dateTime, String handlerMethod) {}
-    void schedule(Date dateTime, MetaMethod handlerMethod, Map options) {}
-    void schedule(Date dateTime, String handlerMethod, Map options) {}
+    void schedule(Date dateTime, MetaMethod handlerMethod) {
+        schedule(dateTime, handlerMethod.name, null)
+    }
+    void schedule(Date dateTime, String handlerMethod) {
+        schedule(dateTime, handlerMethod, null)
+    }
+    void schedule(Date dateTime, MetaMethod handlerMethod, Map options) {
+        schedule(dateTime, handlerMethod.name, options)
+    }
+    void schedule(Date dateTime, String handlerMethod, Map options) {
+        schedule(dateTime.format(ISO_8601_FORMAT), handlerMethod, options)
+    }
     /**
      * Creates a scheduled job that calls the handlerMethod according to cronExpression, or once a day at specified time.
      * @param cronExpressionOrIsoDate
