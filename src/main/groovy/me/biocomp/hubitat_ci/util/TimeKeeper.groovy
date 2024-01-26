@@ -50,6 +50,12 @@ class TimeKeeper {
         internalDate = newDate
     }
 
+    def advanceMillis(int millis) {
+        def oldDate = internalDate
+        internalDate = groovy.time.TimeCategory.plus(internalDate, new groovy.time.TimeDuration(0, 0, 0, 0, millis))
+        fireTimeChangedEvent(oldDate, internalDate)
+    }
+
     def advanceSeconds(int seconds) {
         internalDate = groovy.time.TimeCategory.plus(internalDate, new groovy.time.TimeDuration(0, 0, 0, seconds, 0))
     }

@@ -3,40 +3,16 @@ package me.biocomp.hubitat_ci
 import me.biocomp.hubitat_ci.util.IntegrationScheduler
 import me.biocomp.hubitat_ci.util.TimeKeeper
 
- //import groovy.time.*
-// import org.quartz.CronExpression
-
 import spock.lang.Specification
 
-interface TestListener {
-    void handler(Map data)
-}
-
-
-class IntegrationSchedulerTests extends Specification {
-
+class IntegrationSchedulerSchedulingTests extends Specification {
     def scheduler = new IntegrationScheduler()
-    def listener = Mock(TestListener)
 
     String ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'"
 
     def setup() {
         TimeZone.setDefault(TimeZone.getTimeZone('UTC'))
     }
-
-    // def "test2"() {
-    //     given:
-    //     def cronExpression = "0 15 10 * * ?"    // Fire at 10:15am every day
-
-    //     expect:
-    //         Date now = new Date()
-    //         use (groovy.time.TimeCategory) {
-    //             now = new Date() - 24.hours
-    //         }
-    //         def exp = new CronExpression(cronExpression)
-    //         def nextFireAt = exp.getNextValidTimeAfter(now)
-    //         nextFireAt == null
-    // }
 
     def "Can schedule with cron expression and method name"() {
         given:
@@ -47,7 +23,7 @@ class IntegrationSchedulerTests extends Specification {
 
         then:
             scheduler._scheduleRequests.size() == 1
-            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == cronExpression
+            scheduler._scheduleRequests[0].cronExpression == cronExpression
             scheduler._scheduleRequests[0].handlerMethod == "handler"
             scheduler._scheduleRequests[0].options == null
     }
@@ -74,7 +50,7 @@ class IntegrationSchedulerTests extends Specification {
 
         then:
             scheduler._scheduleRequests.size() == 1
-            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == cronExpression
+            scheduler._scheduleRequests[0].cronExpression == cronExpression
             scheduler._scheduleRequests[0].handlerMethod == "handler"
             scheduler._scheduleRequests[0].options == options
     }
@@ -90,10 +66,10 @@ class IntegrationSchedulerTests extends Specification {
 
         then:
             scheduler._scheduleRequests.size() == 2
-            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == cronExpression1
+            scheduler._scheduleRequests[0].cronExpression == cronExpression1
             scheduler._scheduleRequests[0].handlerMethod == "handler1"
             scheduler._scheduleRequests[0].options == null
-            scheduler._scheduleRequests[1].cronExpressionOrIsoDate == cronExpression2
+            scheduler._scheduleRequests[1].cronExpression == cronExpression2
             scheduler._scheduleRequests[1].handlerMethod == "handler2"
             scheduler._scheduleRequests[1].options == null
     }
@@ -110,7 +86,7 @@ class IntegrationSchedulerTests extends Specification {
 
         then:
             scheduler._scheduleRequests.size() == 1
-            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == cronExpression2
+            scheduler._scheduleRequests[0].cronExpression == cronExpression2
             scheduler._scheduleRequests[0].handlerMethod == "handler2"
             scheduler._scheduleRequests[0].options == null
     }
@@ -135,7 +111,7 @@ class IntegrationSchedulerTests extends Specification {
 
         then:
             scheduler._scheduleRequests.size() == 1
-            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == "0 * * * * ?"
+            scheduler._scheduleRequests[0].cronExpression == "0 * * * * ?"
             scheduler._scheduleRequests[0].handlerMethod == "handler"
             scheduler._scheduleRequests[0].options == null
     }
@@ -146,7 +122,7 @@ class IntegrationSchedulerTests extends Specification {
 
         then:
             scheduler._scheduleRequests.size() == 1
-            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == "0 */5 * * * ?"
+            scheduler._scheduleRequests[0].cronExpression == "0 */5 * * * ?"
             scheduler._scheduleRequests[0].handlerMethod == "handler"
             scheduler._scheduleRequests[0].options == null
     }
@@ -157,7 +133,7 @@ class IntegrationSchedulerTests extends Specification {
 
         then:
             scheduler._scheduleRequests.size() == 1
-            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == "0 */10 * * * ?"
+            scheduler._scheduleRequests[0].cronExpression == "0 */10 * * * ?"
             scheduler._scheduleRequests[0].handlerMethod == "handler"
             scheduler._scheduleRequests[0].options == null
     }
@@ -168,7 +144,7 @@ class IntegrationSchedulerTests extends Specification {
 
         then:
             scheduler._scheduleRequests.size() == 1
-            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == "0 */15 * * * ?"
+            scheduler._scheduleRequests[0].cronExpression == "0 */15 * * * ?"
             scheduler._scheduleRequests[0].handlerMethod == "handler"
             scheduler._scheduleRequests[0].options == null
     }
@@ -179,7 +155,7 @@ class IntegrationSchedulerTests extends Specification {
 
         then:
             scheduler._scheduleRequests.size() == 1
-            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == "0 */30 * * * ?"
+            scheduler._scheduleRequests[0].cronExpression == "0 */30 * * * ?"
             scheduler._scheduleRequests[0].handlerMethod == "handler"
             scheduler._scheduleRequests[0].options == null
     }
@@ -190,7 +166,7 @@ class IntegrationSchedulerTests extends Specification {
 
         then:
             scheduler._scheduleRequests.size() == 1
-            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == "0 0 * * * ?"
+            scheduler._scheduleRequests[0].cronExpression == "0 0 * * * ?"
             scheduler._scheduleRequests[0].handlerMethod == "handler"
             scheduler._scheduleRequests[0].options == null
     }
@@ -201,62 +177,88 @@ class IntegrationSchedulerTests extends Specification {
 
         then:
             scheduler._scheduleRequests.size() == 1
-            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == "0 0 */3 * * ?"
+            scheduler._scheduleRequests[0].cronExpression == "0 0 */3 * * ?"
             scheduler._scheduleRequests[0].handlerMethod == "handler"
             scheduler._scheduleRequests[0].options == null
     }
 
-    def "schedule with a Date generates a request with the ISO date"() {
+    def "schedule with a Date generates a request with a CRON expression"() {
         when:
-            def date = new Date()
-            scheduler.schedule(date, "handler")
+            def date1 = Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 1:23:46")
+            scheduler.schedule(date1, "handler")
+
+            def date2 = Date.parse("yyyy-MM-dd hh:mm:ss", "2014-09-1 14:45:46")
+            scheduler.schedule(date2, "handler")
 
         then:
-            scheduler._scheduleRequests.size() == 1
-            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == date.format(ISO_8601_FORMAT)
+            scheduler._scheduleRequests.size() == 2
+
+            scheduler._scheduleRequests[0].cronExpression == "0 23 1 * * ?"
             scheduler._scheduleRequests[0].handlerMethod == "handler"
             scheduler._scheduleRequests[0].options == null
             scheduler._scheduleRequests[0].deleteAfterSingleRun == false
+
+            scheduler._scheduleRequests[1].cronExpression == "0 45 14 * * ?"
+            scheduler._scheduleRequests[1].handlerMethod == "handler"
+            scheduler._scheduleRequests[1].options == null
+            scheduler._scheduleRequests[1].deleteAfterSingleRun == false
     }
 
-    def "runOnce with a Date generates a request with the ISO date"() {
+    def "runOnce with a Date generates a request with a nextFireAt, but no cron expression"() {
         when:
-            def date = new Date()
-            scheduler.runOnce(date, "handler")
+            def date1 = Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 1:23:46")
+            scheduler.runOnce(date1, "handler")
+
+            def date2 = Date.parse("yyyy-MM-dd hh:mm:ss", "2014-09-1 14:45:46")
+            scheduler.runOnce(date2, "handler")
 
         then:
-            scheduler._scheduleRequests.size() == 1
-            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == date.format(ISO_8601_FORMAT)
+            scheduler._scheduleRequests.size() == 2
+
+            scheduler._scheduleRequests[0].cronExpression == null
+            scheduler._scheduleRequests[0].nextFireAt == date1
             scheduler._scheduleRequests[0].handlerMethod == "handler"
             scheduler._scheduleRequests[0].options == null
             scheduler._scheduleRequests[0].deleteAfterSingleRun == true
+
+            scheduler._scheduleRequests[1].cronExpression == null
+            scheduler._scheduleRequests[1].nextFireAt == date2
+            scheduler._scheduleRequests[1].handlerMethod == "handler"
+            scheduler._scheduleRequests[1].options == null
+            scheduler._scheduleRequests[1].deleteAfterSingleRun == true
     }
 
-    def "runIn generates a request with an ISO date that is the amount of seconds in the future"() {
+    def "runIn generates a request with a nextFireAt that is the amount of seconds in the future"() {
         when:
             def seconds = 60
-            def now = new Date()
+            def timekeeper = new TimeKeeper()
+            scheduler = new IntegrationScheduler(timekeeper)    // Pass in a timekeeper to ensure millisecond precision in the comparison, because runIn generates a date internally.
+            def now = timekeeper.now()
             def expectedDate = new Date(now.getTime() + (seconds * 1000))
             scheduler.runIn(seconds, "handler")
 
         then:
             scheduler._scheduleRequests.size() == 1
-            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == expectedDate.format(ISO_8601_FORMAT)
+            scheduler._scheduleRequests[0].cronExpression == null
+            scheduler._scheduleRequests[0].nextFireAt.getTime() == expectedDate.getTime()
             scheduler._scheduleRequests[0].handlerMethod == "handler"
             scheduler._scheduleRequests[0].options == null
             scheduler._scheduleRequests[0].deleteAfterSingleRun == true
     }
 
-    def "runInMillis generates a request with an ISO date that is the amount of millis in the future"() {
+    def "runInMillis generates a request with a nextFireAt"() {
         when:
             def millis = 50
-            def now = new Date()
+            def timekeeper = new TimeKeeper()
+            scheduler = new IntegrationScheduler(timekeeper)    // Pass in a timekeeper to ensure millisecond precision in the comparison, because runIn generates a date internally.
+            def now = timekeeper.now()
             def expectedDate = new Date(now.getTime() + millis)
             scheduler.runInMillis(millis, "handler")
 
         then:
             scheduler._scheduleRequests.size() == 1
-            scheduler._scheduleRequests[0].cronExpressionOrIsoDate == expectedDate.format(ISO_8601_FORMAT)
+            scheduler._scheduleRequests[0].cronExpression == null
+            scheduler._scheduleRequests[0].nextFireAt.getTime() == expectedDate.getTime()
             scheduler._scheduleRequests[0].handlerMethod == "handler"
             scheduler._scheduleRequests[0].options == null
             scheduler._scheduleRequests[0].deleteAfterSingleRun == true
@@ -271,12 +273,13 @@ class IntegrationSchedulerTests extends Specification {
         when:
             def seconds = 60
             def now = timekeeper.now()
-            def expectedDate = new Date(now.getTime() + (seconds * 1000))
+            def expectedDate = new Date(now.getTime() + seconds * 1000)
             tkScheduler.runIn(seconds, "handler")
 
         then:
             tkScheduler._scheduleRequests.size() == 1
-            tkScheduler._scheduleRequests[0].cronExpressionOrIsoDate == expectedDate.format(ISO_8601_FORMAT)
+            tkScheduler._scheduleRequests[0].cronExpression == null
+            tkScheduler._scheduleRequests[0].nextFireAt.getTime() == expectedDate.getTime()
             tkScheduler._scheduleRequests[0].handlerMethod == "handler"
             tkScheduler._scheduleRequests[0].options == null
             tkScheduler._scheduleRequests[0].deleteAfterSingleRun == true
@@ -299,7 +302,8 @@ class IntegrationSchedulerTests extends Specification {
 
         then:
             tkScheduler._scheduleRequests.size() == 1
-            tkScheduler._scheduleRequests[0].cronExpressionOrIsoDate == expectedDate.format(ISO_8601_FORMAT)
+            tkScheduler._scheduleRequests[0].cronExpression == null
+            tkScheduler._scheduleRequests[0].nextFireAt.getTime() == expectedDate.getTime()
             tkScheduler._scheduleRequests[0].handlerMethod == "handler"
             tkScheduler._scheduleRequests[0].options == null
             tkScheduler._scheduleRequests[0].deleteAfterSingleRun == true

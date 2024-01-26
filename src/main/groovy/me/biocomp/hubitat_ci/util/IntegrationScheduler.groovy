@@ -15,19 +15,79 @@ import org.quartz.CronExpression
 */
 class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
     private TimeKeeper timekeeper
+    private Object handlingObject
 
     IntegrationScheduler(TimeKeeper timekeeper) {
         timekeeper?.addListener(this)
         this.timekeeper = timekeeper
     }
 
+    def setHandlingObject(Object handlingObject) {
+        this.handlingObject = handlingObject
+    }
+
     boolean _is_hubitat_ci_private() { true }
 
-    String ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+    String ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
     @Override
     void timeChangedEventReceived(TimeChangedEvent event) {
-        // TODO - Implement
+        if (handlingObject == null) {
+            return
+        }
+
+        // for each schedule request, see if it should be triggered
+        _scheduleRequests.each { scheduleRequest ->
+            evaluateSingleScheduleRequest(scheduleRequest, event)
+        }
+
+        // Now, filter out any that are flagged for removal
+        _scheduleRequests.removeIf { it.flagForRemoval }
+    }
+
+    private void evaluateSingleScheduleRequest(ScheduleRequest scheduleRequest, TimeChangedEvent event) {
+        if (scheduleRequest.cronExpression == null && scheduleRequest.nextFireAt != null) {
+            // There's a special case where there's no cronString, but there is a nextFireAt date.
+            // This is because if something needs to be scheduled to the second/millisecond, CRON can't do that.
+            if (scheduleRequest.nextFireAt.after(event.oldTime) && scheduleRequest.nextFireAt.before(event.newTime)) {
+                // fire it
+                fireOffScheduledEvent(scheduleRequest)
+                scheduleRequest.flagForRemoval = scheduleRequest.deleteAfterSingleRun
+            }
+        }
+        else {
+            // But otherwise, we need to evaluate the cron expression, relative to the time that
+            // has elapsed.  And we have to account for if the cron expression would have fired
+            // more than once during the elapsed time.
+            def cronString = scheduleRequest.cronExpression
+            def exp = new CronExpression(cronString)
+
+            def evalStartTime = event.oldTime
+            def evalEndTime = event.newTime
+
+            while (evalStartTime < evalEndTime) {
+                def nextFireAt = exp.getNextValidTimeAfter(evalStartTime)
+
+                if (nextFireAt == null || nextFireAt.after(evalEndTime)) {
+                    break
+                }
+
+                // fire it
+                fireOffScheduledEvent(scheduleRequest)
+                scheduleRequest.flagForRemoval = scheduleRequest.deleteAfterSingleRun
+
+                // Advance the evalStartTime to see if we need to fire more than once during this interval
+                evalStartTime = nextFireAt
+            }
+        }
+    }
+
+    private void fireOffScheduledEvent(ScheduleRequest scheduleRequest) {
+        if (scheduleRequest.options?.data != null) {
+            handlingObject."${scheduleRequest.handlerMethod}"(scheduleRequest.options.data)
+        } else {
+            handlingObject."${scheduleRequest.handlerMethod}"([:])
+        }
     }
 
     /**
@@ -207,7 +267,14 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
         runOnce(dateTime, handlerMethod.name, options)
     }
     void runOnce(Date dateTime, String handlerMethod, Map options) {
-        runOnce(dateTime.format(ISO_8601_FORMAT), handlerMethod, options)
+        def scheduleRequest = new ScheduleRequest(
+            cronExpression: null,
+            nextFireAt: dateTime,
+            handlerMethod: handlerMethod,
+            options: options,
+            deleteAfterSingleRun: true
+        )
+        _scheduleRequests.add(scheduleRequest)
     }
 
     /**
@@ -229,13 +296,8 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
         runOnce(dateTime, handlerMethod.name, options)
     }
     void runOnce(String dateTime, String handlerMethod, Map options) {
-        def scheduleRequest = new ScheduleRequest(
-            cronExpressionOrIsoDate: dateTime,
-            handlerMethod: handlerMethod,
-            options: options,
-            deleteAfterSingleRun: true
-        )
-        _scheduleRequests.add(scheduleRequest)
+        parsedDate = Date.parse(ISO_8601_FORMAT, cronExpressionOrIsoDate)
+        runOnce(parsedDate, handlerMethod, options)
     }
 
     /**
@@ -255,7 +317,16 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
         schedule(dateTime, handlerMethod.name, options)
     }
     void schedule(Date dateTime, String handlerMethod, Map options) {
-        schedule(dateTime.format(ISO_8601_FORMAT), handlerMethod, options)
+        // CRON expression for once a day at the time portion of dateTime
+        def cronExpression = dateTime.format("0 m H * * ?")
+
+        def scheduleRequest = new ScheduleRequest(
+            cronExpression: cronExpression,
+            handlerMethod: handlerMethod,
+            options: options,
+            deleteAfterSingleRun: false
+        )
+        _scheduleRequests.add(scheduleRequest)
     }
     /**
      * Creates a scheduled job that calls the handlerMethod according to cronExpression, or once a day at specified time.
@@ -275,8 +346,21 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
         schedule(cronExpressionOrIsoDate, handlerMethod.name, options)
     }
     void schedule(String cronExpressionOrIsoDate, String handlerMethod, Map options) {
+        // Try to parse cronExpressionOrIsoDate as a date.
+        // If it parses, then forward the call to schedule(Date, String, Map)
+        // If it does not parse, then assume it is a cron expression and continue.
+
+        Date dateTime = null
+        try {
+            dateTime = Date.parse(ISO_8601_FORMAT, cronExpressionOrIsoDate)
+            schedule(dateTime, handlerMethod, options)
+            return
+        } catch (Exception e) {
+            // ignore
+        }
+
         def scheduleRequest = new ScheduleRequest(
-            cronExpressionOrIsoDate: cronExpressionOrIsoDate,
+            cronExpression: cronExpressionOrIsoDate,
             handlerMethod: handlerMethod,
             options: options,
             deleteAfterSingleRun: false
@@ -307,13 +391,15 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
         _scheduleRequests.removeIf { it.handlerMethod == method }
     }
 
-    // All the cron jobs that have been scheduled
+    // All the jobs that have been scheduled
     ArrayList<ScheduleRequest> _scheduleRequests = new ArrayList<ScheduleRequest>()
 
     private class ScheduleRequest {
-        String cronExpressionOrIsoDate
+        String cronExpression           // Even if they schedule by an iso date, we're going to convert it to a cron expression before we start tracking it.
+        Date nextFireAt                 // Cron can't schedule for seconds and milliseconds, so for some requests, we have to use an exact date.
         String handlerMethod
         Map options
         boolean deleteAfterSingleRun
+        boolean flagForRemoval = false
     }
 }
