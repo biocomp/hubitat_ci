@@ -25,7 +25,7 @@ class SchedulerRecursionIntegrationTest extends Specification {
     def state = [callbackCount: 0]
     TimeKeeper timekeeper = new TimeKeeper(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:20:01"))    // This time is chosen to not be on a minute or 5 minute boundary
     IntegrationScheduler scheduler = new IntegrationScheduler(timekeeper)
-    IntegrationAppExecutor appExecutor = Spy(IntegrationAppExecutor) {
+    IntegrationAppExecutor appExecutor = Spy(IntegrationAppExecutor, constructorArgs: [scheduler: scheduler]) {
         _*getLog() >> log
         _*getState() >> state
     }
@@ -40,7 +40,6 @@ class SchedulerRecursionIntegrationTest extends Specification {
         appScript = sandbox.run(api: appExecutor,
             userSettingValues: [switches: [switchFixture], enableLogging: true])
 
-        appExecutor.setScheduler(new IntegrationScheduler(timekeeper))
         appExecutor.setSubscribingScript(appScript)
 
         timekeeper.install()
