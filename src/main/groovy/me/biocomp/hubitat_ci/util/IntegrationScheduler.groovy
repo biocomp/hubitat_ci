@@ -44,15 +44,6 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
         ArrayList<ScheduleRequest> jobsToRemove = new ArrayList<ScheduleRequest>()
 
         // for each schedule request, see if it should be triggered
-        // for (Iterator<ScheduleRequest> iterator = _scheduleRequests.iterator(); iterator.hasNext();) {
-        //     ScheduleRequest scheduleRequest = iterator.next()
-        //     boolean shouldRemoveJob = evaluateSingleScheduleRequest(scheduleRequest, event)
-        //     if (shouldRemoveJob) {
-        //         iterator.remove()
-        //         //jobsToRemove.add(scheduleRequest)
-        //     }
-        // }
-
         _scheduleRequests.each { scheduleRequest ->
             def shouldRemoveJob = evaluateSingleScheduleRequest(scheduleRequest, event)
             if (shouldRemoveJob) {
