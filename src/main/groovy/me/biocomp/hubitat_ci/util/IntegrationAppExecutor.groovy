@@ -53,6 +53,8 @@ abstract class IntegrationAppExecutor implements AppExecutor {
 
     void setSubscribingScript(HubitatAppScript script) {
         this.script = script
+
+        this.scheduler?.setHandlingObject(script)
     }
 
     @Override
@@ -100,7 +102,7 @@ abstract class IntegrationAppExecutor implements AppExecutor {
      * BEGIN SECTION: Methods from BaseScheduler trait
      *******************************************************/
 
-    private IntegrationScheduler scheduler
+    IntegrationScheduler scheduler
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.

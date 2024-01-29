@@ -116,7 +116,8 @@ class IntegrationSchedulerTriggeringTests extends Specification {
         given:
             scheduler.runInMillis(10, "handler")
         when:
-            timekeeper.advanceMillis(21)
+            timekeeper.advanceMillis(11)
+            timekeeper.advanceMillis(11)
         then:
             1 * listener.handler(_ as Map)
     }
@@ -143,7 +144,8 @@ class IntegrationSchedulerTriggeringTests extends Specification {
         given:
             scheduler.runIn(10, "handler")
         when:
-            timekeeper.advanceSeconds(21)
+            timekeeper.advanceSeconds(11)
+            timekeeper.advanceSeconds(11)
         then:
             1 * listener.handler(_ as Map)
     }

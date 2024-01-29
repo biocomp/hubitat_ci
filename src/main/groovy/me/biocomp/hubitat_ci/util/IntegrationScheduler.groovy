@@ -5,6 +5,8 @@ import me.biocomp.hubitat_ci.util.TimeKeeper
 import me.biocomp.hubitat_ci.util.TimeChangedEvent
 import me.biocomp.hubitat_ci.util.TimeChangedListener
 
+import java.util.concurrent.CopyOnWriteArrayList
+import groovy.transform.Synchronized
 import org.quartz.CronExpression
 
 /**
@@ -16,6 +18,8 @@ import org.quartz.CronExpression
 class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
     private TimeKeeper timekeeper
     private Object handlingObject
+
+    private final integrationSchedulerLock = new Object()
 
     IntegrationScheduler(TimeKeeper timekeeper) {
         timekeeper?.addListener(this)
@@ -31,28 +35,45 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
     String ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
     @Override
+    @Synchronized("integrationSchedulerLock")
     void timeChangedEventReceived(TimeChangedEvent event) {
         if (handlingObject == null) {
             return
         }
 
+        ArrayList<ScheduleRequest> jobsToRemove = new ArrayList<ScheduleRequest>()
+
         // for each schedule request, see if it should be triggered
+        // for (Iterator<ScheduleRequest> iterator = _scheduleRequests.iterator(); iterator.hasNext();) {
+        //     ScheduleRequest scheduleRequest = iterator.next()
+        //     boolean shouldRemoveJob = evaluateSingleScheduleRequest(scheduleRequest, event)
+        //     if (shouldRemoveJob) {
+        //         iterator.remove()
+        //         //jobsToRemove.add(scheduleRequest)
+        //     }
+        // }
+
         _scheduleRequests.each { scheduleRequest ->
-            evaluateSingleScheduleRequest(scheduleRequest, event)
+            def shouldRemoveJob = evaluateSingleScheduleRequest(scheduleRequest, event)
+            if (shouldRemoveJob) {
+                jobsToRemove.add(scheduleRequest)
+            }
         }
 
         // Now, filter out any that are flagged for removal
-        _scheduleRequests.removeIf { it.flagForRemoval }
+        _scheduleRequests.removeAll(jobsToRemove)
     }
 
-    private void evaluateSingleScheduleRequest(ScheduleRequest scheduleRequest, TimeChangedEvent event) {
+    private boolean evaluateSingleScheduleRequest(ScheduleRequest scheduleRequest, TimeChangedEvent event) {
+        boolean shouldRemoveJob = false
+
         if (scheduleRequest.cronExpression == null && scheduleRequest.nextFireAt != null) {
             // There's a special case where there's no cronString, but there is a nextFireAt date.
             // This is because if something needs to be scheduled to the second/millisecond, CRON can't do that.
             if (scheduleRequest.nextFireAt.after(event.oldTime) && scheduleRequest.nextFireAt.before(event.newTime)) {
                 // fire it
                 fireOffScheduledEvent(scheduleRequest)
-                scheduleRequest.flagForRemoval = scheduleRequest.deleteAfterSingleRun
+                shouldRemoveJob = scheduleRequest.deleteAfterSingleRun
             }
         }
         else {
@@ -74,12 +95,14 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
 
                 // fire it
                 fireOffScheduledEvent(scheduleRequest)
-                scheduleRequest.flagForRemoval = scheduleRequest.deleteAfterSingleRun
+                shouldRemoveJob = scheduleRequest.deleteAfterSingleRun
 
                 // Advance the evalStartTime to see if we need to fire more than once during this interval
                 evalStartTime = nextFireAt
             }
         }
+
+        return shouldRemoveJob
     }
 
     private void fireOffScheduledEvent(ScheduleRequest scheduleRequest) {
@@ -274,7 +297,7 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
             options: options,
             deleteAfterSingleRun: true
         )
-        _scheduleRequests.add(scheduleRequest)
+        addToSchedule(scheduleRequest)
     }
 
     /**
@@ -326,7 +349,7 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
             options: options,
             deleteAfterSingleRun: false
         )
-        _scheduleRequests.add(scheduleRequest)
+        addToSchedule(scheduleRequest)
     }
     /**
      * Creates a scheduled job that calls the handlerMethod according to cronExpression, or once a day at specified time.
@@ -365,12 +388,18 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
             options: options,
             deleteAfterSingleRun: false
         )
+        addToSchedule(scheduleRequest)
+    }
+
+    @Synchronized("integrationSchedulerLock")
+    private void addToSchedule(ScheduleRequest scheduleRequest) {
         _scheduleRequests.add(scheduleRequest)
     }
 
     /**
      * Deletes all scheduled jobs for the App.
      */
+    @Synchronized("integrationSchedulerLock")
     void unschedule() {
         _scheduleRequests.clear()
     }
@@ -379,6 +408,7 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
      * Deletes scheduled job for the App.
      * @param method - method to unschedule
      */
+    @Synchronized("integrationSchedulerLock")
     void unschedule(MetaMethod method) {
         _scheduleRequests.removeIf { it.handlerMethod == method.name }
     }
@@ -387,12 +417,13 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
      * Deletes scheduled job for the App.
      * @param method - method to unschedule
      */
+    @Synchronized("integrationSchedulerLock")
     void unschedule(String method) {
         _scheduleRequests.removeIf { it.handlerMethod == method }
     }
 
     // All the jobs that have been scheduled
-    ArrayList<ScheduleRequest> _scheduleRequests = new ArrayList<ScheduleRequest>()
+    CopyOnWriteArrayList<ScheduleRequest> _scheduleRequests = new CopyOnWriteArrayList<ScheduleRequest>()
 
     private class ScheduleRequest {
         String cronExpression           // Even if they schedule by an iso date, we're going to convert it to a cron expression before we start tracking it.
@@ -400,6 +431,5 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
         String handlerMethod
         Map options
         boolean deleteAfterSingleRun
-        boolean flagForRemoval = false
     }
 }

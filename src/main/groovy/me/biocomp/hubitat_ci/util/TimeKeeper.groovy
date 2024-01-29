@@ -2,6 +2,8 @@ package me.biocomp.hubitat_ci.util
 
 import groovy.time.*
 
+import groovy.transform.Synchronized
+
 /**
 * TimeKeeperDate is just a Date that we can override the constructor for, without impacting
 * the base Date constructor.
@@ -18,6 +20,10 @@ class TimeKeeperDate extends Date {
 */
 class TimeKeeper {
     private Date internalDate = null
+
+    private final CopyOnWriteArrayList<TimeChangedListener> timeChangedListeners
+
+    private final timekeeperLock = new Object()
 
     TimeKeeper() {
         internalDate = new Date()
@@ -70,5 +76,39 @@ class TimeKeeper {
 
     def advanceDays(int days) {
         internalDate = groovy.time.TimeCategory.plus(internalDate, new groovy.time.TimeDuration(days, 0, 0, 0, 0))
+        fireTimeChangedEvent(oldDate, internalDate)
     }
+
+    @Synchronized("timekeeperLock")
+    def addListener(TimeChangedListener listener) {
+        timeChangedListeners.add(listener)
+    }
+
+    @Synchronized("timekeeperLock")
+    def removeListener(TimeChangedListener listener) {
+        timeChangedListeners.remove(listener)
+    }
+
+    @Synchronized("timekeeperLock")
+    def fireTimeChangedEvent(Date oldTime, Date newTime) {
+        TimeChangedEvent event = new TimeChangedEvent(this, oldTime, newTime)
+        timeChangedListeners.each { listener ->
+            listener.timeChangedEventReceived(event)
+        }
+    }
+}
+
+class TimeChangedEvent extends EventObject {
+    Date oldTime
+    Date newTime
+
+    TimeChangedEvent(Object source, Date oldTime, Date newTime) {
+        super(source)
+        this.oldTime = oldTime
+        this.newTime = newTime
+    }
+}
+
+interface TimeChangedListener {
+    void timeChangedEventReceived(TimeChangedEvent event)
 }
