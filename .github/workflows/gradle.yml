@@ -7,11 +7,7 @@
 
 name: Java CI with Gradle
 
-on:
-  push:
-    branches: [ "TimeKeeperAndScheduler" ]
-  pull_request:
-    branches: [ "TimeKeeperAndScheduler" ]
+on: workflow_dispatch
 
 permissions:
   contents: read
