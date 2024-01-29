@@ -5,6 +5,7 @@ import groovy.time.*
 import me.biocomp.hubitat_ci.util.TimeKeeper
 import me.biocomp.hubitat_ci.util.TimeKeeperDate
 import me.biocomp.hubitat_ci.util.TimeChangedEvent
+import me.biocomp.hubitat_ci.util.TimeChangedListener
 
 import spock.lang.Specification
 
@@ -219,7 +220,7 @@ class TimeKeeperTests extends Specification {
             timekeeper.install()
 
         when: "A date is created from the TimeKeeper"
-            def date = new Date()
+            def date = new TimeKeeperDate()
 
         then: "It should be the date we set"
             date != currentDate
@@ -248,7 +249,7 @@ class TimeKeeperTests extends Specification {
             timekeeper.install()
 
         when: "A date is created from the TimeKeeper"
-            def date = new Date()
+            def date = new TimeKeeperDate()
 
         then: "It should be the date we set"
             date != currentDate
@@ -277,7 +278,7 @@ class TimeKeeperTests extends Specification {
             timekeeper.install()
 
         when: "A date is created from the TimeKeeper"
-            def date = new Date()
+            def date = new TimeKeeperDate()
 
         then: "It should be the date we set"
             date != currentDate

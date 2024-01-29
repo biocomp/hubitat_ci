@@ -28,10 +28,12 @@ class TimeKeeper {
 
     TimeKeeper() {
         internalDate = new Date()
+        timeChangedListeners = new CopyOnWriteArrayList<TimeChangedListener>()
     }
 
     TimeKeeper(Date startingDate) {
         internalDate = startingDate
+        timeChangedListeners = new CopyOnWriteArrayList<TimeChangedListener>()
     }
 
     /**
@@ -64,18 +66,25 @@ class TimeKeeper {
     }
 
     def advanceSeconds(int seconds) {
+        def oldDate = internalDate
         internalDate = groovy.time.TimeCategory.plus(internalDate, new groovy.time.TimeDuration(0, 0, 0, seconds, 0))
+        fireTimeChangedEvent(oldDate, internalDate)
     }
 
     def advanceMinutes(int minutes) {
+        def oldDate = internalDate
         internalDate = groovy.time.TimeCategory.plus(internalDate, new groovy.time.TimeDuration(0, 0, minutes, 0, 0))
+        fireTimeChangedEvent(oldDate, internalDate)
     }
 
     def advanceHours(int hours) {
+        def oldDate = internalDate
         internalDate = groovy.time.TimeCategory.plus(internalDate, new groovy.time.TimeDuration(0, hours, 0, 0, 0))
+        fireTimeChangedEvent(oldDate, internalDate)
     }
 
     def advanceDays(int days) {
+        def oldDate = internalDate
         internalDate = groovy.time.TimeCategory.plus(internalDate, new groovy.time.TimeDuration(days, 0, 0, 0, 0))
         fireTimeChangedEvent(oldDate, internalDate)
     }
