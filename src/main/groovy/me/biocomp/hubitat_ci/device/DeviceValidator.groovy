@@ -32,11 +32,13 @@ class DeviceValidator extends
     }
 
     HubitatDeviceScript parseScript(File scriptFile) {
-        return constructParser(HubitatDeviceScript, makeCustomizers()).parse(scriptFile) as HubitatDeviceScript
+        def scriptFileText = scriptFile.getText('UTF-8')
+        return parseScript(scriptFileText)
     }
 
     HubitatDeviceScript parseScript(String scriptText) {
-        return constructParser(HubitatDeviceScript, makeCustomizers()).parse(scriptText) as HubitatDeviceScript
+        scriptText = super.replaceDateReferences(scriptText)
+        return constructParser(HubitatDeviceScript, makeCustomizers()).parse(scriptText, "Script1") as HubitatDeviceScript
     }
 
     /**

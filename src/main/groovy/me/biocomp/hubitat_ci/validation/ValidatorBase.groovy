@@ -295,4 +295,9 @@ class ValidatorBase {
     boolean hasAnyOfFlags(Set<Flags> flags) {
         return this.flags.intersect(flags)
     }
+
+    String replaceDateReferences(String scriptText) {
+        scriptText = scriptText.replaceAll("new\\s*Date\\s*\\(\\s*\\)", "new me.biocomp.hubitat_ci.util.TimeKeeperDate()")
+        return scriptText
+    }
 }

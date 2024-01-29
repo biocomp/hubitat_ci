@@ -18,7 +18,7 @@ import spock.lang.Specification
 * A set of tests to verify that the SandBoxClassLoader replaces references to Date()
 * with TimeKeeperDate() when parsing the app script.
 */
-class DateSubstitutionTest extends Specification {
+class AppDateSubstitutionTest extends Specification {
     HubitatAppSandbox sandbox = new HubitatAppSandbox(new File("Scripts/DimmerMinimums.groovy"))
     def log = Mock(Log)
 

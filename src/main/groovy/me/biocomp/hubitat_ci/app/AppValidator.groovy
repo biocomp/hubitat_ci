@@ -41,7 +41,7 @@ class AppValidator extends ValidatorBase{
     }
 
     HubitatAppScript parseScript(String scriptText) {
-        scriptText = scriptText.replaceAll("new\\s*Date\\s*\\(\\s*\\)", "new me.biocomp.hubitat_ci.util.TimeKeeperDate()")
+        scriptText = super.replaceDateReferences(scriptText)
         return constructParser(HubitatAppScript).parse(scriptText, "Script1") as HubitatAppScript
     }
 
