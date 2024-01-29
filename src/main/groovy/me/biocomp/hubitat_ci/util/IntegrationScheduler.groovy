@@ -34,7 +34,6 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
 
     String ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
-    @Override
     @Synchronized("integrationSchedulerLock")
     void timeChangedEventReceived(TimeChangedEvent event) {
         if (handlingObject == null) {

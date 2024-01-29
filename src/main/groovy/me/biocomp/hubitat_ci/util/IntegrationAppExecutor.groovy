@@ -2,8 +2,8 @@ package me.biocomp.hubitat_ci.util
 
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
+import me.biocomp.hubitat_ci.api.common_api.BaseScheduler
 import me.biocomp.hubitat_ci.app.HubitatAppScript
-import me.biocomp.hubitat_ci.util.IntegrationScheduler
 
 /**
 * An implementation of portions of AppExecutor that are useful for integration tests.
@@ -12,13 +12,13 @@ import me.biocomp.hubitat_ci.util.IntegrationScheduler
 * The parts that are implemented are:
 * - Time methods from BaseExecutor trait
 * - Methods from Subscription interface
-* - Methods from BaseScheduler trait
+* - Methods from BaseScheduler trait (passed through to a BaseScheduler dependency)
 */
 abstract class IntegrationAppExecutor implements AppExecutor {
     IntegrationAppExecutor() {
     }
 
-    IntegrationAppExecutor(IntegrationScheduler scheduler) {
+    IntegrationAppExecutor(BaseScheduler scheduler) {
         this.scheduler = scheduler
     }
 
@@ -102,7 +102,10 @@ abstract class IntegrationAppExecutor implements AppExecutor {
      * BEGIN SECTION: Methods from BaseScheduler trait
      *******************************************************/
 
-    IntegrationScheduler scheduler
+    // This is the scheduler that will be used to schedule events.
+    // This app executor outsources its scheduling logic to the scheduler, if it exists.
+    // In tests, it will generally be an instance of IntegrationScheduler.
+    BaseScheduler scheduler
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
@@ -265,7 +268,7 @@ abstract class IntegrationAppExecutor implements AppExecutor {
 }
 
 /**
-* Private class for sending events to handlers in app scripts.  It replicates
+* Class for sending events to handlers in app scripts.  It replicates
 * the key parts of the events that the Hubitat framework passes to app scripts.
 */
 class DeviceEventArgs {
