@@ -24,7 +24,7 @@ class SandboxClassLoader extends ClassLoader {
         {
             case 'hubitat.device.HubAction':
                 return "${basePackageName}common_api.HubAction"
-
+                
             case 'hubitat.device.HubMultiAction':
                 return "${basePackageName}common_api.HubMultiAction"
 
@@ -112,7 +112,7 @@ class SandboxClassLoader extends ClassLoader {
 
             case ~/hubitat\.zwave\..*/:
                 return name.replace('hubitat.zwave', "${basePackageName}device_api.zwave")
-
+                
             case ~/hubitat\.zigbee\..*/:
                 return name.replace('hubitat.zigbee', "${basePackageName}device_api.zigbee")
 
@@ -126,3 +126,4 @@ class SandboxClassLoader extends ClassLoader {
         //return name.replaceAll('''hubitat[\\.$]device[\\.$]''', "me.biocomp.hubitat_ci.api.")
     }
 }
+
