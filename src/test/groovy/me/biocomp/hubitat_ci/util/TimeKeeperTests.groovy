@@ -4,6 +4,7 @@ import groovy.time.*
 
 import me.biocomp.hubitat_ci.util.TimeKeeper
 import me.biocomp.hubitat_ci.util.TimeKeeperDate
+import me.biocomp.hubitat_ci.util.TimeChangedEvent
 
 import spock.lang.Specification
 

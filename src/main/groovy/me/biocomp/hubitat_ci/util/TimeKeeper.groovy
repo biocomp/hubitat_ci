@@ -3,6 +3,7 @@ package me.biocomp.hubitat_ci.util
 import groovy.time.*
 
 import groovy.transform.Synchronized
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
 * TimeKeeperDate is just a Date that we can override the constructor for, without impacting
