@@ -38,9 +38,10 @@ class DateSubstitutionTest extends Specification {
         when:
         def now = new Date()
         def nowAccordingToTheAppScript = appScript.scriptNow()
+        def differenceInMillis = nowAccordingToTheAppScript.getTime() - now.getTime()
 
-        then:
-        nowAccordingToTheAppScript.toString() == now.toString()
+        then: "Since we're generating Dates twice in succession, there can be a slight time difference, but we don't want to allow much."
+        differenceInMillis < 10
     }
 
     void "If TimeKeeper is installed, then the app script returns simulated time"() {
