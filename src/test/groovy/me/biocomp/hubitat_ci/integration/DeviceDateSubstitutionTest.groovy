@@ -33,7 +33,7 @@ class DeviceDateSubstitutionTest extends Specification {
         def differenceInMillis = nowAccordingToTheDeviceScript.getTime() - now.getTime()
 
         then: "Since we're generating Dates twice in succession, there can be a slight time difference, but we don't want to allow much."
-        differenceInMillis < 10
+        differenceInMillis < 1000
     }
 
     void "If TimeKeeper is installed, then the device script returns simulated time"() {

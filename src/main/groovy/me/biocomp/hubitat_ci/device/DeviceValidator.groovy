@@ -37,7 +37,7 @@ class DeviceValidator extends
     }
 
     HubitatDeviceScript parseScript(String scriptText) {
-        scriptText = super.replaceDateReferences(scriptText)
+        scriptText = super.patchScriptText(scriptText)
         return constructParser(HubitatDeviceScript, makeCustomizers()).parse(scriptText, "Script1") as HubitatDeviceScript
     }
 
