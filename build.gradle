@@ -24,7 +24,7 @@ publishing {
         maven(MavenPublication){
             groupId = 'me.biocomp.hubitat_ci'
             artifactId = System.getenv("MAVEN_ARTIFACT_ID") ?: 'hubitat_ci'
-            version = 0.01
+            version = 0.23
 
             from components.java
 
