@@ -29,14 +29,17 @@ class DimmerFixtureFactory {
             dimmerMetaClass.state = state
             dimmerMetaClass.on = {
                 state.switch = "on"
+                state.doubleTapped = null
                 appExecutor.sendEvent(dimmerDevice, [name: "switch.on", value: "on"])
             }
             dimmerMetaClass.off = {
                 state.switch = "off"
+                state.doubleTapped = null
                 appExecutor.sendEvent(dimmerDevice, [name: "switch.off", value: "off"])
             }
             dimmerMetaClass.setLevel = { int level ->
                 state.level = level
+                state.doubleTapped = null
 
                 appExecutor.sendEvent(dimmerDevice, [name: "level", value: level])
 
@@ -46,6 +49,7 @@ class DimmerFixtureFactory {
                 }
             }
             dimmerMetaClass.doubleTap = { buttonNumber ->
+                state.doubleTapped = buttonNumber
                 appExecutor.sendEvent(dimmerDevice, [name: "doubleTapped.${buttonNumber}", value: buttonNumber])
             }
         }

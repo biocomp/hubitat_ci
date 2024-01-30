@@ -25,6 +25,7 @@ class DimmerFixtureFactoryTests extends Specification {
         then:
         1*appExecutor.sendEvent(dimmerFixture, [name: "switch.on", value: "on"])
         dimmerFixture.state.switch == "on"
+        dimmerFixture.state.doubleTapped == null
     }
 
     void "Dimmer can turn off"() {
@@ -38,6 +39,7 @@ class DimmerFixtureFactoryTests extends Specification {
         then:
         1*appExecutor.sendEvent(dimmerFixture, [name: "switch.off", value: "off"])
         dimmerFixture.state.switch == "off"
+        dimmerFixture.state.doubleTapped == null
     }
 
     void "Dimmer can set level"() {
@@ -51,6 +53,7 @@ class DimmerFixtureFactoryTests extends Specification {
         then:
         1*appExecutor.sendEvent(dimmerFixture, [name: "level", value: 100])
         dimmerFixture.state.level == 100
+        dimmerFixture.state.doubleTapped == null
     }
 
     void "Non-zero setLevel will turn a dimmer on"() {
@@ -66,6 +69,7 @@ class DimmerFixtureFactoryTests extends Specification {
         1*appExecutor.sendEvent(dimmerFixture, [name: "switch.on", value: "on"])
         dimmerFixture.state.switch == "on"
         dimmerFixture.state.level == 100
+        dimmerFixture.state.doubleTapped == null
     }
 
     void "Dimmer can double-tap up"() {
@@ -78,6 +82,7 @@ class DimmerFixtureFactoryTests extends Specification {
 
         then:
         1*appExecutor.sendEvent(dimmerFixture, [name: "doubleTapped.1", value: 1])
+        dimmerFixture.state.doubleTapped == 1
     }
 
     void "Dimmer can double-tap down"() {
@@ -90,6 +95,7 @@ class DimmerFixtureFactoryTests extends Specification {
 
         then:
         1*appExecutor.sendEvent(dimmerFixture, [name: "doubleTapped.2", value: 2])
+        dimmerFixture.state.doubleTapped == 2
     }
 
 }
