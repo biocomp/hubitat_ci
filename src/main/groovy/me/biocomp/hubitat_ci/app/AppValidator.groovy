@@ -41,7 +41,7 @@ class AppValidator extends ValidatorBase{
     }
 
     HubitatAppScript parseScript(String scriptText) {
-        scriptText = super.replaceDateReferences(scriptText)
+        scriptText = super.patchScriptText(scriptText)
         return constructParser(HubitatAppScript).parse(scriptText, "Script1") as HubitatAppScript
     }
 

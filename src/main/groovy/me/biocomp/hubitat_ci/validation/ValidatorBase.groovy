@@ -296,7 +296,7 @@ class ValidatorBase {
         return this.flags.intersect(flags)
     }
 
-    String replaceDateReferences(String scriptText) {
+    String patchScriptText(String scriptText) {
         scriptText = scriptText.replaceAll("new\\s*Date\\s*\\(\\s*\\)", "new me.biocomp.hubitat_ci.util.TimeKeeperDate()")
         return scriptText
     }
