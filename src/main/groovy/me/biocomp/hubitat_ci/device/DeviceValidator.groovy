@@ -7,10 +7,13 @@ import me.biocomp.hubitat_ci.validation.InputCommon
 import me.biocomp.hubitat_ci.validation.Flags
 import me.biocomp.hubitat_ci.validation.NamedParametersValidator
 import me.biocomp.hubitat_ci.validation.ValidatorBase
+
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
 import groovy.transform.TypeCheckingMode
+
 import org.codehaus.groovy.control.customizers.CompilationCustomizer
+import org.apache.commons.io.FilenameUtils
 
 import java.lang.reflect.Method
 
@@ -34,10 +37,7 @@ class DeviceValidator extends
     HubitatDeviceScript parseScript(File scriptFile) {
         def scriptFileText = scriptFile.getText('UTF-8')
 
-        def scriptName = scriptFile.name
-        if (scriptName.endsWith(".groovy")) {
-            scriptName = scriptName[0..-8]
-        }
+        def scriptName = FilenameUtils.getBaseName(scriptFile.name)
 
         return parseScript(scriptFileText, scriptName)
     }
