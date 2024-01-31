@@ -28,7 +28,7 @@ abstract class IntegrationAppExecutor implements AppExecutor {
 
     @Override
     long now() {
-        return (new TimeKeeperDate()).getTime()
+        return TimeKeeper.now().getTime()
     }
 
     @Override

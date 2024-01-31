@@ -5,103 +5,86 @@ import groovy.time.*
 import groovy.transform.Synchronized
 import java.util.concurrent.CopyOnWriteArrayList
 
-/**
-* TimeKeeperDate is just a Date that we can override the constructor for, without impacting
-* the base Date constructor.
-*/
-class TimeKeeperDate extends Date {
-}
+import groovy.transform.Synchronized
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
-* The TimeKeeper is a class that intercepts and overrides the TimeKeeperDate constructor.
-* This allows us to control the current time in tests, without having to build anything special into the app script itself.
-* When parsing an app/device script, we'll replace references to "new Date()" with "new TimeKeeperDate()".
+* The TimeKeeper is a class that allows us to control the current time in tests, without having to build anything special into the app script itself.
+* When parsing an app/device script, we'll replace references to "new Date()" with "TimeKeeper.now()".
 * As long as an app uses "new Date()" to get the current time, this class will control what time the app sees.
-* Note that you must call install() before the app script is tested, and uninstall() after.
 */
 class TimeKeeper {
-    private Date internalDate = null
+    private static Date internalDate = new Date()
 
-    private final CopyOnWriteArrayList<TimeChangedListener> timeChangedListeners
+    private static CopyOnWriteArrayList<TimeChangedListener> timeChangedListeners = new CopyOnWriteArrayList<TimeChangedListener>()
 
-    private final timekeeperLock = new Object()
+    private static timekeeperLock = new Object()
 
     TimeKeeper() {
-        internalDate = new Date()
-        timeChangedListeners = new CopyOnWriteArrayList<TimeChangedListener>()
+        throw new Exception("TimeKeeper is a static class and should not be instantiated.")
     }
 
-    TimeKeeper(Date startingDate) {
-        internalDate = startingDate
-        timeChangedListeners = new CopyOnWriteArrayList<TimeChangedListener>()
-    }
-
-    /**
-    * Install the override of the default Date constructor
-    */
-    def install() {
-        TimeKeeperDate.metaClass.constructor = { -> return this.now() }
-    }
-
-    /**
-    * Uninstall the override of the default Date constructor, so that "new Date()"
-    * will return the current time again.
-    */
-    def uninstall() {
-        TimeKeeperDate.metaClass = null
-    }
-
-    def now() {
+    static Date now() {
         return internalDate
     }
 
-    def set(Date newDate) {
+    static void set(Date newDate) {
         internalDate = newDate
     }
 
-    def advanceMillis(int millis) {
+    @Synchronized("timekeeperLock")
+    static void advanceMillis(int millis) {
         def oldDate = internalDate
         internalDate = groovy.time.TimeCategory.plus(internalDate, new groovy.time.TimeDuration(0, 0, 0, 0, millis))
         fireTimeChangedEvent(oldDate, internalDate)
     }
 
-    def advanceSeconds(int seconds) {
+    @Synchronized("timekeeperLock")
+    static void advanceSeconds(int seconds) {
         def oldDate = internalDate
         internalDate = groovy.time.TimeCategory.plus(internalDate, new groovy.time.TimeDuration(0, 0, 0, seconds, 0))
         fireTimeChangedEvent(oldDate, internalDate)
     }
 
-    def advanceMinutes(int minutes) {
+    @Synchronized("timekeeperLock")
+    static void advanceMinutes(int minutes) {
         def oldDate = internalDate
         internalDate = groovy.time.TimeCategory.plus(internalDate, new groovy.time.TimeDuration(0, 0, minutes, 0, 0))
         fireTimeChangedEvent(oldDate, internalDate)
     }
 
-    def advanceHours(int hours) {
+    @Synchronized("timekeeperLock")
+    static void advanceHours(int hours) {
         def oldDate = internalDate
         internalDate = groovy.time.TimeCategory.plus(internalDate, new groovy.time.TimeDuration(0, hours, 0, 0, 0))
         fireTimeChangedEvent(oldDate, internalDate)
     }
 
-    def advanceDays(int days) {
+    @Synchronized("timekeeperLock")
+    static void advanceDays(int days) {
         def oldDate = internalDate
         internalDate = groovy.time.TimeCategory.plus(internalDate, new groovy.time.TimeDuration(days, 0, 0, 0, 0))
         fireTimeChangedEvent(oldDate, internalDate)
     }
 
     @Synchronized("timekeeperLock")
-    def addListener(TimeChangedListener listener) {
+    static void addListener(TimeChangedListener listener) {
         timeChangedListeners.add(listener)
     }
 
     @Synchronized("timekeeperLock")
-    def removeListener(TimeChangedListener listener) {
+    static void removeListener(TimeChangedListener listener) {
         timeChangedListeners.remove(listener)
     }
 
     @Synchronized("timekeeperLock")
-    def fireTimeChangedEvent(Date oldTime, Date newTime) {
-        TimeChangedEvent event = new TimeChangedEvent(this, oldTime, newTime)
+    static void removeAllListeners() {
+        timeChangedListeners.clear()
+    }
+
+    @Synchronized("timekeeperLock")
+    static void fireTimeChangedEvent(Date oldTime, Date newTime) {
+        TimeChangedEvent event = new TimeChangedEvent(TimeKeeper.class, oldTime, newTime)
         timeChangedListeners.each { listener ->
             listener.timeChangedEventReceived(event)
         }

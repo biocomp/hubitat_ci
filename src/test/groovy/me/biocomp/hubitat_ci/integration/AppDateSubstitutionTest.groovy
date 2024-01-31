@@ -15,8 +15,8 @@ import me.biocomp.hubitat_ci.validation.Flags
 import spock.lang.Specification
 
 /**
-* A set of tests to verify that the SandBoxClassLoader replaces references to Date()
-* with TimeKeeperDate() when parsing the app script.
+* A set of tests to verify that the SandBoxClassLoader replaces references to new Date()
+* with TimeKeeper.now() when parsing the app script.
 */
 class AppDateSubstitutionTest extends Specification {
     HubitatAppSandbox sandbox = new HubitatAppSandbox(new File("Scripts/DimmerMinimums.groovy"))
@@ -26,25 +26,14 @@ class AppDateSubstitutionTest extends Specification {
         _*getLog() >> log
     }
 
-    void "If TimeKeeper is not installed, then the app script returns current time"() {
-        given:
-        def dimmerFixture = DimmerFixtureFactory.create('n')
+    def setup() {
+        TimeZone.setDefault(TimeZone.getTimeZone('UTC'))
 
-        // Run the app sandbox, passing the dimmer fixture in.
-        def appScript = sandbox.run(api: appExecutor,
-            userSettingValues: [dimmers: [dimmerFixture], minimumLevel: 5, enableLogging: true])
-        appExecutor.setSubscribingScript(appScript)
-
-        when:
-        def now = new Date()
-        def nowAccordingToTheAppScript = appScript.scriptNow()
-        def differenceInMillis = nowAccordingToTheAppScript.getTime() - now.getTime()
-
-        then: "Since we're generating Dates twice in succession, there can be a slight time difference, but we don't want to allow much."
-        differenceInMillis < 1000
+        TimeKeeper.set(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:45"))
+        TimeKeeper.removeAllListeners()
     }
 
-    void "If TimeKeeper is installed, then the app script returns simulated time"() {
+    void "App script returns simulated time"() {
         given:
         def dimmerFixture = DimmerFixtureFactory.create('n')
 
@@ -53,19 +42,16 @@ class AppDateSubstitutionTest extends Specification {
             userSettingValues: [dimmers: [dimmerFixture], minimumLevel: 5, enableLogging: true])
         appExecutor.setSubscribingScript(appScript)
 
-        when:
-        def now = new Date()
-        def timekeeper = new TimeKeeper(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:45"))
-        timekeeper.install()
-
         and:
+        def timekeeperNow = TimeKeeper.now()
+        def now = new Date()
+
+        when:
         def nowAccordingToTheAppScript = appScript.scriptNow()
 
         then:
         nowAccordingToTheAppScript.toString() != now.toString()
-
-        cleanup:
-        timekeeper.uninstall()
+        nowAccordingToTheAppScript.toString() == timekeeperNow.toString()
     }
 
 }

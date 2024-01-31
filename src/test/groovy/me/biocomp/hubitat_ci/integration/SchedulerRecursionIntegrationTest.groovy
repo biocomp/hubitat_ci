@@ -23,8 +23,7 @@ class SchedulerRecursionIntegrationTest extends Specification {
 
     Log log = Mock(Log)
     def state = [callbackCount: 0]
-    TimeKeeper timekeeper = new TimeKeeper(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:20:01"))    // This time is chosen to not be on a minute or 5 minute boundary
-    IntegrationScheduler scheduler = new IntegrationScheduler(timekeeper)
+    IntegrationScheduler scheduler = new IntegrationScheduler()
     IntegrationAppExecutor appExecutor = Spy(IntegrationAppExecutor, constructorArgs: [scheduler: scheduler]) {
         _*getLog() >> log
         _*getState() >> state
@@ -34,6 +33,8 @@ class SchedulerRecursionIntegrationTest extends Specification {
 
     def setup() {
         TimeZone.setDefault(TimeZone.getTimeZone('UTC'))
+        TimeKeeper.removeAllListeners()
+        TimeKeeper.set(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:20:01"))    // This time is chosen to not be on a minute or 5 minute boundary
 
         switchFixture.initialize(appExecutor, [switch:"off"])
 
@@ -41,9 +42,12 @@ class SchedulerRecursionIntegrationTest extends Specification {
             userSettingValues: [switches: [switchFixture], enableLogging: true])
 
         appExecutor.setSubscribingScript(appScript)
-
-        timekeeper.install()
     }
+
+    def cleanup() {
+        TimeKeeper.removeAllListeners()
+    }
+
 
     def "Basic validation of app script"() {
         expect:
@@ -67,19 +71,19 @@ class SchedulerRecursionIntegrationTest extends Specification {
         switchFixture.on()
 
         when: "Wait long enough for the runInMillisHandler to be called the first time."
-        timekeeper.advanceMillis(51)
+        TimeKeeper.advanceMillis(51)
 
         then:
         1 * log.debug("runInMillisHandler() called")
 
         when: "Wait long enough for the runInMillisHandler to be called the second time."
-        timekeeper.advanceMillis(1001)
+        TimeKeeper.advanceMillis(1001)
 
         then:
         1 * log.debug("runInMillisHandler() called")
 
         when: "Wait long enough for the runInMillisHandler to be called the third time."
-        timekeeper.advanceMillis(1001)
+        TimeKeeper.advanceMillis(1001)
 
         then:
         1 * log.debug("runInMillisHandler() called")
@@ -93,31 +97,27 @@ class SchedulerRecursionIntegrationTest extends Specification {
         switchFixture.on()
 
         when: "Wait long enough for the runInMillisHandler to be called the first time."
-        timekeeper.advanceMillis(51)
+        TimeKeeper.advanceMillis(51)
 
         then:
         1 * log.debug("runInMillisHandler() called")
 
         when: "Wait long enough for the runInMillisHandler to be called the second time."
-        timekeeper.advanceMillis(1001)
+        TimeKeeper.advanceMillis(1001)
 
         then:
         1 * log.debug("runInMillisHandler() called")
 
         when: "Wait long enough for the runInMillisHandler to be called the third time."
-        timekeeper.advanceMillis(1001)
+        TimeKeeper.advanceMillis(1001)
 
         then:
         1 * log.debug("runInMillisHandler() called")
 
         when: "Wait again, but it should not be called a fourth time."
-        timekeeper.advanceMillis(1001)
+        TimeKeeper.advanceMillis(1001)
 
         then:
         0 * log.debug("runInMillisHandler() called")
-    }
-
-    def cleanup() {
-        timekeeper.uninstall()
     }
 }

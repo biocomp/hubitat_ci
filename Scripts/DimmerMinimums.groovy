@@ -60,7 +60,7 @@ def switchOnHandler(evt) {
 
 /**
 * This function is added to the script in order to test that SandboxClassLoader
-* can replace the Date class with a test implementation called TimeKeeperDate.
+* can replace the Date class with TimeKeeper.now() in the script.
 */
 Date scriptNow() {
     return new Date()

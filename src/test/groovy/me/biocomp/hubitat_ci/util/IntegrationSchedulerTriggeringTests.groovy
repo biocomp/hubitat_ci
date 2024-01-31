@@ -12,27 +12,30 @@ interface TestListener {
 }
 
 class IntegrationSchedulerTriggeringTests extends Specification {
-
     IntegrationScheduler scheduler
     TestListener listener
-    TimeKeeper timekeeper = new TimeKeeper()
 
     String ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
     def setup() {
         TimeZone.setDefault(TimeZone.getTimeZone('UTC'))
+        TimeKeeper.removeAllListeners()
+        TimeKeeper.set(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:46"))    // This time is chosen to not be on a minute boundary
 
         listener = Mock(TestListener)
-        timekeeper = new TimeKeeper(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:46"))    // This time is chosen to not be on a minute boundary
-        scheduler = new IntegrationScheduler(timekeeper)
+        scheduler = new IntegrationScheduler()
         scheduler.setHandlingObject(listener)
+    }
+
+    def cleanup() {
+        TimeKeeper.removeAllListeners()
     }
 
     def "runEvery1Minute will cause the handler to trigger once if you advance the timekeeper across a minute boundary"() {
         given:
             scheduler.runEvery1Minute("handler")
         when:
-            timekeeper.advanceMinutes(1)
+            TimeKeeper.advanceMinutes(1)
         then:
             1 * listener.handler(_ as Map)
     }
@@ -41,7 +44,7 @@ class IntegrationSchedulerTriggeringTests extends Specification {
         given:
             scheduler.runEvery1Minute("handler")
         when:
-            timekeeper.advanceSeconds(1)
+            TimeKeeper.advanceSeconds(1)
         then:
             0 * listener.handler(_ as Map)
     }
@@ -50,7 +53,7 @@ class IntegrationSchedulerTriggeringTests extends Specification {
         given:
             scheduler.runEvery1Minute("handler")
         when:
-            timekeeper.advanceMinutes(2)
+            TimeKeeper.advanceMinutes(2)
         then:
             2 * listener.handler(_ as Map)
     }
@@ -59,7 +62,7 @@ class IntegrationSchedulerTriggeringTests extends Specification {
         given:
             scheduler.runEvery1Minute("handler")
         when:
-            timekeeper.advanceMinutes(10)
+            TimeKeeper.advanceMinutes(10)
         then:
             10 * listener.handler(_ as Map)
     }
@@ -68,7 +71,7 @@ class IntegrationSchedulerTriggeringTests extends Specification {
         given:
             scheduler.runEvery5Minutes("handler")
         when:
-            timekeeper.advanceMinutes(5)
+            TimeKeeper.advanceMinutes(5)
         then:
             1 * listener.handler(_ as Map)
     }
@@ -77,7 +80,7 @@ class IntegrationSchedulerTriggeringTests extends Specification {
         given:
             scheduler.runEvery5Minutes("handler")
         when:
-            timekeeper.advanceMinutes(1)
+            TimeKeeper.advanceMinutes(1)
         then:
             0 * listener.handler(_ as Map)
     }
@@ -86,7 +89,7 @@ class IntegrationSchedulerTriggeringTests extends Specification {
         given:
             scheduler.runEvery5Minutes("handler")
         when:
-            timekeeper.advanceMinutes(10)
+            TimeKeeper.advanceMinutes(10)
         then:
             2 * listener.handler(_ as Map)
     }
@@ -95,7 +98,7 @@ class IntegrationSchedulerTriggeringTests extends Specification {
         given:
             scheduler.runEvery1Hour("handler")
         when:
-            timekeeper.advanceHours(1)
+            TimeKeeper.advanceHours(1)
         then:
             1 * listener.handler(_ as Map)
     }
@@ -104,7 +107,7 @@ class IntegrationSchedulerTriggeringTests extends Specification {
         given:
             scheduler.runInMillis(10, "handler")
         when:
-            timekeeper.advanceMillis(11)
+            TimeKeeper.advanceMillis(11)
         then:
             1 * listener.handler(_ as Map)
     }
@@ -113,8 +116,8 @@ class IntegrationSchedulerTriggeringTests extends Specification {
         given:
             scheduler.runInMillis(10, "handler")
         when:
-            timekeeper.advanceMillis(11)
-            timekeeper.advanceMillis(11)
+            TimeKeeper.advanceMillis(11)
+            TimeKeeper.advanceMillis(11)
         then:
             1 * listener.handler(_ as Map)
     }
@@ -123,7 +126,7 @@ class IntegrationSchedulerTriggeringTests extends Specification {
         given:
             scheduler.runInMillis(10, "handler")
         when:
-            timekeeper.advanceMillis(1)
+            TimeKeeper.advanceMillis(1)
         then:
             0 * listener.handler(_ as Map)
     }
@@ -132,7 +135,7 @@ class IntegrationSchedulerTriggeringTests extends Specification {
         given:
             scheduler.runIn(10, "handler")
         when:
-            timekeeper.advanceSeconds(11)
+            TimeKeeper.advanceSeconds(11)
         then:
             1 * listener.handler(_ as Map)
     }
@@ -141,8 +144,8 @@ class IntegrationSchedulerTriggeringTests extends Specification {
         given:
             scheduler.runIn(10, "handler")
         when:
-            timekeeper.advanceSeconds(11)
-            timekeeper.advanceSeconds(11)
+            TimeKeeper.advanceSeconds(11)
+            TimeKeeper.advanceSeconds(11)
         then:
             1 * listener.handler(_ as Map)
     }
@@ -151,38 +154,38 @@ class IntegrationSchedulerTriggeringTests extends Specification {
         given:
             scheduler.runIn(10, "handler")
         when:
-            timekeeper.advanceSeconds(1)
+            TimeKeeper.advanceSeconds(1)
         then:
             0 * listener.handler(_ as Map)
     }
 
     def "schedule will trigger once if you advace TimeKeeper past the specified time"() {
         given:
-            timekeeper.set(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:46"))
+            TimeKeeper.set(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:46"))
             scheduler.schedule(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:25:00"), "handler")
         when:
-            timekeeper.advanceMinutes(2)
+            TimeKeeper.advanceMinutes(2)
         then:
             1 * listener.handler(_ as Map)
     }
 
     def "schedule will not trigger if you advance TimeKeeper to just before the specified time"() {
         given:
-            timekeeper.set(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:46"))
+            TimeKeeper.set(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:46"))
             scheduler.schedule(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:25:00"), "handler")
         when:
-            timekeeper.advanceMinutes(1)
+            TimeKeeper.advanceMinutes(1)
         then:
             0 * listener.handler(_ as Map)
     }
 
     def "schedule will trigger again at the same time the next day, so you'll get two triggers if you go past two boundaries"() {
         given:
-            timekeeper.set(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:46"))
+            TimeKeeper.set(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:46"))
             scheduler.schedule(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:25:00"), "handler")
         when:
-            timekeeper.advanceMinutes(2)
-            timekeeper.advanceDays(1)
+            TimeKeeper.advanceMinutes(2)
+            TimeKeeper.advanceDays(1)
         then:
             2 * listener.handler(_ as Map)
     }

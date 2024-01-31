@@ -22,8 +22,7 @@ class SchedulerIntegrationTest extends Specification {
     HubitatAppSandbox sandbox = new HubitatAppSandbox(new File("Scripts/AppWithSchedules.groovy"))
 
     Log log = Mock(Log)
-    TimeKeeper timekeeper = new TimeKeeper(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:20:01"))    // This time is chosen to not be on a minute or 5 minute boundary
-    IntegrationScheduler scheduler = new IntegrationScheduler(timekeeper)
+    IntegrationScheduler scheduler = new IntegrationScheduler()
     IntegrationAppExecutor appExecutor = Spy(IntegrationAppExecutor, constructorArgs: [scheduler: scheduler]) {
         _*getLog() >> log
     }
@@ -32,6 +31,8 @@ class SchedulerIntegrationTest extends Specification {
 
     def setup() {
         TimeZone.setDefault(TimeZone.getTimeZone('UTC'))
+        TimeKeeper.removeAllListeners()
+        TimeKeeper.set(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:20:01"))    // This time is chosen to not be on a minute or 5 minute boundary
 
         switchFixture.initialize(appExecutor, [switch:"off"])
 
@@ -39,9 +40,12 @@ class SchedulerIntegrationTest extends Specification {
             userSettingValues: [switches: [switchFixture], enableLogging: true])
 
         appExecutor.setSubscribingScript(appScript)
-
-        timekeeper.install()
     }
+
+    def cleanup() {
+        TimeKeeper.removeAllListeners()
+    }
+
 
     def "Basic validation of app script"() {
         expect:
@@ -66,7 +70,7 @@ class SchedulerIntegrationTest extends Specification {
         switchFixture.on()
 
         when:
-        timekeeper.advanceMillis(51)
+        TimeKeeper.advanceMillis(51)
 
         then:
         1 * log.debug("runInMillisHandler() called")
@@ -80,7 +84,7 @@ class SchedulerIntegrationTest extends Specification {
         switchFixture.on()
 
         when:
-        timekeeper.advanceMillis(49)
+        TimeKeeper.advanceMillis(49)
 
         then:
         0 * log.debug("runInMillisHandler() called")
@@ -94,13 +98,13 @@ class SchedulerIntegrationTest extends Specification {
         switchFixture.on()
 
         when:
-        timekeeper.advanceMillis(51)
+        TimeKeeper.advanceMillis(51)
 
         then:
         1 * log.debug("runInMillisHandler() called")
 
         when: "We advance time again."
-        timekeeper.advanceMillis(51)
+        TimeKeeper.advanceMillis(51)
 
         then:
         0 * log.debug("runInMillisHandler() called")
@@ -114,7 +118,7 @@ class SchedulerIntegrationTest extends Specification {
         switchFixture.off()
 
         when:
-        timekeeper.advanceMinutes(5)
+        TimeKeeper.advanceMinutes(5)
 
         then:
         1 * log.debug("runEvery5MinutesHandler() called")
@@ -128,7 +132,7 @@ class SchedulerIntegrationTest extends Specification {
         switchFixture.off()
 
         when:
-        timekeeper.advanceMinutes(4)
+        TimeKeeper.advanceMinutes(4)
 
         then:
         0 * log.debug("runEvery5MinutesHandler() called")
@@ -142,13 +146,13 @@ class SchedulerIntegrationTest extends Specification {
         switchFixture.off()
 
         when:
-        timekeeper.advanceMinutes(5)
+        TimeKeeper.advanceMinutes(5)
 
         then:
         1 * log.debug("runEvery5MinutesHandler() called")
 
         when: "We advance time again."
-        timekeeper.advanceMinutes(5)
+        TimeKeeper.advanceMinutes(5)
 
         then:
         1 * log.debug("runEvery5MinutesHandler() called")
@@ -162,14 +166,10 @@ class SchedulerIntegrationTest extends Specification {
         switchFixture.off()
 
         when:
-        timekeeper.advanceMinutes(10)
+        TimeKeeper.advanceMinutes(10)
 
         then:
         2 * log.debug("runEvery5MinutesHandler() called")
-    }
-
-    def cleanup() {
-        timekeeper.uninstall()
     }
 
 }

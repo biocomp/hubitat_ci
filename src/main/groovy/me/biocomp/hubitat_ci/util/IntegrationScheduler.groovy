@@ -16,17 +16,15 @@ import org.quartz.CronExpression
 * executes any scheduled methods that would be between the old time and the new time.
 */
 class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
-    private TimeKeeper timekeeper
     private Object handlingObject
 
     private final integrationSchedulerLock = new Object()
 
-    IntegrationScheduler(TimeKeeper timekeeper) {
-        timekeeper?.addListener(this)
-        this.timekeeper = timekeeper
+    IntegrationScheduler() {
     }
 
     def setHandlingObject(Object handlingObject) {
+        TimeKeeper.addListener(this)
         this.handlingObject = handlingObject
     }
 
@@ -258,7 +256,7 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
         runInMillis(delayInMilliSeconds, handlerMethod.name, options)
     }
     void runInMillis(Long delayInMilliSeconds, String handlerMethod, Map options) {
-        runOnce(new Date((timekeeper != null ? timekeeper.now() : new Date()).getTime() + delayInMilliSeconds), handlerMethod, options)
+        runOnce(new Date(TimeKeeper.now().getTime() + delayInMilliSeconds), handlerMethod, options)
     }
 
     /**

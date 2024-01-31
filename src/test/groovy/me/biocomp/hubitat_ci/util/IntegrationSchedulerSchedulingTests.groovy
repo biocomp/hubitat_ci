@@ -231,9 +231,8 @@ class IntegrationSchedulerSchedulingTests extends Specification {
     def "runIn generates a request with a nextFireAt that is the amount of seconds in the future"() {
         when:
             def seconds = 60
-            def timekeeper = new TimeKeeper()
-            scheduler = new IntegrationScheduler(timekeeper)    // Pass in a timekeeper to ensure millisecond precision in the comparison, because runIn generates a date internally.
-            def now = timekeeper.now()
+            scheduler = new IntegrationScheduler()    // Pass in a timekeeper to ensure millisecond precision in the comparison, because runIn generates a date internally.
+            def now = TimeKeeper.now()
             def expectedDate = new Date(now.getTime() + (seconds * 1000))
             scheduler.runIn(seconds, "handler")
 
@@ -249,9 +248,8 @@ class IntegrationSchedulerSchedulingTests extends Specification {
     def "runInMillis generates a request with a nextFireAt"() {
         when:
             def millis = 50
-            def timekeeper = new TimeKeeper()
-            scheduler = new IntegrationScheduler(timekeeper)    // Pass in a timekeeper to ensure millisecond precision in the comparison, because runIn generates a date internally.
-            def now = timekeeper.now()
+            scheduler = new IntegrationScheduler()    // Pass in a timekeeper to ensure millisecond precision in the comparison, because runIn generates a date internally.
+            def now = TimeKeeper.now()
             def expectedDate = new Date(now.getTime() + millis)
             scheduler.runInMillis(millis, "handler")
 
@@ -262,53 +260,5 @@ class IntegrationSchedulerSchedulingTests extends Specification {
             scheduler._scheduleRequests[0].handlerMethod == "handler"
             scheduler._scheduleRequests[0].options == null
             scheduler._scheduleRequests[0].deleteAfterSingleRun == true
-    }
-
-    def "runIn also interoperates with the TimeKeeper class"() {
-        given:
-            def timekeeper = new TimeKeeper(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:45"))
-            timekeeper.install()
-            def tkScheduler = new IntegrationScheduler(timekeeper)
-
-        when:
-            def seconds = 60
-            def now = timekeeper.now()
-            def expectedDate = new Date(now.getTime() + seconds * 1000)
-            tkScheduler.runIn(seconds, "handler")
-
-        then:
-            tkScheduler._scheduleRequests.size() == 1
-            tkScheduler._scheduleRequests[0].cronExpression == null
-            tkScheduler._scheduleRequests[0].nextFireAt.getTime() == expectedDate.getTime()
-            tkScheduler._scheduleRequests[0].handlerMethod == "handler"
-            tkScheduler._scheduleRequests[0].options == null
-            tkScheduler._scheduleRequests[0].deleteAfterSingleRun == true
-
-        cleanup:
-            timekeeper.uninstall()
-    }
-
-    def "runInMillis also interoperates with the TimeKeeper class"() {
-        given:
-            def timekeeper = new TimeKeeper(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:45"))
-            timekeeper.install()
-            def tkScheduler = new IntegrationScheduler(timekeeper)
-
-        when:
-            def millis = 50
-            def now = timekeeper.now()
-            def expectedDate = new Date(now.getTime() + millis)
-            tkScheduler.runInMillis(millis, "handler")
-
-        then:
-            tkScheduler._scheduleRequests.size() == 1
-            tkScheduler._scheduleRequests[0].cronExpression == null
-            tkScheduler._scheduleRequests[0].nextFireAt.getTime() == expectedDate.getTime()
-            tkScheduler._scheduleRequests[0].handlerMethod == "handler"
-            tkScheduler._scheduleRequests[0].options == null
-            tkScheduler._scheduleRequests[0].deleteAfterSingleRun == true
-
-        cleanup:
-            timekeeper.uninstall()
     }
 }
