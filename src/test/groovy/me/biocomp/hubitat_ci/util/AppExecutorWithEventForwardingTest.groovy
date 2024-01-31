@@ -121,8 +121,7 @@ class AppExecutorWithEventForwardingTest extends Specification {
         def trueNowMillis = (new Date()).getTime()
 
         def simulatedDate = Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:45")
-        def timekeeper = new TimeKeeper(simulatedDate)
-        timekeeper.install()
+        TimeKeeper.set(simulatedDate)
 
         when:
         def appExecutorNowMillis = appExecutor.now()
@@ -130,8 +129,5 @@ class AppExecutorWithEventForwardingTest extends Specification {
         then:
         appExecutorNowMillis == simulatedDate.getTime()
         appExecutorNowMillis != trueNowMillis
-
-        cleanup:
-        timekeeper.uninstall()
     }
 }
