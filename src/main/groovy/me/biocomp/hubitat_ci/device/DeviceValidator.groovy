@@ -33,12 +33,18 @@ class DeviceValidator extends
 
     HubitatDeviceScript parseScript(File scriptFile) {
         def scriptFileText = scriptFile.getText('UTF-8')
-        return parseScript(scriptFileText)
+
+        def scriptName = scriptFile.name
+        if (scriptName.endsWith(".groovy")) {
+            scriptName = scriptName[0..-8]
+        }
+
+        return parseScript(scriptFileText, scriptName)
     }
 
-    HubitatDeviceScript parseScript(String scriptText) {
+    HubitatDeviceScript parseScript(String scriptText, String scriptName = "Script1") {
         scriptText = super.patchScriptText(scriptText)
-        return constructParser(HubitatDeviceScript, makeCustomizers()).parse(scriptText, "Script1") as HubitatDeviceScript
+        return constructParser(HubitatDeviceScript, makeCustomizers()).parse(scriptText, scriptName) as HubitatDeviceScript
     }
 
     /**

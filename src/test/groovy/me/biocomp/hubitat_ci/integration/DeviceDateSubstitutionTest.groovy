@@ -22,6 +22,12 @@ class DeviceDateSubstitutionTest extends Specification {
         _*getLog() >> log
     }
 
+    def setup() {
+        TimeZone.setDefault(TimeZone.getTimeZone('UTC'))
+
+        TimeKeeper.set(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:45"))
+    }
+
     void "Device script returns simulated time"() {
         given:
         // Run the app sandbox, passing the dimmer fixture in.
