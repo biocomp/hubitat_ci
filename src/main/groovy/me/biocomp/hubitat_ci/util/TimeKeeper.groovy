@@ -24,10 +24,12 @@ class TimeKeeper {
         throw new Exception("TimeKeeper is a static class and should not be instantiated.")
     }
 
+    @Synchronized("timekeeperLock")
     static Date now() {
         return internalDate
     }
 
+    @Synchronized("timekeeperLock")
     static void set(Date newDate) {
         internalDate = newDate
     }

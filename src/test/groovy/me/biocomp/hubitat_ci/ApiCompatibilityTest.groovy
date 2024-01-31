@@ -49,7 +49,7 @@ class ApiCompatibilityTest extends Specification
 
         then:
             script.getExportedClasses().collect { it.name } == [
-                    "Script1",
+                    "hubitat_api_exporter_driver",
                     zwave.class.name,
                     zigbee.class.name
             ]
@@ -235,7 +235,7 @@ class ApiCompatibilityTest extends Specification
 
         then:
             result.firmware_version == "1.2.3"
-            !classes.find { it.class_name == "Script1" }.methods.isEmpty()
+            !classes.find { it.class_name == "hubitat_api_exporter_app" }.methods.isEmpty()
             !classes.find { it.class_name?.contains("InstalledAppWrapper") }.methods.isEmpty()
             !classes.find { it.class_name?.contains("ChildDeviceWrapper") }.methods.isEmpty()
             !classes.find { it.class_name?.contains("DeviceWrapper") }.methods.isEmpty()

@@ -37,12 +37,18 @@ class AppValidator extends ValidatorBase{
 
     HubitatAppScript parseScript(File scriptFile) {
         def scriptFileText = scriptFile.getText('UTF-8')
-        return parseScript(scriptFileText)
+
+        def scriptName = scriptFile.name
+        if (scriptName.endsWith(".groovy")) {
+            scriptName = scriptName[0..-8]
+        }
+
+        return parseScript(scriptFileText, scriptName)
     }
 
-    HubitatAppScript parseScript(String scriptText) {
+    HubitatAppScript parseScript(String scriptText, String scriptName = "Script1") {
         scriptText = super.patchScriptText(scriptText)
-        return constructParser(HubitatAppScript).parse(scriptText, "Script1") as HubitatAppScript
+        return constructParser(HubitatAppScript).parse(scriptText, scriptName) as HubitatAppScript
     }
 
     @CompileStatic
