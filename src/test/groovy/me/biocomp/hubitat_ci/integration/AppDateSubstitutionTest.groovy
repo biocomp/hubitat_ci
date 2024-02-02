@@ -30,7 +30,6 @@ class AppDateSubstitutionTest extends Specification {
         TimeZone.setDefault(TimeZone.getTimeZone('UTC'))
 
         TimeKeeper.set(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:45"))
-        TimeKeeper.removeAllListeners()
     }
 
     void "App script returns simulated time"() {
