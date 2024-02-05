@@ -1,6 +1,5 @@
 package me.biocomp.hubitat_ci.app
 
-
 import me.biocomp.hubitat_ci.app.preferences.HRef
 import me.biocomp.hubitat_ci.app.preferences.Input
 import me.biocomp.hubitat_ci.app.preferences.Page
@@ -9,8 +8,11 @@ import me.biocomp.hubitat_ci.capabilities.Capabilities
 import me.biocomp.hubitat_ci.validation.Flags
 import me.biocomp.hubitat_ci.validation.NamedParametersValidator
 import me.biocomp.hubitat_ci.validation.ValidatorBase
+
 import groovy.transform.CompileStatic
 import groovy.transform.TypeChecked
+
+import org.apache.commons.io.FilenameUtils
 
 @TypeChecked
 class AppValidator extends ValidatorBase{
@@ -36,11 +38,16 @@ class AppValidator extends ValidatorBase{
     }
 
     HubitatAppScript parseScript(File scriptFile) {
-        return constructParser(HubitatAppScript).parse(scriptFile) as HubitatAppScript
+        def scriptFileText = scriptFile.getText('UTF-8')
+
+        def scriptName = FilenameUtils.getBaseName(scriptFile.name)
+
+        return parseScript(scriptFileText, scriptName)
     }
 
-    HubitatAppScript parseScript(String scriptText) {
-        return constructParser(HubitatAppScript).parse(scriptText) as HubitatAppScript
+    HubitatAppScript parseScript(String scriptText, String scriptName = "Script1") {
+        scriptText = super.patchScriptText(scriptText)
+        return constructParser(HubitatAppScript).parse(scriptText, scriptName) as HubitatAppScript
     }
 
     @CompileStatic

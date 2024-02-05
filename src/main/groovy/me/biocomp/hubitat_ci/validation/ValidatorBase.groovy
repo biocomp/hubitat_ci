@@ -5,6 +5,7 @@ import me.biocomp.hubitat_ci.util.DoNotCallMeBinding
 import me.biocomp.hubitat_ci.util.LoggingCompilationCustomizer
 import me.biocomp.hubitat_ci.util.RemovePrivateFromScriptCompilationCustomizer
 import me.biocomp.hubitat_ci.util.SandboxClassLoader
+import me.biocomp.hubitat_ci.util.TimeKeeper
 import groovy.json.JsonBuilder
 import groovy.time.TimeCategory
 import groovy.transform.CompileStatic
@@ -66,6 +67,7 @@ class ValidatorBase {
                                                             Collection,
                                                             Collections,
                                                             Date,
+                                                            TimeKeeper,
                                                             DecimalFormat,
                                                             Double,
                                                             Float,
@@ -292,5 +294,10 @@ class ValidatorBase {
 
     boolean hasAnyOfFlags(Set<Flags> flags) {
         return this.flags.intersect(flags)
+    }
+
+    String patchScriptText(String scriptText) {
+        scriptText = scriptText.replaceAll("new\\s*Date\\s*\\(\\s*\\)", "me.biocomp.hubitat_ci.util.TimeKeeper.now()")
+        return scriptText
     }
 }

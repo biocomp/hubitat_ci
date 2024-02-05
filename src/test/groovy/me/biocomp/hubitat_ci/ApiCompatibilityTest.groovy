@@ -235,7 +235,7 @@ class ApiCompatibilityTest extends Specification
 
         then:
             result.firmware_version == "1.2.3"
-            !classes.find { it.class_name == "hubitat_api_exporter_app" }.methods.isEmpty() //!= startsWith('[{"class_name":"hubitat_api_exporter_app"')//"[[class_name:'hubitat_api_exporter_app',methods:[]]]"
+            !classes.find { it.class_name == "hubitat_api_exporter_app" }.methods.isEmpty()
             !classes.find { it.class_name?.contains("InstalledAppWrapper") }.methods.isEmpty()
             !classes.find { it.class_name?.contains("ChildDeviceWrapper") }.methods.isEmpty()
             !classes.find { it.class_name?.contains("DeviceWrapper") }.methods.isEmpty()

@@ -2,6 +2,7 @@ package me.biocomp.hubitat_ci
 
 import me.biocomp.hubitat_ci.util.AppExecutorWithEventForwarding
 import me.biocomp.hubitat_ci.util.DeviceEventArgs
+import me.biocomp.hubitat_ci.util.TimeKeeper
 import me.biocomp.hubitat_ci.app.HubitatAppScript
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
 
@@ -113,5 +114,20 @@ class AppExecutorWithEventForwardingTest extends Specification {
         // This is the format that Hubitat hub uses when it converts dates to strings
         // (as it does when storing a date in app or device state)
         date.format("yyyy-MM-dd'T'HH:mm:ssZ", TimeZone.getTimeZone('UTC')) == dateString
+    }
+
+    def "now() integrates with the TimeKeeper class to return simulated times"() {
+        given:
+        def trueNowMillis = (new Date()).getTime()
+
+        def simulatedDate = Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:45")
+        TimeKeeper.set(simulatedDate)
+
+        when:
+        def appExecutorNowMillis = appExecutor.now()
+
+        then:
+        appExecutorNowMillis == simulatedDate.getTime()
+        appExecutorNowMillis != trueNowMillis
     }
 }
