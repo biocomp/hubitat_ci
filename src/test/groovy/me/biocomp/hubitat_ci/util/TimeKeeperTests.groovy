@@ -20,7 +20,6 @@ class TimeKeeperTests extends Specification {
             Date date = TimeKeeper.now()
 
         then:
-            date.toString() != currentDate.toString()
             date.toString() == "Sun Aug 31 08:23:45 UTC 2014"
     }
 
@@ -37,7 +36,6 @@ class TimeKeeperTests extends Specification {
             def date = TimeKeeper.now()
 
         then:
-            date.toString() != currentDate.toString()
             date.toString() == "Sun Aug 31 08:23:45 UTC 2014"
 
         when:
@@ -45,7 +43,6 @@ class TimeKeeperTests extends Specification {
             def date2 = TimeKeeper.now()
 
         then:
-            date2.toString() != currentDate.toString()
             date2.toString() == "Sun Aug 31 08:28:45 UTC 2014"
     }
 
@@ -54,7 +51,6 @@ class TimeKeeperTests extends Specification {
             def date = TimeKeeper.now()
 
         then:
-            date.toString() != currentDate.toString()
             date.toString() == "Sun Aug 31 08:23:45 UTC 2014"
 
         when:
@@ -62,7 +58,6 @@ class TimeKeeperTests extends Specification {
             def date2 = TimeKeeper.now()
 
         then:
-            date2.toString() != currentDate.toString()
             date2.toString() == "Sun Aug 31 08:23:50 UTC 2014"
     }
 
@@ -71,7 +66,6 @@ class TimeKeeperTests extends Specification {
             def date = TimeKeeper.now()
 
         then:
-            date.toString() != currentDate.toString()
             date.toString() == "Sun Aug 31 08:23:45 UTC 2014"
 
         when:
@@ -79,7 +73,6 @@ class TimeKeeperTests extends Specification {
             def date2 = TimeKeeper.now()
 
         then:
-            date2.toString() != currentDate.toString()
             date2.toString() == "Sun Aug 31 13:23:45 UTC 2014"
     }
 
@@ -88,7 +81,6 @@ class TimeKeeperTests extends Specification {
             def date = TimeKeeper.now()
 
         then:
-            date.toString() != currentDate.toString()
             date.toString() == "Sun Aug 31 08:23:45 UTC 2014"
 
         when:
@@ -96,7 +88,6 @@ class TimeKeeperTests extends Specification {
             def date2 = TimeKeeper.now()
 
         then:
-            date2.toString() != currentDate.toString()
             date2.toString() == "Fri Sep 05 08:23:45 UTC 2014"
     }
 }
