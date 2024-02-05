@@ -15,9 +15,6 @@ class TimeKeeperTests extends Specification {
         TimeKeeper.set(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:45"))
     }
 
-    def cleanup() {
-    }
-
     void "Can use the TimeKeeper class to get now"() {
         when:
             Date date = TimeKeeper.now()
