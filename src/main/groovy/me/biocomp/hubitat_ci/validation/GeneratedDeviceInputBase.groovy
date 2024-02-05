@@ -86,12 +86,33 @@ class GeneratedDeviceInputBase implements DeviceWrapper {
         return capabilities
     }
 
-    @Override currentValue(String attributeName) {
-        if (!state) {
+    @Override boolean hasCommand(String commandName) {
+        return supportedCommands.find { it.name == commandName } != null
+    }
+
+    @Override currentValue(String attributeName, boolean skipCache) {
+        try {
+            if (!state) {
+                return null
+            }
+
+            return state[attributeName]
+        } catch (Exception ex) {
             return null
         }
+    }
 
-        return state[attributeName]
+    @Override
+    boolean hasAttribute(String attributeName) {
+        try {
+            if (!state) {
+                return false
+            }
+
+            return state[attributeName] != null
+        } catch (Exception ex) {
+            return false
+        }
     }
 
     @Override
