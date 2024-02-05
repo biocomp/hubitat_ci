@@ -23,7 +23,7 @@ publishing {
     publications {
         maven(MavenPublication){
             groupId = 'me.biocomp.hubitat_ci'
-            artifactId = 'hubitat_ci'
+            artifactId = System.getenv("MAVEN_ARTIFACT_ID") ?: 'hubitat_ci'
             version = 0.23
 
             from components.java
@@ -50,6 +50,7 @@ dependencies {
     implementation 'org.codehaus.groovy:groovy-all:2.5.4'
     implementation 'org.codehaus.groovy:groovy-dateutil:2.5.4'
     implementation 'org.ow2.asm:asm:7.0'
+    implementation 'org.quartz-scheduler:quartz:2.3.0'
 
     implementation 'su.litvak.chromecast:api-v2:0.11.1'
 

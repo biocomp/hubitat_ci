@@ -2,7 +2,7 @@ package me.biocomp.hubitat_ci.integration
 
 import me.biocomp.hubitat_ci.api.Attribute
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
-import me.biocomp.hubitat_ci.util.AppExecutorWithEventForwarding
+import me.biocomp.hubitat_ci.util.IntegrationAppExecutor
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
 import me.biocomp.hubitat_ci.api.common_api.InstalledAppWrapper
 import me.biocomp.hubitat_ci.api.common_api.Location
@@ -22,7 +22,7 @@ class AppDateSubstitutionTest extends Specification {
     HubitatAppSandbox sandbox = new HubitatAppSandbox(new File("Scripts/DimmerMinimums.groovy"))
     def log = Mock(Log)
 
-    def appExecutor = Spy(AppExecutorWithEventForwarding) {
+    def appExecutor = Spy(IntegrationAppExecutor) {
         _*getLog() >> log
     }
 
@@ -30,6 +30,7 @@ class AppDateSubstitutionTest extends Specification {
         TimeZone.setDefault(TimeZone.getTimeZone('UTC'))
 
         TimeKeeper.set(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:45"))
+        TimeKeeper.removeAllListeners()
     }
 
     void "App script returns simulated time"() {

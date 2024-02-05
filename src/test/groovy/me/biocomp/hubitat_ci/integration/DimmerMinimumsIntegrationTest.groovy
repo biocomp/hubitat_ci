@@ -2,7 +2,7 @@ package me.biocomp.hubitat_ci.integration
 
 import me.biocomp.hubitat_ci.api.Attribute
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
-import me.biocomp.hubitat_ci.util.AppExecutorWithEventForwarding
+import me.biocomp.hubitat_ci.util.IntegrationAppExecutor
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
 import me.biocomp.hubitat_ci.api.common_api.InstalledAppWrapper
 import me.biocomp.hubitat_ci.api.common_api.Location
@@ -16,7 +16,7 @@ import spock.lang.Specification
 /**
 * These are a set of integration tests of a real app script, testing it for behavior a user
 * would experience from their real devices.
-* It uses AppExecutorWithEventForwarding, DimmerFixtureFactory, and the app script together, to
+* It uses IntegrationAppExecutor, DimmerFixtureFactory, and the app script together, to
 * ensure that the full behavior of the system is correct.
 * This is very similar to the type of tests we would want to run when developing an app.
 */
@@ -25,7 +25,7 @@ class DimmerMinimumsIntegrationTest extends Specification {
 
     def log = Mock(Log)
 
-    def appExecutor = Spy(AppExecutorWithEventForwarding) {
+    def appExecutor = Spy(IntegrationAppExecutor) {
         _*getLog() >> log
     }
 
