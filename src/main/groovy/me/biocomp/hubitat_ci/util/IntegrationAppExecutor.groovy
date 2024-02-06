@@ -70,6 +70,11 @@ abstract class IntegrationAppExecutor implements AppExecutor {
     }
 
     @Override
+    void unsubscribe() {
+        deviceEventSubscriptions.clear()
+    }
+
+    @Override
     void sendEvent(DeviceWrapper device, Map properties) {
         deviceEventSubscriptions.each { DeviceEventSubInfo subInfo ->
             if (subInfo.toWhat == device && subInfo.attributeNameOrNameAndValueOrEventName == properties.name) {
