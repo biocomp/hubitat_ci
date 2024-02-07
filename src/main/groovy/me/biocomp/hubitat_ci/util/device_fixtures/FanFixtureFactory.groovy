@@ -19,67 +19,68 @@ class FanFixtureFactory {
     static def create(String name) {
         def deviceInputValueFactory = new DeviceInputValueFactory([Switch, SwitchLevel, FanControl])
 
-        def fanDevice = deviceInputValueFactory.makeInputObject(name, 't',  DefaultAndUserValues.empty(), false)
+        def fanDevice = deviceInputValueFactory.makeInputDevice(name)
 
         def fanMetaClass = fanDevice.getMetaClass()
 
         // Calling initialize attaches behavior involving commands, state maintenance, and sending events.
-        fanMetaClass.initialize = { appExecutor, state ->
-            fanMetaClass.state = state
+        fanMetaClass.initialize = { appExecutor, initialAttributeValues ->
+            attributeValues = initialAttributeValues
+
             fanMetaClass.on = {
-                state.switch = "on"
+                attributeValues.switch = "on"
                 appExecutor.sendEvent(fanDevice, [name: "switch.on", value: "on"])
 
-                if (state.level == 0) {
+                if (attributeValues.level == 0) {
                     setLevel(100)
                 }
             }
             fanMetaClass.off = {
-                state.switch = "off"
-                state.speed = "off"
-                state.level = 0
+                attributeValues.switch = "off"
+                attributeValues.speed = "off"
+                attributeValues.level = 0
                 appExecutor.sendEvent(fanDevice, [name: "switch.off", value: "off"])
                 appExecutor.sendEvent(fanDevice, [name: "speed", value: "off"])
                 appExecutor.sendEvent(fanDevice, [name: "level", value: 0])
             }
             fanMetaClass.setLevel = { int level ->
                 // Most real fans will do this in their firmware:
-                if (state.switch == "off" && level > 0) {
-                    state.switch = "on"
+                if (attributeValues.switch == "off" && level > 0) {
+                    attributeValues.switch = "on"
                     appExecutor.sendEvent(fanDevice, [name: "switch.on", value: "on"])
                 }
-                else if (state.switch == "on" && level == 0) {
-                    state.switch = "off"
+                else if (attributeValues.switch == "on" && level == 0) {
+                    attributeValues.switch = "off"
                     appExecutor.sendEvent(fanDevice, [name: "switch.off", value: "off"])
                 }
 
-                state.level = level
+                attributeValues.level = level
 
                 appExecutor.sendEvent(fanDevice, [name: "level", value: level])
 
                 def speed = levelToSpeed(level)
-                state.speed = speed
+                attributeValues.speed = speed
                 appExecutor.sendEvent(fanDevice, [name: "speed", value: speed])
             }
             fanMetaClass.setSpeed = { String speed ->
-                if (state.switch == "off" && speed != "off") {
-                    state.switch = "on"
+                if (attributeValues.switch == "off" && speed != "off") {
+                    attributeValues.switch = "on"
                     appExecutor.sendEvent(fanDevice, [name: "switch.on", value: "on"])
                 }
-                else if (state.switch == "on" && speed == "off") {
-                    state.switch = "off"
+                else if (attributeValues.switch == "on" && speed == "off") {
+                    attributeValues.switch = "off"
                     appExecutor.sendEvent(fanDevice, [name: "switch.off", value: "off"])
                 }
 
-                state.speed = speed
+                attributeValues.speed = speed
                 appExecutor.sendEvent(fanDevice, [name: "speed", value: speed])
 
                 def level = speedToLevel(speed)
-                state.level = level
+                attributeValues.level = level
                 appExecutor.sendEvent(fanDevice, [name: "level", value: level])
             }
             fanMetaClass.cycleSpeed = {
-                def newSpeed = cycleSpeed(state.speed)
+                def newSpeed = cycleSpeed(attributeValues.speed)
                 setSpeed(newSpeed)
             }
 

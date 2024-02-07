@@ -16,20 +16,20 @@ class LightSensorFixtureFactory {
     static def create(String name) {
         def deviceInputValueFactory = new DeviceInputValueFactory([IlluminanceMeasurement])
 
-        def lightSensorDevice = deviceInputValueFactory.makeInputObject(name, 't',  DefaultAndUserValues.empty(), false)
+        def lightSensorDevice = deviceInputValueFactory.makeInputDevice(name)
 
         def lightSensorMetaClass = lightSensorDevice.getMetaClass()
 
         // Calling initialize attaches behavior involving commands, state maintenance, and sending events.
-        lightSensorMetaClass.initialize = { appExecutor, state ->
+        lightSensorMetaClass.initialize = { appExecutor, initialAttributeValues ->
             // The IlluminanceMeasurement capability has no commands and only a single state attribute: illuminance.
-            lightSensorMetaClass.state = state
+            attributeValues = initialAttributeValues
 
             // However, for the purposes of testing, I'm adding a public method to the fixture.
             // It's not an actual command in real Hubitat, but it's useful for testing.
             // It will let you set the illuminance state value, and publish an event for the change.
             lightSensorMetaClass.setIlluminance = { int illuminance ->
-                lightSensorMetaClass.state.illuminance = illuminance
+                lightSensorMetaClass.attributeValues.illuminance = illuminance
                 appExecutor.sendEvent(lightSensorDevice, [name: "illuminance", value: illuminance])
             }
         }

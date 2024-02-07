@@ -28,9 +28,9 @@ class FanFixtureFactoryTests extends Specification {
         1*appExecutor.sendEvent(fanFixture, [name: "level", value: 100])
 
         and:
-        fanFixture.state.switch == "on"
-        fanFixture.state.speed == "high"
-        fanFixture.state.level == 100
+        fanFixture.currentValue('switch') == "on"
+        fanFixture.currentValue('speed') == "high"
+        fanFixture.currentValue('level') == 100
     }
 
     void "Fan can turn off"() {
@@ -47,9 +47,9 @@ class FanFixtureFactoryTests extends Specification {
         1*appExecutor.sendEvent(fanFixture, [name: "level", value: 0])
 
         and:
-        fanFixture.state.switch == "off"
-        fanFixture.state.speed == "off"
-        fanFixture.state.level == 0
+        fanFixture.currentValue('switch') == "off"
+        fanFixture.currentValue('speed') == "off"
+        fanFixture.currentValue('level') == 0
     }
 
     void "Fan can set speed from off"() {
@@ -66,9 +66,9 @@ class FanFixtureFactoryTests extends Specification {
         1*appExecutor.sendEvent(fanFixture, [name: "level", value: 50])
 
         and:
-        fanFixture.state.switch == "on"
-        fanFixture.state.speed == "medium"
-        fanFixture.state.level == 50
+        fanFixture.currentValue('switch') == "on"
+        fanFixture.currentValue('speed') == "medium"
+        fanFixture.currentValue('level') == 50
     }
 
     void "Fan can change speed when already on"() {
@@ -85,9 +85,9 @@ class FanFixtureFactoryTests extends Specification {
         1*appExecutor.sendEvent(fanFixture, [name: "level", value: 100])
 
         and:
-        fanFixture.state.switch == "on"
-        fanFixture.state.speed == "high"
-        fanFixture.state.level == 100
+        fanFixture.currentValue('switch') == "on"
+        fanFixture.currentValue('speed') == "high"
+        fanFixture.currentValue('level') == 100
     }
 
     void "Fan can set level from off"() {
@@ -104,9 +104,9 @@ class FanFixtureFactoryTests extends Specification {
         1*appExecutor.sendEvent(fanFixture, [name: "level", value: 50])
 
         and:
-        fanFixture.state.switch == "on"
-        fanFixture.state.speed == "medium"
-        fanFixture.state.level == 50
+        fanFixture.currentValue('switch') == "on"
+        fanFixture.currentValue('speed') == "medium"
+        fanFixture.currentValue('level') == 50
     }
 
     void "Fan can change level when already on"() {
@@ -123,9 +123,9 @@ class FanFixtureFactoryTests extends Specification {
         1*appExecutor.sendEvent(fanFixture, [name: "level", value: 100])
 
         and:
-        fanFixture.state.switch == "on"
-        fanFixture.state.speed == "high"
-        fanFixture.state.level == 100
+        fanFixture.currentValue('switch') == "on"
+        fanFixture.currentValue('speed') == "high"
+        fanFixture.currentValue('level') == 100
     }
 
     void "Setting level to 0 will turn fan off"() {
@@ -142,9 +142,9 @@ class FanFixtureFactoryTests extends Specification {
         1*appExecutor.sendEvent(fanFixture, [name: "level", value: 0])
 
         and:
-        fanFixture.state.switch == "off"
-        fanFixture.state.speed == "off"
-        fanFixture.state.level == 0
+        fanFixture.currentValue('switch') == "off"
+        fanFixture.currentValue('speed') == "off"
+        fanFixture.currentValue('level') == 0
     }
 
     void "Setting speed to off will turn fan off"() {
@@ -161,9 +161,9 @@ class FanFixtureFactoryTests extends Specification {
         1*appExecutor.sendEvent(fanFixture, [name: "level", value: 0])
 
         and:
-        fanFixture.state.switch == "off"
-        fanFixture.state.speed == "off"
-        fanFixture.state.level == 0
+        fanFixture.currentValue('switch') == "off"
+        fanFixture.currentValue('speed') == "off"
+        fanFixture.currentValue('level') == 0
     }
 
     void "Can cycle speed from off"() {
@@ -180,9 +180,9 @@ class FanFixtureFactoryTests extends Specification {
         1*appExecutor.sendEvent(fanFixture, [name: "level", value: 16])
 
         and:
-        fanFixture.state.switch == "on"
-        fanFixture.state.speed == "low"
-        fanFixture.state.level == 16
+        fanFixture.currentValue('switch') == "on"
+        fanFixture.currentValue('speed') == "low"
+        fanFixture.currentValue('level') == 16
     }
 
     void "Can cycle speed from medium"() {
@@ -199,9 +199,9 @@ class FanFixtureFactoryTests extends Specification {
         1*appExecutor.sendEvent(fanFixture, [name: "level", value: 75])
 
         and:
-        fanFixture.state.switch == "on"
-        fanFixture.state.speed == "medium-high"
-        fanFixture.state.level == 75
+        fanFixture.currentValue('switch') == "on"
+        fanFixture.currentValue('speed') == "medium-high"
+        fanFixture.currentValue('level') == 75
     }
 
     void "Can cycle speed from high"() {
@@ -218,8 +218,8 @@ class FanFixtureFactoryTests extends Specification {
         1*appExecutor.sendEvent(fanFixture, [name: "level", value: 0])
 
         and:
-        fanFixture.state.switch == "off"
-        fanFixture.state.speed == "off"
-        fanFixture.state.level == 0
+        fanFixture.currentValue('switch') == "off"
+        fanFixture.currentValue('speed') == "off"
+        fanFixture.currentValue('level') == 0
     }
 }

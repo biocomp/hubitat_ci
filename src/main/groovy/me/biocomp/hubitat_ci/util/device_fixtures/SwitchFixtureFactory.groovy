@@ -18,25 +18,26 @@ class SwitchFixtureFactory {
     static def create(String name) {
         def deviceInputValueFactory = new DeviceInputValueFactory([Switch, DoubleTapableButton])
 
-        def switchDevice = deviceInputValueFactory.makeInputObject(name, 't',  DefaultAndUserValues.empty(), false)
+        def switchDevice = deviceInputValueFactory.makeInputDevice(name)
 
         def switchMetaClass = switchDevice.getMetaClass()
 
         // Calling initialize attaches behavior involving commands, state maintenance, and sending events.
-        switchMetaClass.initialize = { appExecutor, state ->
-            switchMetaClass.state = state
+        switchMetaClass.initialize = { appExecutor, initialAttributeValues ->
+            attributeValues = initialAttributeValues
+
             switchMetaClass.on = {
-                state.switch = "on"
-                state.doubleTapped = null
+                attributeValues.switch = "on"
+                attributeValues.doubleTapped = null
                 appExecutor.sendEvent(switchDevice, [name: "switch.on", value: "on"])
             }
             switchMetaClass.off = {
-                state.switch = "off"
-                state.doubleTapped = null
+                attributeValues.switch = "off"
+                attributeValues.doubleTapped = null
                 appExecutor.sendEvent(switchDevice, [name: "switch.off", value: "off"])
             }
             switchMetaClass.doubleTap = { buttonNumber ->
-                state.doubleTapped = buttonNumber
+                attributeValues.doubleTapped = buttonNumber
                 appExecutor.sendEvent(switchDevice, [name: "doubleTapped.${buttonNumber}", value: buttonNumber])
             }
         }

@@ -20,7 +20,7 @@ class LightSensorFixtureFactoryTests extends Specification {
         lightSensorFixture.initialize(appExecutor, [illuminance: 200])
 
         expect:
-        lightSensorFixture.state.illuminance == 200
+        lightSensorFixture.currentValue('illuminance') == 200
     }
 
     void "Light sensor reports changes in the measurement"() {

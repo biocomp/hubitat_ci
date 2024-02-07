@@ -25,8 +25,8 @@ class WindowShadeFixtureFactoryTests extends Specification {
         then:
         1*appExecutor.sendEvent(fixture, [name: "position", value: 0])
         1*appExecutor.sendEvent(fixture, [name: "windowShade", value: "closed"])
-        fixture.state.position == 0
-        fixture.state.windowShade == "closed"
+        fixture.currentValue('position') == 0
+        fixture.currentValue('windowShade') == "closed"
     }
 
     void "Shade can open"() {
@@ -40,8 +40,8 @@ class WindowShadeFixtureFactoryTests extends Specification {
         then:
         1*appExecutor.sendEvent(fixture, [name: "position", value: 100])
         1*appExecutor.sendEvent(fixture, [name: "windowShade", value: "open"])
-        fixture.state.position == 100
-        fixture.state.windowShade == "open"
+        fixture.currentValue('position') == 100
+        fixture.currentValue('windowShade') == "open"
     }
 
     void "Shade can set position to closed"() {
@@ -55,8 +55,8 @@ class WindowShadeFixtureFactoryTests extends Specification {
         then:
         1*appExecutor.sendEvent(fixture, [name: "position", value: 0])
         1*appExecutor.sendEvent(fixture, [name: "windowShade", value: "closed"])
-        fixture.state.position == 0
-        fixture.state.windowShade == "closed"
+        fixture.currentValue('position') == 0
+        fixture.currentValue('windowShade') == "closed"
     }
 
     void "Shade can set position to open"() {
@@ -70,8 +70,8 @@ class WindowShadeFixtureFactoryTests extends Specification {
         then:
         1*appExecutor.sendEvent(fixture, [name: "position", value: 100])
         1*appExecutor.sendEvent(fixture, [name: "windowShade", value: "open"])
-        fixture.state.position == 100
-        fixture.state.windowShade == "open"
+        fixture.currentValue('position') == 100
+        fixture.currentValue('windowShade') == "open"
     }
 
     void "Shade can set position to partially open"() {
@@ -85,8 +85,8 @@ class WindowShadeFixtureFactoryTests extends Specification {
         then:
         1*appExecutor.sendEvent(fixture, [name: "position", value: 50])
         1*appExecutor.sendEvent(fixture, [name: "windowShade", value: "partially open"])
-        fixture.state.position == 50
-        fixture.state.windowShade == "partially open"
+        fixture.currentValue('position') == 50
+        fixture.currentValue('windowShade') == "partially open"
     }
 
     void "Shade can start changing to open"() {
@@ -100,8 +100,8 @@ class WindowShadeFixtureFactoryTests extends Specification {
         then:
         1*appExecutor.sendEvent(fixture, [name: "position", value: 100])
         1*appExecutor.sendEvent(fixture, [name: "windowShade", value: "open"])
-        fixture.state.position == 100
-        fixture.state.windowShade == "open"
+        fixture.currentValue('position') == 100
+        fixture.currentValue('windowShade') == "open"
     }
 
     void "Shade can start changing to closed"() {
@@ -115,8 +115,8 @@ class WindowShadeFixtureFactoryTests extends Specification {
         then:
         1*appExecutor.sendEvent(fixture, [name: "position", value: 0])
         1*appExecutor.sendEvent(fixture, [name: "windowShade", value: "closed"])
-        fixture.state.position == 0
-        fixture.state.windowShade == "closed"
+        fixture.currentValue('position') == 0
+        fixture.currentValue('windowShade') == "closed"
     }
 
     void "If given an invalid direction, shade does nothing"() {
@@ -129,7 +129,7 @@ class WindowShadeFixtureFactoryTests extends Specification {
 
         then:
         0*appExecutor.sendEvent(fixture, _)
-        fixture.state.position == 50
-        fixture.state.windowShade == "partially open"
+        fixture.currentValue('position') == 50
+        fixture.currentValue('windowShade') == "partially open"
     }
 }

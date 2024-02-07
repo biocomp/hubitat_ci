@@ -24,7 +24,7 @@ class LockFixtureFactoryTests extends Specification {
 
         then:
         1*appExecutor.sendEvent(lockFixture, [name: "lock", value: "locked"])
-        lockFixture.state.lock == "locked"
+        lockFixture.currentValue('lock') == "locked"
     }
 
     void "Lock can unlock"() {
@@ -37,8 +37,8 @@ class LockFixtureFactoryTests extends Specification {
 
         then:
         1*appExecutor.sendEvent(lockFixture, [name: "lock", value: "unlocked"])
-        lockFixture.state.lock == "unlocked"
-        lockFixture.state.doubleTapped == null
+        lockFixture.currentValue('lock') == "unlocked"
+        lockFixture.currentValue('doubleTapped') == null
     }
 
     void "We can set the lock fixture to be unresponsive for a bit"() {
@@ -47,7 +47,7 @@ class LockFixtureFactoryTests extends Specification {
         lockFixture.initialize(appExecutor, [lock: "unlocked"])
 
         and: "We tell the fixture to ignore two commands"
-        lockFixture.state.commandsToIgnore = 2
+        lockFixture.setCommandsToIgnore(2)
 
         when: "We try to lock it twice"
         lockFixture.lock()
@@ -55,14 +55,14 @@ class LockFixtureFactoryTests extends Specification {
 
         then: "The lock should still be unlocked"
         0*appExecutor.sendEvent(lockFixture, [name: "lock", value: "locked"])
-        lockFixture.state.lock == "unlocked"
+        lockFixture.currentValue('lock') == "unlocked"
 
         when: "We try a third time"
         lockFixture.lock()
 
         then: "The lock should be locked"
         1*appExecutor.sendEvent(lockFixture, [name: "lock", value: "locked"])
-        lockFixture.state.lock == "locked"
+        lockFixture.currentValue('lock') == "locked"
     }
 
     void "Can call refresh"() {
@@ -74,7 +74,7 @@ class LockFixtureFactoryTests extends Specification {
         lockFixture.refresh()
 
         then:
-        lockFixture.state.lock == "unlocked"
+        lockFixture.currentValue('lock') == "unlocked"
     }
 
     void "If requireRefresh is set, then commands don't report results immediately"() {
@@ -83,20 +83,20 @@ class LockFixtureFactoryTests extends Specification {
         lockFixture.initialize(appExecutor, [lock: "unlocked"])
 
         and: "We set requireRefresh to true"
-        lockFixture.state.requireRefresh = true
+        lockFixture.setRequireRefresh(true)
 
         when: "We send the lock a lock command"
         lockFixture.lock()
 
         then: "The lock does not report back its results immediately"
         0*appExecutor.sendEvent(lockFixture, [name: "lock", value: "locked"])
-        lockFixture.state.lock == "unlocked"
+        lockFixture.currentValue('lock') == "unlocked"
 
         when: "We send the lock a refresh command"
         lockFixture.refresh()
 
         then: "The lock reports back its results"
         1*appExecutor.sendEvent(lockFixture, [name: "lock", value: "locked"])
-        lockFixture.state.lock == "locked"
+        lockFixture.currentValue('lock') == "locked"
     }
 }

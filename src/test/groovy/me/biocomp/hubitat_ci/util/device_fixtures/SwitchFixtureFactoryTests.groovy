@@ -24,8 +24,8 @@ class SwitchFixtureFactoryTests extends Specification {
 
         then:
         1*appExecutor.sendEvent(switchFixture, [name: "switch.on", value: "on"])
-        switchFixture.state.switch == "on"
-        switchFixture.state.doubleTapped == null
+        switchFixture.currentValue('switch') == "on"
+        switchFixture.currentValue('doubleTapped') == null
     }
 
     void "Switch can turn off"() {
@@ -38,8 +38,8 @@ class SwitchFixtureFactoryTests extends Specification {
 
         then:
         1*appExecutor.sendEvent(switchFixture, [name: "switch.off", value: "off"])
-        switchFixture.state.switch == "off"
-        switchFixture.state.doubleTapped == null
+        switchFixture.currentValue('switch') == "off"
+        switchFixture.currentValue('doubleTapped') == null
     }
 
     void "Switch can double-tap up"() {
@@ -52,7 +52,7 @@ class SwitchFixtureFactoryTests extends Specification {
 
         then:
         1*appExecutor.sendEvent(switchFixture, [name: "doubleTapped.1", value: 1])
-        switchFixture.state.doubleTapped == 1
+        switchFixture.currentValue('doubleTapped') == 1
     }
 
     void "Switch can double-tap down"() {
@@ -65,7 +65,7 @@ class SwitchFixtureFactoryTests extends Specification {
 
         then:
         1*appExecutor.sendEvent(switchFixture, [name: "doubleTapped.2", value: 2])
-        switchFixture.state.doubleTapped == 2
+        switchFixture.currentValue('doubleTapped') == 2
     }
 
 }
