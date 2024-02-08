@@ -19,8 +19,8 @@ abstract class IntegrationAppSpecification extends Specification {
 
     protected log = Mock(Log)
 
-    def appState = [:]
-    def appAtomicState = [:]
+    protected appState = [:]
+    protected appAtomicState = [:]
 
     protected appExecutor = Spy(IntegrationAppExecutor, constructorArgs: [scheduler: scheduler]) {
         _*getLog() >> log
@@ -44,14 +44,14 @@ abstract class IntegrationAppSpecification extends Specification {
      * Spock will run this base setup BEFORE running the overridden setup() in the subclass specifications.
      */
     def setup() {
-        TimeKeeper.removeAllListeners()
+        TimeKeeper.removeAllListeners()     // Ensure a clean slate for each test.
     }
 
     /**
      * Spock will run this base cleanup AFTER running the overridden cleanup() in the subclass specifications.
      */
     def cleanup() {
-        TimeKeeper.removeAllListeners()
+        TimeKeeper.removeAllListeners()     // The IntegrationScheduler is a TimeKeeper listener, so we want to unregister it after each test is complete.
     }
 
 }

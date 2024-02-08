@@ -48,12 +48,24 @@ abstract class IntegrationDeviceExecutor implements DeviceExecutor {
      * BEGIN SECTION: Select methods from DeviceExecutor trait
      *****************************************************************/
 
+
     @Override
     void sendEvent(Map properties) {
-            def deviceId = 0    // device.getIdAsLong()
-            def generatedEvent = new DeviceEventArgs(deviceId, device, properties.name, properties.value)
-            throw new Exception("Need to send it somewhere, as well as update the tracked attribute")
+        // FUTURE:  It might be desirable to send the event to apps that subscribe.
+        // For example, if you were trying to system test both an app script and a device script
+        // at the same time.  However, that would require allowing AppSandbox/Executor/Wrapper to work
+        // together with DeviceSandbox/Executor/Wrapper, and that's not supported yet. So this is
+        // commented out for now.
+        // def deviceId = 0    // device.getIdAsLong()
+        // def generatedEvent = new DeviceEventArgs(deviceId, device, properties.name, properties.value)
+        // throw new Exception("Need to send it somewhere.")
+
+        device.sendEvent(properties)
     }
+
+    // def currentValue(String attributeName, boolean skipCache=false) {
+    //     return attributeValues[attributeName]
+    // }
 
     /*****************************************************************
      * END SECTION: Select methods from DeviceExecutor trait
@@ -63,6 +75,15 @@ abstract class IntegrationDeviceExecutor implements DeviceExecutor {
     /*******************************************************
      * BEGIN SECTION: Methods from BaseScheduler trait
      *******************************************************/
+
+    private HubitatDeviceScript script
+
+    void setSubscribingScript(HubitatDeviceScript script) {
+        this.script = script
+
+        // TODO - I need to clean up this unethical spaghetti.
+        this.scheduler?.setHandlingObject(script)
+    }
 
     // This is the scheduler that will be used to schedule events.
     // This app executor outsources its scheduling logic to the scheduler, if it exists.
