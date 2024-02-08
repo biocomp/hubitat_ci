@@ -1,13 +1,13 @@
 package me.biocomp.hubitat_ci.integration
 
-import me.biocomp.hubitat_ci.integration.IntegrationDeviceSpecification
+import me.biocomp.hubitat_ci.util.integration.IntegrationDeviceSpecification
 
 import spock.lang.Specification
 
 class EnhancedVirtualPresenceSensorTests extends IntegrationDeviceSpecification {
     @Override
     def setup() {
-        super.initializeEnvironment("Scripts/Devices/EnhancedVirtualPresenceSensor.groovy", [switch: "off", presence: "not present"])
+        super.initializeEnvironment("Scripts/Devices/EnhancedVirtualPresenceSensor.groovy", [], [switch: "off", presence: "not present"])
     }
 
     def "Can arrive"() {

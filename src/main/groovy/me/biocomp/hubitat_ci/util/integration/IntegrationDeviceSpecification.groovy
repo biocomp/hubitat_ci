@@ -1,4 +1,4 @@
-package me.biocomp.hubitat_ci.integration
+package me.biocomp.hubitat_ci.util.integration
 
 import me.biocomp.hubitat_ci.api.common_api.Log
 import me.biocomp.hubitat_ci.device.HubitatDeviceSandbox
@@ -7,6 +7,7 @@ import me.biocomp.hubitat_ci.util.integration.IntegrationDeviceExecutor
 import me.biocomp.hubitat_ci.util.integration.IntegrationDeviceWrapper
 import me.biocomp.hubitat_ci.util.integration.IntegrationScheduler
 import me.biocomp.hubitat_ci.util.integration.TimeKeeper
+import me.biocomp.hubitat_ci.validation.Flags
 
 import spock.lang.Specification
 
@@ -32,9 +33,9 @@ abstract class IntegrationDeviceSpecification extends Specification {
      * the necessary objects.
      * This method must be called in the overridden setup() method of the subclass specifications.
      */
-    protected void initializeEnvironment(String deviceScriptFilename, Map deviceSettings = [:]) {
+    protected void initializeEnvironment(String deviceScriptFilename, List<Flags> validationFlags, Map deviceSettings = [:]) {
         sandbox = new HubitatDeviceSandbox(new File(deviceScriptFilename))
-        deviceScript = sandbox.run(api: deviceExecutor, userSettingValues: deviceSettings)
+        deviceScript = sandbox.run(api: deviceExecutor, validationFlags: validationFlags, userSettingValues: deviceSettings)
         deviceExecutor.setSubscribingScript(deviceScript)
     }
 

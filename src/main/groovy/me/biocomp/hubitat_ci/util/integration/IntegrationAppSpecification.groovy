@@ -1,4 +1,4 @@
-package me.biocomp.hubitat_ci.integration
+package me.biocomp.hubitat_ci.util.integration
 
 import me.biocomp.hubitat_ci.api.common_api.InstalledAppWrapper
 import me.biocomp.hubitat_ci.api.common_api.Log
@@ -7,6 +7,7 @@ import me.biocomp.hubitat_ci.app.HubitatAppScript
 import me.biocomp.hubitat_ci.util.integration.IntegrationAppExecutor
 import me.biocomp.hubitat_ci.util.integration.IntegrationScheduler
 import me.biocomp.hubitat_ci.util.integration.TimeKeeper
+import me.biocomp.hubitat_ci.validation.Flags
 
 import spock.lang.Specification
 
@@ -34,9 +35,9 @@ abstract class IntegrationAppSpecification extends Specification {
      * the necessary objects.
      * This method must be called in the overridden setup() method of the subclass specifications.
      */
-    protected void initializeEnvironment(String appScriptFilename, Map appSettings = [:]) {
+    protected void initializeEnvironment(String appScriptFilename, List<Flags> flags, Map appSettings = [:]) {
         sandbox = new HubitatAppSandbox(new File(appScriptFilename))
-        appScript = sandbox.run(api: appExecutor, userSettingValues: appSettings)
+        appScript = sandbox.run(api: appExecutor, validationFlags: flags, userSettingValues: appSettings)
         appExecutor.setSubscribingScript(appScript)
     }
 
