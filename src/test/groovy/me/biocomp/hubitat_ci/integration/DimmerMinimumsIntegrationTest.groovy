@@ -1,162 +1,98 @@
 package me.biocomp.hubitat_ci.integration
 
-import me.biocomp.hubitat_ci.api.Attribute
-import me.biocomp.hubitat_ci.api.app_api.AppExecutor
-import me.biocomp.hubitat_ci.util.integration.IntegrationAppExecutor
-import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
-import me.biocomp.hubitat_ci.api.common_api.InstalledAppWrapper
-import me.biocomp.hubitat_ci.api.common_api.Location
-import me.biocomp.hubitat_ci.api.common_api.Log
-import me.biocomp.hubitat_ci.app.AppValidator
-import me.biocomp.hubitat_ci.app.HubitatAppSandbox
+import me.biocomp.hubitat_ci.integration.IntegrationAppSpecification
 import me.biocomp.hubitat_ci.util.device_fixtures.DimmerFixtureFactory
-import me.biocomp.hubitat_ci.validation.Flags
+
 import spock.lang.Specification
 
 /**
 * These are a set of integration tests of a real app script, testing it for behavior a user
 * would experience from their real devices.
-* It uses IntegrationAppExecutor, DimmerFixtureFactory, and the app script together, to
-* ensure that the full behavior of the system is correct.
-* This is very similar to the type of tests we would want to run when developing an app.
+* Inside the IntegrationAppSpecification, tt uses IntegrationAppExecutor, DimmerFixtureFactory,
+* and the app script together, to ensure that the full behavior of the system is correct.
+* These are the type of tests we would want to write when developing an app.
 */
-class DimmerMinimumsIntegrationTest extends Specification {
-    HubitatAppSandbox sandbox = new HubitatAppSandbox(new File("Scripts/DimmerMinimums.groovy"))
+class DimmerMinimumsIntegrationTest extends IntegrationAppSpecification {
+    Object dimmerFixture1
+    Object dimmerFixture2
 
-    def log = Mock(Log)
+    @Override
+    def setup() {
+        dimmerFixture1 = DimmerFixtureFactory.create('d1')
+        dimmerFixture2 = DimmerFixtureFactory.create('d2')
 
-    def appExecutor = Spy(IntegrationAppExecutor) {
-        _*getLog() >> log
-    }
-
-    def "Basic validation of app script"() {
-        expect:
-        sandbox.run()
+        super.initializeEnvironment("Scripts/DimmerMinimums.groovy", [dimmers: [dimmerFixture1, dimmerFixture2], minimumLevel: 5, enableLogging: true])
     }
 
     void "App initialize subscribes to events"() {
-        given:
-        def dimmerFixture = DimmerFixtureFactory.create('n')
-
-        // Run the app sandbox, passing the dimmer fixture in.
-        def appScript = sandbox.run(api: appExecutor,
-            userSettingValues: [dimmers: [dimmerFixture], minimumLevel: 5, enableLogging: true])
-        appExecutor.setSubscribingScript(appScript)
-
         when:
         appScript.initialize()
 
         then:
         // Expect that events are subscribed to
-        1 * appExecutor.subscribe([dimmerFixture], 'level', 'levelHandler')
-        1 * appExecutor.subscribe([dimmerFixture], 'switch.on', 'switchOnHandler')
+        1 * appExecutor.subscribe([dimmerFixture1, dimmerFixture2], 'level', 'levelHandler')
+        1 * appExecutor.subscribe([dimmerFixture1, dimmerFixture2], 'switch.on', 'switchOnHandler')
     }
 
     void "levelHandler() ensures minimum level"() {
         given:
-        // Define a dimmer fixture
-        def dimmerFixture = DimmerFixtureFactory.create('n')
-
-        // Run the app sandbox, passing the dimmer fixture in.
-        def appScript = sandbox.run(api: appExecutor,
-            userSettingValues: [dimmers: [dimmerFixture], minimumLevel: 5, enableLogging: true],
-            )
-        appExecutor.setSubscribingScript(appScript)
-
-        dimmerFixture.initialize(appExecutor, [switch: "on", level: 99])
+        dimmerFixture1.initialize(appExecutor, [switch: "on", level: 99])
+        appScript.installed()
 
         when:
-        appScript.installed()
-        dimmerFixture.setLevel(2)
+        dimmerFixture1.setLevel(2)
 
         then:
-        dimmerFixture.currentValue('switch') == "on"
-        dimmerFixture.currentValue('level') == 5
+        dimmerFixture1.currentValue('switch') == "on"
+        dimmerFixture1.currentValue('level') == 5
     }
 
     void "setLevel() can turn on the dimmer"() {
         given:
-        // Define a dimmer fixture
-        def dimmerFixture = DimmerFixtureFactory.create('n')
-
-        // Run the app sandbox, passing the dimmer fixture in.
-        def appScript = sandbox.run(api: appExecutor,
-            userSettingValues: [dimmers: [dimmerFixture], minimumLevel: 5, enableLogging: true],
-            )
-        appExecutor.setSubscribingScript(appScript)
-
-        dimmerFixture.initialize(appExecutor, [switch: "off", level: 99])
+        dimmerFixture1.initialize(appExecutor, [switch: "off", level: 99])
+        appScript.installed()
 
         when:
-        appScript.installed()
-        dimmerFixture.setLevel(2)
+        dimmerFixture1.setLevel(2)
 
         then:
-        dimmerFixture.currentValue('switch') == "on"
-        dimmerFixture.currentValue('level') == 5
+        dimmerFixture1.currentValue('switch') == "on"
+        dimmerFixture1.currentValue('level') == 5
     }
 
     void "setLevel() does not turn on dimmer if zero"() {
         given:
-        // Define a dimmer fixture
-        def dimmerFixture = DimmerFixtureFactory.create('n')
-
-        // Run the app sandbox, passing the dimmer fixture in.
-        def appScript = sandbox.run(api: appExecutor,
-            userSettingValues: [dimmers: [dimmerFixture], minimumLevel: 5, enableLogging: true],
-            )
-        appExecutor.setSubscribingScript(appScript)
-
-        dimmerFixture.initialize(appExecutor, [switch: "off", level: 99])
+        dimmerFixture1.initialize(appExecutor, [switch: "off", level: 99])
+        appScript.installed()
 
         when:
-        appScript.installed()
-        dimmerFixture.setLevel(0)
+        dimmerFixture1.setLevel(0)
 
         then:
-        dimmerFixture.currentValue('switch') == "off"
-        dimmerFixture.currentValue('level') == 0
+        dimmerFixture1.currentValue('switch') == "off"
+        dimmerFixture1.currentValue('level') == 0
     }
 
     void "levelHandler() does not change level if above the minimum"() {
         given:
-        // Define a dimmer fixture
-        def dimmerFixture = DimmerFixtureFactory.create('n')
-
-        // Run the app sandbox, passing the dimmer fixture in.
-        def appScript = sandbox.run(api: appExecutor,
-            userSettingValues: [dimmers: [dimmerFixture], minimumLevel: 5, enableLogging: true],
-            )
-        appExecutor.setSubscribingScript(appScript)
-
-        dimmerFixture.initialize(appExecutor, [switch: "on", level: 99])
+        dimmerFixture1.initialize(appExecutor, [switch: "on", level: 99])
+        appScript.installed()
 
         when:
-        appScript.installed()
-        dimmerFixture.setLevel(80)
+        dimmerFixture1.setLevel(80)
 
         then:
-        dimmerFixture.currentValue('switch') == "on"
-        dimmerFixture.currentValue('level') == 80
+        dimmerFixture1.currentValue('switch') == "on"
+        dimmerFixture1.currentValue('level') == 80
     }
 
     void "levelHandler() adjusts correct dimmer from among multiple devices"() {
         given:
-        // Define two dimmer fixtures
-        def dimmerFixture1 = DimmerFixtureFactory.create('n1')
-        def dimmerFixture2 = DimmerFixtureFactory.create('n2')
-
-        // Run the app sandbox, passing the dimmer fixtures in.
-        def appScript = sandbox.run(api: appExecutor,
-            userSettingValues: [dimmers: [dimmerFixture1, dimmerFixture2], minimumLevel: 5, enableLogging: true],
-            )
-        appExecutor.setSubscribingScript(appScript)
-
         dimmerFixture1.initialize(appExecutor, [switch: "on", level: 99])
         dimmerFixture2.initialize(appExecutor, [switch: "on", level: 99])
+        appScript.installed()
 
         when:
-        appScript.installed()
         dimmerFixture2.setLevel(2)
 
         then:
@@ -166,67 +102,39 @@ class DimmerMinimumsIntegrationTest extends Specification {
         dimmerFixture1.currentValue('level') == 99
     }
 
-        void "switchOnHandler() ensures minimum level"() {
+    void "switchOnHandler() ensures minimum level"() {
         given:
-        // Define a dimmer fixture
-        def dimmerFixture = DimmerFixtureFactory.create('n')
-
-        // Run the app sandbox, passing the dimmer fixture in.
-        def appScript = sandbox.run(api: appExecutor,
-            userSettingValues: [dimmers: [dimmerFixture], minimumLevel: 5, enableLogging: true],
-            )
-        appExecutor.setSubscribingScript(appScript)
-
-        dimmerFixture.initialize(appExecutor, [switch: "off", level: 0])
+        dimmerFixture1.initialize(appExecutor, [switch: "off", level: 0])
+        appScript.installed()
 
         when:
-        appScript.installed()
-        dimmerFixture.on()
+        dimmerFixture1.on()
 
         then:
-        dimmerFixture.currentValue('switch') == "on"
-        dimmerFixture.currentValue('level') == 5
+        dimmerFixture1.currentValue('switch') == "on"
+        dimmerFixture1.currentValue('level') == 5
     }
 
     void "switchOnHandler() does not change level if above the minimum"() {
         given:
-        // Define a dimmer fixture
-        def dimmerFixture = DimmerFixtureFactory.create('n')
-
-        // Run the app sandbox, passing the dimmer fixture in.
-        def appScript = sandbox.run(api: appExecutor,
-            userSettingValues: [dimmers: [dimmerFixture], minimumLevel: 5, enableLogging: true],
-            )
-        appExecutor.setSubscribingScript(appScript)
-
-        dimmerFixture.initialize(appExecutor, [switch: "off", level: 99])
+        dimmerFixture1.initialize(appExecutor, [switch: "off", level: 99])
+        appScript.installed()
 
         when:
-        appScript.installed()
-        dimmerFixture.on()
+        dimmerFixture1.on()
 
         then:
-        dimmerFixture.currentValue('switch') == "on"
-        dimmerFixture.currentValue('level') == 99
+        dimmerFixture1.currentValue('switch') == "on"
+        dimmerFixture1.currentValue('level') == 99
     }
 
     void "switchOnHandler() adjusts correct dimmer from among multiple devices"() {
         given:
-        // Define two dimmer fixtures
-        def dimmerFixture1 = DimmerFixtureFactory.create('n1')
-        def dimmerFixture2 = DimmerFixtureFactory.create('n2')
-
-        // Run the app sandbox, passing the dimmer fixtures in.
-        def appScript = sandbox.run(api: appExecutor,
-            userSettingValues: [dimmers: [dimmerFixture1, dimmerFixture2], minimumLevel: 5, enableLogging: true],
-            )
-        appExecutor.setSubscribingScript(appScript)
-
         dimmerFixture1.initialize(appExecutor, [switch: "off", level: 0])
         dimmerFixture2.initialize(appExecutor, [switch: "off", level: 0])
+        appScript.installed()
 
         when:
-        appScript.installed()
         dimmerFixture2.on()
 
         then:
