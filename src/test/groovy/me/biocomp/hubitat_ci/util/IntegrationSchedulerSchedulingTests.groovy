@@ -1,7 +1,7 @@
 package me.biocomp.hubitat_ci
 
-import me.biocomp.hubitat_ci.util.IntegrationScheduler
-import me.biocomp.hubitat_ci.util.TimeKeeper
+import me.biocomp.hubitat_ci.util.integration.IntegrationScheduler
+import me.biocomp.hubitat_ci.util.integration.TimeKeeper
 
 import spock.lang.Specification
 

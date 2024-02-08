@@ -1,4 +1,4 @@
-package me.biocomp.hubitat_ci.util
+package me.biocomp.hubitat_ci.util.integration
 
 import groovy.time.*
 

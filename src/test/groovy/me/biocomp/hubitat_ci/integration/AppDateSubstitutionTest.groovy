@@ -2,7 +2,7 @@ package me.biocomp.hubitat_ci.integration
 
 import me.biocomp.hubitat_ci.api.Attribute
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
-import me.biocomp.hubitat_ci.util.IntegrationAppExecutor
+import me.biocomp.hubitat_ci.util.integration.IntegrationAppExecutor
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
 import me.biocomp.hubitat_ci.api.common_api.InstalledAppWrapper
 import me.biocomp.hubitat_ci.api.common_api.Location
@@ -10,7 +10,7 @@ import me.biocomp.hubitat_ci.api.common_api.Log
 import me.biocomp.hubitat_ci.app.AppValidator
 import me.biocomp.hubitat_ci.app.HubitatAppSandbox
 import me.biocomp.hubitat_ci.util.device_fixtures.DimmerFixtureFactory
-import me.biocomp.hubitat_ci.util.TimeKeeper
+import me.biocomp.hubitat_ci.util.integration.TimeKeeper
 import me.biocomp.hubitat_ci.validation.Flags
 import spock.lang.Specification
 
@@ -30,6 +30,10 @@ class AppDateSubstitutionTest extends Specification {
         TimeZone.setDefault(TimeZone.getTimeZone('UTC'))
 
         TimeKeeper.set(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:45"))
+        TimeKeeper.removeAllListeners()
+    }
+
+    def cleanup() {
         TimeKeeper.removeAllListeners()
     }
 

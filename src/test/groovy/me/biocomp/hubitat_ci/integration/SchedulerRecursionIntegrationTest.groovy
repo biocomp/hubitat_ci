@@ -2,11 +2,11 @@ package me.biocomp.hubitat_ci.integration
 
 import me.biocomp.hubitat_ci.api.Attribute
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
-import me.biocomp.hubitat_ci.util.IntegrationAppExecutor
-import me.biocomp.hubitat_ci.util.IntegrationScheduler
-import me.biocomp.hubitat_ci.util.TimeKeeper
-import me.biocomp.hubitat_ci.util.TimeChangedEvent
-import me.biocomp.hubitat_ci.util.TimeChangedListener
+import me.biocomp.hubitat_ci.util.integration.IntegrationAppExecutor
+import me.biocomp.hubitat_ci.util.integration.IntegrationScheduler
+import me.biocomp.hubitat_ci.util.integration.TimeKeeper
+import me.biocomp.hubitat_ci.util.integration.TimeChangedEvent
+import me.biocomp.hubitat_ci.util.integration.TimeChangedListener
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
 import me.biocomp.hubitat_ci.api.common_api.InstalledAppWrapper
 import me.biocomp.hubitat_ci.api.common_api.Location

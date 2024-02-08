@@ -2,7 +2,7 @@ package me.biocomp.hubitat_ci.integration
 
 import me.biocomp.hubitat_ci.api.Attribute
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
-import me.biocomp.hubitat_ci.util.IntegrationAppExecutor
+import me.biocomp.hubitat_ci.util.integration.IntegrationAppExecutor
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
 import me.biocomp.hubitat_ci.api.common_api.InstalledAppWrapper
 import me.biocomp.hubitat_ci.api.common_api.Location

@@ -1,8 +1,8 @@
 package me.biocomp.hubitat_ci
 
-import me.biocomp.hubitat_ci.util.IntegrationAppExecutor
-import me.biocomp.hubitat_ci.util.DeviceEventArgs
-import me.biocomp.hubitat_ci.util.TimeKeeper
+import me.biocomp.hubitat_ci.util.integration.IntegrationAppExecutor
+import me.biocomp.hubitat_ci.util.integration.DeviceEventArgs
+import me.biocomp.hubitat_ci.util.integration.TimeKeeper
 import me.biocomp.hubitat_ci.app.HubitatAppScript
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
 

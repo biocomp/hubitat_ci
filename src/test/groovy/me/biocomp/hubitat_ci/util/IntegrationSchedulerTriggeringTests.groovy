@@ -1,9 +1,9 @@
 package me.biocomp.hubitat_ci
 
-import me.biocomp.hubitat_ci.util.IntegrationScheduler
-import me.biocomp.hubitat_ci.util.TimeKeeper
-import me.biocomp.hubitat_ci.util.TimeChangedEvent
-import me.biocomp.hubitat_ci.util.TimeChangedListener
+import me.biocomp.hubitat_ci.util.integration.IntegrationScheduler
+import me.biocomp.hubitat_ci.util.integration.TimeKeeper
+import me.biocomp.hubitat_ci.util.integration.TimeChangedEvent
+import me.biocomp.hubitat_ci.util.integration.TimeChangedListener
 
 import spock.lang.Specification
 

@@ -1,9 +1,9 @@
-package me.biocomp.hubitat_ci.util
+package me.biocomp.hubitat_ci.util.integration
 
 import me.biocomp.hubitat_ci.api.common_api.BaseScheduler
-import me.biocomp.hubitat_ci.util.TimeKeeper
-import me.biocomp.hubitat_ci.util.TimeChangedEvent
-import me.biocomp.hubitat_ci.util.TimeChangedListener
+import me.biocomp.hubitat_ci.util.integration.TimeKeeper
+import me.biocomp.hubitat_ci.util.integration.TimeChangedEvent
+import me.biocomp.hubitat_ci.util.integration.TimeChangedListener
 
 import java.util.concurrent.CopyOnWriteArrayList
 import groovy.transform.Synchronized

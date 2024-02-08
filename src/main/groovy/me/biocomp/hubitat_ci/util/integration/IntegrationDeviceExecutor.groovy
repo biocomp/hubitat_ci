@@ -1,24 +1,24 @@
-package me.biocomp.hubitat_ci.util
+package me.biocomp.hubitat_ci.util.integration
 
-import me.biocomp.hubitat_ci.api.app_api.AppExecutor
-import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
+import me.biocomp.hubitat_ci.api.device_api.DeviceExecutor
 import me.biocomp.hubitat_ci.api.common_api.BaseScheduler
-import me.biocomp.hubitat_ci.app.HubitatAppScript
+import me.biocomp.hubitat_ci.device.HubitatDeviceScript
+import me.biocomp.hubitat_ci.util.integration.DeviceEventArgs
 
 /**
-* An implementation of portions of AppExecutor that are useful for integration tests.
-* It is not a full implementation of the AppExecutor abstract class, so it
+* An implementation of portions of DeviceExecutor that are useful for integration tests.
+* It is not a full implementation of the DeviceExecutor abstract class, so it
 * is still expected to be wrapped in a Spock Spy.
 * The parts that are implemented are:
 * - Time methods from BaseExecutor trait
-* - Methods from Subscription interface
+* - Select methods from DeviceExecutor trait
 * - Methods from BaseScheduler trait (passed through to a BaseScheduler dependency)
 */
-abstract class IntegrationAppExecutor implements AppExecutor {
-    IntegrationAppExecutor() {
+abstract class IntegrationDeviceExecutor implements DeviceExecutor {
+    IntegrationDeviceExecutor() {
     }
 
-    IntegrationAppExecutor(BaseScheduler scheduler) {
+    IntegrationDeviceExecutor(BaseScheduler scheduler) {
         this.scheduler = scheduler
     }
 
@@ -45,63 +45,20 @@ abstract class IntegrationAppExecutor implements AppExecutor {
 
 
     /*****************************************************************
-     * BEGIN SECTION: Methods from Subscription interface
+     * BEGIN SECTION: Select methods from DeviceExecutor trait
      *****************************************************************/
 
-    private List<DeviceEventSubInfo> deviceEventSubscriptions = []
-    private HubitatAppScript script
-
-    void setSubscribingScript(HubitatAppScript script) {
-        this.script = script
-
-        this.scheduler?.setHandlingObject(script)
-    }
-
     @Override
-    void subscribe(Object toWhat, String attributeNameOrNameAndValueOrEventName, Object handler) {
-        if (toWhat in Collection) {
-            toWhat.each { Object it ->
-                deviceEventSubscriptions << new DeviceEventSubInfo(it, attributeNameOrNameAndValueOrEventName, handler)
-            }
-        }
-        else {
-            deviceEventSubscriptions << new DeviceEventSubInfo(toWhat, attributeNameOrNameAndValueOrEventName, handler)
-        }
-    }
-
-    @Override
-    void unsubscribe() {
-        deviceEventSubscriptions.clear()
-    }
-
-    @Override
-    void sendEvent(DeviceWrapper device, Map properties) {
-        deviceEventSubscriptions.each { DeviceEventSubInfo subInfo ->
-            if (subInfo.toWhat == device && subInfo.attributeNameOrNameAndValueOrEventName == properties.name) {
-                def generatedEvent = new DeviceEventArgs(device.getIdAsLong(), device, properties.name, properties.value)
-                script."$subInfo.handler"(generatedEvent)
-            }
-        }
-    }
-
-    /**
-    * Private class for tracking subscriptions to device events.
-    */
-    private class DeviceEventSubInfo {
-        Object toWhat
-        String attributeNameOrNameAndValueOrEventName
-        Object handler
-
-        DeviceEventSubInfo(Object toWhat, String attributeNameOrNameAndValueOrEventName, Object handler) {
-            this.toWhat = toWhat
-            this.attributeNameOrNameAndValueOrEventName = attributeNameOrNameAndValueOrEventName
-            this.handler = handler
-        }
+    void sendEvent(Map properties) {
+            def deviceId = 0    // device.getIdAsLong()
+            def generatedEvent = new DeviceEventArgs(deviceId, device, properties.name, properties.value)
+            throw new Exception("Need to send it somewhere, as well as update the tracked attribute")
     }
 
     /*****************************************************************
-     * END SECTION: Methods from Subscription interface
+     * END SECTION: Select methods from DeviceExecutor trait
      *****************************************************************/
+
 
     /*******************************************************
      * BEGIN SECTION: Methods from BaseScheduler trait
@@ -270,22 +227,4 @@ abstract class IntegrationAppExecutor implements AppExecutor {
     /*******************************************************
      * END SECTION: Methods from BaseScheduler trait
      *******************************************************/
-}
-
-/**
-* Class for sending events to handlers in app scripts.  It replicates
-* the key parts of the events that the Hubitat framework passes to app scripts.
-*/
-class DeviceEventArgs {
-    Object deviceId
-    DeviceWrapper device
-    String name
-    Object value
-
-    DeviceEventArgs(Object deviceId, DeviceWrapper device, String name, Object value) {
-        this.deviceId = deviceId
-        this.device = device
-        this.name = name
-        this.value = value
-    }
 }
