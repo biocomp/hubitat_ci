@@ -20,7 +20,7 @@ class DimmerFixtureFactory {
     static def create(String name) {
         def deviceInputValueFactory = new DeviceInputValueFactory([Switch, SwitchLevel, DoubleTapableButton])
 
-        def dimmerDevice = deviceInputValueFactory.makeInputDevice(name)
+        def dimmerDevice = deviceInputValueFactory.makeInputObject(name)
 
         def dimmerMetaClass = dimmerDevice.getMetaClass()
 

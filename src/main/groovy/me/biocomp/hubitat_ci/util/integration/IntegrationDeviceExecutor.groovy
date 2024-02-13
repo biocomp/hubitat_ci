@@ -63,10 +63,6 @@ abstract class IntegrationDeviceExecutor implements DeviceExecutor {
         device.sendEvent(properties)
     }
 
-    // def currentValue(String attributeName, boolean skipCache=false) {
-    //     return attributeValues[attributeName]
-    // }
-
     /*****************************************************************
      * END SECTION: Select methods from DeviceExecutor trait
      *****************************************************************/

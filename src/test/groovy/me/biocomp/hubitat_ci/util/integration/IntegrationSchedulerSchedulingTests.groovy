@@ -8,8 +8,6 @@ import spock.lang.Specification
 class IntegrationSchedulerSchedulingTests extends Specification {
     def scheduler = new IntegrationScheduler()
 
-    String ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'"
-
     def setup() {
         TimeZone.setDefault(TimeZone.getTimeZone('UTC'))
     }
@@ -231,7 +229,7 @@ class IntegrationSchedulerSchedulingTests extends Specification {
     def "runIn generates a request with a nextFireAt that is the amount of seconds in the future"() {
         when:
             def seconds = 60
-            scheduler = new IntegrationScheduler()    // Pass in a timekeeper to ensure millisecond precision in the comparison, because runIn generates a date internally.
+            scheduler = new IntegrationScheduler()
             def now = TimeKeeper.now()
             def expectedDate = new Date(now.getTime() + (seconds * 1000))
             scheduler.runIn(seconds, "handler")
@@ -248,7 +246,7 @@ class IntegrationSchedulerSchedulingTests extends Specification {
     def "runInMillis generates a request with a nextFireAt"() {
         when:
             def millis = 50
-            scheduler = new IntegrationScheduler()    // Pass in a timekeeper to ensure millisecond precision in the comparison, because runIn generates a date internally.
+            scheduler = new IntegrationScheduler()
             def now = TimeKeeper.now()
             def expectedDate = new Date(now.getTime() + millis)
             scheduler.runInMillis(millis, "handler")

@@ -18,7 +18,7 @@ class LockFixtureFactory {
     static def create(String name) {
         def deviceInputValueFactory = new DeviceInputValueFactory([Lock, Refresh])
 
-        def lockDevice = deviceInputValueFactory.makeInputDevice(name)
+        def lockDevice = deviceInputValueFactory.makeInputObject(name)
 
         def lockMetaClass = lockDevice.getMetaClass()
 

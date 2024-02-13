@@ -16,7 +16,7 @@ class LightSensorFixtureFactory {
     static def create(String name) {
         def deviceInputValueFactory = new DeviceInputValueFactory([IlluminanceMeasurement])
 
-        def lightSensorDevice = deviceInputValueFactory.makeInputDevice(name)
+        def lightSensorDevice = deviceInputValueFactory.makeInputObject(name)
 
         def lightSensorMetaClass = lightSensorDevice.getMetaClass()
 

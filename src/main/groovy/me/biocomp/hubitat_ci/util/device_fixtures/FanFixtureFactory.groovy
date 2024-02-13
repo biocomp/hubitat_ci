@@ -19,7 +19,7 @@ class FanFixtureFactory {
     static def create(String name) {
         def deviceInputValueFactory = new DeviceInputValueFactory([Switch, SwitchLevel, FanControl])
 
-        def fanDevice = deviceInputValueFactory.makeInputDevice(name)
+        def fanDevice = deviceInputValueFactory.makeInputObject(name)
 
         def fanMetaClass = fanDevice.getMetaClass()
 

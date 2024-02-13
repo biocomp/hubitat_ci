@@ -11,6 +11,16 @@ import me.biocomp.hubitat_ci.validation.Flags
 
 import spock.lang.Specification
 
+/**
+ * The IntegrationDeviceSpecification is a Spock spec that sets up a mock Hub
+ * environment for running integration tests on Hubitat device scripts.
+ * It provisions the necessary objects and mocks to run the device script in a
+ * controlled environment, and provides helper methods for setting up the
+ * device settings and initializing the device script.
+ * It lets the test writer focus on the device script logic, without having to
+ * worry about the Hubitat_ci framework.
+ * An example of use can be found in EnhancedVirtualPresenceSensorTests.groovy.
+ */
 abstract class IntegrationDeviceSpecification extends Specification {
     private HubitatDeviceSandbox sandbox
     protected HubitatDeviceScript deviceScript

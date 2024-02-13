@@ -41,7 +41,7 @@ class LockFixtureFactoryTests extends Specification {
         lockFixture.currentValue('doubleTapped') == null
     }
 
-    void "We can set the lock fixture to be unresponsive for a bit"() {
+    void "We can set the lock fixture to be unresponsive for a bit, which simulates flaky zwave/zigbee."() {
         given:
         def lockFixture = LockFixtureFactory.create('n')
         lockFixture.initialize(appExecutor, [lock: "unlocked"])
@@ -77,7 +77,7 @@ class LockFixtureFactoryTests extends Specification {
         lockFixture.currentValue('lock') == "unlocked"
     }
 
-    void "If requireRefresh is set, then commands don't report results immediately"() {
+    void "If requireRefresh is set, then commands don't report results immediately, which simulates older zwave locks from before zwave plus."() {
         given:
         def lockFixture = LockFixtureFactory.create('n')
         lockFixture.initialize(appExecutor, [lock: "unlocked"])

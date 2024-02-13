@@ -15,8 +15,6 @@ class IntegrationSchedulerTriggeringTests extends Specification {
     IntegrationScheduler scheduler
     TestListener listener
 
-    String ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
-
     def setup() {
         TimeZone.setDefault(TimeZone.getTimeZone('UTC'))
         TimeKeeper.removeAllListeners()
@@ -159,7 +157,7 @@ class IntegrationSchedulerTriggeringTests extends Specification {
             0 * listener.handler(_ as Map)
     }
 
-    def "schedule will trigger once if you advace TimeKeeper past the specified time"() {
+    def "schedule will trigger once if you advance TimeKeeper past the specified time"() {
         given:
             TimeKeeper.set(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:23:46"))
             scheduler.schedule(Date.parse("yyyy-MM-dd hh:mm:ss", "2014-08-31 8:25:00"), "handler")

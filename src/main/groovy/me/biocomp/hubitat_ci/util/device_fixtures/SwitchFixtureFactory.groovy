@@ -18,7 +18,7 @@ class SwitchFixtureFactory {
     static def create(String name) {
         def deviceInputValueFactory = new DeviceInputValueFactory([Switch, DoubleTapableButton])
 
-        def switchDevice = deviceInputValueFactory.makeInputDevice(name)
+        def switchDevice = deviceInputValueFactory.makeInputObject(name)
 
         def switchMetaClass = switchDevice.getMetaClass()
 

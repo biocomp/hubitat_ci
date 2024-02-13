@@ -30,7 +30,7 @@ class IntegrationScheduler implements BaseScheduler, TimeChangedListener {
 
     boolean _is_hubitat_ci_private() { true }
 
-    String ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+    static final String ISO_8601_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
     @Synchronized("integrationSchedulerLock")
     void timeChangedEventReceived(TimeChangedEvent event) {

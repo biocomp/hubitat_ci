@@ -11,6 +11,16 @@ import me.biocomp.hubitat_ci.validation.Flags
 
 import spock.lang.Specification
 
+/**
+ * The IntegrationAppSpecification is a Spock spec that sets up a mock Hub
+ * environment for running integration tests on Hubitat app scripts.
+ * It provisions the necessary objects and mocks to run the app script in a
+ * controlled environment, and provides helper methods for setting up the
+ * app settings and initializing the app script.
+ * It lets the test writer focus on the app script logic, without having to
+ * worry about the Hubitat_ci framework.
+ * An example of use can be found in DimmerMinimumsIntegrationTest.groovy.
+ */
 abstract class IntegrationAppSpecification extends Specification {
     private HubitatAppSandbox sandbox
     protected HubitatAppScript appScript

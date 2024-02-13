@@ -18,6 +18,10 @@ import me.biocomp.hubitat_ci.util.device_fixtures.DimmerFixtureFactory
 import me.biocomp.hubitat_ci.validation.Flags
 import spock.lang.Specification
 
+/**
+ * Apps and device drivers sometimes schedule callbacks inside of other callbacks.
+ * These tests verify that recursive callbacks are handled correctly by the IntegrationScheduler.
+ */
 class SchedulerRecursionIntegrationTest extends Specification {
     HubitatAppSandbox sandbox = new HubitatAppSandbox(new File("Scripts/AppWithRecursiveSchedules.groovy"))
 

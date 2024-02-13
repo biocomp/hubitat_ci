@@ -8,7 +8,7 @@ import spock.lang.Specification
 /**
 * These are a set of integration tests of a real app script, testing it for behavior a user
 * would experience from their real devices.
-* Inside the IntegrationAppSpecification, tt uses IntegrationAppExecutor, DimmerFixtureFactory,
+* Inside the IntegrationAppSpecification, it uses IntegrationAppExecutor, DimmerFixtureFactory,
 * and the app script together, to ensure that the full behavior of the system is correct.
 * These are the type of tests we would want to write when developing an app.
 */

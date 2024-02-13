@@ -17,7 +17,7 @@ class WindowShadeFixtureFactory {
     static def create(String name) {
         def deviceInputValueFactory = new DeviceInputValueFactory([WindowShade])
 
-        def fixture = deviceInputValueFactory.makeInputDevice(name)
+        def fixture = deviceInputValueFactory.makeInputObject(name)
 
         def fixtureMetaClass = fixture.getMetaClass()
 
