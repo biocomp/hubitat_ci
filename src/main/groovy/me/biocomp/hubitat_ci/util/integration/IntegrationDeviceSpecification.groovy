@@ -8,6 +8,7 @@ import me.biocomp.hubitat_ci.util.integration.IntegrationDeviceWrapper
 import me.biocomp.hubitat_ci.util.integration.IntegrationScheduler
 import me.biocomp.hubitat_ci.util.integration.TimeKeeper
 import me.biocomp.hubitat_ci.validation.Flags
+import me.biocomp.hubitat_ci.validation.NamedParametersValidator
 
 import spock.lang.Specification
 
@@ -43,10 +44,24 @@ abstract class IntegrationDeviceSpecification extends Specification {
      * the necessary objects.
      * This method must be called in the overridden setup() method of the subclass specifications.
      */
-    protected void initializeEnvironment(String deviceScriptFilename, List<Flags> validationFlags, Map deviceSettings = [:]) {
-        sandbox = new HubitatDeviceSandbox(new File(deviceScriptFilename))
-        deviceScript = sandbox.run(api: deviceExecutor, validationFlags: validationFlags, userSettingValues: deviceSettings)
+    protected void initializeEnvironment(Map options) {
+        validateAndUpdateOptions(options)
+
+        sandbox = new HubitatDeviceSandbox(new File(options.deviceScriptFilename))
+        deviceScript = sandbox.run(api: deviceExecutor, validationFlags: options.validationFlags, userSettingValues: options.userSettingValues)
         deviceExecutor.setSubscribingScript(deviceScript)
+    }
+
+    private static void validateAndUpdateOptions(Map options) {
+        options.putIfAbsent('validationFlags', [])
+        options.putIfAbsent('userSettingValues', [])
+        optionsValidator.validate("Validating IntegrationAppSpecification options", options, EnumSet.noneOf(Flags))
+    }
+
+    private static final NamedParametersValidator optionsValidator = NamedParametersValidator.make {
+        objParameter("deviceScriptFilename", required(), mustNotBeNull(), { v -> new Tuple2("String", v instanceof String)} )
+        objParameter("validationFlags", notRequired(), mustNotBeNull(), { v -> new Tuple2("List<Flags>", v as List<Flags>) })
+        objParameter("userSettingValues", notRequired(), mustNotBeNull(), { v -> new Tuple2("Map<String, Object>", v as Map<String, Object>) })
     }
 
     /**

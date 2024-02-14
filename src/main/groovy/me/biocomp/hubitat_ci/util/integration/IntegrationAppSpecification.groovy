@@ -8,6 +8,7 @@ import me.biocomp.hubitat_ci.util.integration.IntegrationAppExecutor
 import me.biocomp.hubitat_ci.util.integration.IntegrationScheduler
 import me.biocomp.hubitat_ci.util.integration.TimeKeeper
 import me.biocomp.hubitat_ci.validation.Flags
+import me.biocomp.hubitat_ci.validation.NamedParametersValidator
 
 import spock.lang.Specification
 
@@ -44,11 +45,30 @@ abstract class IntegrationAppSpecification extends Specification {
      * Set the app settings that will be used to run the app script, and initialize all
      * the necessary objects.
      * This method must be called in the overridden setup() method of the subclass specifications.
+     * Required options:
+     *  - appScriptFilename: the filename of the app script to be tested.
+     * Optional options:
+     *  - validationFlags: a list of Flags to be used for validating the app script. Default is an empty list.
+     *  - userSettingValues: a map of user settings to be used configuring the app. Default is an empty map.
      */
-    protected void initializeEnvironment(String appScriptFilename, List<Flags> flags, Map appSettings = [:]) {
-        sandbox = new HubitatAppSandbox(new File(appScriptFilename))
-        appScript = sandbox.run(api: appExecutor, validationFlags: flags, userSettingValues: appSettings)
+    protected void initializeEnvironment(Map options = [:]) {
+        validateAndUpdateOptions(options)
+
+        sandbox = new HubitatAppSandbox(new File(options.appScriptFilename))
+        appScript = sandbox.run(api: appExecutor, validationFlags: options.validationFlags, userSettingValues: options.userSettingValues)
         appExecutor.setSubscribingScript(appScript)
+    }
+
+    private static void validateAndUpdateOptions(Map options) {
+        options.putIfAbsent('validationFlags', [])
+        options.putIfAbsent('userSettingValues', [])
+        optionsValidator.validate("Validating IntegrationAppSpecification options", options, EnumSet.noneOf(Flags))
+    }
+
+    private static final NamedParametersValidator optionsValidator = NamedParametersValidator.make {
+        objParameter("appScriptFilename", required(), mustNotBeNull(), { v -> new Tuple2("String", v instanceof String)} )
+        objParameter("validationFlags", notRequired(), mustNotBeNull(), { v -> new Tuple2("List<Flags>", v as List<Flags>) })
+        objParameter("userSettingValues", notRequired(), mustNotBeNull(), { v -> new Tuple2("Map<String, Object>", v as Map<String, Object>) })
     }
 
     /**

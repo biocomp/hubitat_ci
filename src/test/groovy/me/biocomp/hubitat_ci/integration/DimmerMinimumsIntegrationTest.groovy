@@ -21,7 +21,8 @@ class DimmerMinimumsIntegrationTest extends IntegrationAppSpecification {
         dimmerFixture1 = DimmerFixtureFactory.create('d1')
         dimmerFixture2 = DimmerFixtureFactory.create('d2')
 
-        super.initializeEnvironment("Scripts/DimmerMinimums.groovy", [], [dimmers: [dimmerFixture1, dimmerFixture2], minimumLevel: 5, enableLogging: true])
+        super.initializeEnvironment(appScriptFilename: "Scripts/DimmerMinimums.groovy",
+                                    userSettingValues: [dimmers: [dimmerFixture1, dimmerFixture2], minimumLevel: 5, enableLogging: true])
     }
 
     void "App initialize subscribes to events"() {

@@ -13,7 +13,8 @@ import spock.lang.Specification
 class EnhancedVirtualPresenceSensorTests extends IntegrationDeviceSpecification {
     @Override
     def setup() {
-        super.initializeEnvironment("Scripts/Devices/EnhancedVirtualPresenceSensor.groovy", [], [switch: "off", presence: "not present"])
+        super.initializeEnvironment(deviceScriptFilename: "Scripts/Devices/EnhancedVirtualPresenceSensor.groovy",
+                                    userSettingValues: [switch: "off", presence: "not present"])
     }
 
     def "Can arrive"() {
