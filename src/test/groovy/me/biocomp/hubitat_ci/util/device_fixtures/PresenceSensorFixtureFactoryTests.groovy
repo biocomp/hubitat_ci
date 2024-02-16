@@ -29,14 +29,14 @@ class PresenceSensorFixtureFactoryTests extends Specification {
         presenceSensorFixture.initialize(appExecutor, [presence: 'not present'])
 
         when:
-        presenceSensorFixture.detectMotion()
+        presenceSensorFixture.arrived()
 
         then:
         1*appExecutor.sendEvent(presenceSensorFixture, [name: "presence", value: 'present'])
         presenceSensorFixture.currentValue('presence') == 'present'
 
         when:
-        presenceSensorFixture.noMotion()
+        presenceSensorFixture.departed()
 
         then:
         1*appExecutor.sendEvent(presenceSensorFixture, [name: "presence", value: 'not present'])

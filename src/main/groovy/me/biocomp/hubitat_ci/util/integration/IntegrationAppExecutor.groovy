@@ -79,7 +79,14 @@ abstract class IntegrationAppExecutor implements AppExecutor {
     @Override
     void sendEvent(DeviceWrapper device, Map properties) {
         deviceEventSubscriptions.each { DeviceEventSubInfo subInfo ->
-            if (subInfo.toWhat == device && subInfo.attributeNameOrNameAndValueOrEventName == properties.name) {
+            if (subInfo.toWhat != device) {
+                return
+            }
+
+            def matchOfAttributeName = subInfo.attributeNameOrNameAndValueOrEventName == properties.name
+            def matchOfNameAndValue = subInfo.attributeNameOrNameAndValueOrEventName == "${properties.name}.${properties.value}"
+
+            if (matchOfAttributeName || matchOfNameAndValue) {
                 def generatedEvent = new DeviceEventArgs(device.getIdAsLong(), device, properties.name, properties.value)
                 script."$subInfo.handler"(generatedEvent)
             }

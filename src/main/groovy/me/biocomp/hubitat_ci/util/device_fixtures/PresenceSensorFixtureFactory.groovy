@@ -25,14 +25,12 @@ class PresenceSensorFixtureFactory {
             // The PresenceSensor capability has no commands and only a single state attribute: presence.
             attributeValues = initialAttributeValues
 
-            // However, for the purposes of testing, I'm adding public methods to the fixture.
-            // They're not actual commands in real Hubitat, but are useful for testing.
-            // They will let you set the presence attribute value, and publish an event for the change.
-            deviceMetaClass.detectMotion = { ->
+            deviceMetaClass.arrived = { ->
                 attributeValues.presence = 'present'
                 appExecutor.sendEvent(device, [name: "presence", value: 'present'])
             }
-            deviceMetaClass.noMotion = { ->
+
+            deviceMetaClass.departed = { ->
                 attributeValues.presence = 'not present'
                 appExecutor.sendEvent(device, [name: "presence", value: 'not present'])
             }
