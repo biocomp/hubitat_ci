@@ -17,10 +17,6 @@ abstract class IntegrationDeviceWrapper implements DeviceWrapper {
         attributeValues[properties.name] = properties.value
     }
 
-    def currentValue(String attributeName) {
-        return currentValue(attributeName, false)
-    }
-
     @Override
     def currentValue(String attributeName, boolean skipCache) {
         return attributeValues[attributeName]

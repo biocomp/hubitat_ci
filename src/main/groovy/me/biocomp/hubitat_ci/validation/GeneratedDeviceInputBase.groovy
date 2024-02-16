@@ -91,20 +91,12 @@ class GeneratedDeviceInputBase implements DeviceWrapper {
         return supportedCommands.find { it.name == commandName } != null
     }
 
-    def currentValue(String attributeName) {
-        currentValue(attributeName, false)
-    }
-
     @Override currentValue(String attributeName, boolean skipCache) {
-        try {
-            if (!attributeValues) {
-                return null
-            }
-
-            return attributeValues[attributeName]
-        } catch (Exception ex) {
+        if (!attributeValues) {
             return null
         }
+
+        return attributeValues[attributeName]
     }
 
     @Override
