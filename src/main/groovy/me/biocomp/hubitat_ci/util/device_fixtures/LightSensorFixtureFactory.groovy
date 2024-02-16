@@ -27,9 +27,9 @@ class LightSensorFixtureFactory {
 
             // However, for the purposes of testing, I'm adding a public method to the fixture.
             // It's not an actual command in real Hubitat, but it's useful for testing.
-            // It will let you set the illuminance state value, and publish an event for the change.
+            // It will let you set the illuminance attribute value, and publish an event for the change.
             lightSensorMetaClass.setIlluminance = { int illuminance ->
-                lightSensorMetaClass.attributeValues.illuminance = illuminance
+                attributeValues.illuminance = illuminance
                 appExecutor.sendEvent(lightSensorDevice, [name: "illuminance", value: illuminance])
             }
         }

@@ -33,5 +33,6 @@ class LightSensorFixtureFactoryTests extends Specification {
 
         then:
         1*appExecutor.sendEvent(lightSensorFixture, [name: "illuminance", value: 300])
+        lightSensorFixture.currentValue('illuminance') == 300
     }
 }
