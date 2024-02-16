@@ -657,7 +657,7 @@ interface PowerSource extends Capability
 interface PresenceSensor extends Capability
 {
     static Map<String, CapabilityAttributeInfo> _internalAttributes = CapabilityAttributeInfo.makeList{
-        enumAttribute("presense", ["present", "not present"])
+        enumAttribute("presence", ["present", "not present"])
     }
 
 }
