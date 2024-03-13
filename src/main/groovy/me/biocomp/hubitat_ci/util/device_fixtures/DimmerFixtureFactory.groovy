@@ -20,42 +20,32 @@ class DimmerFixtureFactory {
     static def create(String name) {
         def deviceInputValueFactory = new DeviceInputValueFactory([Switch, SwitchLevel, DoubleTapableButton])
 
-        def dimmerDevice = deviceInputValueFactory.makeInputObject(name)
+        def dimmerDevice = deviceInputValueFactory.makeInputObject(name, 't',  DefaultAndUserValues.empty(), false)
 
         def dimmerMetaClass = dimmerDevice.getMetaClass()
 
         // Calling initialize attaches behavior involving commands, state maintenance, and sending events.
-        dimmerMetaClass.initialize = { appExecutor, initialAttributeValues ->
-            attributeValues = initialAttributeValues
-
+        dimmerMetaClass.initialize = { appExecutor, state ->
+            dimmerMetaClass.state = state
             dimmerMetaClass.on = {
-                attributeValues.switch = "on"
-                attributeValues.doubleTapped = null
+                state.switch = "on"
                 appExecutor.sendEvent(dimmerDevice, [name: "switch.on", value: "on"])
-
-                if (attributeValues.level == 0) {
-                    setLevel(100)
-                }
             }
             dimmerMetaClass.off = {
-                attributeValues.switch = "off"
-                attributeValues.doubleTapped = null
+                state.switch = "off"
                 appExecutor.sendEvent(dimmerDevice, [name: "switch.off", value: "off"])
             }
             dimmerMetaClass.setLevel = { int level ->
-                // Most real dimmers will do this in their firmware:
-                if (attributeValues.switch == "off" && level > 0) {
-                    attributeValues.switch = "on"
-                    appExecutor.sendEvent(dimmerDevice, [name: "switch.on", value: "on"])
-                }
-
-                attributeValues.level = level
-                attributeValues.doubleTapped = null
+                state.level = level
 
                 appExecutor.sendEvent(dimmerDevice, [name: "level", value: level])
+
+                // Most real dimmers will do this in their firmware:
+                if (level > 0) {
+                    on()
+                }
             }
             dimmerMetaClass.doubleTap = { buttonNumber ->
-                attributeValues.doubleTapped = buttonNumber
                 appExecutor.sendEvent(dimmerDevice, [name: "doubleTapped.${buttonNumber}", value: buttonNumber])
             }
         }

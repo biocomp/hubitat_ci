@@ -24,8 +24,7 @@ class DimmerFixtureFactoryTests extends Specification {
 
         then:
         1*appExecutor.sendEvent(dimmerFixture, [name: "switch.on", value: "on"])
-        dimmerFixture.currentValue('switch') == "on"
-        dimmerFixture.currentValue('doubleTapped') == null
+        dimmerFixture.state.switch == "on"
     }
 
     void "Dimmer can turn off"() {
@@ -38,8 +37,7 @@ class DimmerFixtureFactoryTests extends Specification {
 
         then:
         1*appExecutor.sendEvent(dimmerFixture, [name: "switch.off", value: "off"])
-        dimmerFixture.currentValue('switch') == "off"
-        dimmerFixture.currentValue('doubleTapped') == null
+        dimmerFixture.state.switch == "off"
     }
 
     void "Dimmer can set level"() {
@@ -52,8 +50,7 @@ class DimmerFixtureFactoryTests extends Specification {
 
         then:
         1*appExecutor.sendEvent(dimmerFixture, [name: "level", value: 100])
-        dimmerFixture.currentValue('level') == 100
-        dimmerFixture.currentValue('doubleTapped') == null
+        dimmerFixture.state.level == 100
     }
 
     void "Non-zero setLevel will turn a dimmer on"() {
@@ -67,9 +64,8 @@ class DimmerFixtureFactoryTests extends Specification {
         then:
         1*appExecutor.sendEvent(dimmerFixture, [name: "level", value: 100])
         1*appExecutor.sendEvent(dimmerFixture, [name: "switch.on", value: "on"])
-        dimmerFixture.currentValue('switch') == "on"
-        dimmerFixture.currentValue('level') == 100
-        dimmerFixture.currentValue('doubleTapped') == null
+        dimmerFixture.state.switch == "on"
+        dimmerFixture.state.level == 100
     }
 
     void "Dimmer can double-tap up"() {
@@ -82,7 +78,6 @@ class DimmerFixtureFactoryTests extends Specification {
 
         then:
         1*appExecutor.sendEvent(dimmerFixture, [name: "doubleTapped.1", value: 1])
-        dimmerFixture.currentValue('doubleTapped') == 1
     }
 
     void "Dimmer can double-tap down"() {
@@ -95,7 +90,6 @@ class DimmerFixtureFactoryTests extends Specification {
 
         then:
         1*appExecutor.sendEvent(dimmerFixture, [name: "doubleTapped.2", value: 2])
-        dimmerFixture.currentValue('doubleTapped') == 2
     }
 
 }
