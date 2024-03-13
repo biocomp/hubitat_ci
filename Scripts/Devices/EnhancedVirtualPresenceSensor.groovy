@@ -29,7 +29,7 @@ def departed() {
 
 def on() {
     sendEvent(name: "switch", value: "on")
-sendEvent(name: "presence", value: "present")
+    sendEvent(name: "presence", value: "present")
 }
 
 def off() {
