@@ -1,6 +1,3 @@
-[submodule "buildSrc/src/main/groovy/biocomp/HubitatCi"]
-	path = buildSrc/src/main/groovy/biocomp/HubitatCi
-	url = https://biocomp.visualstudio.com/DefaultCollection/HubitatStuff/_git/HubitatCi
 [submodule "SubmodulesWithScripts/EcoNet"]
 	path = SubmodulesWithScripts/EcoNet
 	url = https://github.com/biocomp/EcoNet.git
