@@ -27,70 +27,70 @@ trait PassthroughScheduler extends BaseScheduler {
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runEvery1Minute(MetaMethod handlerMethod) { scheduler?.runEvery1Minute(handlerMethod) }
-    void runEvery1Minute(String handlerMethod) { scheduler?.runEvery1Minute(handlerMethod) }
-    void runEvery1Minute(MetaMethod handlerMethod, Map options) { scheduler?.runEvery1Minute(handlerMethod, options) }
-    void runEvery1Minute(String handlerMethod, Map options) { scheduler?.runEvery1Minute(handlerMethod, options) }
+    @Override void runEvery1Minute(MetaMethod handlerMethod) { scheduler?.runEvery1Minute(handlerMethod) }
+    @Override void runEvery1Minute(String handlerMethod) { scheduler?.runEvery1Minute(handlerMethod) }
+    @Override void runEvery1Minute(MetaMethod handlerMethod, Map options) { scheduler?.runEvery1Minute(handlerMethod, options) }
+    @Override void runEvery1Minute(String handlerMethod, Map options) { scheduler?.runEvery1Minute(handlerMethod, options) }
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runEvery5Minutes(MetaMethod handlerMethod) { scheduler?.runEvery5Minutes(handlerMethod) }
-    void runEvery5Minutes(String handlerMethod) { scheduler?.runEvery5Minutes(handlerMethod) }
-    void runEvery5Minutes(MetaMethod handlerMethod, Map options) { scheduler?.runEvery5Minutes(handlerMethod, options) }
-    void runEvery5Minutes(String handlerMethod, Map options) { scheduler?.runEvery5Minutes(handlerMethod, options) }
+    @Override void runEvery5Minutes(MetaMethod handlerMethod) { scheduler?.runEvery5Minutes(handlerMethod) }
+    @Override void runEvery5Minutes(String handlerMethod) { scheduler?.runEvery5Minutes(handlerMethod) }
+    @Override void runEvery5Minutes(MetaMethod handlerMethod, Map options) { scheduler?.runEvery5Minutes(handlerMethod, options) }
+    @Override void runEvery5Minutes(String handlerMethod, Map options) { scheduler?.runEvery5Minutes(handlerMethod, options) }
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runEvery10Minutes(MetaMethod handlerMethod) { scheduler?.runEvery10Minutes(handlerMethod) }
-    void runEvery10Minutes(String handlerMethod) { scheduler?.runEvery10Minutes(handlerMethod) }
-    void runEvery10Minutes(MetaMethod handlerMethod, Map options) { scheduler?.runEvery10Minutes(handlerMethod, options) }
-    void runEvery10Minutes(String handlerMethod, Map options) { scheduler?.runEvery10Minutes(handlerMethod, options) }
+    @Override void runEvery10Minutes(MetaMethod handlerMethod) { scheduler?.runEvery10Minutes(handlerMethod) }
+    @Override void runEvery10Minutes(String handlerMethod) { scheduler?.runEvery10Minutes(handlerMethod) }
+    @Override void runEvery10Minutes(MetaMethod handlerMethod, Map options) { scheduler?.runEvery10Minutes(handlerMethod, options) }
+    @Override void runEvery10Minutes(String handlerMethod, Map options) { scheduler?.runEvery10Minutes(handlerMethod, options) }
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runEvery15Minutes(MetaMethod handlerMethod) { scheduler?.runEvery15Minutes(handlerMethod) }
-    void runEvery15Minutes(String handlerMethod) { scheduler?.runEvery15Minutes(handlerMethod) }
-    void runEvery15Minutes(MetaMethod handlerMethod, Map options) { scheduler?.runEvery15Minutes(handlerMethod, options) }
-    void runEvery15Minutes(String handlerMethod, Map options) { scheduler?.runEvery15Minutes(handlerMethod, options) }
+    @Override void runEvery15Minutes(MetaMethod handlerMethod) { scheduler?.runEvery15Minutes(handlerMethod) }
+    @Override void runEvery15Minutes(String handlerMethod) { scheduler?.runEvery15Minutes(handlerMethod) }
+    @Override void runEvery15Minutes(MetaMethod handlerMethod, Map options) { scheduler?.runEvery15Minutes(handlerMethod, options) }
+    @Override void runEvery15Minutes(String handlerMethod, Map options) { scheduler?.runEvery15Minutes(handlerMethod, options) }
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runEvery30Minutes(MetaMethod handlerMethod) { scheduler?.runEvery30Minutes(handlerMethod) }
-    void runEvery30Minutes(String handlerMethod) { scheduler?.runEvery30Minutes(handlerMethod) }
-    void runEvery30Minutes(MetaMethod handlerMethod, Map options) { scheduler?.runEvery30Minutes(handlerMethod, options) }
-    void runEvery30Minutes(String handlerMethod, Map options) { scheduler?.runEvery30Minutes(handlerMethod, options) }
+    @Override void runEvery30Minutes(MetaMethod handlerMethod) { scheduler?.runEvery30Minutes(handlerMethod) }
+    @Override void runEvery30Minutes(String handlerMethod) { scheduler?.runEvery30Minutes(handlerMethod) }
+    @Override void runEvery30Minutes(MetaMethod handlerMethod, Map options) { scheduler?.runEvery30Minutes(handlerMethod, options) }
+    @Override void runEvery30Minutes(String handlerMethod, Map options) { scheduler?.runEvery30Minutes(handlerMethod, options) }
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runEvery1Hour(MetaMethod handlerMethod) { scheduler?.runEvery1Hour(handlerMethod) }
-    void runEvery1Hour(String handlerMethod) { scheduler?.runEvery1Hour(handlerMethod) }
-    void runEvery1Hour(MetaMethod handlerMethod, Map options) { scheduler?.runEvery1Hour(handlerMethod, options) }
-    void runEvery1Hour(String handlerMethod, Map options) { scheduler?.runEvery1Hour(handlerMethod, options) }
+    @Override void runEvery1Hour(MetaMethod handlerMethod) { scheduler?.runEvery1Hour(handlerMethod) }
+    @Override void runEvery1Hour(String handlerMethod) { scheduler?.runEvery1Hour(handlerMethod) }
+    @Override void runEvery1Hour(MetaMethod handlerMethod, Map options) { scheduler?.runEvery1Hour(handlerMethod, options) }
+    @Override void runEvery1Hour(String handlerMethod, Map options) { scheduler?.runEvery1Hour(handlerMethod, options) }
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
      * @param options. Supported keys:
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runEvery3Hours(MetaMethod handlerMethod) { scheduler?.runEvery3Hours(handlerMethod) }
-    void runEvery3Hours(String handlerMethod) { scheduler?.runEvery3Hours(handlerMethod) }
-    void runEvery3Hours(MetaMethod handlerMethod, Map options) { scheduler?.runEvery3Hours(handlerMethod, options) }
-    void runEvery3Hours(String handlerMethod, Map options) { scheduler?.runEvery3Hours(handlerMethod, options) }
+    @Override void runEvery3Hours(MetaMethod handlerMethod) { scheduler?.runEvery3Hours(handlerMethod) }
+    @Override void runEvery3Hours(String handlerMethod) { scheduler?.runEvery3Hours(handlerMethod) }
+    @Override void runEvery3Hours(MetaMethod handlerMethod, Map options) { scheduler?.runEvery3Hours(handlerMethod, options) }
+    @Override void runEvery3Hours(String handlerMethod, Map options) { scheduler?.runEvery3Hours(handlerMethod, options) }
 
     /**
      * @param handlerMethod - could be method name (String) or reference to a method.
@@ -98,15 +98,15 @@ trait PassthroughScheduler extends BaseScheduler {
      *  overwrite (Boolean) - Specify [overwrite: false] to not overwrite any existing pending schedule handler for the given method (the abstract behavior is to overwrite the pending schedule). Specifying [overwrite: false] can lead to multiple different schedules for the same handler method, so be sure your handler method can handle this.
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runIn(Long delayInSeconds, MetaMethod handlerMethod) { scheduler?.runIn(delayInSeconds, handlerMethod) }
-    void runIn(Long delayInSeconds, String handlerMethod) { scheduler?.runIn(delayInSeconds, handlerMethod) }
-    void runIn(Long delayInSeconds, MetaMethod handlerMethod, Map options) { scheduler?.runIn(delayInSeconds, handlerMethod, options) }
-    void runIn(Long delayInSeconds, String handlerMethod, Map options) { scheduler?.runIn(delayInSeconds, handlerMethod, options) }
+    @Override void runIn(Long delayInSeconds, MetaMethod handlerMethod) { scheduler?.runIn(delayInSeconds, handlerMethod) }
+    @Override void runIn(Long delayInSeconds, String handlerMethod) { scheduler?.runIn(delayInSeconds, handlerMethod) }
+    @Override void runIn(Long delayInSeconds, MetaMethod handlerMethod, Map options) { scheduler?.runIn(delayInSeconds, handlerMethod, options) }
+    @Override void runIn(Long delayInSeconds, String handlerMethod, Map options) { scheduler?.runIn(delayInSeconds, handlerMethod, options) }
 
-    void runInMillis(Long delayInMilliSeconds, MetaMethod handlerMethod) { scheduler?.runInMillis(delayInMilliSeconds, handlerMethod) }
-    void runInMillis(Long delayInMilliSeconds, String handlerMethod) { scheduler?.runInMillis(delayInMilliSeconds, handlerMethod) }
-    void runInMillis(Long delayInMilliSeconds, MetaMethod handlerMethod, Map options) { scheduler?.runInMillis(delayInMilliSeconds, handlerMethod, options) }
-    void runInMillis(Long delayInMilliSeconds, String handlerMethod, Map options) { scheduler?.runInMillis(delayInMilliSeconds, handlerMethod, options) }
+    @Override void runInMillis(Long delayInMilliSeconds, MetaMethod handlerMethod) { scheduler?.runInMillis(delayInMilliSeconds, handlerMethod) }
+    @Override void runInMillis(Long delayInMilliSeconds, String handlerMethod) { scheduler?.runInMillis(delayInMilliSeconds, handlerMethod) }
+    @Override void runInMillis(Long delayInMilliSeconds, MetaMethod handlerMethod, Map options) { scheduler?.runInMillis(delayInMilliSeconds, handlerMethod, options) }
+    @Override void runInMillis(Long delayInMilliSeconds, String handlerMethod, Map options) { scheduler?.runInMillis(delayInMilliSeconds, handlerMethod, options) }
 
     /**
      * Runs specified method at specified date/time.
@@ -117,10 +117,10 @@ trait PassthroughScheduler extends BaseScheduler {
      *  overwrite (Boolean) - Specify [overwrite: false] to not overwrite any existing pending schedule handler for the given method (the abstract behavior is to overwrite the pending schedule). Specifying [overwrite: false] can lead to multiple different schedules for the same handler method, so be sure your handler method can handle this.
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runOnce(Date dateTime, MetaMethod handlerMethod) { scheduler?.runOnce(dateTime, handlerMethod) }
-    void runOnce(Date dateTime, String handlerMethod) { scheduler?.runOnce(dateTime, handlerMethod) }
-    void runOnce(Date dateTime, MetaMethod handlerMethod, Map options) { scheduler?.runOnce(dateTime, handlerMethod, options) }
-    void runOnce(Date dateTime, String handlerMethod, Map options) { scheduler?.runOnce(dateTime, handlerMethod, options) }
+    @Override void runOnce(Date dateTime, MetaMethod handlerMethod) { scheduler?.runOnce(dateTime, handlerMethod) }
+    @Override void runOnce(Date dateTime, String handlerMethod) { scheduler?.runOnce(dateTime, handlerMethod) }
+    @Override void runOnce(Date dateTime, MetaMethod handlerMethod, Map options) { scheduler?.runOnce(dateTime, handlerMethod, options) }
+    @Override void runOnce(Date dateTime, String handlerMethod, Map options) { scheduler?.runOnce(dateTime, handlerMethod, options) }
 
     /**
      * Runs specified method at specified date/time.
@@ -131,10 +131,10 @@ trait PassthroughScheduler extends BaseScheduler {
      *  overwrite (Boolean) - Specify [overwrite: false] to not overwrite any existing pending schedule handler for the given method (the abstract behavior is to overwrite the pending schedule). Specifying [overwrite: false] can lead to multiple different schedules for the same handler method, so be sure your handler method can handle this.
      *  data (Map) A map of data that will be passed to the handler method
      */
-    void runOnce(String dateTime, MetaMethod handlerMethod) { scheduler?.runOnce(dateTime, handlerMethod) }
-    void runOnce(String dateTime, String handlerMethod) { scheduler?.runOnce(dateTime, handlerMethod) }
-    void runOnce(String dateTime, MetaMethod handlerMethod, Map options) { scheduler?.runOnce(dateTime, handlerMethod, options) }
-    void runOnce(String dateTime, String handlerMethod, Map options) { scheduler?.runOnce(dateTime, handlerMethod, options) }
+    @Override void runOnce(String dateTime, MetaMethod handlerMethod) { scheduler?.runOnce(dateTime, handlerMethod) }
+    @Override void runOnce(String dateTime, String handlerMethod) { scheduler?.runOnce(dateTime, handlerMethod) }
+    @Override void runOnce(String dateTime, MetaMethod handlerMethod, Map options) { scheduler?.runOnce(dateTime, handlerMethod, options) }
+    @Override void runOnce(String dateTime, String handlerMethod, Map options) { scheduler?.runOnce(dateTime, handlerMethod, options) }
 
     /**
      * Creates a scheduled job that calls the handlerMethod once per day at the time specified.
@@ -143,10 +143,10 @@ trait PassthroughScheduler extends BaseScheduler {
      * @param options. Supported keys:
      *  data (Map) - will be passed to handlerMethod
      */
-    void schedule(Date dateTime, MetaMethod handlerMethod) { scheduler?.schedule(dateTime, handlerMethod) }
-    void schedule(Date dateTime, String handlerMethod) { scheduler?.schedule(dateTime, handlerMethod) }
-    void schedule(Date dateTime, MetaMethod handlerMethod, Map options) { scheduler?.schedule(dateTime, handlerMethod, options) }
-    void schedule(Date dateTime, String handlerMethod, Map options) { scheduler?.schedule(dateTime, handlerMethod, options) }
+    @Override void schedule(Date dateTime, MetaMethod handlerMethod) { scheduler?.schedule(dateTime, handlerMethod) }
+    @Override void schedule(Date dateTime, String handlerMethod) { scheduler?.schedule(dateTime, handlerMethod) }
+    @Override void schedule(Date dateTime, MetaMethod handlerMethod, Map options) { scheduler?.schedule(dateTime, handlerMethod, options) }
+    @Override void schedule(Date dateTime, String handlerMethod, Map options) { scheduler?.schedule(dateTime, handlerMethod, options) }
     /**
      * Creates a scheduled job that calls the handlerMethod according to cronExpression, or once a day at specified time.
      * @param cronExpressionOrIsoDate
@@ -155,25 +155,25 @@ trait PassthroughScheduler extends BaseScheduler {
      * @param options. Supported keys:
      *  data (Map) - will be passed to handlerMethod
      */
-    void schedule(String cronExpressionOrIsoDate, MetaMethod handlerMethod) { scheduler?.schedule(cronExpressionOrIsoDate, handlerMethod) }
-    void schedule(String cronExpressionOrIsoDate, String handlerMethod) { scheduler?.schedule(cronExpressionOrIsoDate, handlerMethod) }
-    void schedule(String cronExpressionOrIsoDate, MetaMethod handlerMethod, Map options) { scheduler?.schedule(cronExpressionOrIsoDate, handlerMethod, options) }
-    void schedule(String cronExpressionOrIsoDate, String handlerMethod, Map options) { scheduler?.schedule(cronExpressionOrIsoDate, handlerMethod, options) }
+    @Override void schedule(String cronExpressionOrIsoDate, MetaMethod handlerMethod) { scheduler?.schedule(cronExpressionOrIsoDate, handlerMethod) }
+    @Override void schedule(String cronExpressionOrIsoDate, String handlerMethod) { scheduler?.schedule(cronExpressionOrIsoDate, handlerMethod) }
+    @Override void schedule(String cronExpressionOrIsoDate, MetaMethod handlerMethod, Map options) { scheduler?.schedule(cronExpressionOrIsoDate, handlerMethod, options) }
+    @Override void schedule(String cronExpressionOrIsoDate, String handlerMethod, Map options) { scheduler?.schedule(cronExpressionOrIsoDate, handlerMethod, options) }
 
     /**
      * Deletes all scheduled jobs for the App.
      */
-    void unschedule() { scheduler?.unschedule() }
+    @Override void unschedule() { scheduler?.unschedule() }
 
     /**
      * Deletes scheduled job for the App.
      * @param method - method to unschedule
      */
-    void unschedule(MetaMethod method) { scheduler?.unschedule(method) }
+    @Override void unschedule(MetaMethod method) { scheduler?.unschedule(method) }
 
     /**
      * Deletes scheduled job for the App.
      * @param method - method to unschedule
      */
-    void unschedule(String method) { scheduler?.unschedule(method) }
+    @Override void unschedule(String method) { scheduler?.unschedule(method) }
 }
