@@ -16,9 +16,6 @@ import me.biocomp.hubitat_ci.util.integration.DeviceEventArgs
 * - Methods from BaseScheduler trait (passed through to a BaseScheduler dependency)
 */
 abstract class IntegrationAppExecutor implements AppExecutor {
-    IntegrationAppExecutor() {
-    }
-
     IntegrationAppExecutor(BaseScheduler scheduler) {
         this.scheduler = scheduler
     }
