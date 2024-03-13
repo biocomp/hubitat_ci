@@ -3,7 +3,7 @@ package me.biocomp.hubitat_ci.util
 import me.biocomp.hubitat_ci.api.app_api.AppExecutor
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
 import me.biocomp.hubitat_ci.app.HubitatAppScript
-import me.biocomp.hubitat_ci.util.TimeKeeper
+import me.biocomp.hubitat_ci.util.integration.TimeKeeper
 
 /**
 * An implementation of the subscribe() and sendEvent() portions of AppExecutor,

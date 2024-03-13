@@ -6,7 +6,7 @@ import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
 import me.biocomp.hubitat_ci.api.common_api.Location
 import me.biocomp.hubitat_ci.api.common_api.Log
 import me.biocomp.hubitat_ci.device.HubitatDeviceSandbox
-import me.biocomp.hubitat_ci.util.TimeKeeper
+import me.biocomp.hubitat_ci.util.integration.TimeKeeper
 import me.biocomp.hubitat_ci.validation.Flags
 import spock.lang.Specification
 
