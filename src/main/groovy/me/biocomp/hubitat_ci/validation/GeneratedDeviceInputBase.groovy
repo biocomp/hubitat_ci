@@ -101,15 +101,11 @@ class GeneratedDeviceInputBase implements DeviceWrapper {
 
     @Override
     boolean hasAttribute(String attributeName) {
-        try {
-            if (!attributeValues) {
-                return false
-            }
-
-            return attributeValues.containsKey(attributeName)
-        } catch (Exception ex) {
+        if (!attributeValues) {
             return false
         }
+
+        return attributeValues.containsKey(attributeName)
     }
 
     @Override
