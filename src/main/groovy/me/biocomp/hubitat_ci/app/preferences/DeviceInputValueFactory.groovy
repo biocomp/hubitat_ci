@@ -25,12 +25,6 @@ class DeviceInputValueFactory implements IInputValueFactory
         this.generatedDevice = generateDeviceClass(capabilities)
     }
 
-    // @CompileStatic
-    // GeneratedDeviceInputBase makeInputDevice(String inputName)
-    // {
-    //     generatedDevice.newInstance(inputName, 't', this.capabilities)
-    // }
-
     @Override
     @CompileStatic
     def makeInputObject(String inputName, String inputType = 't', DefaultAndUserValues userProvidedAndDefaultValues = null, boolean multipleValues = false)
