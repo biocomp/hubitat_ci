@@ -47,7 +47,7 @@ class LockFixtureFactoryTests extends Specification {
         lockFixture.initialize(appExecutor, [lock: "unlocked"])
 
         and: "We tell the fixture to ignore two commands"
-        lockFixture.setCommandsToIgnore(2)
+        lockFixture.setNumOfCommandsToIgnore(2)
 
         when: "We try to lock it twice"
         lockFixture.lock()

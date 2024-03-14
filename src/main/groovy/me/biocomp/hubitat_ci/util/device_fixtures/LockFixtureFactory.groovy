@@ -27,18 +27,18 @@ class LockFixtureFactory {
             attributeValues = initialAttributeValues
 
             // A group of testing-only state variables, that allow us to simulate different aspects of real physical locks in our tests.
-            //  - commandsToIgnore: This allows us to simulate a lock that is unresponsive for a bit.  It will ignore the specified number of commands before responding again.
+            //  - numOfCommandsToIgnore: This allows us to simulate a lock that is unresponsive for a bit.  It will ignore the specified number of commands before responding again.
             //  - requireRefresh: Some older smart locks don't immediately report back their state changes.  You have to give them a refresh command to get the latest state from them.
             //  - desiredState: If requireRefresh is set to true, this is the state we want the lock to be in after the refresh command is sent.
-            lockMetaClass.state = [commandsToIgnore: 0, requireRefresh: false, desiredState: initialAttributeValues.lock]
+            lockMetaClass.state = [numOfCommandsToIgnore: 0, requireRefresh: false, desiredState: initialAttributeValues.lock]
 
             // Note that in a real device, it takes time for the lock to move when you send any of these commands.
             // So the resulting attribute change events won't be sent out instantaneously.
             // However, for the purposes of app testing, we will approximate the behavior by reporting the results
             // instantaneously.
             lockMetaClass.lock = {
-                if (state.commandsToIgnore > 0) {
-                    state.commandsToIgnore--
+                if (state.numOfCommandsToIgnore > 0) {
+                    state.numOfCommandsToIgnore--
                     return
                 }
 
@@ -50,8 +50,8 @@ class LockFixtureFactory {
                 }
             }
             lockMetaClass.unlock = {
-                if (state.commandsToIgnore > 0) {
-                    state.commandsToIgnore--
+                if (state.numOfCommandsToIgnore > 0) {
+                    state.numOfCommandsToIgnore--
                     return
                 }
 
@@ -74,8 +74,8 @@ class LockFixtureFactory {
             lockMetaClass.setRequireRefresh = { boolean requireRefresh ->
                 state.requireRefresh = requireRefresh
             }
-            lockMetaClass.setCommandsToIgnore = { int commandsToIgnore ->
-                state.commandsToIgnore = commandsToIgnore
+            lockMetaClass.setNumOfCommandsToIgnore = { int numOfCommandsToIgnore ->
+                state.numOfCommandsToIgnore = numOfCommandsToIgnore
             }
         }
 
