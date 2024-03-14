@@ -17,44 +17,44 @@ class WindowShadeFixtureFactory {
     static def create(String name) {
         def deviceInputValueFactory = new DeviceInputValueFactory([WindowShade])
 
-        def fixture = deviceInputValueFactory.makeInputObject(name, 't',  DefaultAndUserValues.empty(), false)
+        def fixture = deviceInputValueFactory.makeInputObject(name)
 
         def fixtureMetaClass = fixture.getMetaClass()
 
         // Calling initialize attaches behavior involving commands, state maintenance, and sending events.
-        fixtureMetaClass.initialize = { appExecutor, state ->
-            fixtureMetaClass.state = state
+        fixtureMetaClass.initialize = { appExecutor, initialAttributeValues ->
+            attributeValues = initialAttributeValues
 
             // Note that in a real device, it takes time for the shade to move when you send any of these commands.
             // So the resulting attribute change events won't be sent out instantaneously.
             // However, for the purposes of app testing, we will approximate the behavior by reporting the results
             // instantaneously.
             fixtureMetaClass.close = {
-                state.position = 0
+                attributeValues.position = 0
                 appExecutor.sendEvent(fixture, [name: "position", value: 0])
 
-                state.windowShade = "closed"
+                attributeValues.windowShade = "closed"
                 appExecutor.sendEvent(fixture, [name: "windowShade", value: "closed"])
             }
             fixtureMetaClass.open = {
-                state.position = 100
+                attributeValues.position = 100
                 appExecutor.sendEvent(fixture, [name: "position", value: 100])
 
-                state.windowShade = "open"
+                attributeValues.windowShade = "open"
                 appExecutor.sendEvent(fixture, [name: "windowShade", value: "open"])
             }
             fixtureMetaClass.setPosition = { int position ->
-                state.position = position
+                attributeValues.position = position
                 appExecutor.sendEvent(fixture, [name: "position", value: position])
 
                 if (position == 0) {
-                    state.windowShade = "closed"
+                    attributeValues.windowShade = "closed"
                     appExecutor.sendEvent(fixture, [name: "windowShade", value: "closed"])
                 } else if (position == 100) {
-                    state.windowShade = "open"
+                    attributeValues.windowShade = "open"
                     appExecutor.sendEvent(fixture, [name: "windowShade", value: "open"])
                 } else {
-                    state.windowShade = "partially open"
+                    attributeValues.windowShade = "partially open"
                     appExecutor.sendEvent(fixture, [name: "windowShade", value: "partially open"])
                 }
             }
