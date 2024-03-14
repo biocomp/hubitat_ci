@@ -44,6 +44,7 @@ class GeneratedDeviceInputBase implements DeviceWrapper {
     }
 
     private static long nextDeviceId = 0
+    protected Map attributeValues = [:]
 
     @Synchronized
     private static int generateNextDeviceId() {
@@ -86,12 +87,25 @@ class GeneratedDeviceInputBase implements DeviceWrapper {
         return capabilities
     }
 
-    @Override currentValue(String attributeName) {
-        if (!state) {
+    @Override boolean hasCommand(String commandName) {
+        return supportedCommands.find { it.name == commandName } != null
+    }
+
+    @Override currentValue(String attributeName, boolean skipCache) {
+        if (!attributeValues) {
             return null
         }
 
-        return state[attributeName]
+        return attributeValues[attributeName]
+    }
+
+    @Override
+    boolean hasAttribute(String attributeName) {
+        if (!attributeValues) {
+            return false
+        }
+
+        return attributeValues.containsKey(attributeName)
     }
 
     @Override
