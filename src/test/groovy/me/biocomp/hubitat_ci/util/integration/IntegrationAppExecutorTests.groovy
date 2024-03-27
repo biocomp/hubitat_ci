@@ -1,7 +1,7 @@
 package me.biocomp.hubitat_ci
 
-import me.biocomp.hubitat_ci.util.AppExecutorWithEventForwarding
-import me.biocomp.hubitat_ci.util.DeviceEventArgs
+import me.biocomp.hubitat_ci.util.integration.IntegrationAppExecutor
+import me.biocomp.hubitat_ci.util.integration.DeviceEventArgs
 import me.biocomp.hubitat_ci.util.integration.TimeKeeper
 import me.biocomp.hubitat_ci.app.HubitatAppScript
 import me.biocomp.hubitat_ci.api.common_api.DeviceWrapper
@@ -10,22 +10,23 @@ import spock.lang.Specification
 
 /**
 * We have to extend HubitatAppScript so that Spock Mock will know
-* about the levelHandler method that is called on it.
+* about the levelHandler/switchHandler methods that are called on it.
 */
-abstract class LevelHandlingAppScript extends HubitatAppScript {
+abstract class EventHandlingAppScript extends HubitatAppScript {
     abstract void levelHandler(DeviceEventArgs args)
+    abstract void switchHandler(DeviceEventArgs args)
 }
 
-class AppExecutorWithEventForwardingTest extends Specification {
-    def appExecutor = Spy(AppExecutorWithEventForwarding)
+class IntegrationAppExecutorTests extends Specification {
+    def appExecutor = Spy(IntegrationAppExecutor)
 
-    def appScript = Mock(LevelHandlingAppScript)
+    def appScript = Mock(EventHandlingAppScript)
 
     def setup() {
         appExecutor.setSubscribingScript(appScript)
     }
 
-    def "AppExecutorWithEventForwarding will forward a message"() {
+    def "IntegrationAppExecutor will forward a message when subscribed by attribute name"() {
         given:
         def device = Mock(DeviceWrapper) {
             _*getIdAsLong() >> 1
@@ -41,6 +42,44 @@ class AppExecutorWithEventForwardingTest extends Specification {
             assert event.device == device
             assert event.name == 'level'
             assert event.value == 50
+        }
+    }
+
+    def "IntegrationAppExecutor will forward a message when subscribed by attribute name and value"() {
+        given:
+        def device = Mock(DeviceWrapper) {
+            _*getIdAsLong() >> 1
+        }
+        appExecutor.subscribe(device, 'switch.on', 'switchHandler')
+
+        when:
+        appExecutor.sendEvent(device, [name: 'switch', value: 'on'])
+
+        then:
+        1 * appScript.switchHandler(_) >> { DeviceEventArgs event ->
+            assert event.deviceId == 1
+            assert event.device == device
+            assert event.name == 'switch'
+            assert event.value == 'on'
+        }
+    }
+
+    def "IntegrationAppExecutor does not forward a message when subscribed by attribute name and value, and value does not match"() {
+        given:
+        def device = Mock(DeviceWrapper) {
+            _*getIdAsLong() >> 1
+        }
+        appExecutor.subscribe(device, 'switch.off', 'switchHandler')
+
+        when:
+        appExecutor.sendEvent(device, [name: 'switch', value: 'on'])
+
+        then:
+        0 * appScript.switchHandler(_) >> { DeviceEventArgs event ->
+            assert event.deviceId == 1
+            assert event.device == device
+            assert event.name == 'switch'
+            assert event.value == 'on'
         }
     }
 
@@ -89,7 +128,7 @@ class AppExecutorWithEventForwardingTest extends Specification {
         }
     }
 
-    def "AppExecutorWithEventForwarding ignores unsubscribed events"() {
+    def "IntegrationAppExecutor ignores unsubscribed events"() {
         given:
         def device = Mock(DeviceWrapper) {
             _*getIdAsLong() >> 1
