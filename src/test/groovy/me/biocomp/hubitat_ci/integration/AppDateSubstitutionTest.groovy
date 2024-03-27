@@ -10,7 +10,7 @@ import me.biocomp.hubitat_ci.api.common_api.Log
 import me.biocomp.hubitat_ci.app.AppValidator
 import me.biocomp.hubitat_ci.app.HubitatAppSandbox
 import me.biocomp.hubitat_ci.util.device_fixtures.DimmerFixtureFactory
-import me.biocomp.hubitat_ci.util.TimeKeeper
+import me.biocomp.hubitat_ci.util.integration.TimeKeeper
 import me.biocomp.hubitat_ci.validation.Flags
 import spock.lang.Specification
 

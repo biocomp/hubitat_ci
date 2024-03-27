@@ -153,7 +153,7 @@ trait DeviceWrapper {
     abstract boolean isDisabled()
     abstract void clearSetting(String settingName)
     abstract void removeSetting(String settingName)
-    abstract void sendEvent(Map)
+    abstract void sendEvent(Map properties)
     abstract void setDeviceNetworkId(String)
     abstract void setDisplayName(String)
 
